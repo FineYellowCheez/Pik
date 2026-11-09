@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pik - A Game of Rare Answers</title>
+  
+  <!-- Handcrafted SVG Favicon (5 Matte Dots in a Circle) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/></svg>">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            pik: {
+              bg: '#121212',
+              card: '#1a1a1a',
+              border: '#2a2a2a',
+              common: '#7e8c8d',
+              uncommon: '#388e3c',
+              rare: '#1976d2',
+              epic: '#8e24aa',
+              gold: '#d4af37'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Strict Viewport & No-Scroll Guarantee */
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #121212;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Animated SVG Line Stroke */
+    .pik-line-stroke {
+      transition: stroke-dashoffset 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .node-transition {
+      transition: fill 0.3s ease, stroke 0.3s ease;
+    }
+
+    /* Card Slide Out / In Animations */
+    .card-slide-out {
+      transform: translateX(100vw) !important;
+      opacity: 0 !important;
+      transition: transform 0.35s ease-in, opacity 0.35s ease-in !important;
+    }
+
+    .card-slide-in-prepare {
+      transform: translateX(-100vw) !important;
+      opacity: 0 !important;
+      transition: none !important;
+    }
+
+    /* Timed Mode Red Flash on Timeout */
+    .card-flash-red {
+      border-color: #ef4444 !important;
+      background-color: #271313 !important;
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
+      transition: all 0.15s ease-in-out !important;
+    }
+
+    /* Results Section Fade In */
+    .hidden-results {
+      display: none !important;
+      opacity: 0;
+    }
+
+    .show-results {
+      display: flex !important;
+      animation: fadeInSmooth 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeInSmooth {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hide Scrollbar for internal results overflow if needed on small displays */
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
+
+  <!-- ================= TOP NAVIGATION HEADER ================= -->
+  <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between z-20 border-b border-pik-border/40 flex-shrink-0">
+    <!-- Header Brand (5 Matte Dots in Circle + Title) -->
+    <div class="flex items-center gap-3 cursor-pointer" onclick="returnToMenu()">
+      <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="11" r="4" fill="#7e8c8d"/>
+        <circle cx="36.3" cy="20" r="4" fill="#388e3c"/>
+        <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
+        <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
+        <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+      </svg>
+      <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">PIK</span>
+    </div>
+
+    <!-- Header Action Controls -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Return to Menu Button -->
+      <button onclick="returnToMenu()" title="Main Menu" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </button>
+
+      <!-- Toggle Sound Button -->
+      <button onclick="toggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg id="audioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
+      </button>
+
+      <!-- Help / Instructions Button -->
+      <button onclick="toggleHelpModal(true)" title="How to Play" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN MENU SCREEN OVERLAY ================= -->
+  <div id="menuScreen" class="absolute inset-0 z-40 bg-pik-bg flex flex-col items-center justify-between py-10 px-4 transition-transform duration-500 ease-in-out">
+    
+    <!-- Upper-Middle Title Block -->
+    <div class="flex flex-col items-center mt-6 sm:mt-10 text-center px-4">
+      <svg class="w-20 h-20 mb-3" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="11" r="4.5" fill="#7e8c8d"/>
+        <circle cx="36.3" cy="20" r="4.5" fill="#388e3c"/>
+        <circle cx="31.6" cy="34.4" r="4.5" fill="#1976d2"/>
+        <circle cx="16.4" cy="34.4" r="4.5" fill="#8e24aa"/>
+        <circle cx="11.7" cy="20" r="4.5" fill="#d4af37"/>
+      </svg>
+      <h1 class="font-display font-black text-5xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
+      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">The game of niche ball knowledge</p>
+      <p class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
+      <p class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-2">PIK is still in beta, so please keep that in mind while playing.</p>
+    </div>
+
+    <!-- Triangular Button Arrangement -->
+    <div class="flex flex-col items-center gap-6 my-auto max-w-md w-full px-4">
+      <!-- Top Center Button: Play Standard (-3 deg rotation) -->
+      <button onclick="launchGame('standard')" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Play Standard
+      </button>
+
+      <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
+      <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
+        <!-- Bottom Left: Play Timed (+2.5 deg rotation) -->
+        <button onclick="launchGame('timed')" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Play Timed
+        </button>
+
+        <!-- Bottom Right: Play Daily (-2.5 deg rotation) -->
+        <button onclick="launchGame('daily')" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform -rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 text-pik-epic" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Play Daily
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Footer Subtext -->
+    <div class="text-[11px] text-slate-500 font-display">
+      8 Questions • 5 Rarity Tiers
+    </div>
+  </div>
+
+  <!-- ================= HELP MODAL OVERLAY ================= -->
+  <div id="helpModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-md w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300">
+      <div class="flex items-center justify-between border-b border-pik-border pb-3">
+        <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+          How to Play Pik
+        </h3>
+        <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+      </div>
+
+      <div class="space-y-2">
+        <p><strong class="text-slate-100">Objective:</strong> For each question, try to guess valid answers that are <em class="text-pik-gold">uncommon or rare</em>. The rarer your answer, the further your line stretches!</p>
+        
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-1.5 font-display text-[11px]">
+          <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
+        </div>
+
+        <p class="text-slate-400">
+          The area below the line remains completely empty until you complete all 8 questions!
+        </p>
+      </div>
+
+      <button onclick="toggleHelpModal(false)" class="w-full py-2 bg-slate-100 text-slate-950 font-display font-bold rounded-xl text-xs transition mt-1">
+        Got It
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
+  <main id="gameArea" class="w-full flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+    <div id="questionCard" class="w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative transition-all duration-300">
+      
+      <!-- Question Card Top Header -->
+      <div class="flex items-center justify-between border-b border-pik-border/60 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span id="questionNumText" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question 1 / 8</span>
+          <span id="dailyBadge" class="hidden px-2 py-0.5 bg-pik-epic/20 border border-pik-epic/40 text-pik-epic font-display text-[10px] font-bold rounded-md">Daily Challenge</span>
+        </div>
+        
+        <!-- Timed Countdown Pill -->
+        <div id="timerPill" class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-red-950/40 border border-red-500/40 rounded-full font-display text-xs text-red-400 font-bold">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="timerText">30s</span>
+        </div>
+
+        <!-- Step Progress Indicator Pills -->
+        <div id="stepPills" class="flex items-center gap-1">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Question Prompt Text -->
+      <div class="py-1">
+        <h2 id="questionPrompt" class="font-display font-extrabold text-lg sm:text-xl text-slate-100 tracking-tight leading-snug">
+          Loading Question...
+        </h2>
+      </div>
+
+      <!-- User Answer Input Field & Controls -->
+      <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
+        <div class="relative w-full">
+          <input 
+            type="text" 
+            id="answerInput" 
+            autocomplete="off" 
+            spellcheck="false" 
+            placeholder="Type your answer..." 
+            class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans"
+          >
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5">
+            Submit
+          </button>
+          <button onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+            Skip
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Feedback Text (Typo Correction / Invalid Fit) -->
+      <div id="feedbackText" class="hidden text-xs text-red-400 font-display font-medium pt-1"></div>
+
+    </div>
+  </main>
+
+  <!-- ================= CENTRAL LINE DIVIDER (BACKGROUND LINE) ================= -->
+  <section class="w-full relative flex flex-col items-center justify-center my-1 z-10 flex-shrink-0">
+    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-28 overflow-visible">
+      
+      <!-- SVG Line Track Canvas -->
+      <svg id="mainLineSvg" class="w-full h-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- Main Continuous Track Guide Line -->
+        <line x1="0" y1="70" x2="6000" y2="70" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4"/>
+        <!-- Animated Colored Line Segments -->
+        <g id="svgLineSegments"></g>
+        <!-- Alternating Floating Badges (Inside SVG Space) -->
+        <g id="svgLineBadges"></g>
+        <!-- Dynamic Nodes (Starts with 1 hollow dot at X=60) -->
+        <g id="svgLineNodes"></g>
+      </svg>
+    </div>
+
+    <!-- Interactive Line Slider (Appears on Finish Game) -->
+    <div id="lineSliderContainer" class="hidden w-full max-w-xs sm:max-w-sm px-3 py-1.5 flex items-center gap-3 bg-pik-card/90 border border-pik-border rounded-xl z-20 -mt-2 shadow-lg">
+      <span class="text-[10px] font-display font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Inspect Line</span>
+      <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
+    </div>
+  </section>
+
+  <!-- ================= BOTTOM SECTION: RESULTS AREA (COMPLETELY BLANK UNTIL GAME END) ================= -->
+  <section id="resultsSection" class="hidden-results w-full max-w-4xl mx-auto px-4 py-2 flex-1 flex flex-col items-center justify-center overflow-y-auto min-h-0 scrollbar-none z-20 mb-2">
+    <div class="w-full bg-pik-card border border-pik-border rounded-2xl p-3 sm:p-4 flex flex-col gap-3 shadow-2xl my-auto">
+      
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2.5">
+        <div>
+          <h2 class="font-display font-extrabold text-lg sm:text-2xl text-slate-100 flex items-center gap-2">
+            Game Completed
+          </h2>
+          <p id="finalRankSub" class="text-xs text-pik-gold font-display font-medium">Rank: Pik Master</p>
+        </div>
+        <div class="flex items-center gap-4 text-right">
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
+            <div id="finalDistanceText" class="font-display font-extrabold text-base sm:text-xl text-pik-gold">0 px</div>
+          </div>
+          <div class="w-px h-8 bg-pik-border"></div>
+          <div>
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
+            <div id="finalScoreText" class="font-display font-extrabold text-base sm:text-xl text-slate-100">0 pts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8 Question Summary Cards Grid -->
+      <div id="summaryCardsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-center gap-3 pt-1">
+        <button onclick="returnToMenu()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Main Menu
+        </button>
+        <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-6 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Play Again
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
+  <script>
+    /* ----------------------------------------------------
+       1. RARITY CONFIGURATION & AUDIO SYNTHESIZER
+    ---------------------------------------------------- */
+    const RARITY_CONFIG = {
+      common: { name: 'Common', color: '#7e8c8d', length: 110, points: 10 },
+      uncommon: { name: 'Uncommon', color: '#388e3c', length: 180, points: 25 },
+      rare: { name: 'Rare', color: '#1976d2', length: 270, points: 50 },
+      epic: { name: 'Epic', color: '#8e24aa', length: 390, points: 75 },
+      gold: { name: 'The Pik', color: '#d4af37', length: 540, points: 100 }
+    };
+
+    let audioCtx = null;
+    let audioMuted = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudio() {
+      audioMuted = !audioMuted;
+      const icon = document.getElementById('audioIcon');
+      if (icon) {
+        icon.setAttribute('stroke-opacity', audioMuted ? '0.3' : '1');
+      }
+    }
+
+    function playAudioTone(type, rarityKey) {
+      if (audioMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'stretch') {
+          const freqMap = { common: 260, uncommon: 330, rare: 440, epic: 550, gold: 660 };
+          const baseFreq = freqMap[rarityKey] || 300;
+          osc.type = rarityKey === 'gold' ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(baseFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.35);
+
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'skip') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(90, now + 0.2);
+
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else if (type === 'error') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.setValueAtTime(110, now + 0.1);
+
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'timeout') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+          osc.start(now);
+          osc.stop(now + 0.4);
+        }
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+
+    /* ----------------------------------------------------
+       2. DYNAMIC & CATEGORY-BALANCED QUESTION BANK ENGINE
+    ---------------------------------------------------- */
+    let QUESTION_BANK = [];
+    let unseenQuestionPool = [];
+
+    function buildMassiveQuestionBank() {
+      const q = [];
+
+      const addQ = (cat, prompt, gold, epic, rare, uncommon, common) => {
+        q.push({ cat, prompt, gold, epic, rare, uncommon, common });
+      };
+
+      // --- CATEGORY 1: MOVIES & FILM ---
+      addQ('movies', 'Name a movie that won the Oscar for Best Picture', ["Marty", "Tom Jones", "Oliver", "Chariots of Fire"], ["Platoon", "Unforgiven", "Braveheart", "Birdman", "Spotlight"], ["Gladiator", "Chicago", "The Departed", "No Country for Old Men", "Oppenheimer"], ["Titanic", "Forest Gump", "Schindler's List"], ["Titanic", "Forrest Gump"]);
+      addQ('movies', 'Name an animated movie released by Pixar', ["A Bug's Life", "The Good Dinosaur", "Onward", "Luca", "Turning Red", "Elemental"], ["Ratatouille", "WALL-E", "Up", "Brave", "Inside Out", "Coco", "Soul"], ["Monsters Inc", "Finding Nemo", "The Incredibles", "Cars"], ["Toy Story", "Finding Nemo"], ["Toy Story"]);
+      addQ('movies', 'Name a movie released in the 1980s', ["Scanners", "Videodrome", "Repo Man", "Brazil", "Blow Out"], ["Scarface", "The Thing", "Aliens", "Blade Runner", "The Empire Strikes Back"], ["The Shining", "Die Hard", "Ghostbusters", "Back to the Future"], ["E.T.", "Back to the Future"], ["E.T.", "Back to the Future"]);
+      addQ('movies', 'Name a movie directed by Quentin Tarantino', ["Death Proof"], ["Jackie Brown", "The Hateful Eight"], ["Kill Bill", "Inglourious Basterds", "Django Unchained", "Once Upon a Time in Hollywood"], ["Pulp Fiction", "Reservoir Dogs"], ["Pulp Fiction"]);
+      addQ('movies', 'Name a movie set in space or alien worlds', ["Silent Running", "Dark Star", "Solaris", "Event Horizon", "Sunshine"], ["Moon", "Arrival", "District 9", "The Martian", "Gattaca"], ["Alien", "Interstellar", "Gravitation", "Star Trek", "Wall-E"], ["Star Wars", "Avatar"], ["Star Wars", "Avatar"]);
+      addQ('movies', 'Name a movie released in the 1990s', ["Magnolia", "Being John Malkovich", "La Haine", "Dark City"], ["Se7en", "The Matrix", "Goodfellas", "Fargo", "The Big Lebowski"], ["Pulp Fiction", "Fight Club", "The Lion King", "Shawshank Redemption"], ["Jurassic Park", "Titanic"], ["Titanic", "Jurassic Park"]);
+
+      // --- CATEGORY 2: TV SHOWS ---
+      addQ('tv', 'Name a popular sitcom from the 1990s', ["NewsRadio", "Northern Exposure", "Wings", "Blossom"], ["Frasier", "Everybody Loves Raymond", "Home Improvement", "The Fresh Prince of Bel-Air"], ["Seinfeld", "The Simpsons", "Friends", "Boy Meets World"], ["Friends", "Seinfeld"], ["Friends"]);
+      addQ('tv', 'Name a TV series produced by HBO', ["Carnivàle", "Treme", "The Leftovers", "Deadwood", "Rome"], ["Six Feet Under", "Veep", "Chernobyl", "True Detective", "Boardwalk Empire"], ["The Sopranos", "The Wire", "Succession", "Euphoria", "Band of Brothers"], ["Game of Thrones"], ["Game of Thrones"]);
+      addQ('tv', 'Name a main character from The Office (US)', ["Creed Bratton", "Meredith Palmer", "Mose Schrute", "Gabe Lewis"], ["Oscar Martinez", "Kevin Malone", "Angela Martin", "Stanley Hudson", "Phyllis Vance"], ["Dwight Schrute", "Jim Halpert", "Pam Beesly", "Ryan Howard"], ["Michael Scott"], ["Michael Scott"]);
+      addQ('tv', 'Name an animated TV series for prime time or adults', ["Drawn Together", "The Critic", "Mission Hill", "Clone High"], ["Archer", "Futurama", "Bob's Burgers", "Bojack Horseman", "Venture Bros"], ["Rick and Morty", "Family Guy", "South Park", "King of the Hill"], ["The Simpsons"], ["The Simpsons"]);
+
+      // --- CATEGORY 3: VIDEO GAMES ---
+      addQ('gaming', 'Name a video game released for the Super Nintendo (SNES)', ["ActRaiser", "Terranigma", "EarthBound", "Ogre Battle"], ["Chrono Trigger", "Super Castlevania IV", "Mega Man X", "Secret of Mana"], ["Super Mario RPG", "Donkey Kong Country", "F-Zero"], ["Super Metroid", "Super Mario World"], ["Super Mario World"]);
+      addQ('gaming', 'Name a main entry game in The Legend of Zelda franchise', ["Oracle of Seasons", "Oracle of Ages", "The Minish Cap", "Spirit Tracks", "Tri Force Heroes"], ["Link's Awakening", "Majora's Mask", "Skyward Sword", "Twilight Princess"], ["Ocarina of Time", "The Wind Waker", "Tears of the Kingdom"], ["Breath of the Wild"], ["Breath of the Wild"]);
+      addQ('gaming', 'Name a video game console released by Sony', ["PocketStation"], ["PlayStation Vita", "PS Vita"], ["PSP", "PlayStation Portable"], ["PlayStation 5", "PS5", "PlayStation 4", "PS4", "PlayStation 3", "PS3"], ["PlayStation", "PS1", "PlayStation 2", "PS2"]);
+      addQ('gaming', 'Name an original Gen 1 Pokémon (Kanto #1-#151)', ["Farfetch'd", "Tangela", "Lickitung", "Pinsir", "Omanyte", "Porygon"], ["Dragonite", "Arcanine", "Gengar", "Gyarados", "Alakazam", "Lapras"], ["Charizard", "Blastoise", "Venusaur", "Mewtwo", "Snorlax", "Eevee"], ["Pikachu", "Charizard"], ["Pikachu"]);
+      addQ('gaming', 'Name an iconic fighting video game franchise', ["Guilty Gear", "Darkstalkers", "Samurai Shodown", "BlazBlue", "Soulcalibur"], ["Virtual Fighter", "Marvel vs Capcom", "Dead or Alive", "Killer Instinct"], ["Tekken", "Mortal Kombat", "Super Smash Bros"], ["Street Fighter"], ["Street Fighter"]);
+
+      // --- CATEGORY 4: WORLD GEOGRAPHY (COUNTRIES) ---
+      addQ('geography_countries', 'Name a country located in South America', ["Suriname", "Guyana", "French Guiana"], ["Paraguay", "Uruguay", "Bolivia"], ["Ecuador", "Venezuela"], ["Chile", "Peru", "Colombia"], ["Brazil", "Argentina"]);
+      addQ('geography_countries', 'Name a landlocked country in Europe', ["Liechtenstein", "San Marino", "Andorra", "Luxembourg", "Moldova"], ["Serbia", "Slovakia", "Belarus", "Armenia", "North Macedonia"], ["Hungary", "Czech Republic", "Austria"], ["Switzerland"], ["Switzerland"]);
+      addQ('geography_countries', 'Name an island nation in the Caribbean', ["Dominica", "Saint Kitts and Nevis", "Saint Vincent", "Saint Lucia"], ["Antigua and Barbuda", "Barbados", "Grenada", "Trinidad and Tobago"], ["Bahamas", "Jamaica", "Haiti", "Dominican Republic"], ["Cuba", "Jamaica"], ["Cuba"]);
+      addQ('geography_countries', 'Name a country located in Southeast Asia', ["Brunei", "East Timor", "Timor-Leste"], ["Laos", "Myanmar", "Cambodia"], ["Vietnam", "Thailand", "Malaysia", "Singapore", "Indonesia", "Philippines"], ["Thailand", "Vietnam"], ["Vietnam", "Thailand"]);
+      addQ('geography_countries', 'Name a Nordic country', ["Faroe Islands", "Greenland"], ["Åland Islands", "Iceland"], ["Finland"], ["Norway", "Denmark", "Sweden"], ["Sweden", "Norway"]);
+
+      // --- CATEGORY 5: MAJOR CITIES & CAPITALS ---
+      addQ('geography_cities', 'Name a capital city in Europe', ["Vaduz", "Valletta", "Ljubljana", "Tallinn", "Vilnius", "Riga"], ["Zagreb", "Bratislava", "Belgrade", "Sofia", "Bucharest"], ["Prague", "Vienna", "Budapest", "Warsaw", "Copenhagen", "Dublin"], ["Berlin", "Madrid", "Rome", "Amsterdam"], ["Paris", "London"]);
+      addQ('geography_cities', 'Name a state capital in the United States', ["Pierre", "Bismarck", "Helena", "Montpelier", "Augusta", "Frankfort"], ["Juneau", "Carson City", "Tallahassee", "Des Moines", "Salem"], ["Sacramento", "Austin", "Albany", "Nashville", "Salt Lake City"], ["Denver", "Phoenix", "Atlanta"], ["Boston", "Austin", "Phoenix"]);
+      addQ('geography_cities', 'Name a major city in Japan', ["Sapporo", "Fukuoka", "Sendai", "Chiba", "Shizuoka"], ["Nagoya", "Kyoto", "Kobe", "Hiroshima"], ["Yokohama", "Osaka"], ["Tokyo"], ["Tokyo"]);
+      addQ('geography_cities', 'Name a major city in California', ["Fresno", "Bakersfield", "Stockton", "Modesto", "Chico"], ["San Jose", "Sacramento", "Oakland", "Anaheim"], ["San Francisco", "San Diego"], ["Los Angeles"], ["Los Angeles"]);
+
+      // --- CATEGORY 6: REGIONAL CUISINES & DISHES ---
+      addQ('food_dishes', 'Name a traditional dish from Italian cuisine', ["Bucatini", "Ossobuco", "Arancini", "Saltimbocca", "Cacio e Pepe"], ["Carbonara", "Gnocchi", "Risotto", "Polenta", "Bruschetta"], ["Lasagna", "Ravioli", "Fettuccine Alfredo"], ["Pizza", "Spaghetti"], ["Pizza", "Spaghetti"]);
+      addQ('food_dishes', 'Name a traditional dish from Mexican cuisine', ["Chiles en Nogada", "Pozole", "Birria", "Menudo", "Huarache"], ["Tamales", "Chilaquiles", "Carnitas", "Tostadas", "Elote"], ["Enchiladas", "Quesadilla", "Burrito", "Guacamole"], ["Taco", "Burrito"], ["Taco"]);
+      addQ('food_dishes', 'Name a traditional dish from Japanese cuisine', ["Okonomiyaki", "Takoyaki", "Unagi", "Chawanmushi", "Katsudon"], ["Tonkatsu", "Soba", "Udon", "Yakitori", "Gyoza"], ["Sashimi", "Tempura", "Miso Soup"], ["Ramen"], ["Sushi"]);
+      addQ('food_dishes', 'Name a traditional dish from French cuisine', ["Bouillabaisse", "Cassoulet", "Coq au Vin", "Beef Bourguignon"], ["Escargot", "Ratatouille", "Quiche", "Soufflé", "Duck Confit"], ["Crêpes", "Croissant", "French Onion Soup"], ["Baguette"], ["Baguette"]);
+
+      // --- CATEGORY 7: FOOD INGREDIENTS & TYPES ---
+      addQ('food_ingredients', 'Name a type of culinary cheese', ["Mimolette", "Taleggio", "Manchego", "Raclette", "Cotija"], ["Gruyère", "Gorgonzola", "Gouda", "Roquefort", "Feta"], ["Parmesan", "Provolone", "Brie", "Camembert", "Swiss"], ["Cheddar", "Mozzarella"], ["Mozzarella", "Cheddar"]);
+      addQ('food_ingredients', 'Name a culinary herb or spice', ["Sumac", "Marjoram", "Chervil", "Fenugreek", "Cardamom"], ["Tarragon", "Saffron", "Turmeric", "Coriander", "Rosemary"], ["Thyme", "Oregano", "Basil", "Cinnamon", "Paprika"], ["Pepper", "Garlic"], ["Salt", "Pepper"]);
+      addQ('food_ingredients', 'Name a type of pasta shape', ["Bucatini", "Mafaldine", "Campanelle", "Cavatappi", "Orecchiette"], ["Rigatoni", "Tagliatelle", "Farfalle", "Pappardelle", "Rotini"], ["Linguine", "Fettuccine", "Gnocchi", "Ravioli", "Lasagna"], ["Macaroni", "Penne"], ["Spaghetti"]);
+      addQ('food_ingredients', 'Name a citrus fruit', ["Yuzu", "Kumquat", "Ugli Fruit", "Bergamot"], ["Pomelo", "Blood Orange", "Clementine", "Key Lime"], ["Grapefruit", "Tangerine", "Mandarin"], ["Lime", "Lemon"], ["Orange", "Lemon"]);
+
+      // --- CATEGORY 8: DRINKS & BEVERAGES ---
+      addQ('drinks', 'Name a classic alcoholic cocktail', ["Last Word", "Aviation", "Sazerac", "Paper Plane", "Vieux Carré"], ["Negroni", "Boulevardier", "Paloma", "Espresso Martini", "French 75"], ["Old Fashioned", "Manhattan", "Whiskey Sour", "Daiquiri", "Mojito"], ["Margarita", "Martini"], ["Margarita", "Martini"]);
+      addQ('drinks', 'Name a type of coffee beverage', ["Gibraltar", "Affogato", "Cortado", "Red Eye"], ["Ristretto", "Macchiato", "Flat White", "Café au Lait"], ["Americano", "Cappuccino", "Mocha", "Espresso"], ["Latte"], ["Latte", "Coffee"]);
+      addQ('drinks', 'Name a global soft drink brand', ["Moxie", "Inca Kola", "Irn-Bru", "Jarritos", "Ramune"], ["Fanta", "Sprite", "Mountain Dew", "Dr Pepper", "7Up"], ["Coca-Cola", "Pepsi", "Dr Pepper"], ["Pepsi", "Coca-Cola"], ["Coca-Cola"]);
+
+      // --- CATEGORY 9: MUSIC & ARTISTS ---
+      addQ('music', 'Name a legendary rock band formed in the UK', ["Gentle Giant", "Caravan", "Soft Machine", "Camel"], ["King Crimson", "The Kinks", "The Who", "Deep Purple", "Black Sabbath"], ["Pink Floyd", "Led Zeppelin", "Queen", "The Rolling Stones"], ["The Beatles"], ["The Beatles"]);
+      addQ('music', 'Name an acoustic musical instrument', ["Theremin", "Kazoo", "Glass Harmonica", "Hurdy-gurdy", "Harpsichord"], ["Marimba", "Ukulele", "Accordion", "Banjo", "Mandolin", "Cello"], ["Flute", "Violin", "Saxophone", "Trumpet", "Clarinet"], ["Guitar", "Piano"], ["Piano", "Guitar"]);
+      addQ('music', 'Name a genre of music', ["Shoegaze", "Math Rock", "Bossa Nova", "Dubstep", "Grime"], ["Progressive Rock", "Funk", "Ska", "Reggae", "Heavy Metal"], ["Jazz", "Blues", "Country", "Hip Hop", "Classical"], ["Pop", "Rock"], ["Pop", "Rock"]);
+
+      // --- CATEGORY 10: SCIENCE & NATURE ---
+      addQ('science_nature', 'Name a chemical element on the Periodic Table', ["Oganesson", "Rhenium", "Osmium", "Bismuth", "Francium", "Promethium"], ["Beryllium", "Titanium", "Tungsten", "Platinum", "Krypton", "Xenon"], ["Helium", "Lithium", "Neon", "Argon", "Silicon", "Phosphorus"], ["Carbon", "Nitrogen", "Sodium", "Copper"], ["Oxygen", "Hydrogen", "Iron", "Gold"]);
+      addQ('science_nature', 'Name a planet or moon in our Solar System', ["Enceladus", "Triton", "Mimas", "Phobos", "Deimos", "Titan"], ["Io", "Europa", "Ganymede", "Callisto"], ["Neptune", "Uranus", "Mercury", "Venus", "Saturn", "Jupiter"], ["Mars"], ["Earth"]);
+      addQ('science_nature', 'Name a major organ in the human body', ["Pancreas", "Spleen", "Gallbladder", "Thyroid", "Pituitary Gland"], ["Bladder", "Appendix", "Esophagus", "Pharynx"], ["Large Intestine", "Small Intestine", "Stomach", "Kidney", "Liver"], ["Skin", "Heart"], ["Brain", "Heart", "Lung"]);
+      addQ('science_nature', 'Name a type of atmospheric cloud', ["Altocumulus", "Stratocumulus", "Cirrocumulus", "Cumulonimbus", "Mammatus"], ["Cirrus", "Stratus", "Altostratus", "Nimbostratus"], ["Cumulus", "Cirrus"], ["Cumulus"], ["Cumulus"]);
+
+      // --- CATEGORY 11: ANIMALS & FAUNA ---
+      addQ('animals', 'Name a recognized dog breed', ["Basenji", "Borzoi", "Komondor", "Affenpinscher", "Vizsla", "Saluki"], ["Shiba Inu", "Great Dane", "Rottweiler", "Doberman", "Australian Shepherd"], ["Beagle", "Poodle", "Bulldog", "Boxer", "Dachshund"], ["German Shepherd", "Golden Retriever"], ["Labrador", "Labrador Retriever"]);
+      addQ('animals', 'Name a species of dinosaur', ["Therizinosaurus", "Ankylosaurus", "Deinonychus", "Carnotaurus", "Spinosaurus"], ["Allosaurus", "Diplodocus", "Brachiosaurus", "Pachycephalosaurus"], ["Stegosaurus", "Velociraptor", "Pterodactyl"], ["Triceratops"], ["Tyrannosaurus", "T-Rex"]);
+      addQ('animals', 'Name a bird of prey (raptor)', ["Osprey", "Kestrel", "Harrier", "Caracara", "Secretarybird"], ["Goshawk", "Falcon", "Merlin", "Kite"], ["Hawk", "Eagle", "Owl", "Vulture"], ["Eagle", "Owl"], ["Owl", "Eagle"]);
+
+      // --- CATEGORY 12: HISTORY ---
+      addQ('history', 'Name a President of the United States', ["Franklin Pierce", "Millard Fillmore", "Chester A Arthur", "Rutherford B Hayes", "James Buchanan"], ["James K Polk", "Zachary Taylor", "John Tyler", "Grover Cleveland", "Calvin Coolidge"], ["Teddy Roosevelt", "John F Kennedy", "Franklin D Roosevelt", "Dwight D Eisenhower"], ["George Washington", "Abraham Lincoln", "Barack Obama"], ["George Washington", "Abraham Lincoln"]);
+      addQ('history', 'Name an ancient civilization or empire', ["Aksumite Empire", "Assyrian Empire", "Carthaginian Empire", "Sumerian Civilization"], ["Mayan Civilization", "Inca Empire", "Babylonian Empire", "Persian Empire"], ["Ancient Greece", "Roman Empire", "Ottoman Empire"], ["Ancient Egypt"], ["Roman Empire", "Ancient Egypt"]);
+
+      // --- CATEGORY 13: MYTHOLOGY ---
+      addQ('mythology', 'Name a deity from Greek mythology', ["Hestia", "Hephaestus", "Demeter", "Dionysus", "Persephone"], ["Artemis", "Apollo", "Hermes", "Ares", "Athena"], ["Poseidon", "Hades", "Zeus", "Hera"], ["Zeus", "Poseidon"], ["Zeus"]);
+      addQ('mythology', 'Name a deity from Norse mythology', ["Vidar", "Njord", "Heimdall", "Tyr", "Bragi", "Idun"], ["Baldr", "Freya", "Freyja", "Frigg"], ["Loki", "Thor", "Odin"], ["Thor", "Odin"], ["Thor"]);
+
+      // --- CATEGORY 14: SPORTS ---
+      addQ('sports', 'Name an active NBA franchise team', ["Indiana Pacers", "Memphis Grizzlies", "Sacramento Kings", "Charlotte Hornets", "Utah Jazz"], ["Portland Trail Blazers", "Denver Nuggets", "Milwaukee Bucks", "Phoenix Suns"], ["Chicago Bulls", "Boston Celtics", "Golden State Warriors", "Miami Heat"], ["Los Angeles Lakers", "New York Knicks"], ["Los Angeles Lakers"]);
+      addQ('sports', 'Name an English Premier League football club', ["Brentford", "Bournemouth", "Wolverhampton Wanderers", "Burnley", "Sheffield United"], ["Brighton", "Aston Villa", "Newcastle United", "West Ham United", "Everton"], ["Arsenal", "Chelsea", "Tottenham Hotspur", "Manchester City"], ["Manchester United", "Liverpool"], ["Liverpool", "Manchester United"]);
+      addQ('sports', 'Name an official event at the Summer Olympic Games', ["Modern Pentathlon", "Fencing", "Canoeing", "Handball", "Water Polo"], ["Taekwondo", "Archery", "Rowing", "Triathlon", "Badminton"], ["Sailing", "Equestrian", "Judo", "Table Tennis", "Boxing"], ["Swimming", "Athletics", "Basketball"], ["Swimming", "Track and Field"]);
+
+      // --- CATEGORY 15: POP CULTURE LORE ---
+      addQ('pop_culture_lore', 'Name a character from Star Wars', ["Plo Koon", "Kit Fisto", "Ki-Adi-Mundi", "Aurra Sing", "Bossk", "General Grievous"], ["Ahsoka Tano", "Grand Moff Tarkin", "Mace Windu", "Count Dooku", "Lando Calrissian"], ["Obi-Wan Kenobi", "Yoda", "Han Solo", "Chewbacca", "Leia Organa"], ["Luke Skywalker", "Darth Vader"], ["Darth Vader"]);
+      addQ('pop_culture_lore', 'Name a character from Harry Potter', ["Ludo Bagman", "Regulus Black", "Nymphadora Tonks", "Kingsley Shacklebolt", "Fenrir Greyback"], ["Remus Lupin", "Sirius Black", "Neville Longbottom", "Luna Lovegood", "Draco Malfoy"], ["Severus Snape", "Albus Dumbledore", "Voldemort", "Rubeus Hagrid"], ["Ron Weasley", "Hermione Granger"], ["Harry Potter"]);
+      addQ('pop_culture_lore', 'Name a character from The Lord of the Rings', ["Glorfindel", "Celebrimbor", "Beregond", "Haldir", "Denethor", "Eomer"], ["Eowyn", "Faramir", "Treebeard", "Boromir", "Elrond", "Galadriel"], ["Gimli", "Legolas", "Aragorn", "Gandalf", "Gollum"], ["Frodo Baggins", "Samwise Gamgee"], ["Frodo Baggins"]);
+
+      // --- CATEGORY 16: LITERATURE & ART ---
+      addQ('literature_art', 'Name a play written by William Shakespeare', ["Cymbeline", "Titus Andronicus", "The Winter's Tale", "Coriolanus", "Pericles"], ["King Lear", "The Tempest", "Othello", "Twelfth Night", "Much Ado About Nothing"], ["Macbeth", "Hamlet", "A Midsummer Night's Dream", "Julius Caesar"], ["Romeo and Juliet"], ["Romeo and Juliet"]);
+      addQ('literature_art', 'Name a famous visual painter', ["Artemisia Gentileschi", "Kazimir Malevich", "Egon Schiele", "Gustave Courbet"], ["Paul Cézanne", "Henri Matisse", "Diego Rivera", "Edvard Munch", "Gustav Klimt"], ["Claude Monet", "Rembrandt", "Salvador Dalí", "Pablo Picasso"], ["Vincent van Gogh", "Leonardo da Vinci"], ["Leonardo da Vinci", "Vincent van Gogh"]);
+
+      QUESTION_BANK = q;
+      unseenQuestionPool = shuffleArray(QUESTION_BANK);
+    }
+
+    // Initialize full dataset at launch
+    buildMassiveQuestionBank();
+
+    function normalize(str) {
+      if (!str) return '';
+      let s = str.toLowerCase().trim();
+      s = s.replace(/[^a-z0-9\s]/g, '');
+      s = s.replace(/^(a|an|the)\s+/, '');
+      return s.trim();
+    }
+
+    function levenshteinDistance(a, b) {
+      const matrix = [];
+      for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+      for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            );
+          }
+        }
+      }
+      return matrix[b.length][a.length];
+    }
+
+    function findAnswerRarity(userAns, qObj) {
+      const normInput = normalize(userAns);
+      if (!normInput) return null;
+
+      const keys = ['gold', 'epic', 'rare', 'uncommon', 'common'];
+
+      // Direct exact normalized match check
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          if (normalize(ans) === normInput) {
+            return {
+              key: key,
+              name: RARITY_CONFIG[key].name,
+              color: RARITY_CONFIG[key].color,
+              length: RARITY_CONFIG[key].length,
+              points: RARITY_CONFIG[key].points,
+              matchedName: ans,
+              autoCorrected: false
+            };
+          }
+        }
+      }
+
+      // Typo auto-correction check (Levenshtein distance <= 2 for words >= 4 chars)
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          const normAns = normalize(ans);
+          if (normAns.length >= 4) {
+            const dist = levenshteinDistance(normInput, normAns);
+            if (dist <= 2) {
+              return {
+                key: key,
+                name: RARITY_CONFIG[key].name,
+                color: RARITY_CONFIG[key].color,
+                length: RARITY_CONFIG[key].length,
+                points: RARITY_CONFIG[key].points,
+                matchedName: ans,
+                autoCorrected: true
+              };
+            }
+          }
+        }
+      }
+
+      return null;
+    }
+
+    /* ----------------------------------------------------
+       3. GLOBAL GAME STATE & CATEGORY-BALANCED DRAW
+    ---------------------------------------------------- */
+    let isTimedMode = false;
+    let isDailyMode = false;
+    let timerInterval = null;
+    let timerValue = 30;
+
+    let activeQuestions = [];
+    let currentQIndex = 0;
+    let totalScore = 0;
+    let totalDistance = 0;
+    let userHistory = [];
+    let usedAnswersSet = new Set();
+
+    let accumulatedX = 60;
+    let currentViewBoxX = 0;
+    let targetViewBoxX = 0;
+    let panAnimationFrame = null;
+    let currentDotIndex = 0;
+
+    function seededPRNG(seedStr) {
+      let hash = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        hash = (hash << 5) - hash + seedStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return function () {
+        hash = (hash * 9301 + 49297) % 233280;
+        return hash / 233280;
+      };
+    }
+
+    function getDailySeed() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
+
+    function shuffleArray(arr, prng = null) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = prng ? Math.floor(prng() * (i + 1)) : Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function selectCategoryBalancedQuestions(pool) {
+      const selected = [];
+      const usedCategories = new Set();
+
+      for (const q of pool) {
+        if (!usedCategories.has(q.cat)) {
+          selected.push(q);
+          usedCategories.add(q.cat);
+          if (selected.length === 8) break;
+        }
+      }
+
+      // Fallback if not enough distinct categories
+      if (selected.length < 8) {
+        for (const q of pool) {
+          if (!selected.includes(q)) {
+            selected.push(q);
+            if (selected.length === 8) break;
+          }
+        }
+      }
+      return selected;
+    }
+
+    function getNextQuestions(isDaily) {
+      if (isDaily) {
+        const prng = seededPRNG(getDailySeed());
+        const shuffled = shuffleArray(QUESTION_BANK, prng);
+        return selectCategoryBalancedQuestions(shuffled);
+      }
+
+      // If unseen deck has less than 16 questions left, refill and reshuffle whole bank
+      if (unseenQuestionPool.length < 16) {
+        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      }
+
+      const selected = selectCategoryBalancedQuestions(unseenQuestionPool);
+
+      // Remove selected questions from unseenQuestionPool so they never repeat across games
+      const selectedPrompts = new Set(selected.map(q => q.prompt));
+      unseenQuestionPool = unseenQuestionPool.filter(q => !selectedPrompts.has(q.prompt));
+
+      return selected;
+    }
+
+    /* ----------------------------------------------------
+       4. NAVIGATION & MENU TRANSITIONS
+    ---------------------------------------------------- */
+    function launchGame(mode) {
+      initAudio();
+      isTimedMode = (mode === 'timed');
+      isDailyMode = (mode === 'daily');
+
+      activeQuestions = getNextQuestions(isDailyMode);
+
+      currentQIndex = 0;
+      totalScore = 0;
+      totalDistance = 0;
+      userHistory = [];
+      usedAnswersSet.clear();
+
+      document.getElementById('menuScreen').classList.add('-translate-x-full');
+      const resultsSec = document.getElementById('resultsSection');
+      resultsSec.classList.remove('show-results');
+      resultsSec.classList.add('hidden-results');
+      document.getElementById('gameArea').classList.remove('hidden');
+
+      initSvgTrackLine();
+      renderQuestion(currentQIndex);
+    }
+
+    function returnToMenu() {
+      if (timerInterval) clearInterval(timerInterval);
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+      document.getElementById('menuScreen').classList.remove('-translate-x-full');
+      const resultsSec = document.getElementById('resultsSection');
+      resultsSec.classList.remove('show-results');
+      resultsSec.classList.add('hidden-results');
+      document.getElementById('gameArea').classList.remove('hidden');
+    }
+
+    function toggleHelpModal(show) {
+      const modal = document.getElementById('helpModal');
+      if (modal) {
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+      }
+    }
+
+    /* ----------------------------------------------------
+       5. LINE CANVAS & SVG BADGES
+    ---------------------------------------------------- */
+    function initSvgTrackLine() {
+      const segGroup = document.getElementById('svgLineSegments');
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const nodeGroup = document.getElementById('svgLineNodes');
+      const svg = document.getElementById('mainLineSvg');
+
+      if (segGroup) segGroup.innerHTML = '';
+      if (badgeGroup) badgeGroup.innerHTML = '';
+      if (nodeGroup) nodeGroup.innerHTML = '';
+
+      accumulatedX = 60;
+      currentViewBoxX = 0;
+      targetViewBoxX = 0;
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      currentDotIndex = 0;
+      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
+
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+
+      const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      startNode.setAttribute('id', 'svg-node-0');
+      startNode.setAttribute('cx', '60');
+      startNode.setAttribute('cy', '70');
+      startNode.setAttribute('r', '7');
+      startNode.setAttribute('stroke', '#ffffff');
+      startNode.setAttribute('stroke-width', '3');
+      startNode.setAttribute('fill', '#121212');
+      startNode.classList.add('node-transition');
+      if (nodeGroup) nodeGroup.appendChild(startNode);
+    }
+
+    function panCameraToFit(targetX, instant = false) {
+      const svg = document.getElementById('mainLineSvg');
+      if (!svg) return;
+
+      if (targetX > 750) {
+        targetViewBoxX = targetX - 650;
+      } else {
+        targetViewBoxX = 0;
+      }
+
+      if (instant) {
+        if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+        currentViewBoxX = targetViewBoxX;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        return;
+      }
+
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      function animatePan() {
+        const diff = targetViewBoxX - currentViewBoxX;
+        if (Math.abs(diff) < 0.3) {
+          currentViewBoxX = targetViewBoxX;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          panAnimationFrame = null;
+          return;
+        }
+        currentViewBoxX += diff * 0.08;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        panAnimationFrame = requestAnimationFrame(animatePan);
+      }
+
+      panAnimationFrame = requestAnimationFrame(animatePan);
+    }
+
+    function scrubLineView(percent) {
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      const maxPanX = Math.max(0, accumulatedX - 650);
+      const targetX = (percent / 100) * maxPanX;
+      currentViewBoxX = targetX;
+      targetViewBoxX = targetX;
+      const svg = document.getElementById('mainLineSvg');
+      if (svg) {
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+      }
+    }
+
+    /* ----------------------------------------------------
+       6. GAMEPLAY LOOP & CARD ANIMATIONS
+    ---------------------------------------------------- */
+    function renderQuestion(index) {
+      if (timerInterval) clearInterval(timerInterval);
+      hideFeedback();
+
+      const q = activeQuestions[index];
+      const card = document.getElementById('questionCard');
+      const promptEl = document.getElementById('questionPrompt');
+      const qNumText = document.getElementById('questionNumText');
+      const inputEl = document.getElementById('answerInput');
+      const timerPill = document.getElementById('timerPill');
+      const dailyBadge = document.getElementById('dailyBadge');
+
+      card.className = 'w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative transition-all duration-300';
+      promptEl.textContent = q.prompt;
+      qNumText.textContent = `Question ${index + 1} / 8`;
+      inputEl.value = '';
+      inputEl.focus();
+
+      if (dailyBadge) {
+        if (isDailyMode) dailyBadge.classList.remove('hidden');
+        else dailyBadge.classList.add('hidden');
+      }
+
+      // Update progress step pills
+      const stepPills = document.getElementById('stepPills');
+      if (stepPills) {
+        stepPills.innerHTML = '';
+        for (let i = 0; i < 8; i++) {
+          const pill = document.createElement('div');
+          pill.className = `h-1.5 rounded-full transition-all duration-300 ${
+            i === index ? 'w-5 bg-pik-gold' : i < index ? 'w-2 bg-slate-500' : 'w-2 bg-slate-800'
+          }`;
+          stepPills.appendChild(pill);
+        }
+      }
+
+      if (isTimedMode) {
+        timerPill.classList.remove('hidden');
+        startQuestionTimer();
+      } else {
+        timerPill.classList.add('hidden');
+      }
+    }
+
+    function startQuestionTimer() {
+      timerValue = 30;
+      const timerText = document.getElementById('timerText');
+      if (timerText) timerText.textContent = `${timerValue}s`;
+
+      timerInterval = setInterval(() => {
+        timerValue--;
+        if (timerText) timerText.textContent = `${timerValue}s`;
+
+        if (timerValue <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function handleTimeout() {
+      playAudioTone('timeout');
+      const card = document.getElementById('questionCard');
+      card.classList.add('card-flash-red');
+
+      setTimeout(() => {
+        skipQuestion(true);
+      }, 450);
+    }
+
+    function showFeedback(msg) {
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden');
+      }
+    }
+
+    function hideFeedback() {
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = '';
+        fb.classList.add('hidden');
+      }
+    }
+
+    function animateCardOut(isTimeout, callback) {
+      const card = document.getElementById('questionCard');
+      card.classList.add('card-slide-out');
+
+      setTimeout(() => {
+        card.classList.remove('card-slide-out', 'card-flash-red');
+        card.classList.add('card-slide-in-prepare');
+
+        callback();
+
+        requestAnimationFrame(() => {
+          card.classList.remove('card-slide-in-prepare');
+        });
+      }, 350);
+    }
+
+    function submitAnswer() {
+      const inputEl = document.getElementById('answerInput');
+      const rawVal = inputEl.value.trim();
+
+      if (!rawVal) {
+        showFeedback("Please enter an answer or skip.");
+        playAudioTone('error');
+        return;
+      }
+
+      const normInput = normalize(rawVal);
+      if (usedAnswersSet.has(normInput)) {
+        showFeedback(`"${rawVal}" has already been used in this game.`);
+        playAudioTone('error');
+        return;
+      }
+
+      const qObj = activeQuestions[currentQIndex];
+      const result = findAnswerRarity(rawVal, qObj);
+
+      if (!result) {
+        showFeedback(`${rawVal} doesn't fit for this question.`);
+        playAudioTone('error');
+        return;
+      }
+
+      if (timerInterval) clearInterval(timerInterval);
+
+      // Auto-correct spelling in input box if applicable
+      if (result.autoCorrected) {
+        inputEl.value = result.matchedName;
+      }
+
+      usedAnswersSet.add(normInput);
+      processTurn(result.matchedName || rawVal, result);
+    }
+
+    function skipQuestion(fromTimeout = false) {
+      if (timerInterval) clearInterval(timerInterval);
+      hideFeedback();
+
+      if (!fromTimeout) playAudioTone('skip');
+
+      userHistory.push({
+        prompt: activeQuestions[currentQIndex].prompt,
+        userAnswer: 'Skipped',
+        matchedName: 'Skipped',
+        rarityKey: 'skipped',
+        rarityName: 'Skipped',
+        color: '#475569',
+        length: 0,
+        points: 0
+      });
+
+      animateCardOut(fromTimeout, () => {
+        currentQIndex++;
+        if (currentQIndex < 8) {
+          renderQuestion(currentQIndex);
+        } else {
+          finishGame();
+        }
+      });
+    }
+
+    function processTurn(ansText, result) {
+      totalScore += result.points;
+      totalDistance += result.length;
+
+      userHistory.push({
+        prompt: activeQuestions[currentQIndex].prompt,
+        userAnswer: ansText,
+        matchedName: result.matchedName || ansText,
+        rarityKey: result.key,
+        rarityName: result.name,
+        color: result.color,
+        length: result.length,
+        points: result.points
+      });
+
+      const currNode = document.getElementById(`svg-node-${currentDotIndex}`);
+      if (currNode) {
+        currNode.setAttribute('fill', result.color);
+        currNode.setAttribute('stroke', result.color);
+      }
+
+      const startX = accumulatedX;
+      const endX = accumulatedX + result.length;
+      accumulatedX = endX;
+
+      const segGroup = document.getElementById('svgLineSegments');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', startX.toString());
+      line.setAttribute('y1', '70');
+      line.setAttribute('x2', endX.toString());
+      line.setAttribute('y2', '70');
+      line.setAttribute('stroke', result.color);
+      line.setAttribute('stroke-width', '6');
+      line.setAttribute('stroke-linecap', 'round');
+      line.classList.add('pik-line-stroke');
+
+      const pathLen = result.length;
+      line.style.strokeDasharray = pathLen;
+      line.style.strokeDashoffset = pathLen;
+      if (segGroup) segGroup.appendChild(line);
+
+      requestAnimationFrame(() => {
+        line.style.strokeDashoffset = '0';
+      });
+
+      // Alternating Top/Bottom Floating SVG Badge
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const centerX = (startX + endX) / 2;
+      const isTop = (userHistory.length % 2 === 1);
+      const chosenY = isTop ? 25 : 115;
+      const leaderY2 = isTop ? 38 : 102;
+
+      const badgeTextStr = `${ansText} • +${result.length}px`;
+      const approxCharWidth = 6.8;
+      const badgeWidth = Math.max(85, badgeTextStr.length * approxCharWidth + 18);
+
+      // Leader line connecting badge box to the central line track at Y=70
+      const leaderLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      leaderLine.setAttribute('x1', centerX.toString());
+      leaderLine.setAttribute('y1', '70');
+      leaderLine.setAttribute('x2', centerX.toString());
+      leaderLine.setAttribute('y2', leaderY2.toString());
+      leaderLine.setAttribute('stroke', result.color);
+      leaderLine.setAttribute('stroke-width', '1.5');
+      leaderLine.setAttribute('stroke-dasharray', '3 3');
+      leaderLine.setAttribute('stroke-opacity', '0.7');
+      if (badgeGroup) badgeGroup.appendChild(leaderLine);
+
+      // Badge Container Group
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${centerX}, ${chosenY})`);
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', (-badgeWidth / 2).toString());
+      rect.setAttribute('y', '-11');
+      rect.setAttribute('width', badgeWidth.toString());
+      rect.setAttribute('height', '22');
+      rect.setAttribute('rx', '6');
+      rect.setAttribute('fill', '#1a1a1a');
+      rect.setAttribute('stroke', result.color);
+      rect.setAttribute('stroke-width', '1.5');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', '0');
+      text.setAttribute('y', '4');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', result.color);
+      text.setAttribute('font-family', 'Space Grotesk, sans-serif');
+      text.setAttribute('font-size', '10.5');
+      text.setAttribute('font-weight', 'bold');
+      text.textContent = badgeTextStr;
+
+      g.appendChild(rect);
+      g.appendChild(text);
+      if (badgeGroup) badgeGroup.appendChild(g);
+
+      currentDotIndex++;
+      const nodeGroup = document.getElementById('svgLineNodes');
+      const nextNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      nextNode.setAttribute('id', `svg-node-${currentDotIndex}`);
+      nextNode.setAttribute('cx', endX.toString());
+      nextNode.setAttribute('cy', '70');
+      nextNode.setAttribute('r', '7');
+      nextNode.setAttribute('stroke', '#ffffff');
+      nextNode.setAttribute('stroke-width', '3');
+      nextNode.setAttribute('fill', '#121212');
+      nextNode.classList.add('node-transition');
+      if (nodeGroup) nodeGroup.appendChild(nextNode);
+
+      panCameraToFit(endX);
+      playAudioTone('stretch', result.key);
+
+      // Question card waits until line stroke finishes (~750ms), THEN slides out to the right
+      setTimeout(() => {
+        animateCardOut(false, () => {
+          currentQIndex++;
+          if (currentQIndex < 8) {
+            renderQuestion(currentQIndex);
+          } else {
+            finishGame();
+          }
+        });
+      }, 750);
+    }
+
+    /* ----------------------------------------------------
+       7. END GAME RESULTS & SUMMARY CARDS
+    ---------------------------------------------------- */
+    function finishGame() {
+      if (timerInterval) clearInterval(timerInterval);
+
+      document.getElementById('gameArea').classList.add('hidden');
+      const resultsSection = document.getElementById('resultsSection');
+      resultsSection.classList.remove('hidden-results');
+      resultsSection.classList.add('show-results');
+
+      // Show interactive line scrubber slider and set to 100%
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      const slider = document.getElementById('lineScrubber');
+      if (sliderContainer) sliderContainer.classList.remove('hidden');
+      if (slider) slider.value = 100;
+
+      document.getElementById('finalDistanceText').textContent = `${totalDistance} px`;
+      document.getElementById('finalScoreText').textContent = `${totalScore} pts`;
+
+      let rankTitle = 'Pik Explorer';
+      if (totalScore >= 600) rankTitle = 'Pik Grandmaster';
+      else if (totalScore >= 450) rankTitle = 'Pik Master';
+      else if (totalScore >= 300) rankTitle = 'Pik Expert';
+      else if (totalScore >= 150) rankTitle = 'Pik Scholar';
+
+      document.getElementById('finalRankSub').textContent = `Rank: ${rankTitle}`;
+
+      const grid = document.getElementById('summaryCardsGrid');
+      grid.innerHTML = '';
+
+      userHistory.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-pik-bg border border-pik-border/80 rounded-xl p-3 flex flex-col justify-between text-left';
+
+        const isSkip = item.rarityKey === 'skipped';
+        const colorHex = isSkip ? '#475569' : item.color;
+
+        card.innerHTML = `
+          <div>
+            <div class="text-[10px] text-slate-500 font-display uppercase tracking-wider mb-1">Q${idx + 1} • ${item.prompt}</div>
+            <div class="font-display font-bold text-sm text-slate-200 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
+          </div>
+          <div class="flex items-center justify-between mt-2 pt-2 border-t border-pik-border/40 text-xs">
+            <span class="font-display font-semibold flex items-center gap-1.5" style="color: ${colorHex}">
+              <span class="w-2 h-2 rounded-full" style="background-color: ${colorHex}"></span>
+              ${item.rarityName}
+            </span>
+            <span class="font-display font-bold text-slate-400">+${item.length}px</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ----------------------------------------------------
+       8. EVENT LISTENERS INITIALIZATION
+    ---------------------------------------------------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('answerInput');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitAnswer();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
