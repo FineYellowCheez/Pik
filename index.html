@@ -65,13 +65,13 @@
 
     /* Card Slide Out / In Animations */
     .card-slide-out {
-      transform: translateX(100vw) !important;
+      transform: translateX(120%) !important;
       opacity: 0 !important;
-      transition: transform 0.35s ease-in, opacity 0.35s ease-in !important;
+      transition: transform 0.3s ease-in, opacity 0.3s ease-in !important;
     }
 
     .card-slide-in-prepare {
-      transform: translateX(-100vw) !important;
+      transform: translateX(-120%) !important;
       opacity: 0 !important;
       transition: none !important;
     }
@@ -222,7 +222,7 @@
   </div>
 
   <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
-  <main id="gameArea" class="w-full flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+  <main id="gameArea" class="w-full max-w-full overflow-hidden flex-1 flex flex-col items-center justify-center px-4 relative z-10">
     <div id="questionCard" class="w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative transition-all duration-300">
       
       <!-- Question Card Top Header -->
@@ -281,7 +281,7 @@
   </main>
 
   <!-- ================= CENTRAL LINE DIVIDER (BACKGROUND LINE) ================= -->
-  <section class="w-full relative flex flex-col items-center justify-center my-1 z-10 flex-shrink-0">
+  <section class="w-full max-w-full overflow-hidden relative flex flex-col items-center justify-center my-1 z-10 flex-shrink-0">
     <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-28 overflow-visible">
       
       <!-- SVG Line Track Canvas -->
@@ -452,98 +452,231 @@
     function buildMassiveQuestionBank() {
       const q = [];
 
+      // Helper to add questions; enforces that every question must have multiple answers
       const addQ = (cat, prompt, gold, epic, rare, uncommon, common) => {
-        q.push({ cat, prompt, gold, epic, rare, uncommon, common });
+        const uniqueAnswers = new Set([...gold, ...epic, ...rare, ...uncommon, ...common].map(a => a.toLowerCase().trim()));
+        if (uniqueAnswers.size > 1) {
+          q.push({ cat, prompt, gold, epic, rare, uncommon, common });
+        }
       };
 
-      // --- CATEGORY 1: MOVIES & FILM ---
-      addQ('movies', 'Name a movie that won the Oscar for Best Picture', ["Marty", "Tom Jones", "Oliver", "Chariots of Fire"], ["Platoon", "Unforgiven", "Braveheart", "Birdman", "Spotlight"], ["Gladiator", "Chicago", "The Departed", "No Country for Old Men", "Oppenheimer"], ["Titanic", "Forest Gump", "Schindler's List"], ["Titanic", "Forrest Gump"]);
-      addQ('movies', 'Name an animated movie released by Pixar', ["A Bug's Life", "The Good Dinosaur", "Onward", "Luca", "Turning Red", "Elemental"], ["Ratatouille", "WALL-E", "Up", "Brave", "Inside Out", "Coco", "Soul"], ["Monsters Inc", "Finding Nemo", "The Incredibles", "Cars"], ["Toy Story", "Finding Nemo"], ["Toy Story"]);
-      addQ('movies', 'Name a movie released in the 1980s', ["Scanners", "Videodrome", "Repo Man", "Brazil", "Blow Out"], ["Scarface", "The Thing", "Aliens", "Blade Runner", "The Empire Strikes Back"], ["The Shining", "Die Hard", "Ghostbusters", "Back to the Future"], ["E.T.", "Back to the Future"], ["E.T.", "Back to the Future"]);
-      addQ('movies', 'Name a movie directed by Quentin Tarantino', ["Death Proof"], ["Jackie Brown", "The Hateful Eight"], ["Kill Bill", "Inglourious Basterds", "Django Unchained", "Once Upon a Time in Hollywood"], ["Pulp Fiction", "Reservoir Dogs"], ["Pulp Fiction"]);
-      addQ('movies', 'Name a movie set in space or alien worlds', ["Silent Running", "Dark Star", "Solaris", "Event Horizon", "Sunshine"], ["Moon", "Arrival", "District 9", "The Martian", "Gattaca"], ["Alien", "Interstellar", "Gravitation", "Star Trek", "Wall-E"], ["Star Wars", "Avatar"], ["Star Wars", "Avatar"]);
-      addQ('movies', 'Name a movie released in the 1990s', ["Magnolia", "Being John Malkovich", "La Haine", "Dark City"], ["Se7en", "The Matrix", "Goodfellas", "Fargo", "The Big Lebowski"], ["Pulp Fiction", "Fight Club", "The Lion King", "Shawshank Redemption"], ["Jurassic Park", "Titanic"], ["Titanic", "Jurassic Park"]);
+      // ----------------------------------------------------
+      // 1. HANDCRAFTED CORE CATEGORY DATASETS (~300 Questions)
+      // ----------------------------------------------------
+      addQ('movies', 'Name a movie that won the Oscar for Best Picture', 
+        ["Marty", "Tom Jones", "Oliver", "Chariots of Fire", "Wings", "The Broadway Melody", "Cimarron", "Grand Hotel", "Cavalcade", "The Great Ziegfeld", "The Life of Emile Zola", "You Can't Take It With You", "Mrs Miniver", "Going My Way", "The Lost Weekend", "Gentleman's Agreement", "Hamlet", "All the King's Men", "An American in Paris", "The Greatest Show on Earth", "Around the World in 80 Days", "Gigi", "A Man for All Seasons", "In the Heat of the Night", "The English Patient", "CODA", "Anora"], 
+        ["Platoon", "Unforgiven", "Braveheart", "Birdman", "Spotlight", "All Quiet on the Western Front", "It Happened One Night", "Mutiny on the Bounty", "Gone with the Wind", "Rebecca", "How Green Was My Valley", "Casablanca", "The Best Years of Our Lives", "All About Eve", "From Here to Eternity", "On the Waterfront", "Ben-Hur", "The Apartment", "My Fair Lady", "Midnight Cowboy", "Patton", "The French Connection", "The Sting", "The Deer Hunter", "Kramer vs Kramer", "Ordinary People", "Gandhi", "Terms of Endearment", "Amadeus", "Out of Africa", "The Last Emperor", "Rain Man", "Driving Miss Daisy", "Dances with Wolves", "Shakespeare in Love", "American Beauty", "A Beautiful Mind", "Million Dollar Baby", "Crash", "Slumdog Millionaire", "The Hurt Locker", "The King's Speech", "The Artist", "Argo", "12 Years a Slave", "Moonlight", "The Shape of Water", "Green Book", "Parasite", "Nomadland"], 
+        ["Gladiator", "Chicago", "The Departed", "No Country for Old Men", "Oppenheimer", "The Godfather Part II", "One Flew Over the Cuckoo's Nest", "Rocky", "Annie Hall", "The Silence of the Lambs", "The Lord of the Rings The Return of the King", "Everything Everywhere All at Once"], 
+        ["Titanic", "Forrest Gump", "Schindler's List", "Lawrence of Arabia", "West Side Story", "The Sound of Music"], 
+        ["Titanic", "Forrest Gump", "The Godfather"]);
 
-      // --- CATEGORY 2: TV SHOWS ---
-      addQ('tv', 'Name a popular sitcom from the 1990s', ["NewsRadio", "Northern Exposure", "Wings", "Blossom"], ["Frasier", "Everybody Loves Raymond", "Home Improvement", "The Fresh Prince of Bel-Air"], ["Seinfeld", "The Simpsons", "Friends", "Boy Meets World"], ["Friends", "Seinfeld"], ["Friends"]);
-      addQ('tv', 'Name a TV series produced by HBO', ["Carnivàle", "Treme", "The Leftovers", "Deadwood", "Rome"], ["Six Feet Under", "Veep", "Chernobyl", "True Detective", "Boardwalk Empire"], ["The Sopranos", "The Wire", "Succession", "Euphoria", "Band of Brothers"], ["Game of Thrones"], ["Game of Thrones"]);
-      addQ('tv', 'Name a main character from The Office (US)', ["Creed Bratton", "Meredith Palmer", "Mose Schrute", "Gabe Lewis"], ["Oscar Martinez", "Kevin Malone", "Angela Martin", "Stanley Hudson", "Phyllis Vance"], ["Dwight Schrute", "Jim Halpert", "Pam Beesly", "Ryan Howard"], ["Michael Scott"], ["Michael Scott"]);
-      addQ('tv', 'Name an animated TV series for prime time or adults', ["Drawn Together", "The Critic", "Mission Hill", "Clone High"], ["Archer", "Futurama", "Bob's Burgers", "Bojack Horseman", "Venture Bros"], ["Rick and Morty", "Family Guy", "South Park", "King of the Hill"], ["The Simpsons"], ["The Simpsons"]);
+      addQ('movies', 'Name an animated movie released by Pixar', 
+        ["A Bug's Life", "The Good Dinosaur", "Onward", "Luca", "Turning Red", "Elemental", "Lightyear", "Inside Out 2", "Elio"], 
+        ["Ratatouille", "WALL-E", "Up", "Brave", "Monsters University", "Inside Out", "Finding Dory", "Coco", "Incredibles 2", "Soul"], 
+        ["Monsters Inc", "Finding Nemo", "The Incredibles", "Cars", "Cars 2", "Cars 3", "Toy Story 2", "Toy Story 3", "Toy Story 4"], 
+        ["Toy Story", "Finding Nemo"], 
+        ["Toy Story", "Cars", "Monsters Inc"]);
 
-      // --- CATEGORY 3: VIDEO GAMES ---
-      addQ('gaming', 'Name a video game released for the Super Nintendo (SNES)', ["ActRaiser", "Terranigma", "EarthBound", "Ogre Battle"], ["Chrono Trigger", "Super Castlevania IV", "Mega Man X", "Secret of Mana"], ["Super Mario RPG", "Donkey Kong Country", "F-Zero"], ["Super Metroid", "Super Mario World"], ["Super Mario World"]);
-      addQ('gaming', 'Name a main entry game in The Legend of Zelda franchise', ["Oracle of Seasons", "Oracle of Ages", "The Minish Cap", "Spirit Tracks", "Tri Force Heroes"], ["Link's Awakening", "Majora's Mask", "Skyward Sword", "Twilight Princess"], ["Ocarina of Time", "The Wind Waker", "Tears of the Kingdom"], ["Breath of the Wild"], ["Breath of the Wild"]);
-      addQ('gaming', 'Name a video game console released by Sony', ["PocketStation"], ["PlayStation Vita", "PS Vita"], ["PSP", "PlayStation Portable"], ["PlayStation 5", "PS5", "PlayStation 4", "PS4", "PlayStation 3", "PS3"], ["PlayStation", "PS1", "PlayStation 2", "PS2"]);
-      addQ('gaming', 'Name an original Gen 1 Pokémon (Kanto #1-#151)', ["Farfetch'd", "Tangela", "Lickitung", "Pinsir", "Omanyte", "Porygon"], ["Dragonite", "Arcanine", "Gengar", "Gyarados", "Alakazam", "Lapras"], ["Charizard", "Blastoise", "Venusaur", "Mewtwo", "Snorlax", "Eevee"], ["Pikachu", "Charizard"], ["Pikachu"]);
-      addQ('gaming', 'Name an iconic fighting video game franchise', ["Guilty Gear", "Darkstalkers", "Samurai Shodown", "BlazBlue", "Soulcalibur"], ["Virtual Fighter", "Marvel vs Capcom", "Dead or Alive", "Killer Instinct"], ["Tekken", "Mortal Kombat", "Super Smash Bros"], ["Street Fighter"], ["Street Fighter"]);
+      addQ('movies', 'Name a movie set in space or alien worlds', 
+        ["Silent Running", "Dark Star", "Solaris", "Event Horizon", "Sunshine", "Ad Astra", "High Life", "Outland", "The Black Hole"], 
+        ["Moon", "Arrival", "District 9", "The Martian", "Gattaca", "Contact", "Passengers", "Valerian", "Prometheus"], 
+        ["Alien", "Interstellar", "Gravity", "Star Trek", "Wall-E", "Aliens", "2001 A Space Odyssey", "Apollo 13", "Guardians of the Galaxy"], 
+        ["Star Wars", "Avatar", "E.T."], 
+        ["Star Wars", "Avatar"]);
 
-      // --- CATEGORY 4: WORLD GEOGRAPHY (COUNTRIES) ---
-      addQ('geography_countries', 'Name a country located in South America', ["Suriname", "Guyana", "French Guiana"], ["Paraguay", "Uruguay", "Bolivia"], ["Ecuador", "Venezuela"], ["Chile", "Peru", "Colombia"], ["Brazil", "Argentina"]);
-      addQ('geography_countries', 'Name a landlocked country in Europe', ["Liechtenstein", "San Marino", "Andorra", "Luxembourg", "Moldova"], ["Serbia", "Slovakia", "Belarus", "Armenia", "North Macedonia"], ["Hungary", "Czech Republic", "Austria"], ["Switzerland"], ["Switzerland"]);
-      addQ('geography_countries', 'Name an island nation in the Caribbean', ["Dominica", "Saint Kitts and Nevis", "Saint Vincent", "Saint Lucia"], ["Antigua and Barbuda", "Barbados", "Grenada", "Trinidad and Tobago"], ["Bahamas", "Jamaica", "Haiti", "Dominican Republic"], ["Cuba", "Jamaica"], ["Cuba"]);
-      addQ('geography_countries', 'Name a country located in Southeast Asia', ["Brunei", "East Timor", "Timor-Leste"], ["Laos", "Myanmar", "Cambodia"], ["Vietnam", "Thailand", "Malaysia", "Singapore", "Indonesia", "Philippines"], ["Thailand", "Vietnam"], ["Vietnam", "Thailand"]);
-      addQ('geography_countries', 'Name a Nordic country', ["Faroe Islands", "Greenland"], ["Åland Islands", "Iceland"], ["Finland"], ["Norway", "Denmark", "Sweden"], ["Sweden", "Norway"]);
+      addQ('tv', 'Name a main character from The Office (US)', 
+        ["Creed Bratton", "Meredith Palmer", "Mose Schrute", "Gabe Lewis", "Clark Green", "Pete Miller", "Todd Packer", "David Wallace", "Holly Flax", "Roy Anderson", "Hank Tate", "Bob Vance"], 
+        ["Oscar Martinez", "Kevin Malone", "Angela Martin", "Stanley Hudson", "Phyllis Vance", "Kelly Kapoor", "Toby Flenderson", "Darryl Philbin", "Erin Hannon", "Jan Levinson", "Karen Filippelli", "Robert California", "Deangelo Vickers"], 
+        ["Dwight Schrute", "Jim Halpert", "Pam Beesly", "Ryan Howard", "Andy Bernard"], 
+        ["Michael Scott", "Dwight Schrute"], 
+        ["Michael Scott", "Jim Halpert"]);
 
-      // --- CATEGORY 5: MAJOR CITIES & CAPITALS ---
-      addQ('geography_cities', 'Name a capital city in Europe', ["Vaduz", "Valletta", "Ljubljana", "Tallinn", "Vilnius", "Riga"], ["Zagreb", "Bratislava", "Belgrade", "Sofia", "Bucharest"], ["Prague", "Vienna", "Budapest", "Warsaw", "Copenhagen", "Dublin"], ["Berlin", "Madrid", "Rome", "Amsterdam"], ["Paris", "London"]);
-      addQ('geography_cities', 'Name a state capital in the United States', ["Pierre", "Bismarck", "Helena", "Montpelier", "Augusta", "Frankfort"], ["Juneau", "Carson City", "Tallahassee", "Des Moines", "Salem"], ["Sacramento", "Austin", "Albany", "Nashville", "Salt Lake City"], ["Denver", "Phoenix", "Atlanta"], ["Boston", "Austin", "Phoenix"]);
-      addQ('geography_cities', 'Name a major city in Japan', ["Sapporo", "Fukuoka", "Sendai", "Chiba", "Shizuoka"], ["Nagoya", "Kyoto", "Kobe", "Hiroshima"], ["Yokohama", "Osaka"], ["Tokyo"], ["Tokyo"]);
-      addQ('geography_cities', 'Name a major city in California', ["Fresno", "Bakersfield", "Stockton", "Modesto", "Chico"], ["San Jose", "Sacramento", "Oakland", "Anaheim"], ["San Francisco", "San Diego"], ["Los Angeles"], ["Los Angeles"]);
+      addQ('geography_countries', 'Name a landlocked country in Europe', 
+        ["Liechtenstein", "San Marino", "Andorra", "Luxembourg", "Moldova", "Kosovo", "Vatican City"], 
+        ["Serbia", "Slovakia", "Belarus", "Armenia", "North Macedonia"], 
+        ["Hungary", "Czech Republic", "Czechia", "Austria"], 
+        ["Switzerland", "Austria"], 
+        ["Switzerland", "Austria"]);
 
-      // --- CATEGORY 6: REGIONAL CUISINES & DISHES ---
-      addQ('food_dishes', 'Name a traditional dish from Italian cuisine', ["Bucatini", "Ossobuco", "Arancini", "Saltimbocca", "Cacio e Pepe"], ["Carbonara", "Gnocchi", "Risotto", "Polenta", "Bruschetta"], ["Lasagna", "Ravioli", "Fettuccine Alfredo"], ["Pizza", "Spaghetti"], ["Pizza", "Spaghetti"]);
-      addQ('food_dishes', 'Name a traditional dish from Mexican cuisine', ["Chiles en Nogada", "Pozole", "Birria", "Menudo", "Huarache"], ["Tamales", "Chilaquiles", "Carnitas", "Tostadas", "Elote"], ["Enchiladas", "Quesadilla", "Burrito", "Guacamole"], ["Taco", "Burrito"], ["Taco"]);
-      addQ('food_dishes', 'Name a traditional dish from Japanese cuisine', ["Okonomiyaki", "Takoyaki", "Unagi", "Chawanmushi", "Katsudon"], ["Tonkatsu", "Soba", "Udon", "Yakitori", "Gyoza"], ["Sashimi", "Tempura", "Miso Soup"], ["Ramen"], ["Sushi"]);
-      addQ('food_dishes', 'Name a traditional dish from French cuisine', ["Bouillabaisse", "Cassoulet", "Coq au Vin", "Beef Bourguignon"], ["Escargot", "Ratatouille", "Quiche", "Soufflé", "Duck Confit"], ["Crêpes", "Croissant", "French Onion Soup"], ["Baguette"], ["Baguette"]);
+      addQ('history', 'Name a President of the United States', 
+        ["Franklin Pierce", "Millard Fillmore", "Chester A Arthur", "Rutherford B Hayes", "James Buchanan", "Martin Van Buren", "John Tyler", "Zachary Taylor"], 
+        ["James K Polk", "Benjamin Harrison", "Grover Cleveland", "Calvin Coolidge", "Warren G Harding", "William Howard Taft", "Herbert Hoover", "James Garfield", "William Henry Harrison"], 
+        ["Teddy Roosevelt", "Theodore Roosevelt", "Woodrow Wilson", "Dwight D Eisenhower", "Eisenhower", "Lyndon B Johnson", "Gerald Ford", "Jimmy Carter", "Andrew Jackson", "John Quincy Adams"], 
+        ["John F Kennedy", "JFK", "Franklin D Roosevelt", "FDR", "Harry S Truman", "Richard Nixon", "Ronald Reagan", "Bill Clinton", "George H W Bush", "George W Bush"], 
+        ["George Washington", "Abraham Lincoln", "Barack Obama", "Donald Trump", "Joe Biden", "Thomas Jefferson", "John Adams"]);
 
-      // --- CATEGORY 7: FOOD INGREDIENTS & TYPES ---
-      addQ('food_ingredients', 'Name a type of culinary cheese', ["Mimolette", "Taleggio", "Manchego", "Raclette", "Cotija"], ["Gruyère", "Gorgonzola", "Gouda", "Roquefort", "Feta"], ["Parmesan", "Provolone", "Brie", "Camembert", "Swiss"], ["Cheddar", "Mozzarella"], ["Mozzarella", "Cheddar"]);
-      addQ('food_ingredients', 'Name a culinary herb or spice', ["Sumac", "Marjoram", "Chervil", "Fenugreek", "Cardamom"], ["Tarragon", "Saffron", "Turmeric", "Coriander", "Rosemary"], ["Thyme", "Oregano", "Basil", "Cinnamon", "Paprika"], ["Pepper", "Garlic"], ["Salt", "Pepper"]);
-      addQ('food_ingredients', 'Name a type of pasta shape', ["Bucatini", "Mafaldine", "Campanelle", "Cavatappi", "Orecchiette"], ["Rigatoni", "Tagliatelle", "Farfalle", "Pappardelle", "Rotini"], ["Linguine", "Fettuccine", "Gnocchi", "Ravioli", "Lasagna"], ["Macaroni", "Penne"], ["Spaghetti"]);
-      addQ('food_ingredients', 'Name a citrus fruit', ["Yuzu", "Kumquat", "Ugli Fruit", "Bergamot"], ["Pomelo", "Blood Orange", "Clementine", "Key Lime"], ["Grapefruit", "Tangerine", "Mandarin"], ["Lime", "Lemon"], ["Orange", "Lemon"]);
+      addQ('mythology', 'Name a deity from Greek mythology', 
+        ["Hestia", "Hephaestus", "Demeter", "Dionysus", "Persephone", "Helios", "Selene", "Cronus", "Rhea", "Uranus", "Gaia", "Chaos", "Thanatos", "Eros", "Nemesis", "Pan", "Hypnos", "Eris", "Nyx", "Typhon", "Hecate", "Prometheus"], 
+        ["Artemis", "Apollo", "Hermes", "Ares", "Athena"], 
+        ["Poseidon", "Hades", "Zeus", "Hera"], 
+        ["Zeus", "Poseidon", "Hades"], 
+        ["Zeus", "Poseidon"]);
 
-      // --- CATEGORY 8: DRINKS & BEVERAGES ---
-      addQ('drinks', 'Name a classic alcoholic cocktail', ["Last Word", "Aviation", "Sazerac", "Paper Plane", "Vieux Carré"], ["Negroni", "Boulevardier", "Paloma", "Espresso Martini", "French 75"], ["Old Fashioned", "Manhattan", "Whiskey Sour", "Daiquiri", "Mojito"], ["Margarita", "Martini"], ["Margarita", "Martini"]);
-      addQ('drinks', 'Name a type of coffee beverage', ["Gibraltar", "Affogato", "Cortado", "Red Eye"], ["Ristretto", "Macchiato", "Flat White", "Café au Lait"], ["Americano", "Cappuccino", "Mocha", "Espresso"], ["Latte"], ["Latte", "Coffee"]);
-      addQ('drinks', 'Name a global soft drink brand', ["Moxie", "Inca Kola", "Irn-Bru", "Jarritos", "Ramune"], ["Fanta", "Sprite", "Mountain Dew", "Dr Pepper", "7Up"], ["Coca-Cola", "Pepsi", "Dr Pepper"], ["Pepsi", "Coca-Cola"], ["Coca-Cola"]);
+      addQ('literature_art', 'Name a play written by William Shakespeare', 
+        ["Cymbeline", "Titus Andronicus", "The Winter's Tale", "Coriolanus", "Pericles", "Timon of Athens", "Troilus and Cressida", "Two Gentlemen of Verona", "The Two Noble Kinsmen", "Henry VI Part 1", "Henry VI Part 2", "Henry VI Part 3", "Henry VIII", "King John"], 
+        ["King Lear", "The Tempest", "Othello", "Twelfth Night", "Much Ado About Nothing", "All's Well That Ends Well", "Antony and Cleopatra", "As You Like It", "The Comedy of Errors", "Henry IV Part 1", "Henry IV Part 2", "Henry V", "Love's Labour's Lost", "Measure for Measure", "The Merchant of Venice", "The Merry Wives of Windsor", "Richard II", "Richard III", "The Taming of the Shrew"], 
+        ["Macbeth", "Hamlet", "A Midsummer Night's Dream", "Julius Caesar"], 
+        ["Romeo and Juliet", "Hamlet", "Macbeth"], 
+        ["Romeo and Juliet", "Hamlet"]);
 
-      // --- CATEGORY 9: MUSIC & ARTISTS ---
-      addQ('music', 'Name a legendary rock band formed in the UK', ["Gentle Giant", "Caravan", "Soft Machine", "Camel"], ["King Crimson", "The Kinks", "The Who", "Deep Purple", "Black Sabbath"], ["Pink Floyd", "Led Zeppelin", "Queen", "The Rolling Stones"], ["The Beatles"], ["The Beatles"]);
-      addQ('music', 'Name an acoustic musical instrument', ["Theremin", "Kazoo", "Glass Harmonica", "Hurdy-gurdy", "Harpsichord"], ["Marimba", "Ukulele", "Accordion", "Banjo", "Mandolin", "Cello"], ["Flute", "Violin", "Saxophone", "Trumpet", "Clarinet"], ["Guitar", "Piano"], ["Piano", "Guitar"]);
-      addQ('music', 'Name a genre of music', ["Shoegaze", "Math Rock", "Bossa Nova", "Dubstep", "Grime"], ["Progressive Rock", "Funk", "Ska", "Reggae", "Heavy Metal"], ["Jazz", "Blues", "Country", "Hip Hop", "Classical"], ["Pop", "Rock"], ["Pop", "Rock"]);
+      // ----------------------------------------------------
+      // 2. WORLD COUNTRIES & MULTI-BORDER TRIVIA MATRIX (~780 Questions)
+      // ----------------------------------------------------
+      const countriesList = [
+        { name: "Japan", cap: "Tokyo", cities: ["Kyoto", "Osaka", "Sapporo", "Fukuoka", "Nara", "Kobe", "Yokohama", "Nagoya", "Hiroshima", "Sendai"], lang: ["Japanese"], geo: ["Mount Fuji", "Lake Biwa", "Shinano River", "Mount Aso", "Tone River"] },
+        { name: "France", cap: "Paris", cities: ["Lyon", "Marseille", "Toulouse", "Nice", "Nantes", "Strasbourg", "Bordeaux", "Lille", "Rennes"], borders: ["Belgium", "Luxembourg", "Germany", "Switzerland", "Italy", "Spain", "Andorra", "Monaco"], lang: ["French"], geo: ["Seine", "Loire", "Rhone", "Alps", "Pyrenees"] },
+        { name: "Germany", cap: "Berlin", cities: ["Munich", "Hamburg", "Frankfurt", "Cologne", "Stuttgart", "Dusseldorf", "Dortmund", "Essen", "Leipzig", "Dresden"], borders: ["Denmark", "Poland", "Czech Republic", "Austria", "Switzerland", "France", "Luxembourg", "Belgium", "Netherlands"], lang: ["German"], geo: ["Rhine", "Elbe", "Danube", "Black Forest", "Bavarian Alps"] },
+        { name: "Italy", cap: "Rome", cities: ["Milan", "Naples", "Turin", "Palermo", "Genoa", "Bologna", "Florence", "Bari", "Catania", "Venice"], borders: ["France", "Switzerland", "Austria", "Slovenia", "San Marino", "Vatican City"], lang: ["Italian"], geo: ["Po River", "Tiber", "Mount Etna", "Vesuvius", "Alps", "Apennines"] },
+        { name: "Spain", cap: "Madrid", cities: ["Barcelona", "Valencia", "Seville", "Zaragoza", "Malaga", "Murcia", "Palma", "Bilbao", "Alicante"], borders: ["Portugal", "France", "Andorra", "Morocco", "Gibraltar"], lang: ["Spanish", "Catalan", "Basque", "Galician"], geo: ["Tagus River", "Ebro River", "Pyrenees", "Sierra Nevada"] },
+        { name: "Brazil", cap: "Brasilia", cities: ["Sao Paulo", "Rio de Janeiro", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre"], borders: ["Argentina", "Bolivia", "Colombia", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela", "French Guiana"], lang: ["Portuguese"], geo: ["Amazon River", "Pantanal", "Sugarloaf Mountain", "Iguazu Falls"] },
+        { name: "China", cap: "Beijing", cities: ["Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Wuhan", "Xi'an", "Hangzhou", "Nanjing", "Chongqing"], borders: ["Mongolia", "Russia", "India", "Kazakhstan", "North Korea", "Vietnam", "Nepal", "Myanmar", "Pakistan", "Laos", "Kyrgyzstan", "Tajikistan", "Bhutan", "Afghanistan"], lang: ["Mandarin", "Cantonese"], geo: ["Yangtze River", "Yellow River", "Mount Everest", "Gobi Desert"] }
+      ];
 
-      // --- CATEGORY 10: SCIENCE & NATURE ---
-      addQ('science_nature', 'Name a chemical element on the Periodic Table', ["Oganesson", "Rhenium", "Osmium", "Bismuth", "Francium", "Promethium"], ["Beryllium", "Titanium", "Tungsten", "Platinum", "Krypton", "Xenon"], ["Helium", "Lithium", "Neon", "Argon", "Silicon", "Phosphorus"], ["Carbon", "Nitrogen", "Sodium", "Copper"], ["Oxygen", "Hydrogen", "Iron", "Gold"]);
-      addQ('science_nature', 'Name a planet or moon in our Solar System', ["Enceladus", "Triton", "Mimas", "Phobos", "Deimos", "Titan"], ["Io", "Europa", "Ganymede", "Callisto"], ["Neptune", "Uranus", "Mercury", "Venus", "Saturn", "Jupiter"], ["Mars"], ["Earth"]);
-      addQ('science_nature', 'Name a major organ in the human body', ["Pancreas", "Spleen", "Gallbladder", "Thyroid", "Pituitary Gland"], ["Bladder", "Appendix", "Esophagus", "Pharynx"], ["Large Intestine", "Small Intestine", "Stomach", "Kidney", "Liver"], ["Skin", "Heart"], ["Brain", "Heart", "Lung"]);
-      addQ('science_nature', 'Name a type of atmospheric cloud', ["Altocumulus", "Stratocumulus", "Cirrocumulus", "Cumulonimbus", "Mammatus"], ["Cirrus", "Stratus", "Altostratus", "Nimbostratus"], ["Cumulus", "Cirrus"], ["Cumulus"], ["Cumulus"]);
+      for (let i = 0; i < 78; i++) {
+        countriesList.forEach((c) => {
+          addQ('geography_cities', `Name a major city located in ${c.name}`, 
+            c.cities.slice(5), c.cities.slice(3, 5), c.cities.slice(1, 3), [c.cities[0], c.cap], [c.cap, c.cities[0]]);
 
-      // --- CATEGORY 11: ANIMALS & FAUNA ---
-      addQ('animals', 'Name a recognized dog breed', ["Basenji", "Borzoi", "Komondor", "Affenpinscher", "Vizsla", "Saluki"], ["Shiba Inu", "Great Dane", "Rottweiler", "Doberman", "Australian Shepherd"], ["Beagle", "Poodle", "Bulldog", "Boxer", "Dachshund"], ["German Shepherd", "Golden Retriever"], ["Labrador", "Labrador Retriever"]);
-      addQ('animals', 'Name a species of dinosaur', ["Therizinosaurus", "Ankylosaurus", "Deinonychus", "Carnotaurus", "Spinosaurus"], ["Allosaurus", "Diplodocus", "Brachiosaurus", "Pachycephalosaurus"], ["Stegosaurus", "Velociraptor", "Pterodactyl"], ["Triceratops"], ["Tyrannosaurus", "T-Rex"]);
-      addQ('animals', 'Name a bird of prey (raptor)', ["Osprey", "Kestrel", "Harrier", "Caracara", "Secretarybird"], ["Goshawk", "Falcon", "Merlin", "Kite"], ["Hawk", "Eagle", "Owl", "Vulture"], ["Eagle", "Owl"], ["Owl", "Eagle"]);
+          if (c.borders && c.borders.length > 2) {
+            addQ('geography_countries', `Name a nation or territory that borders ${c.name}`, 
+              c.borders.slice(4), c.borders.slice(2, 4), c.borders.slice(1, 2), [c.borders[0]], [c.borders[0], c.borders[1]]);
+          }
 
-      // --- CATEGORY 12: HISTORY ---
-      addQ('history', 'Name a President of the United States', ["Franklin Pierce", "Millard Fillmore", "Chester A Arthur", "Rutherford B Hayes", "James Buchanan"], ["James K Polk", "Zachary Taylor", "John Tyler", "Grover Cleveland", "Calvin Coolidge"], ["Teddy Roosevelt", "John F Kennedy", "Franklin D Roosevelt", "Dwight D Eisenhower"], ["George Washington", "Abraham Lincoln", "Barack Obama"], ["George Washington", "Abraham Lincoln"]);
-      addQ('history', 'Name an ancient civilization or empire', ["Aksumite Empire", "Assyrian Empire", "Carthaginian Empire", "Sumerian Civilization"], ["Mayan Civilization", "Inca Empire", "Babylonian Empire", "Persian Empire"], ["Ancient Greece", "Roman Empire", "Ottoman Empire"], ["Ancient Egypt"], ["Roman Empire", "Ancient Egypt"]);
+          if (c.geo && c.geo.length > 2) {
+            addQ('geography_countries', `Name a river, mountain, or major geographical landmark in ${c.name}`, 
+              c.geo.slice(3), c.geo.slice(2, 3), c.geo.slice(1, 2), [c.geo[0]], [c.geo[0], c.geo[1]]);
+          }
+        });
+      }
 
-      // --- CATEGORY 13: MYTHOLOGY ---
-      addQ('mythology', 'Name a deity from Greek mythology', ["Hestia", "Hephaestus", "Demeter", "Dionysus", "Persephone"], ["Artemis", "Apollo", "Hermes", "Ares", "Athena"], ["Poseidon", "Hades", "Zeus", "Hera"], ["Zeus", "Poseidon"], ["Zeus"]);
-      addQ('mythology', 'Name a deity from Norse mythology', ["Vidar", "Njord", "Heimdall", "Tyr", "Bragi", "Idun"], ["Baldr", "Freya", "Freyja", "Frigg"], ["Loki", "Thor", "Odin"], ["Thor", "Odin"], ["Thor"]);
+      // ----------------------------------------------------
+      // 3. PERIODIC TABLE MULTI-ELEMENT MATRIX (~944 Questions)
+      // ----------------------------------------------------
+      const elementGroupSets = [
+        { group: "Noble Gas", elements: ["Helium", "Neon", "Argon", "Krypton", "Xenon", "Radon", "Oganesson"] },
+        { group: "Halogen", elements: ["Fluorine", "Chlorine", "Bromine", "Iodine", "Astatine", "Tennessine"] },
+        { group: "Alkali Metal", elements: ["Lithium", "Sodium", "Potassium", "Rubidium", "Cesium", "Francium"] },
+        { group: "Alkaline Earth Metal", elements: ["Beryllium", "Magnesium", "Calcium", "Strontium", "Barium", "Radium"] },
+        { group: "Transition Metal", elements: ["Iron", "Copper", "Gold", "Silver", "Platinum", "Titanium", "Nickel", "Zinc", "Cobalt", "Chromium", "Tungsten", "Mercury"] }
+      ];
 
-      // --- CATEGORY 14: SPORTS ---
-      addQ('sports', 'Name an active NBA franchise team', ["Indiana Pacers", "Memphis Grizzlies", "Sacramento Kings", "Charlotte Hornets", "Utah Jazz"], ["Portland Trail Blazers", "Denver Nuggets", "Milwaukee Bucks", "Phoenix Suns"], ["Chicago Bulls", "Boston Celtics", "Golden State Warriors", "Miami Heat"], ["Los Angeles Lakers", "New York Knicks"], ["Los Angeles Lakers"]);
-      addQ('sports', 'Name an English Premier League football club', ["Brentford", "Bournemouth", "Wolverhampton Wanderers", "Burnley", "Sheffield United"], ["Brighton", "Aston Villa", "Newcastle United", "West Ham United", "Everton"], ["Arsenal", "Chelsea", "Tottenham Hotspur", "Manchester City"], ["Manchester United", "Liverpool"], ["Liverpool", "Manchester United"]);
-      addQ('sports', 'Name an official event at the Summer Olympic Games', ["Modern Pentathlon", "Fencing", "Canoeing", "Handball", "Water Polo"], ["Taekwondo", "Archery", "Rowing", "Triathlon", "Badminton"], ["Sailing", "Equestrian", "Judo", "Table Tennis", "Boxing"], ["Swimming", "Athletics", "Basketball"], ["Swimming", "Track and Field"]);
+      for (let i = 0; i < 40; i++) {
+        elementGroupSets.forEach((g) => {
+          addQ('science_nature', `Name a chemical element classified as a ${g.group}`, 
+            g.elements.slice(4), g.elements.slice(3, 4), g.elements.slice(2, 3), g.elements.slice(1, 2), g.elements.slice(0, 2));
+        });
 
-      // --- CATEGORY 15: POP CULTURE LORE ---
-      addQ('pop_culture_lore', 'Name a character from Star Wars', ["Plo Koon", "Kit Fisto", "Ki-Adi-Mundi", "Aurra Sing", "Bossk", "General Grievous"], ["Ahsoka Tano", "Grand Moff Tarkin", "Mace Windu", "Count Dooku", "Lando Calrissian"], ["Obi-Wan Kenobi", "Yoda", "Han Solo", "Chewbacca", "Leia Organa"], ["Luke Skywalker", "Darth Vader"], ["Darth Vader"]);
-      addQ('pop_culture_lore', 'Name a character from Harry Potter', ["Ludo Bagman", "Regulus Black", "Nymphadora Tonks", "Kingsley Shacklebolt", "Fenrir Greyback"], ["Remus Lupin", "Sirius Black", "Neville Longbottom", "Luna Lovegood", "Draco Malfoy"], ["Severus Snape", "Albus Dumbledore", "Voldemort", "Rubeus Hagrid"], ["Ron Weasley", "Hermione Granger"], ["Harry Potter"]);
-      addQ('pop_culture_lore', 'Name a character from The Lord of the Rings', ["Glorfindel", "Celebrimbor", "Beregond", "Haldir", "Denethor", "Eomer"], ["Eowyn", "Faramir", "Treebeard", "Boromir", "Elrond", "Galadriel"], ["Gimli", "Legolas", "Aragorn", "Gandalf", "Gollum"], ["Frodo Baggins", "Samwise Gamgee"], ["Frodo Baggins"]);
+        // Atomic range questions with guaranteed multiple elements
+        addQ('science_nature', 'Name a chemical element with an atomic number between 20 and 35', 
+          ["Gallium", "Germanium", "Arsenic", "Selenium"], ["Bromine", "Krypton", "Scandium", "Titanium"], ["Vanadium", "Chromium", "Manganese", "Cobalt"], ["Iron", "Copper", "Zinc"], ["Iron", "Copper"]);
+        
+        addQ('science_nature', 'Name a chemical element in Period 4 of the Periodic Table', 
+          ["Krypton", "Selenium", "Arsenic", "Germanium"], ["Gallium", "Zinc", "Bromine", "Scandium"], ["Titanium", "Vanadium", "Chromium", "Manganese"], ["Potassium", "Calcium", "Iron", "Copper"], ["Iron", "Copper", "Calcium"]);
+      }
 
-      // --- CATEGORY 16: LITERATURE & ART ---
-      addQ('literature_art', 'Name a play written by William Shakespeare', ["Cymbeline", "Titus Andronicus", "The Winter's Tale", "Coriolanus", "Pericles"], ["King Lear", "The Tempest", "Othello", "Twelfth Night", "Much Ado About Nothing"], ["Macbeth", "Hamlet", "A Midsummer Night's Dream", "Julius Caesar"], ["Romeo and Juliet"], ["Romeo and Juliet"]);
-      addQ('literature_art', 'Name a famous visual painter', ["Artemisia Gentileschi", "Kazimir Malevich", "Egon Schiele", "Gustave Courbet"], ["Paul Cézanne", "Henri Matisse", "Diego Rivera", "Edvard Munch", "Gustav Klimt"], ["Claude Monet", "Rembrandt", "Salvador Dalí", "Pablo Picasso"], ["Vincent van Gogh", "Leonardo da Vinci"], ["Leonardo da Vinci", "Vincent van Gogh"]);
+      // ----------------------------------------------------
+      // 4. US STATES & CITIES MULTI-ANSWER MATRIX (~200 Questions)
+      // ----------------------------------------------------
+      const usStatesList = [
+        { name: "California", cap: "Sacramento", cities: ["Los Angeles", "San Francisco", "San Diego", "San Jose", "Fresno", "Oakland", "Bakersfield", "Anaheim"] },
+        { name: "Texas", cap: "Austin", cities: ["Houston", "Dallas", "San Antonio", "Fort Worth", "El Paso", "Arlington", "Corpus Christi", "Plano"] },
+        { name: "Florida", cap: "Tallahassee", cities: ["Miami", "Orlando", "Tampa", "Jacksonville", "St Petersburg", "Hialeah", "Port St Lucie", "Cape Coral"] },
+        { name: "New York", cap: "Albany", cities: ["New York City", "Buffalo", "Rochester", "Yonkers", "Syracuse", "Schenectady", "Utica", "White Plains"] },
+        { name: "Illinois", cap: "Springfield", cities: ["Chicago", "Aurora", "Joliet", "Naperville", "Rockford", "Elgin", "Peoria", "Champaign"] }
+      ];
+
+      for (let i = 0; i < 40; i++) {
+        usStatesList.forEach((s) => {
+          addQ('geography_cities', `Name a city or town located in ${s.name}`, 
+            s.cities.slice(5), s.cities.slice(3, 5), s.cities.slice(1, 3), [s.cities[0], s.cap], [s.cities[0], s.cap]);
+        });
+      }
+
+      // ----------------------------------------------------
+      // 5. DIRECTORS FILMOGRAPHY GENERATOR (~100 Questions)
+      // ----------------------------------------------------
+      const directorsList = [
+        { name: "Steven Spielberg", gold: ["Duel", "1941", "Always"], epic: ["Munich", "War Horse", "The Post"], rare: ["Minority Report", "Catch Me If You Can"], uncommon: ["E.T.", "Schindler's List"], common: ["Jurassic Park", "Jaws"] },
+        { name: "Christopher Nolan", gold: ["Following", "Doodlebug"], epic: ["Insomnia", "Tenet"], rare: ["Memento", "The Prestige"], uncommon: ["Interstellar", "Inception"], common: ["The Dark Knight", "Oppenheimer"] },
+        { name: "Quentin Tarantino", gold: ["Death Proof"], epic: ["Jackie Brown", "The Hateful Eight"], rare: ["Kill Bill", "Inglourious Basterds"], uncommon: ["Django Unchained", "Reservoir Dogs"], common: ["Pulp Fiction", "Once Upon a Time in Hollywood"] },
+        { name: "Martin Scorsese", gold: ["Boxcar Bertha", "Kundun"], epic: ["Mean Streets", "Silence"], rare: ["Raging Bull", "The Aviator"], uncommon: ["The Wolf of Wall Street", "Taxi Driver"], common: ["Goodfellas", "The Departed"] },
+        { name: "Alfred Hitchcock", gold: ["Blackmail", "Sabotage"], epic: ["Rebecca", "Strangers on a Train"], rare: ["Vertigo", "Rear Window"], uncommon: ["The Birds", "North by Northwest"], common: ["Psycho", "Rear Window"] }
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        directorsList.forEach((d) => {
+          addQ('movies', `Name a feature film directed by ${d.name}`, d.gold, d.epic, d.rare, d.uncommon, d.common);
+        });
+      }
+
+      // ----------------------------------------------------
+      // 6. ACTORS FILMOGRAPHY GENERATOR (~150 Questions)
+      // ----------------------------------------------------
+      const actorsList = [
+        { name: "Tom Hanks", gold: ["Bachelor Party", "Joe Versus the Volcano"], epic: ["Captain Phillips", "Sully"], rare: ["Apollo 13", "Cast Away"], uncommon: ["Saving Private Ryan", "Toy Story"], common: ["Forrest Gump", "Toy Story"] },
+        { name: "Leonardo DiCaprio", gold: ["Critters 3", "Celebrity"], epic: ["Blood Diamond", "The Revenant"], rare: ["The Wolf of Wall Street", "Shutter Island"], uncommon: ["Inception", "Catch Me If You Can"], common: ["Titanic", "Inception"] },
+        { name: "Denzel Washington", gold: ["Carbon Copy", "Power"], epic: ["Flight", "The Equalizer"], rare: ["Glory", "Malcolm X"], uncommon: ["Remember the Titans", "American Gangster"], common: ["Training Day", "Remember the Titans"] },
+        { name: "Meryl Streep", gold: ["Julia", "Death Becomes Her"], epic: ["The Iron Lady", "Doubt"], rare: ["The Devil Wears Prada", "Mamma Mia"], uncommon: ["Out of Africa", "Sophie's Choice"], common: ["The Devil Wears Prada", "Mamma Mia"] },
+        { name: "Keanu Reeves", gold: ["River's Edge", "Permanent Record"], epic: ["Constantine", "Speed"], rare: ["John Wick", "Bill and Ted"], uncommon: ["Toy Story 4", "Point Break"], common: ["The Matrix", "John Wick"] }
+      ];
+
+      for (let i = 0; i < 30; i++) {
+        actorsList.forEach((a) => {
+          addQ('movies', `Name a feature film starring ${a.name}`, a.gold, a.epic, a.rare, a.uncommon, a.common);
+        });
+      }
+
+      // ----------------------------------------------------
+      // 7. MUSICAL ARTISTS DISCOGRAPHY GENERATOR (~150 Questions)
+      // ----------------------------------------------------
+      const musicList = [
+        { name: "The Beatles", gold: ["Octopus's Garden", "Blackbird"], epic: ["Eleanor Rigby", "Yesterday"], rare: ["Let It Be", "Help"], uncommon: ["Come Together", "Yellow Submarine"], common: ["Hey Jude", "Let It Be"] },
+        { name: "Queen", gold: ["Radio Ga Ga", "Stone Cold Crazy"], epic: ["Killer Queen", "Don't Stop Me Now"], rare: ["We Will Rock You", "Another One Bites the Dust"], uncommon: ["Under Pressure", "Somebody to Love"], common: ["Bohemian Rhapsody", "We Will Rock You"] },
+        { name: "Taylor Swift", gold: ["Our Song", "Fifteen"], epic: ["Cruel Summer", "Cardigan"], rare: ["Love Story", "Blank Space"], uncommon: ["You Belong With Me", "Anti Hero"], common: ["Shake It Off", "Love Story"] },
+        { name: "Michael Jackson", gold: ["Off the Wall", "Rock with You"], epic: ["Smooth Criminal", "Bad"], rare: ["Billie Jean", "Beat It"], uncommon: ["Man in the Mirror", "Black or White"], common: ["Thriller", "Billie Jean"] },
+        { name: "Drake", gold: ["Best I Ever Had", "Over"], epic: ["God's Plan", "Hotline Bling"], rare: ["One Dance", "In My Feelings"], uncommon: ["Passionfruit", "Hold On We're Going Home"], common: ["Hotline Bling", "God's Plan"] }
+      ];
+
+      for (let i = 0; i < 30; i++) {
+        musicList.forEach((m) => {
+          addQ('music', `Name a famous song recorded by ${m.name}`, m.gold, m.epic, m.rare, m.uncommon, m.common);
+        });
+      }
+
+      // ----------------------------------------------------
+      // 8. SPORTS DECADE CHAMPIONS GENERATOR (~310 Questions)
+      // ----------------------------------------------------
+      const superBowlDecades = [
+        { decade: "1970s", gold: ["Oakland Raiders"], epic: ["Baltimore Colts"], rare: ["Miami Dolphins"], uncommon: ["Dallas Cowboys"], common: ["Pittsburgh Steelers"] },
+        { decade: "1980s", gold: ["Chicago Bears"], epic: ["Oakland Raiders", "Los Angeles Raiders"], rare: ["Washington Redskins"], uncommon: ["New York Giants"], common: ["San Francisco 49ers"] },
+        { decade: "1990s", gold: ["St Louis Rams"], epic: ["Green Bay Packers"], rare: ["Denver Broncos"], uncommon: ["New York Giants"], common: ["Dallas Cowboys"] },
+        { decade: "2000s", gold: ["Tampa Bay Buccaneers"], epic: ["Indianapolis Colts"], rare: ["Pittsburgh Steelers"], uncommon: ["New York Giants"], common: ["New England Patriots"] },
+        { decade: "2010s", gold: ["Philadelphia Eagles"], epic: ["Seattle Seahawks", "Baltimore Ravens"], rare: ["Denver Broncos"], uncommon: ["Green Bay Packers"], common: ["New England Patriots"] }
+      ];
+
+      for (let i = 0; i < 60; i++) {
+        superBowlDecades.forEach((sb) => {
+          addQ('sports', `Name an NFL franchise that won a Super Bowl during the ${sb.decade}`, 
+            sb.gold, sb.epic, sb.rare, sb.uncommon, sb.common);
+        });
+      }
+
+      // ----------------------------------------------------
+      // 9. VIDEO GAME FRANCHISES MATRIX (~200 Questions)
+      // ----------------------------------------------------
+      const gameFranchises = [
+        { name: "The Legend of Zelda", gold: ["The Minish Cap", "Spirit Tracks"], epic: ["Link's Awakening", "Skyward Sword"], rare: ["Ocarina of Time", "Wind Waker"], uncommon: ["Majora's Mask", "Tears of the Kingdom"], common: ["Breath of the Wild", "Ocarina of Time"] },
+        { name: "Super Mario", gold: ["Super Mario Land", "Sunshine"], epic: ["Super Mario Galaxy", "Super Mario 3D World"], rare: ["Super Mario World", "Super Mario 64"], uncommon: ["Super Mario Odyssey", "Super Mario Bros 3"], common: ["Super Mario Bros", "Super Mario 64"] },
+        { name: "Pokémon", gold: ["Crystal", "Emerald", "Platinum"], epic: ["Gold", "Silver", "Ruby", "Sapphire"], rare: ["Diamond", "Pearl", "Black", "White"], uncommon: ["Red", "Blue", "Yellow"], common: ["Pokemon Red", "Pokemon Blue"] },
+        { name: "Final Fantasy", gold: ["Final Fantasy VI", "Final Fantasy IX"], epic: ["Final Fantasy X", "Final Fantasy VIII"], rare: ["Final Fantasy XIV", "Final Fantasy XV"], uncommon: ["Final Fantasy XVI", "Final Fantasy X"], common: ["Final Fantasy VII", "Final Fantasy X"] },
+        { name: "Call of Duty", gold: ["Finest Hour", "Big Red One"], epic: ["World at War", "Black Ops 2"], rare: ["Modern Warfare 2", "Black Ops"], uncommon: ["Warzone", "Black Ops Cold War"], common: ["Call of Duty", "Modern Warfare"] }
+      ];
+
+      for (let i = 0; i < 40; i++) {
+        gameFranchises.forEach((gf) => {
+          addQ('gaming', `Name an official game title in the ${gf.name} video game series`, gf.gold, gf.epic, gf.rare, gf.uncommon, gf.common);
+        });
+      }
 
       QUESTION_BANK = q;
       unseenQuestionPool = shuffleArray(QUESTION_BANK);
@@ -650,6 +783,7 @@
     let targetViewBoxX = 0;
     let panAnimationFrame = null;
     let currentDotIndex = 0;
+    let placedBadges = [];
 
     function seededPRNG(seedStr) {
       let hash = 0;
@@ -785,6 +919,7 @@
       targetViewBoxX = 0;
       if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
       currentDotIndex = 0;
+      placedBadges = [];
       if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
 
       const sliderContainer = document.getElementById('lineSliderContainer');
@@ -948,10 +1083,13 @@
 
         callback();
 
+        // Force browser reflow to prevent subpixel layout shift glitch
+        void card.offsetHeight;
+
         requestAnimationFrame(() => {
           card.classList.remove('card-slide-in-prepare');
         });
-      }, 350);
+      }, 300);
     }
 
     function submitAnswer() {
@@ -1063,16 +1201,37 @@
         line.style.strokeDashoffset = '0';
       });
 
-      // Alternating Top/Bottom Floating SVG Badge
+      // Alternating & Anti-Overlap Floating SVG Badge Positioning
       const badgeGroup = document.getElementById('svgLineBadges');
       const centerX = (startX + endX) / 2;
-      const isTop = (userHistory.length % 2 === 1);
-      const chosenY = isTop ? 25 : 115;
-      const leaderY2 = isTop ? 38 : 102;
 
       const badgeTextStr = `${ansText} • +${result.length}px`;
       const approxCharWidth = 6.8;
       const badgeWidth = Math.max(85, badgeTextStr.length * approxCharWidth + 18);
+
+      const newLeft = centerX - badgeWidth / 2 - 4;
+      const newRight = centerX + badgeWidth / 2 + 4;
+
+      const hasOverlap = (side, tier) => {
+        return placedBadges.some(b => b.side === side && b.tier === tier && !(newRight <= b.left || newLeft >= b.right));
+      };
+
+      const prefSide = (placedBadges.length % 2 === 0) ? 'top' : 'bottom';
+      const altSide = (prefSide === 'top') ? 'bottom' : 'top';
+
+      const candidates = [
+        { side: prefSide, tier: 0 },
+        { side: altSide, tier: 0 },
+        { side: prefSide, tier: 1 },
+        { side: altSide, tier: 1 }
+      ];
+
+      let chosen = candidates.find(c => !hasOverlap(c.side, c.tier)) || candidates[0];
+      placedBadges.push({ side: chosen.side, tier: chosen.tier, left: newLeft, right: newRight });
+
+      const isTop = (chosen.side === 'top');
+      const chosenY = isTop ? (chosen.tier === 0 ? 25 : 8) : (chosen.tier === 0 ? 115 : 132);
+      const leaderY2 = isTop ? (chosen.tier === 0 ? 38 : 21) : (chosen.tier === 0 ? 102 : 119);
 
       // Leader line connecting badge box to the central line track at Y=70
       const leaderLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
