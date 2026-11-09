@@ -141,25 +141,25 @@
   </header>
 
   <!-- ================= MAIN MENU SCREEN OVERLAY ================= -->
-  <div id="menuScreen" class="absolute inset-0 z-40 bg-pik-bg flex flex-col items-center justify-between py-10 px-4 transition-transform duration-500 ease-in-out">
+  <div id="menuScreen" class="absolute inset-0 z-40 bg-pik-bg flex flex-col items-center justify-between py-6 sm:py-8 px-4 overflow-hidden transition-transform duration-500 ease-in-out">
     
     <!-- Upper-Middle Title Block -->
-    <div class="flex flex-col items-center mt-6 sm:mt-10 text-center px-4">
-      <svg class="w-20 h-20 mb-3" viewBox="0 0 48 48" fill="none">
+    <div class="flex flex-col items-center mt-2 sm:mt-4 text-center px-4">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 mb-2" viewBox="0 0 48 48" fill="none">
         <circle cx="24" cy="11" r="4.5" fill="#7e8c8d"/>
         <circle cx="36.3" cy="20" r="4.5" fill="#388e3c"/>
         <circle cx="31.6" cy="34.4" r="4.5" fill="#1976d2"/>
         <circle cx="16.4" cy="34.4" r="4.5" fill="#8e24aa"/>
         <circle cx="11.7" cy="20" r="4.5" fill="#d4af37"/>
       </svg>
-      <h1 class="font-display font-black text-5xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">The game of niche ball knowledge</p>
+      <h1 class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
+      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">A game of niche ball knowledge</p>
       <p class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
-      <p class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-2">PIK is still in beta, so please keep that in mind while playing.</p>
+      <p class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
     </div>
 
     <!-- Triangular Button Arrangement -->
-    <div class="flex flex-col items-center gap-6 my-auto max-w-md w-full px-4">
+    <div class="flex flex-col items-center gap-4 sm:gap-5 my-auto max-w-md w-full px-4">
       <!-- Top Center Button: Play Standard (-3 deg rotation) -->
       <button onclick="launchGame('standard')" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -222,7 +222,7 @@
   </div>
 
   <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
-  <main id="gameArea" class="w-full max-w-full overflow-hidden flex-1 flex flex-col items-center justify-center px-4 relative z-10">
+  <main id="gameArea" class="w-full max-w-full overflow-hidden flex-1 flex flex-col items-center justify-center px-4 relative z-10 min-h-0 order-1">
     <div id="questionCard" class="w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative transition-all duration-300">
       
       <!-- Question Card Top Header -->
@@ -265,7 +265,7 @@
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto">
-          <button onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5">
+          <button id="submitBtn" onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap">
             Submit
           </button>
           <button onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition">
@@ -275,14 +275,21 @@
       </div>
 
       <!-- Dynamic Feedback Text (Typo Correction / Invalid Fit) -->
-      <div id="feedbackText" class="hidden text-xs text-red-400 font-display font-medium pt-1"></div>
+      <div id="feedbackText" class="hidden text-xs text-pik-gold font-display font-medium pt-1"></div>
 
     </div>
   </main>
 
   <!-- ================= CENTRAL LINE DIVIDER (BACKGROUND LINE) ================= -->
-  <section class="w-full max-w-full overflow-hidden relative flex flex-col items-center justify-center my-1 z-10 flex-shrink-0">
-    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-28 overflow-visible">
+  <section id="lineSection" class="w-full max-w-full overflow-hidden relative flex flex-col items-center justify-center my-0.5 z-10 flex-shrink-0 order-2 transition-all duration-300">
+    
+    <!-- Interactive Line Slider (Appears on Finish Game, placed above SVG track under results card) -->
+    <div id="lineSliderContainer" class="hidden w-full max-w-xs sm:max-w-sm px-3 py-1.5 flex items-center gap-3 bg-pik-card/90 border border-pik-border rounded-xl z-20 mb-1 shadow-lg">
+      <span class="text-[10px] font-display font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Inspect Line</span>
+      <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
+    </div>
+
+    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-20 sm:h-24 overflow-visible">
       
       <!-- SVG Line Track Canvas -->
       <svg id="mainLineSvg" class="w-full h-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
@@ -296,51 +303,45 @@
         <g id="svgLineNodes"></g>
       </svg>
     </div>
-
-    <!-- Interactive Line Slider (Appears on Finish Game) -->
-    <div id="lineSliderContainer" class="hidden w-full max-w-xs sm:max-w-sm px-3 py-1.5 flex items-center gap-3 bg-pik-card/90 border border-pik-border rounded-xl z-20 -mt-2 shadow-lg">
-      <span class="text-[10px] font-display font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Inspect Line</span>
-      <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
-    </div>
   </section>
 
   <!-- ================= BOTTOM SECTION: RESULTS AREA (COMPLETELY BLANK UNTIL GAME END) ================= -->
-  <section id="resultsSection" class="hidden-results w-full max-w-4xl mx-auto px-4 py-2 flex-1 flex flex-col items-center justify-center overflow-y-auto min-h-0 scrollbar-none z-20 mb-2">
-    <div class="w-full bg-pik-card border border-pik-border rounded-2xl p-3 sm:p-4 flex flex-col gap-3 shadow-2xl my-auto">
+  <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex-1 flex flex-col items-center justify-center overflow-hidden min-h-0 z-20 order-3">
+    <div class="w-full bg-pik-card border border-pik-border rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5 sm:gap-3 shadow-2xl my-auto">
       
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2.5">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-1.5 border-b border-pik-border/60 pb-2">
         <div>
-          <h2 class="font-display font-extrabold text-lg sm:text-2xl text-slate-100 flex items-center gap-2">
+          <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
             Game Completed
           </h2>
           <p id="finalRankSub" class="text-xs text-pik-gold font-display font-medium">Rank: Pik Master</p>
         </div>
-        <div class="flex items-center gap-4 text-right">
+        <div class="flex items-center gap-3 sm:gap-4 text-right">
           <div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
-            <div id="finalDistanceText" class="font-display font-extrabold text-base sm:text-xl text-pik-gold">0 px</div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
+            <div id="finalDistanceText" class="font-display font-extrabold text-sm sm:text-lg text-pik-gold">0 px</div>
           </div>
-          <div class="w-px h-8 bg-pik-border"></div>
+          <div class="w-px h-7 bg-pik-border"></div>
           <div>
-            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
-            <div id="finalScoreText" class="font-display font-extrabold text-base sm:text-xl text-slate-100">0 pts</div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
+            <div id="finalScoreText" class="font-display font-extrabold text-sm sm:text-lg text-slate-100">0 pts</div>
           </div>
         </div>
       </div>
 
-      <!-- 8 Question Summary Cards Grid -->
-      <div id="summaryCardsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <!-- 8 Question Summary Cards Grid (4 cols on mobile, 8 cols on desktop for 0 vertical scroll) -->
+      <div id="summaryCardsGrid" class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2">
         <!-- Injected via JavaScript -->
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center justify-center gap-3 pt-1">
-        <button onclick="returnToMenu()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <div class="flex items-center justify-center gap-3 pt-0.5">
+        <button onclick="returnToMenu()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
           Main Menu
         </button>
-        <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-6 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-5 py-2 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Play Again
         </button>
       </div>
@@ -449,6 +450,16 @@
     let QUESTION_BANK = [];
     let unseenQuestionPool = [];
 
+    // Helper: Fisher-Yates array shuffle
+    function shuffleArray(arr) {
+      const array = [...arr];
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
     function buildMassiveQuestionBank() {
       const q = [];
 
@@ -461,222 +472,625 @@
       };
 
       // ----------------------------------------------------
-      // 1. HANDCRAFTED CORE CATEGORY DATASETS (~300 Questions)
+      // 1. KRILLION WORDPLAY & LANGUAGE PROMPTS
       // ----------------------------------------------------
-      addQ('movies', 'Name a movie that won the Oscar for Best Picture', 
-        ["Marty", "Tom Jones", "Oliver", "Chariots of Fire", "Wings", "The Broadway Melody", "Cimarron", "Grand Hotel", "Cavalcade", "The Great Ziegfeld", "The Life of Emile Zola", "You Can't Take It With You", "Mrs Miniver", "Going My Way", "The Lost Weekend", "Gentleman's Agreement", "Hamlet", "All the King's Men", "An American in Paris", "The Greatest Show on Earth", "Around the World in 80 Days", "Gigi", "A Man for All Seasons", "In the Heat of the Night", "The English Patient", "CODA", "Anora"], 
-        ["Platoon", "Unforgiven", "Braveheart", "Birdman", "Spotlight", "All Quiet on the Western Front", "It Happened One Night", "Mutiny on the Bounty", "Gone with the Wind", "Rebecca", "How Green Was My Valley", "Casablanca", "The Best Years of Our Lives", "All About Eve", "From Here to Eternity", "On the Waterfront", "Ben-Hur", "The Apartment", "My Fair Lady", "Midnight Cowboy", "Patton", "The French Connection", "The Sting", "The Deer Hunter", "Kramer vs Kramer", "Ordinary People", "Gandhi", "Terms of Endearment", "Amadeus", "Out of Africa", "The Last Emperor", "Rain Man", "Driving Miss Daisy", "Dances with Wolves", "Shakespeare in Love", "American Beauty", "A Beautiful Mind", "Million Dollar Baby", "Crash", "Slumdog Millionaire", "The Hurt Locker", "The King's Speech", "The Artist", "Argo", "12 Years a Slave", "Moonlight", "The Shape of Water", "Green Book", "Parasite", "Nomadland"], 
-        ["Gladiator", "Chicago", "The Departed", "No Country for Old Men", "Oppenheimer", "The Godfather Part II", "One Flew Over the Cuckoo's Nest", "Rocky", "Annie Hall", "The Silence of the Lambs", "The Lord of the Rings The Return of the King", "Everything Everywhere All at Once"], 
-        ["Titanic", "Forrest Gump", "Schindler's List", "Lawrence of Arabia", "West Side Story", "The Sound of Music"], 
-        ["Titanic", "Forrest Gump", "The Godfather"]);
-
-      addQ('movies', 'Name an animated movie released by Pixar', 
-        ["A Bug's Life", "The Good Dinosaur", "Onward", "Luca", "Turning Red", "Elemental", "Lightyear", "Inside Out 2", "Elio"], 
-        ["Ratatouille", "WALL-E", "Up", "Brave", "Monsters University", "Inside Out", "Finding Dory", "Coco", "Incredibles 2", "Soul"], 
-        ["Monsters Inc", "Finding Nemo", "The Incredibles", "Cars", "Cars 2", "Cars 3", "Toy Story 2", "Toy Story 3", "Toy Story 4"], 
-        ["Toy Story", "Finding Nemo"], 
-        ["Toy Story", "Cars", "Monsters Inc"]);
-
-      addQ('movies', 'Name a movie set in space or alien worlds', 
-        ["Silent Running", "Dark Star", "Solaris", "Event Horizon", "Sunshine", "Ad Astra", "High Life", "Outland", "The Black Hole"], 
-        ["Moon", "Arrival", "District 9", "The Martian", "Gattaca", "Contact", "Passengers", "Valerian", "Prometheus"], 
-        ["Alien", "Interstellar", "Gravity", "Star Trek", "Wall-E", "Aliens", "2001 A Space Odyssey", "Apollo 13", "Guardians of the Galaxy"], 
-        ["Star Wars", "Avatar", "E.T."], 
-        ["Star Wars", "Avatar"]);
-
-      addQ('tv', 'Name a main character from The Office (US)', 
-        ["Creed Bratton", "Meredith Palmer", "Mose Schrute", "Gabe Lewis", "Clark Green", "Pete Miller", "Todd Packer", "David Wallace", "Holly Flax", "Roy Anderson", "Hank Tate", "Bob Vance"], 
-        ["Oscar Martinez", "Kevin Malone", "Angela Martin", "Stanley Hudson", "Phyllis Vance", "Kelly Kapoor", "Toby Flenderson", "Darryl Philbin", "Erin Hannon", "Jan Levinson", "Karen Filippelli", "Robert California", "Deangelo Vickers"], 
-        ["Dwight Schrute", "Jim Halpert", "Pam Beesly", "Ryan Howard", "Andy Bernard"], 
-        ["Michael Scott", "Dwight Schrute"], 
-        ["Michael Scott", "Jim Halpert"]);
-
-      addQ('geography_countries', 'Name a landlocked country in Europe', 
-        ["Liechtenstein", "San Marino", "Andorra", "Luxembourg", "Moldova", "Kosovo", "Vatican City"], 
-        ["Serbia", "Slovakia", "Belarus", "Armenia", "North Macedonia"], 
-        ["Hungary", "Czech Republic", "Czechia", "Austria"], 
-        ["Switzerland", "Austria"], 
-        ["Switzerland", "Austria"]);
-
-      addQ('history', 'Name a President of the United States', 
-        ["Franklin Pierce", "Millard Fillmore", "Chester A Arthur", "Rutherford B Hayes", "James Buchanan", "Martin Van Buren", "John Tyler", "Zachary Taylor"], 
-        ["James K Polk", "Benjamin Harrison", "Grover Cleveland", "Calvin Coolidge", "Warren G Harding", "William Howard Taft", "Herbert Hoover", "James Garfield", "William Henry Harrison"], 
-        ["Teddy Roosevelt", "Theodore Roosevelt", "Woodrow Wilson", "Dwight D Eisenhower", "Eisenhower", "Lyndon B Johnson", "Gerald Ford", "Jimmy Carter", "Andrew Jackson", "John Quincy Adams"], 
-        ["John F Kennedy", "JFK", "Franklin D Roosevelt", "FDR", "Harry S Truman", "Richard Nixon", "Ronald Reagan", "Bill Clinton", "George H W Bush", "George W Bush"], 
-        ["George Washington", "Abraham Lincoln", "Barack Obama", "Donald Trump", "Joe Biden", "Thomas Jefferson", "John Adams"]);
-
-      addQ('mythology', 'Name a deity from Greek mythology', 
-        ["Hestia", "Hephaestus", "Demeter", "Dionysus", "Persephone", "Helios", "Selene", "Cronus", "Rhea", "Uranus", "Gaia", "Chaos", "Thanatos", "Eros", "Nemesis", "Pan", "Hypnos", "Eris", "Nyx", "Typhon", "Hecate", "Prometheus"], 
-        ["Artemis", "Apollo", "Hermes", "Ares", "Athena"], 
-        ["Poseidon", "Hades", "Zeus", "Hera"], 
-        ["Zeus", "Poseidon", "Hades"], 
-        ["Zeus", "Poseidon"]);
-
-      addQ('literature_art', 'Name a play written by William Shakespeare', 
-        ["Cymbeline", "Titus Andronicus", "The Winter's Tale", "Coriolanus", "Pericles", "Timon of Athens", "Troilus and Cressida", "Two Gentlemen of Verona", "The Two Noble Kinsmen", "Henry VI Part 1", "Henry VI Part 2", "Henry VI Part 3", "Henry VIII", "King John"], 
-        ["King Lear", "The Tempest", "Othello", "Twelfth Night", "Much Ado About Nothing", "All's Well That Ends Well", "Antony and Cleopatra", "As You Like It", "The Comedy of Errors", "Henry IV Part 1", "Henry IV Part 2", "Henry V", "Love's Labour's Lost", "Measure for Measure", "The Merchant of Venice", "The Merry Wives of Windsor", "Richard II", "Richard III", "The Taming of the Shrew"], 
-        ["Macbeth", "Hamlet", "A Midsummer Night's Dream", "Julius Caesar"], 
-        ["Romeo and Juliet", "Hamlet", "Macbeth"], 
-        ["Romeo and Juliet", "Hamlet"]);
-
-      // ----------------------------------------------------
-      // 2. WORLD COUNTRIES & MULTI-BORDER TRIVIA MATRIX (~780 Questions)
-      // ----------------------------------------------------
-      const countriesList = [
-        { name: "Japan", cap: "Tokyo", cities: ["Kyoto", "Osaka", "Sapporo", "Fukuoka", "Nara", "Kobe", "Yokohama", "Nagoya", "Hiroshima", "Sendai"], lang: ["Japanese"], geo: ["Mount Fuji", "Lake Biwa", "Shinano River", "Mount Aso", "Tone River"] },
-        { name: "France", cap: "Paris", cities: ["Lyon", "Marseille", "Toulouse", "Nice", "Nantes", "Strasbourg", "Bordeaux", "Lille", "Rennes"], borders: ["Belgium", "Luxembourg", "Germany", "Switzerland", "Italy", "Spain", "Andorra", "Monaco"], lang: ["French"], geo: ["Seine", "Loire", "Rhone", "Alps", "Pyrenees"] },
-        { name: "Germany", cap: "Berlin", cities: ["Munich", "Hamburg", "Frankfurt", "Cologne", "Stuttgart", "Dusseldorf", "Dortmund", "Essen", "Leipzig", "Dresden"], borders: ["Denmark", "Poland", "Czech Republic", "Austria", "Switzerland", "France", "Luxembourg", "Belgium", "Netherlands"], lang: ["German"], geo: ["Rhine", "Elbe", "Danube", "Black Forest", "Bavarian Alps"] },
-        { name: "Italy", cap: "Rome", cities: ["Milan", "Naples", "Turin", "Palermo", "Genoa", "Bologna", "Florence", "Bari", "Catania", "Venice"], borders: ["France", "Switzerland", "Austria", "Slovenia", "San Marino", "Vatican City"], lang: ["Italian"], geo: ["Po River", "Tiber", "Mount Etna", "Vesuvius", "Alps", "Apennines"] },
-        { name: "Spain", cap: "Madrid", cities: ["Barcelona", "Valencia", "Seville", "Zaragoza", "Malaga", "Murcia", "Palma", "Bilbao", "Alicante"], borders: ["Portugal", "France", "Andorra", "Morocco", "Gibraltar"], lang: ["Spanish", "Catalan", "Basque", "Galician"], geo: ["Tagus River", "Ebro River", "Pyrenees", "Sierra Nevada"] },
-        { name: "Brazil", cap: "Brasilia", cities: ["Sao Paulo", "Rio de Janeiro", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre"], borders: ["Argentina", "Bolivia", "Colombia", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela", "French Guiana"], lang: ["Portuguese"], geo: ["Amazon River", "Pantanal", "Sugarloaf Mountain", "Iguazu Falls"] },
-        { name: "China", cap: "Beijing", cities: ["Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Wuhan", "Xi'an", "Hangzhou", "Nanjing", "Chongqing"], borders: ["Mongolia", "Russia", "India", "Kazakhstan", "North Korea", "Vietnam", "Nepal", "Myanmar", "Pakistan", "Laos", "Kyrgyzstan", "Tajikistan", "Bhutan", "Afghanistan"], lang: ["Mandarin", "Cantonese"], geo: ["Yangtze River", "Yellow River", "Mount Everest", "Gobi Desert"] }
+      const krillionWordplay = [
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "K"',
+          gold: ["Knave", "Knoll", "Knickerbocker", "Knavish", "Knickknack", "Knell", "Kith", "Knighthood", "Kneecap", "Knowhow"],
+          epic: ["Knapsack", "Knead", "Knelt", "Knicker", "Kneel", "Knockout", "Knockoff"],
+          rare: ["Knack", "Knight", "Knot", "Knock", "Knuckle"],
+          uncommon: ["Knife", "Know", "Knee", "Knowledge"],
+          common: ["Knife", "Know", "Knee"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "B"',
+          gold: ["Aplomb", "Bdellium", "Redoubt", "Dumbfound", "Succumb", "Jamb", "Iamb", "Benumb", "Coxcomb", "Catacomb"],
+          epic: ["Crumb", "Subtle", "Limb", "Numb", "Tomb", "Thumbnail"],
+          rare: ["Debt", "Plumber", "Womb", "Doubt", "Climb"],
+          uncommon: ["Comb", "Thumb", "Bomb", "Lamb"],
+          common: ["Comb", "Thumb", "Bomb"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "G"',
+          gold: ["Phlegm", "Benign", "Malign", "Gnat", "Diaphragm", "Paradigm", "Condign", "Impugn", "Apothegm"],
+          epic: ["Reign", "Champagne", "Alignment", "Gnome", "Foreign", "Campaign"],
+          rare: ["Resign", "Assign", "Sovereign", "Cologne", "Design"],
+          uncommon: ["Sign", "High", "Night", "Light"],
+          common: ["Sign", "Night", "High"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "P"',
+          gold: ["Ptarmigan", "Pneuma", "Pneumatic", "Psychosis", "Psychedelic", "Pseudonym"],
+          epic: ["Pneumonia", "Psalm", "Psychiatrist", "Pterodactyl", "Pseudo"],
+          rare: ["Psychology", "Psycho", "Raspberry", "Receipt"],
+          uncommon: ["Cupboard", "Raspberry"],
+          common: ["Cupboard", "Receipt"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "W"',
+          gold: ["Wretch", "Wry", "Awry", "Ghostwriter", "Shipwreck", "Playwright", "Unwrapped", "Wroth"],
+          epic: ["Wrestler", "Wring", "Wrinkle", "Wreck"],
+          rare: ["Wrap", "Sword", "Answer"],
+          uncommon: ["Write", "Wrong", "Wrist"],
+          common: ["Write", "Wrong", "Wrist"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "T"',
+          gold: ["Apostle", "Bristle", "Hustle", "Jostle", "Thistle", "Cachet", "Glisten", "Nestle"],
+          epic: ["Mortgage", "Softening", "Gourmet", "Ballet", "Beret", "Buffet", "Valet", "Depot"],
+          rare: ["Whistle", "Listen", "Fasten", "Christmas", "Wrestle"],
+          uncommon: ["Castle", "Whistle", "Listen"],
+          common: ["Castle", "Listen"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "L"',
+          gold: ["Qualm", "Psalm", "Balm", "Yolk", "Almond"],
+          epic: ["Salmon", "Calm", "Palm", "Folk"],
+          rare: ["Half", "Calf", "Chalk", "Could", "Should", "Would"],
+          uncommon: ["Talk", "Walk", "Half"],
+          common: ["Talk", "Walk"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "H"',
+          gold: ["Gherkin", "Rhapsody", "Rhinoceros", "Rheumatism", "Ghastly", "Ghoulish", "Choreography"],
+          epic: ["Heir", "Honest", "Honor", "Exhaust", "Echo", "Cheetah", "Ghost"],
+          rare: ["Rhythm", "Hour", "White", "What", "When", "Where", "Why"],
+          uncommon: ["Hour", "Honest", "Ghost", "What"],
+          common: ["Hour", "Ghost", "What"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a word that is a palindrome (reads the same backwards and forwards)',
+          gold: ["Rotator", "Peeweep", "Kinnikinnick", "Malayalam", "Redder", "Minim", "Hannah", "Otto"],
+          epic: ["Reviver", "Deified", "Repaper", "Kayak", "Refer", "Noon", "Deed", "Toot"],
+          rare: ["Rotor", "Stats", "Tenet", "Level", "Radar", "Peep", "Gig", "Eye"],
+          uncommon: ["Madam", "Racecar", "Dad", "Mom", "Pop"],
+          common: ["Mom", "Dad", "Racecar"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a word ending with "-phobia"',
+          gold: ["Alektorophobia", "Pogonophobia", "Hippopotomonstrosesquippedaliophobia", "Triskaidekaphobia", "Nomophobia", "Turophobia"],
+          epic: ["Glossophobia", "Trypophobia", "Ophidiophobia", "Agoraphobia", "Nyctophobia"],
+          rare: ["Necrophobia", "Hydrophobia", "Technophobia", "Xenophobia"],
+          uncommon: ["Claustrophobia", "Arachnophobia", "Acrophobia"],
+          common: ["Claustrophobia", "Arachnophobia"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a scientific field or subject ending in "-ology"',
+          gold: ["Herpetology", "Mycology", "Ornithology", "Speleology", "Cryptozoology", "Ichthyology", "Entomology", "Limnology"],
+          epic: ["Paleontology", "Meteorology", "Etymology", "Toxicology", "Seismology", "Neurology"],
+          rare: ["Criminology", "Sociology", "Anthropology", "Microbiology", "Ecology"],
+          uncommon: ["Biology", "Psychology", "Geology", "Archaeology"],
+          common: ["Biology", "Psychology", "Geology"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word with a double "Z"',
+          gold: ["Blizzard", "Frizz", "Jazz", "Grizzle", "Puzzle", "Fizzle", "Pizzazz", "Grizzly"],
+          epic: ["Gizzards", "Sizzle", "Drizzle", "Muzzle", "Dazzle", "Piazza", "Mezzanine"],
+          rare: ["Fuzzy", "Dizzy", "Buzz", "Fizz", "Pizza", "Puzzle"],
+          uncommon: ["Pizza", "Fuzzy", "Dizzy", "Buzz"],
+          common: ["Pizza", "Fuzzy", "Buzz"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word with a double "O"',
+          gold: ["Baboon", "Igloo", "Typhoon", "Snooze", "Bamboo", "Spoonbill", "Tattoo", "Cocoon"],
+          epic: ["Crook", "Smooth", "Poodle", "Gloom", "Troop", "Blood", "Flood"],
+          rare: ["Spoon", "Tooth", "Moon", "Floor", "Door", "Book"],
+          uncommon: ["Food", "Good", "Look", "Book", "Moon"],
+          common: ["Food", "Good", "Book"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a compound word starting with "Sun"',
+          gold: ["Sunstroke", "Sunburst", "Sunlit", "Sunroom", "Sunbed", "Sundial", "Sunup"],
+          epic: ["Sunbeam", "Sunroof", "Sunburn", "Sunspot", "Sundae"],
+          rare: ["Sunlight", "Sunrise", "Sunset", "Sunglasses", "Sunflower"],
+          uncommon: ["Sunshine", "Sunglasses", "Sunflower", "Sunrise"],
+          common: ["Sunshine", "Sunglasses", "Sunflower"]
+        }
       ];
 
-      for (let i = 0; i < 78; i++) {
-        countriesList.forEach((c) => {
-          addQ('geography_cities', `Name a major city located in ${c.name}`, 
-            c.cities.slice(5), c.cities.slice(3, 5), c.cities.slice(1, 3), [c.cities[0], c.cap], [c.cap, c.cities[0]]);
-
-          if (c.borders && c.borders.length > 2) {
-            addQ('geography_countries', `Name a nation or territory that borders ${c.name}`, 
-              c.borders.slice(4), c.borders.slice(2, 4), c.borders.slice(1, 2), [c.borders[0]], [c.borders[0], c.borders[1]]);
-          }
-
-          if (c.geo && c.geo.length > 2) {
-            addQ('geography_countries', `Name a river, mountain, or major geographical landmark in ${c.name}`, 
-              c.geo.slice(3), c.geo.slice(2, 3), c.geo.slice(1, 2), [c.geo[0]], [c.geo[0], c.geo[1]]);
-          }
-        });
-      }
-
       // ----------------------------------------------------
-      // 3. PERIODIC TABLE MULTI-ELEMENT MATRIX (~944 Questions)
+      // 2. KRILLION FOOD, DISHES & BEVERAGES
       // ----------------------------------------------------
-      const elementGroupSets = [
-        { group: "Noble Gas", elements: ["Helium", "Neon", "Argon", "Krypton", "Xenon", "Radon", "Oganesson"] },
-        { group: "Halogen", elements: ["Fluorine", "Chlorine", "Bromine", "Iodine", "Astatine", "Tennessine"] },
-        { group: "Alkali Metal", elements: ["Lithium", "Sodium", "Potassium", "Rubidium", "Cesium", "Francium"] },
-        { group: "Alkaline Earth Metal", elements: ["Beryllium", "Magnesium", "Calcium", "Strontium", "Barium", "Radium"] },
-        { group: "Transition Metal", elements: ["Iron", "Copper", "Gold", "Silver", "Platinum", "Titanium", "Nickel", "Zinc", "Cobalt", "Chromium", "Tungsten", "Mercury"] }
+      const krillionFood = [
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of noodle or pasta dish',
+          gold: ["Khao Soi", "Strozzapreti", "Tagliolini", "Mie Goreng", "Bucatini All Amatriciana", "Pancit", "Biang Biang", "Somen", "Pad See Ew"],
+          epic: ["Laksa", "Japchae", "Spätzle", "Dan Dan Noodles", "Cacio e Pepe", "Tagliatelle", "Gnocchi", "Bucatini", "Linguine"],
+          rare: ["Udon", "Soba", "Penne Arrabbiata", "Lasagna", "Carbonara", "Ravioli", "Tortellini", "Orzo", "Farfalle", "Chow Mein"],
+          uncommon: ["Pad Thai", "Pho", "Fettuccine Alfredo", "Lo Mein", "Vermicelli", "Ramen"],
+          common: ["Spaghetti", "Ramen", "Macaroni and Cheese"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of cheese',
+          gold: ["Taleggio", "Pecorino Romano", "Halloumi", "Cotija", "Fontina", "Edam", "Emmental", "Raclette", "Burrata", "Limburger", "Stilton"],
+          epic: ["Roquefort", "Manchego", "Havarti", "Muenster", "Gorgonzola", "Mascarpone", "Paneer", "Colby Jack", "Pepper Jack"],
+          rare: ["Feta", "Camembert", "Gruyere", "Brie", "Gouda", "Parmesan", "Provolone", "Ricotta"],
+          uncommon: ["Swiss", "Provolone", "Cheddar", "Mozzarella", "American Cheese"],
+          common: ["Cheddar", "Mozzarella", "American Cheese"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a pizza topping',
+          gold: ["Prosciutto", "Truffle Oil", "Hot Honey", "Ricotta", "Gorgonzola", "Capers", "Arugula", "Sun Dried Tomatoes", "Banana Peppers"],
+          epic: ["Anchovies", "Spinach", "Artichoke Hearts", "Jalapenos", "Pineapple", "Basil", "Garlic", "Chicken"],
+          rare: ["Olives", "Ham", "Bacon", "Bell Peppers", "Onions", "Green Peppers", "Red Onion"],
+          uncommon: ["Mushrooms", "Pepperoni", "Sausage", "Extra Cheese"],
+          common: ["Pepperoni", "Sausage", "Cheese"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a citrus fruit',
+          gold: ["Buddha's Hand", "Finger Lime", "Calamansi", "Ugli Fruit", "Kumquat", "Citron", "Tangelo", "Kaffir Lime"],
+          epic: ["Yuzu", "Meyer Lemon", "Bergamot", "Satsuma", "Blood Orange", "Mandarin"],
+          rare: ["Pomelo", "Tangerine", "Clementine", "Key Lime"],
+          uncommon: ["Grapefruit", "Lemon", "Lime", "Orange"],
+          common: ["Orange", "Lemon", "Lime"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a coffee or espresso-based beverage',
+          gold: ["Mazagran", "Espresso Romano", "Cafe de Olla", "Lungo", "Ristretto", "Nitro Cold Brew", "Cafe con Leche"],
+          epic: ["Flat White", "Cortado", "Affogato", "Irish Coffee", "Cafe au Lait", "Frappe", "Red Eye"],
+          rare: ["Americano", "Mocha", "Macchiato", "Cold Brew"],
+          uncommon: ["Latte", "Cappuccino", "Espresso"],
+          common: ["Coffee", "Latte", "Espresso"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a breakfast food or dish',
+          gold: ["Dutch Baby", "Loco Moco", "Açai Bowl", "Chilaquiles", "Shakshuka", "Eggs Florentine", "Avocado Toast", "Huevos Rancheros"],
+          epic: ["Eggs Benedict", "Crepes", "Hash Browns", "Breakfast Burrito", "French Toast"],
+          rare: ["Waffles", "Omelette", "Oatmeal", "Bagel", "Muffin"],
+          uncommon: ["Pancakes", "Eggs", "Bacon", "Toast", "Cereal"],
+          common: ["Pancakes", "Eggs", "Bacon"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of soup',
+          gold: ["Vichyssoise", "Menudo", "Sinigang", "Caldo Verde", "Cioppino", "Pho", "Avgolemono", "Sancocho"],
+          epic: ["Gumbo", "Mulligatawny", "Bouillabaisse", "Tom Yum", "Borscht", "Lentil Soup", "Pozole"],
+          rare: ["Miso Soup", "Gazpacho", "French Onion", "Split Pea", "Potato Leek", "Wonton Soup"],
+          uncommon: ["Minestrone", "Clam Chowder", "Chicken Noodle", "Tomato"],
+          common: ["Chicken Noodle", "Tomato Soup", "Clam Chowder"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of bread',
+          gold: ["Injera", "Pumpernickel", "Pain de Campagne", "Lavash", "Roti", "Paratha", "Panettone", "Challah"],
+          epic: ["Ciabatta", "Brioche", "Naan", "Focaccia", "Pita", "Flatbread", "Soda Bread"],
+          rare: ["Sourdough", "Baguette", "Rye Bread", "Cornbread"],
+          uncommon: ["White Bread", "Wheat Bread", "Rolls", "Baguette"],
+          common: ["White Bread", "Wheat Bread"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a culinary herb or spice',
+          gold: ["Fenugreek", "Sumac", "Star Anise", "Cardamom", "Asafoetida", "Saffron", "Tarragon", "Marjoram", "Caraway"],
+          epic: ["Turmeric", "Coriander", "Dill", "Sage", "Nutmeg", "Cloves", "Allspice", "Chive"],
+          rare: ["Rosemary", "Thyme", "Cumin", "Paprika", "Oregano", "Cinnamon", "Ginger"],
+          uncommon: ["Basil", "Parsley", "Garlic", "Black Pepper", "Salt"],
+          common: ["Salt", "Pepper", "Garlic"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a famous Mexican dish',
+          gold: ["Mole Poblano", "Chiles en Nogada", "Tlayuda", "Aguachile", "Cochinita Pibil", "Menudo"],
+          epic: ["Pozole", "Tamales", "Chilaquiles", "Elote", "Birria", "Enchiladas Verdes"],
+          rare: ["Tacos", "Burritos", "Enchiladas", "Quesadillas", "Fajitas", "Guacamole"],
+          uncommon: ["Tacos", "Burritos", "Quesadilla", "Nachos"],
+          common: ["Tacos", "Burritos", "Nachos"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a famous Japanese food or dish',
+          gold: ["Takoyaki", "Okonomiyaki", "Unadon", "Chawanmushi", "Katsudon", "Sukiyaki", "Shabu Shabu"],
+          epic: ["Tonkatsu", "Gyoza", "Yakitori", "Matcha", "Miso Soup", "Mochi"],
+          rare: ["Sashimi", "Tempura", "Udon", "Teriyaki", "Edamame", "Ramen"],
+          uncommon: ["Sushi", "Ramen", "Tempura", "Teriyaki"],
+          common: ["Sushi", "Ramen"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a popular dip or sauce',
+          gold: ["Toum", "Chimichurri", "Tzatziki", "Romesco", "Ponzu", "Muhammara", "Hoisin", "Sriracha"],
+          epic: ["Guacamole", "Hummus", "Aioli", "Pesto", "Bernaise", "Tartar Sauce", "Buffalo Sauce"],
+          rare: ["Salsa", "Ranch", "Barbecue Sauce", "Mayonnaise", "Mustard", "Teriyaki"],
+          uncommon: ["Ketchup", "Mustard", "Mayonnaise", "Ranch"],
+          common: ["Ketchup", "Mustard", "Ranch"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of dessert or pastry',
+          gold: ["Kouign-Amann", "Baklava", "Profiterole", "Canelé", "Pavlova", "Strudel", "Tiramisu", "Eclair"],
+          epic: ["Macaron", "Crème Brûlée", "Cheesecake", "Cannoli", "Churro", "Tart", "Flan"],
+          rare: ["Brownie", "Cupcake", "Donut", "Pie", "Pudding", "Sundae"],
+          uncommon: ["Ice Cream", "Cake", "Cookie", "Pie"],
+          common: ["Ice Cream", "Cake", "Cookie"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name an ice cream flavor',
+          gold: ["Ube", "Black Sesame", "Cardamom", "Matcha", "Salted Honey", "Butter Pecan", "Durian", "Rum Raisin"],
+          epic: ["Dulce de Leche", "Pistachio", "Rocky Road", "Coffee", "Mango", "Butterscotch"],
+          rare: ["Mint Chocolate Chip", "Cookie Dough", "Cookies and Cream", "Strawberry", "Neapolitan"],
+          uncommon: ["Chocolate", "Vanilla", "Strawberry"],
+          common: ["Vanilla", "Chocolate"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of sandwich',
+          gold: ["Croque Monsieur", "Bánh Mì", "Muffuletta", "Po' Boy", "Cubano", "Reuben", "Monte Cristo"],
+          epic: ["Philly Cheesesteak", "French Dip", "Panini", "Gyro", "Caprese", "BLT"],
+          rare: ["Club Sandwich", "Grilled Cheese", "Tuna Melt", "Meatball Sub", "Egg Salad"],
+          uncommon: ["Ham and Cheese", "Turkey Sandwich", "Peanut Butter and Jelly"],
+          common: ["Peanut Butter and Jelly", "Grilled Cheese"]
+        }
       ];
 
-      for (let i = 0; i < 40; i++) {
-        elementGroupSets.forEach((g) => {
-          addQ('science_nature', `Name a chemical element classified as a ${g.group}`, 
-            g.elements.slice(4), g.elements.slice(3, 4), g.elements.slice(2, 3), g.elements.slice(1, 2), g.elements.slice(0, 2));
-        });
-
-        // Atomic range questions with guaranteed multiple elements
-        addQ('science_nature', 'Name a chemical element with an atomic number between 20 and 35', 
-          ["Gallium", "Germanium", "Arsenic", "Selenium"], ["Bromine", "Krypton", "Scandium", "Titanium"], ["Vanadium", "Chromium", "Manganese", "Cobalt"], ["Iron", "Copper", "Zinc"], ["Iron", "Copper"]);
-        
-        addQ('science_nature', 'Name a chemical element in Period 4 of the Periodic Table', 
-          ["Krypton", "Selenium", "Arsenic", "Germanium"], ["Gallium", "Zinc", "Bromine", "Scandium"], ["Titanium", "Vanadium", "Chromium", "Manganese"], ["Potassium", "Calcium", "Iron", "Copper"], ["Iron", "Copper", "Calcium"]);
-      }
-
       // ----------------------------------------------------
-      // 4. US STATES & CITIES MULTI-ANSWER MATRIX (~200 Questions)
+      // 3. KRILLION EVERYDAY OBJECTS & HOUSEHOLD
       // ----------------------------------------------------
-      const usStatesList = [
-        { name: "California", cap: "Sacramento", cities: ["Los Angeles", "San Francisco", "San Diego", "San Jose", "Fresno", "Oakland", "Bakersfield", "Anaheim"] },
-        { name: "Texas", cap: "Austin", cities: ["Houston", "Dallas", "San Antonio", "Fort Worth", "El Paso", "Arlington", "Corpus Christi", "Plano"] },
-        { name: "Florida", cap: "Tallahassee", cities: ["Miami", "Orlando", "Tampa", "Jacksonville", "St Petersburg", "Hialeah", "Port St Lucie", "Cape Coral"] },
-        { name: "New York", cap: "Albany", cities: ["New York City", "Buffalo", "Rochester", "Yonkers", "Syracuse", "Schenectady", "Utica", "White Plains"] },
-        { name: "Illinois", cap: "Springfield", cities: ["Chicago", "Aurora", "Joliet", "Naperville", "Rockford", "Elgin", "Peoria", "Champaign"] }
+      const krillionEveryday = [
+        {
+          cat: 'everyday',
+          prompt: 'Name an item typically found in a bathroom medicine cabinet',
+          gold: ["Witch Hazel", "Styptic Pencil", "Saline Solution", "Epsom Salt", "Calamine Lotion", "Petroleum Jelly"],
+          epic: ["Hydrogen Peroxide", "Cough Syrup", "Antihistamine", "Hydrocortisone", "Dental Floss", "Tweezers"],
+          rare: ["Rubbing Alcohol", "Tweezers", "Cotton Swabs", "Thermometer", "Eye Drops", "Bandages"],
+          uncommon: ["Bandages", "Toothpaste", "Aspirin", "Nail Clippers"],
+          common: ["Bandages", "Toothpaste", "Toothbrush"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item typically found in a car glove box',
+          gold: ["Tire Pressure Gauge", "Ice Scraper", "Owner's Manual", "Fuse Kit", "Flashlight"],
+          epic: ["Registration", "Insurance Card", "First Aid Kit", "Sunglasses", "Aux Cable"],
+          rare: ["Napkins", "Pen", "Tissues", "Hand Sanitizer", "Phone Charger"],
+          uncommon: ["Registration", "Insurance Card", "Napkins", "Pen"],
+          common: ["Registration", "Napkins", "Pen"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a handyman tool box',
+          gold: ["Chisel", "Torx Screwdriver", "Calliper", "Plumb Bob", "Wire Stripper", "Stud Finder"],
+          epic: ["Level", "Utility Knife", "Allen Wrench", "Socket Wrench", "C-Clamp", "Pliers"],
+          rare: ["Tape Measure", "Wrench", "Screwdriver", "Hacksaw", "Flashlight"],
+          uncommon: ["Hammer", "Screwdriver", "Pliers", "Nails", "Screws"],
+          common: ["Hammer", "Screwdriver", "Nails"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a kitchen utensil or manual tool',
+          gold: ["Potato Ricer", "Mandoline", "Chinois", "Spider Strainer", "Melon Baller", "Microplane"],
+          epic: ["Garlic Press", "Zester", "Meat Tenderizer", "Ladle", "Rolling Pin", "Can Opener"],
+          rare: ["Grater", "Colander", "Whisk", "Tongs", "Peeler", "Can Opener", "Measuring Cups"],
+          uncommon: ["Fork", "Spoon", "Knife", "Spatula"],
+          common: ["Fork", "Spoon", "Knife"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item brought to a day at the beach',
+          gold: ["Boogie Board", "Snorkel", "Beach Umbrella", "Portable Speaker", "Cooler", "Sun Visor"],
+          epic: ["Sunscreen", "Beach Towel", "Flip Flops", "Sunglasses", "Beach Chair", "Sand Toys"],
+          rare: ["Towel", "Sunscreen", "Water Bottle", "Hat", "Sunglasses"],
+          uncommon: ["Towel", "Sunscreen", "Sunglasses"],
+          common: ["Towel", "Sunscreen"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item commonly found in a household junk drawer',
+          gold: ["Rubber Bands", "Paperclips", "Super Glue", "Birthday Candles", "Measuring Tape", "Twist Ties"],
+          epic: ["Batteries", "Scissors", "Scotch Tape", "Safety Pins", "Keys", "Markers"],
+          rare: ["Pens", "Notepad", "Batteries", "Coupons", "Flashlight"],
+          uncommon: ["Pens", "Batteries", "Tape", "Scissors"],
+          common: ["Pens", "Tape", "Scissors"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item packed for a overnight camping trip',
+          gold: ["Camp Stove", "Water Purifier", "Flint and Steel", "Headlamp", "Bug Spray", "Sleeping Pad"],
+          epic: ["Sleeping Bag", "Tent", "Flashlight", "Pocket Knife", "First Aid Kit", "Matches"],
+          rare: ["Backpack", "Tent", "Sleeping Bag", "Water Bottle", "Lantern"],
+          uncommon: ["Tent", "Sleeping Bag", "Flashlight"],
+          common: ["Tent", "Sleeping Bag"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a student school backpack',
+          gold: ["Highlighters", "Protractor", "Index Cards", "Sticky Notes", "Hand Sanitizer", "Pencil Case"],
+          epic: ["Calculator", "Folder", "Notebook", "Textbook", "Pencil Sharpener", "Water Bottle"],
+          rare: ["Laptop", "Binder", "Pencil", "Pen", "Eraser", "Ruler"],
+          uncommon: ["Pencil", "Pen", "Notebook", "Laptop"],
+          common: ["Pencil", "Notebook", "Pen"]
+        }
       ];
 
-      for (let i = 0; i < 40; i++) {
-        usStatesList.forEach((s) => {
-          addQ('geography_cities', `Name a city or town located in ${s.name}`, 
-            s.cities.slice(5), s.cities.slice(3, 5), s.cities.slice(1, 3), [s.cities[0], s.cap], [s.cities[0], s.cap]);
-        });
-      }
-
       // ----------------------------------------------------
-      // 5. DIRECTORS FILMOGRAPHY GENERATOR (~100 Questions)
+      // 4. KRILLION CLOTHING & FASHION
       // ----------------------------------------------------
-      const directorsList = [
-        { name: "Steven Spielberg", gold: ["Duel", "1941", "Always"], epic: ["Munich", "War Horse", "The Post"], rare: ["Minority Report", "Catch Me If You Can"], uncommon: ["E.T.", "Schindler's List"], common: ["Jurassic Park", "Jaws"] },
-        { name: "Christopher Nolan", gold: ["Following", "Doodlebug"], epic: ["Insomnia", "Tenet"], rare: ["Memento", "The Prestige"], uncommon: ["Interstellar", "Inception"], common: ["The Dark Knight", "Oppenheimer"] },
-        { name: "Quentin Tarantino", gold: ["Death Proof"], epic: ["Jackie Brown", "The Hateful Eight"], rare: ["Kill Bill", "Inglourious Basterds"], uncommon: ["Django Unchained", "Reservoir Dogs"], common: ["Pulp Fiction", "Once Upon a Time in Hollywood"] },
-        { name: "Martin Scorsese", gold: ["Boxcar Bertha", "Kundun"], epic: ["Mean Streets", "Silence"], rare: ["Raging Bull", "The Aviator"], uncommon: ["The Wolf of Wall Street", "Taxi Driver"], common: ["Goodfellas", "The Departed"] },
-        { name: "Alfred Hitchcock", gold: ["Blackmail", "Sabotage"], epic: ["Rebecca", "Strangers on a Train"], rare: ["Vertigo", "Rear Window"], uncommon: ["The Birds", "North by Northwest"], common: ["Psycho", "Rear Window"] }
+      const krillionFashion = [
+        {
+          cat: 'fashion',
+          prompt: 'Name a type of footwear or shoe style',
+          gold: ["Sabots", "Getas", "Babouches", "Mukluks", "Galoshes", "Espadrilles", "Brogues", "Stilettos"],
+          epic: ["Clogs", "Moccasins", "Oxfords", "Loafers", "Slippers", "High Heels", "Cleats"],
+          rare: ["Sneakers", "Boots", "Sandals", "Flip Flops", "Running Shoes"],
+          uncommon: ["Sneakers", "Boots", "Sandals"],
+          common: ["Sneakers", "Boots", "Sandals"]
+        },
+        {
+          cat: 'fashion',
+          prompt: 'Name a type of hat or headwear',
+          gold: ["Deerstalker", "Fez", "Sombrero", "Pork Pie Hat", "Turban", "Tam o' Shanter", "Pillbox Hat", "Nightcap", "Shower Cap"],
+          epic: ["Fedora", "Beret", "Bowler Hat", "Cowboy Hat", "Panama Hat", "Trapper Hat", "Flat Cap", "Newsboy Cap", "Hard Hat", "Mining Cap"],
+          rare: ["Beanie", "Baseball Cap", "Bucket Hat", "Sun Hat", "Top Hat", "Trucker Hat", "Visor"],
+          uncommon: ["Cap", "Beanie", "Hat", "Helmet", "Baseball Cap"],
+          common: ["Hat", "Cap", "Beanie"]
+        },
+        {
+          cat: 'fashion',
+          prompt: 'Name an item of jewelry',
+          gold: ["Tiara", "Locket", "Signet Ring", "Anklet", "Brooch", "Cufflinks", "Choker", "Toe Ring", "Nose Stud", "Belly Ring", "Mood Ring"],
+          epic: ["Bracelet", "Pendant", "Earrings", "Bangle", "Nose Ring", "Class Ring", "Promise Ring", "Choker"],
+          rare: ["Necklace", "Ring", "Earrings", "Watch", "Wedding Ring", "Engagement Ring"],
+          uncommon: ["Ring", "Necklace", "Earrings"],
+          common: ["Ring", "Necklace"]
+        },
+        {
+          cat: 'fashion',
+          prompt: 'Name a style of coat or jacket',
+          gold: ["Peacoat", "Anorak", "Duffle Coat", "Trench Coat", "Tuxedo Jacket", "Parka", "Poncho"],
+          epic: ["Windbreaker", "Bomber Jacket", "Blazer", "Overcoat", "Puffer Jacket"],
+          rare: ["Leather Jacket", "Denim Jacket", "Raincoat", "Hoodie"],
+          uncommon: ["Jacket", "Coat", "Hoodie"],
+          common: ["Jacket", "Coat"]
+        },
+        {
+          cat: 'fashion',
+          prompt: 'Name a type of fabric or textile material',
+          gold: ["Cashmere", "Tweed", "Angora", "Seersucker", "Velvet", "Chiffon", "Organza", "Flannel"],
+          epic: ["Satin", "Fleece", "Linen", "Suede", "Corduroy", "Denim", "Lace"],
+          rare: ["Silk", "Wool", "Cotton", "Polyester", "Nylon", "Leather"],
+          uncommon: ["Cotton", "Wool", "Silk", "Polyester"],
+          common: ["Cotton", "Wool"]
+        }
       ];
 
-      for (let i = 0; i < 20; i++) {
-        directorsList.forEach((d) => {
-          addQ('movies', `Name a feature film directed by ${d.name}`, d.gold, d.epic, d.rare, d.uncommon, d.common);
-        });
-      }
-
       // ----------------------------------------------------
-      // 6. ACTORS FILMOGRAPHY GENERATOR (~150 Questions)
+      // 5. KRILLION POP CULTURE, TOYS & MEDIA
       // ----------------------------------------------------
-      const actorsList = [
-        { name: "Tom Hanks", gold: ["Bachelor Party", "Joe Versus the Volcano"], epic: ["Captain Phillips", "Sully"], rare: ["Apollo 13", "Cast Away"], uncommon: ["Saving Private Ryan", "Toy Story"], common: ["Forrest Gump", "Toy Story"] },
-        { name: "Leonardo DiCaprio", gold: ["Critters 3", "Celebrity"], epic: ["Blood Diamond", "The Revenant"], rare: ["The Wolf of Wall Street", "Shutter Island"], uncommon: ["Inception", "Catch Me If You Can"], common: ["Titanic", "Inception"] },
-        { name: "Denzel Washington", gold: ["Carbon Copy", "Power"], epic: ["Flight", "The Equalizer"], rare: ["Glory", "Malcolm X"], uncommon: ["Remember the Titans", "American Gangster"], common: ["Training Day", "Remember the Titans"] },
-        { name: "Meryl Streep", gold: ["Julia", "Death Becomes Her"], epic: ["The Iron Lady", "Doubt"], rare: ["The Devil Wears Prada", "Mamma Mia"], uncommon: ["Out of Africa", "Sophie's Choice"], common: ["The Devil Wears Prada", "Mamma Mia"] },
-        { name: "Keanu Reeves", gold: ["River's Edge", "Permanent Record"], epic: ["Constantine", "Speed"], rare: ["John Wick", "Bill and Ted"], uncommon: ["Toy Story 4", "Point Break"], common: ["The Matrix", "John Wick"] }
+      const krillionPopCulture = [
+        {
+          cat: 'popculture',
+          prompt: 'Name a classic tabletop board game',
+          gold: ["Twilight Imperium", "Root", "Terraforming Mars", "Betrayal at House on the Hill", "Brass Birmingham"],
+          epic: ["Codenames", "Wingspan", "Azul", "Gloomhaven", "Ticket to Ride", "Risk", "Battleship"],
+          rare: ["Catan", "Pandemic", "Carcassonne", "Clue", "Connect Four", "Operation"],
+          uncommon: ["Monopoly", "Scrabble", "Chess", "Checkers", "Sorry"],
+          common: ["Monopoly", "Scrabble", "Chess"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a musical instrument',
+          gold: ["Theremin", "Kalimba", "Didgeridoo", "Balalaika", "Harpsichord", "Bagpipes", "Sitar", "Ocarina"],
+          epic: ["Oboe", "Bassoon", "Accordion", "Cello", "Clarinet", "Trombone", "Banjo", "Lute"],
+          rare: ["Ukulele", "Harmonica", "Violin", "Flute", "Trumpet", "Saxophone"],
+          uncommon: ["Guitar", "Piano", "Drums", "Bass"],
+          common: ["Guitar", "Piano", "Drums"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a famous fictional or cartoon dog',
+          gold: ["Muttley", "Huckleberry Hound", "Hong Kong Phooey", "Mr Peabody", "Droopy", "Underdog"],
+          epic: ["Gromit", "Ren", "Courage", "Astro", "Clifford", "Blue", "Santa's Little Helper"],
+          rare: ["Brian Griffin", "Odie", "Goofy", "Pluto", "Snoopy", "Scooby Doo"],
+          uncommon: ["Scooby Doo", "Snoopy", "Goofy", "Pluto"],
+          common: ["Scooby Doo", "Snoopy", "Goofy"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a famous superhero with no inherent superpowers',
+          gold: ["Rorschach", "Nite Owl", "The Question", "Green Arrow", "Batwoman", "Wildcat"],
+          epic: ["Hawkeye", "Black Widow", "The Punisher", "Batgirl", "Nightwing", "Moon Knight"],
+          rare: ["Batman", "Iron Man", "Robin", "Catwoman"],
+          uncommon: ["Batman", "Iron Man"],
+          common: ["Batman", "Iron Man"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name an animated Pixar movie',
+          gold: ["Turning Red", "Luca", "Soul", "Onward", "The Good Dinosaur", "A Bug's Life"],
+          epic: ["Coco", "Inside Out", "Brave", "WALL-E", "Ratatouille", "Up", "Cars"],
+          rare: ["Toy Story", "Finding Nemo", "The Incredibles", "Monsters Inc"],
+          uncommon: ["Toy Story", "Finding Nemo", "Cars"],
+          common: ["Toy Story", "Finding Nemo"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a classic card game played with a standard deck',
+          gold: ["Canasta", "Cribbage", "Euchre", "Pinochle", "Bridge", "Baccarat", "Piquet"],
+          epic: ["Spades", "Hearts", "Gin Rummy", "Texas Hold'em", "War", "Crazy Eights"],
+          rare: ["Poker", "Blackjack", "Solitaire", "Go Fish", "UNO"],
+          uncommon: ["Poker", "Blackjack", "Solitaire"],
+          common: ["Poker", "Blackjack"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a genre of video games',
+          gold: ["Metroidvania", "Roguelike", "Bullet Hell", "Tactical RPG", "Visual Novel", "Soulslike"],
+          epic: ["MMORPG", "Battle Royale", "Platformer", "Stealth", "Sandbox", "Tower Defense"],
+          rare: ["First Person Shooter", "Fighting", "Racing", "RPG", "Puzzle", "Strategy"],
+          uncommon: ["Shooter", "Sports", "Racing", "Action"],
+          common: ["Action", "Sports"]
+        }
       ];
 
-      for (let i = 0; i < 30; i++) {
-        actorsList.forEach((a) => {
-          addQ('movies', `Name a feature film starring ${a.name}`, a.gold, a.epic, a.rare, a.uncommon, a.common);
-        });
-      }
-
       // ----------------------------------------------------
-      // 7. MUSICAL ARTISTS DISCOGRAPHY GENERATOR (~150 Questions)
+      // 6. KRILLION NATURE & ANIMALS
       // ----------------------------------------------------
-      const musicList = [
-        { name: "The Beatles", gold: ["Octopus's Garden", "Blackbird"], epic: ["Eleanor Rigby", "Yesterday"], rare: ["Let It Be", "Help"], uncommon: ["Come Together", "Yellow Submarine"], common: ["Hey Jude", "Let It Be"] },
-        { name: "Queen", gold: ["Radio Ga Ga", "Stone Cold Crazy"], epic: ["Killer Queen", "Don't Stop Me Now"], rare: ["We Will Rock You", "Another One Bites the Dust"], uncommon: ["Under Pressure", "Somebody to Love"], common: ["Bohemian Rhapsody", "We Will Rock You"] },
-        { name: "Taylor Swift", gold: ["Our Song", "Fifteen"], epic: ["Cruel Summer", "Cardigan"], rare: ["Love Story", "Blank Space"], uncommon: ["You Belong With Me", "Anti Hero"], common: ["Shake It Off", "Love Story"] },
-        { name: "Michael Jackson", gold: ["Off the Wall", "Rock with You"], epic: ["Smooth Criminal", "Bad"], rare: ["Billie Jean", "Beat It"], uncommon: ["Man in the Mirror", "Black or White"], common: ["Thriller", "Billie Jean"] },
-        { name: "Drake", gold: ["Best I Ever Had", "Over"], epic: ["God's Plan", "Hotline Bling"], rare: ["One Dance", "In My Feelings"], uncommon: ["Passionfruit", "Hold On We're Going Home"], common: ["Hotline Bling", "God's Plan"] }
+      const krillionNature = [
+        {
+          cat: 'nature',
+          prompt: 'Name a recognized breed of dog',
+          gold: ["Xoloitzcuintli", "Azawakh", "Bergamasco Shepherd", "Otterhound", "Komondor", "Borzoi", "Basenji"],
+          epic: ["Shiba Inu", "Pembroke Welsh Corgi", "Australian Shepherd", "Border Collie", "Dachshund", "Great Dane"],
+          rare: ["Siberian Husky", "Shih Tzu", "Boxer", "Beagle", "Poodle", "Bulldog"],
+          uncommon: ["German Shepherd", "Golden Retriever", "Labrador Retriever", "Bulldog"],
+          common: ["Labrador Retriever", "Golden Retriever", "Poodle"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a type of tree',
+          gold: ["Baobab", "Ginkgo Biloba", "Banyan", "Sequoia", "Bristlecone Pine", "Jacaranda", "Douglas Fir"],
+          epic: ["Redwood", "Cedar", "Eucalyptus", "Magnolia", "Birch", "Willow", "Cypress"],
+          rare: ["Pine", "Oak", "Maple", "Palm", "Cherry Blossom", "Elm", "Ash"],
+          uncommon: ["Oak", "Pine", "Maple", "Palm"],
+          common: ["Oak", "Pine", "Maple"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a species of bird',
+          gold: ["Cassowary", "Shoebill", "Kakapo", "Hoatzin", "Secretarybird", "Puffin", "Peregrine Falcon"],
+          epic: ["Toucan", "Flamingo", "Hummingbird", "Peacock", "Albatross", "Pelican", "Owl"],
+          rare: ["Eagle", "Hawk", "Parrot", "Penguin", "Falcon", "Crow", "Raven"],
+          uncommon: ["Robin", "Pigeon", "Sparrow", "Blue Jay", "Eagle"],
+          common: ["Robin", "Eagle", "Pigeon"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a type of cloud',
+          gold: ["Noctilucent", "Cumulonimbus", "Cirrostratus", "Altocumulus", "Mammatus", "Lenticular", "Contrail"],
+          epic: ["Cirrus", "Stratus", "Cumulus", "Nimbostratus", "Stratocumulus"],
+          rare: ["Cumulus", "Cirrus", "Stratus"],
+          uncommon: ["Cumulus", "Cirrus", "Rain Cloud"],
+          common: ["Cumulus", "Cirrus"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a precious gemstone or mineral',
+          gold: ["Alexandrite", "Tanzanite", "Larimar", "Rhodochrosite", "Benitoite", "Taaffeite", "Moissanite"],
+          epic: ["Emerald", "Sapphire", "Ruby", "Opal", "Amethyst", "Topaz", "Jade", "Turquoise"],
+          rare: ["Diamond", "Quartz", "Garnet", "Pearl", "Aquamarine"],
+          uncommon: ["Diamond", "Ruby", "Emerald", "Sapphire"],
+          common: ["Diamond", "Ruby", "Emerald"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a species of flower',
+          gold: ["Corpse Flower", "Bird of Paradise", "Plumeria", "Bleeding Heart", "Protea", "Foxglove"],
+          epic: ["Orchid", "Hydrangea", "Lavender", "Dahlia", "Peony", "Iris", "Lotus"],
+          rare: ["Rose", "Tulip", "Sunflower", "Lily", "Daisy", "Daffodil", "Carnation"],
+          uncommon: ["Rose", "Tulip", "Sunflower", "Daisy"],
+          common: ["Rose", "Tulip", "Daisy"]
+        },
+        {
+          cat: 'nature',
+          prompt: 'Name a sea creature or marine animal',
+          gold: ["Nautilus", "Axolotl", "Mantiss Shrimp", "Narwhal", "Blobfish", "Vampire Squid", "Dugong"],
+          epic: ["Hammerhead Shark", "Manta Ray", "Octopus", "Sea Otter", "Seahorse", "Jellyfish", "Walrus"],
+          rare: ["Dolphin", "Whale", "Shark", "Sea Turtle", "Seal", "Crab", "Lobster"],
+          uncommon: ["Dolphin", "Whale", "Fish", "Shark"],
+          common: ["Fish", "Whale", "Shark"]
+        }
       ];
 
-      for (let i = 0; i < 30; i++) {
-        musicList.forEach((m) => {
-          addQ('music', `Name a famous song recorded by ${m.name}`, m.gold, m.epic, m.rare, m.uncommon, m.common);
-        });
-      }
-
       // ----------------------------------------------------
-      // 8. SPORTS DECADE CHAMPIONS GENERATOR (~310 Questions)
+      // 7. KRILLION HUMAN BODY & ANATOMY
       // ----------------------------------------------------
-      const superBowlDecades = [
-        { decade: "1970s", gold: ["Oakland Raiders"], epic: ["Baltimore Colts"], rare: ["Miami Dolphins"], uncommon: ["Dallas Cowboys"], common: ["Pittsburgh Steelers"] },
-        { decade: "1980s", gold: ["Chicago Bears"], epic: ["Oakland Raiders", "Los Angeles Raiders"], rare: ["Washington Redskins"], uncommon: ["New York Giants"], common: ["San Francisco 49ers"] },
-        { decade: "1990s", gold: ["St Louis Rams"], epic: ["Green Bay Packers"], rare: ["Denver Broncos"], uncommon: ["New York Giants"], common: ["Dallas Cowboys"] },
-        { decade: "2000s", gold: ["Tampa Bay Buccaneers"], epic: ["Indianapolis Colts"], rare: ["Pittsburgh Steelers"], uncommon: ["New York Giants"], common: ["New England Patriots"] },
-        { decade: "2010s", gold: ["Philadelphia Eagles"], epic: ["Seattle Seahawks", "Baltimore Ravens"], rare: ["Denver Broncos"], uncommon: ["Green Bay Packers"], common: ["New England Patriots"] }
+      const krillionAnatomy = [
+        {
+          cat: 'anatomy',
+          prompt: 'Name a bone in the human skeleton',
+          gold: ["Hyoid", "Stapes", "Incus", "Malleus", "Coccyx", "Sternum", "Fibula", "Tibia", "Scapula"],
+          epic: ["Femur", "Humeral", "Humerus", "Clavicle", "Radius", "Ulna", "Patella", "Pelvis"],
+          rare: ["Rib", "Skull", "Spine", "Femur", "Jawbone"],
+          uncommon: ["Skull", "Rib", "Spine"],
+          common: ["Skull", "Rib"]
+        },
+        {
+          cat: 'anatomy',
+          prompt: 'Name an internal organ of the human body',
+          gold: ["Pancreas", "Spleen", "Gallbladder", "Thyroid", "Appendix", "Adrenal Gland", "Pituitary Gland"],
+          epic: ["Liver", "Kidney", "Stomach", "Bladder", "Esophagus", "Intestines"],
+          rare: ["Heart", "Lungs", "Brain", "Liver", "Stomach"],
+          uncommon: ["Heart", "Lungs", "Brain"],
+          common: ["Heart", "Lungs", "Brain"]
+        }
       ];
 
-      for (let i = 0; i < 60; i++) {
-        superBowlDecades.forEach((sb) => {
-          addQ('sports', `Name an NFL franchise that won a Super Bowl during the ${sb.decade}`, 
-            sb.gold, sb.epic, sb.rare, sb.uncommon, sb.common);
-        });
-      }
-
       // ----------------------------------------------------
-      // 9. VIDEO GAME FRANCHISES MATRIX (~200 Questions)
+      // 8. KRILLION SPORTS & HOBBIES
       // ----------------------------------------------------
-      const gameFranchises = [
-        { name: "The Legend of Zelda", gold: ["The Minish Cap", "Spirit Tracks"], epic: ["Link's Awakening", "Skyward Sword"], rare: ["Ocarina of Time", "Wind Waker"], uncommon: ["Majora's Mask", "Tears of the Kingdom"], common: ["Breath of the Wild", "Ocarina of Time"] },
-        { name: "Super Mario", gold: ["Super Mario Land", "Sunshine"], epic: ["Super Mario Galaxy", "Super Mario 3D World"], rare: ["Super Mario World", "Super Mario 64"], uncommon: ["Super Mario Odyssey", "Super Mario Bros 3"], common: ["Super Mario Bros", "Super Mario 64"] },
-        { name: "Pokémon", gold: ["Crystal", "Emerald", "Platinum"], epic: ["Gold", "Silver", "Ruby", "Sapphire"], rare: ["Diamond", "Pearl", "Black", "White"], uncommon: ["Red", "Blue", "Yellow"], common: ["Pokemon Red", "Pokemon Blue"] },
-        { name: "Final Fantasy", gold: ["Final Fantasy VI", "Final Fantasy IX"], epic: ["Final Fantasy X", "Final Fantasy VIII"], rare: ["Final Fantasy XIV", "Final Fantasy XV"], uncommon: ["Final Fantasy XVI", "Final Fantasy X"], common: ["Final Fantasy VII", "Final Fantasy X"] },
-        { name: "Call of Duty", gold: ["Finest Hour", "Big Red One"], epic: ["World at War", "Black Ops 2"], rare: ["Modern Warfare 2", "Black Ops"], uncommon: ["Warzone", "Black Ops Cold War"], common: ["Call of Duty", "Modern Warfare"] }
+      const krillionHobbies = [
+        {
+          cat: 'hobbies',
+          prompt: 'Name a sport played in the Summer Olympic Games',
+          gold: ["Modern Pentathlon", "Trampoline Gymnastics", "Fencing", "Canoe Slalom", "Water Polo", "Handball"],
+          epic: ["Surfing", "Skateboarding", "Sport Climbing", "Archery", "Rowing", "Taekwondo", "Judo"],
+          rare: ["Badminton", "Table Tennis", "Volleyball", "Boxing", "Wrestling", "Gymnastics", "Track and Field"],
+          uncommon: ["Swimming", "Basketball", "Soccer", "Tennis"],
+          common: ["Soccer", "Basketball", "Swimming"]
+        },
+        {
+          cat: 'hobbies',
+          prompt: 'Name a water sport or activity',
+          gold: ["Kitesurfing", "Wakeboarding", "Free Diving", "Synchronized Swimming", "Windsurfing", "Flyboarding"],
+          epic: ["Kayaking", "Scuba Diving", "Snorkeling", "Paddleboarding", "Water Skiing", "Rowing"],
+          rare: ["Surfing", "Water Polo", "Sailing", "Rafting"],
+          uncommon: ["Swimming", "Surfing", "Diving"],
+          common: ["Swimming", "Surfing"]
+        },
+        {
+          cat: 'hobbies',
+          prompt: 'Name a creative or hands-on hobby',
+          gold: ["Pyrography", "Bonsai", "Calligraphy", "Pottery", "Origami", "Weaving", "Glassblowing"],
+          epic: ["Sculpting", "Woodworking", "Crochet", "Knitting", "Embroidery", "Jewelry Making"],
+          rare: ["Painting", "Drawing", "Photography", "Gardening", "Baking", "Sewing"],
+          uncommon: ["Drawing", "Painting", "Reading", "Cooking"],
+          common: ["Drawing", "Painting", "Cooking"]
+        }
       ];
 
-      for (let i = 0; i < 40; i++) {
-        gameFranchises.forEach((gf) => {
-          addQ('gaming', `Name an official game title in the ${gf.name} video game series`, gf.gold, gf.epic, gf.rare, gf.uncommon, gf.common);
-        });
-      }
+      // Combine all distinct handcrafted Krillion sets into the primary Question Bank
+      const allKrillionSets = [
+        ...krillionWordplay,
+        ...krillionFood,
+        ...krillionEveryday,
+        ...krillionFashion,
+        ...krillionPopCulture,
+        ...krillionNature,
+        ...krillionAnatomy,
+        ...krillionHobbies
+      ];
+
+      allKrillionSets.forEach((item) => {
+        addQ(
+          item.cat,
+          item.prompt,
+          item.gold,
+          item.epic,
+          item.rare,
+          item.uncommon,
+          item.common
+        );
+      });
 
       QUESTION_BANK = q;
       unseenQuestionPool = shuffleArray(QUESTION_BANK);
@@ -691,6 +1105,22 @@
       s = s.replace(/[^a-z0-9\s]/g, '');
       s = s.replace(/^(a|an|the)\s+/, '');
       return s.trim();
+    }
+
+    function getVariants(normStr) {
+      const set = new Set([normStr]);
+      if (normStr.endsWith('ies') && normStr.length > 4) {
+        set.add(normStr.slice(0, -3) + 'y');
+      } else if (normStr.endsWith('es') && normStr.length > 4) {
+        set.add(normStr.slice(0, -2));
+        set.add(normStr.slice(0, -1));
+      } else if (normStr.endsWith('s') && normStr.length > 3) {
+        set.add(normStr.slice(0, -1));
+      } else {
+        set.add(normStr + 's');
+        set.add(normStr + 'es');
+      }
+      return Array.from(set);
     }
 
     function levenshteinDistance(a, b) {
@@ -714,38 +1144,33 @@
       return matrix[b.length][a.length];
     }
 
+    function createDynamicRarity(key, userAns, label) {
+      return {
+        key: key,
+        name: RARITY_CONFIG[key].name,
+        color: RARITY_CONFIG[key].color,
+        length: RARITY_CONFIG[key].length,
+        points: RARITY_CONFIG[key].points,
+        matchedName: userAns,
+        autoCorrected: false
+      };
+    }
+
     function findAnswerRarity(userAns, qObj) {
       const normInput = normalize(userAns);
       if (!normInput) return null;
 
+      const inputVariants = getVariants(normInput);
       const keys = ['gold', 'epic', 'rare', 'uncommon', 'common'];
 
-      // Direct exact normalized match check
-      for (const key of keys) {
-        const answers = qObj[key] || [];
-        for (const ans of answers) {
-          if (normalize(ans) === normInput) {
-            return {
-              key: key,
-              name: RARITY_CONFIG[key].name,
-              color: RARITY_CONFIG[key].color,
-              length: RARITY_CONFIG[key].length,
-              points: RARITY_CONFIG[key].points,
-              matchedName: ans,
-              autoCorrected: false
-            };
-          }
-        }
-      }
-
-      // Typo auto-correction check (Levenshtein distance <= 2 for words >= 4 chars)
+      // 1. Direct exact normalized & variant match check
       for (const key of keys) {
         const answers = qObj[key] || [];
         for (const ans of answers) {
           const normAns = normalize(ans);
-          if (normAns.length >= 4) {
-            const dist = levenshteinDistance(normInput, normAns);
-            if (dist <= 2) {
+          const ansVariants = getVariants(normAns);
+          for (const iv of inputVariants) {
+            if (ansVariants.includes(iv)) {
               return {
                 key: key,
                 name: RARITY_CONFIG[key].name,
@@ -753,11 +1178,130 @@
                 length: RARITY_CONFIG[key].length,
                 points: RARITY_CONFIG[key].points,
                 matchedName: ans,
-                autoCorrected: true
+                autoCorrected: false
               };
             }
           }
         }
+      }
+
+      // 2. Strict Substring & Phrase Containment (Prevents false matches across multi-word phrases like "toe ring" vs "signet ring")
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          const normAns = normalize(ans);
+          for (const iv of inputVariants) {
+            if (iv.length >= 4 && normAns.length >= 4) {
+              const inTokens = iv.split(/\s+/);
+              const ansTokens = normAns.split(/\s+/);
+
+              // If multi-word vs multi-word, ensure tokens don't contradict
+              if (inTokens.length > 1 && ansTokens.length > 1) {
+                let mismatchCount = 0;
+                for (let t = 0; t < Math.max(inTokens.length, ansTokens.length); t++) {
+                  const t1 = inTokens[t] || '';
+                  const t2 = ansTokens[t] || '';
+                  if (t1 !== t2 && levenshteinDistance(t1, t2) > 1) {
+                    mismatchCount++;
+                  }
+                }
+                if (mismatchCount > 0) continue; // Skip mismatching multi-word phrases
+              }
+
+              if (iv.endsWith(normAns) || iv.startsWith(normAns) || normAns.endsWith(iv) || normAns.startsWith(iv)) {
+                return {
+                  key: key,
+                  name: RARITY_CONFIG[key].name,
+                  color: RARITY_CONFIG[key].color,
+                  length: RARITY_CONFIG[key].length,
+                  points: RARITY_CONFIG[key].points,
+                  matchedName: ans,
+                  autoCorrected: false
+                };
+              }
+            }
+          }
+        }
+      }
+
+      // 3. Strict Typo auto-correction check (Max distance 1 for short words, max distance 2 for long words)
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          const normAns = normalize(ans);
+          const maxAllowedDist = normAns.length <= 6 ? 1 : 2;
+
+          for (const iv of inputVariants) {
+            if (Math.abs(iv.length - normAns.length) <= maxAllowedDist) {
+              const dist = levenshteinDistance(iv, normAns);
+              if (dist <= maxAllowedDist && dist > 0) {
+                const inTokens = iv.split(/\s+/);
+                const ansTokens = normAns.split(/\s+/);
+                if (inTokens.length === ansTokens.length) {
+                  return {
+                    key: key,
+                    name: RARITY_CONFIG[key].name,
+                    color: RARITY_CONFIG[key].color,
+                    length: RARITY_CONFIG[key].length,
+                    points: RARITY_CONFIG[key].points,
+                    matchedName: ans,
+                    autoCorrected: true
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // 4. Algorithmic Wordplay Verification Fallback
+      const p = qObj.prompt.toLowerCase();
+      const rawLower = normInput;
+
+      if (p.includes('silent "k"') && (rawLower.startsWith('kn') || rawLower.includes('kn'))) {
+        return createDynamicRarity('epic', userAns, 'Silent K Word');
+      }
+      if (p.includes('silent "b"') && (rawLower.endsWith('mb') || rawLower.includes('bt') || rawLower.startsWith('bd'))) {
+        return createDynamicRarity('epic', userAns, 'Silent B Word');
+      }
+      if (p.includes('silent "g"') && (rawLower.startsWith('gn') || rawLower.endsWith('gm') || rawLower.endsWith('gn') || rawLower.includes('phleg') || rawLower.includes('rthm'))) {
+        return createDynamicRarity('epic', userAns, 'Silent G Word');
+      }
+      if (p.includes('silent "p"') && (rawLower.startsWith('ps') || rawLower.startsWith('pn') || rawLower.startsWith('pt') || rawLower.includes('cupboard') || rawLower.includes('receipt') || rawLower.includes('raspberry'))) {
+        return createDynamicRarity('epic', userAns, 'Silent P Word');
+      }
+      if (p.includes('silent "w"') && (rawLower.startsWith('wr') || rawLower.includes('sword') || rawLower.includes('answer'))) {
+        return createDynamicRarity('epic', userAns, 'Silent W Word');
+      }
+      if (p.includes('silent "t"') && (rawLower.endsWith('stle') || rawLower.endsWith('sten') || rawLower.includes('mortgage') || rawLower.includes('ballet') || rawLower.includes('beret') || rawLower.includes('buffet') || rawLower.includes('valet') || rawLower.includes('depot') || rawLower.includes('gourmet'))) {
+        return createDynamicRarity('epic', userAns, 'Silent T Word');
+      }
+      if (p.includes('silent "l"') && (rawLower.includes('alk') || rawLower.includes('alm') || rawLower.includes('alf') || rawLower.includes('ould') || rawLower.includes('folk') || rawLower.includes('yolk') || rawLower.includes('salmon'))) {
+        return createDynamicRarity('epic', userAns, 'Silent L Word');
+      }
+      if (p.includes('silent "h"') && (rawLower.startsWith('rh') || rawLower.startsWith('gh') || rawLower.includes('ghost') || rawLower.includes('hour') || rawLower.includes('honest') || rawLower.includes('honor') || rawLower.includes('heir') || rawLower.includes('echo') || rawLower.includes('exhaust') || rawLower.includes('cheetah'))) {
+        return createDynamicRarity('epic', userAns, 'Silent H Word');
+      }
+      if (p.includes('palindrome') && rawLower.length >= 3 && rawLower === rawLower.split('').reverse().join('')) {
+        const tierKey = rawLower.length >= 7 ? 'gold' : rawLower.length >= 5 ? 'epic' : 'rare';
+        return createDynamicRarity(tierKey, userAns, 'Palindrome');
+      }
+      if (p.includes('-phobia') && rawLower.endsWith('phobia')) {
+        const tierKey = rawLower.length >= 14 ? 'gold' : 'epic';
+        return createDynamicRarity(tierKey, userAns, 'Phobia Word');
+      }
+      if (p.includes('-ology') && rawLower.endsWith('ology')) {
+        const tierKey = rawLower.length >= 12 ? 'gold' : 'epic';
+        return createDynamicRarity(tierKey, userAns, 'Ology Subject');
+      }
+      if (p.includes('double "z"') && rawLower.includes('zz')) {
+        return createDynamicRarity('epic', userAns, 'Double Z Word');
+      }
+      if (p.includes('double "o"') && rawLower.includes('oo')) {
+        return createDynamicRarity('uncommon', userAns, 'Double O Word');
+      }
+      if (p.includes('starting with "sun"') && rawLower.startsWith('sun') && rawLower.length >= 5) {
+        return createDynamicRarity('rare', userAns, 'Sun Compound Word');
       }
 
       return null;
@@ -777,7 +1321,9 @@
     let totalDistance = 0;
     let userHistory = [];
     let usedAnswersSet = new Set();
+    let pendingAutoCorrect = null;
 
+    // Global SVG Canvas & Camera State
     let accumulatedX = 60;
     let currentViewBoxX = 0;
     let targetViewBoxX = 0;
@@ -785,119 +1331,184 @@
     let currentDotIndex = 0;
     let placedBadges = [];
 
-    function seededPRNG(seedStr) {
-      let hash = 0;
-      for (let i = 0; i < seedStr.length; i++) {
-        hash = (hash << 5) - hash + seedStr.charCodeAt(i);
-        hash |= 0;
-      }
-      return function () {
-        hash = (hash * 9301 + 49297) % 233280;
-        return hash / 233280;
-      };
-    }
-
-    function getDailySeed() {
-      const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-    }
-
-    function shuffleArray(arr, prng = null) {
-      const copy = [...arr];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = prng ? Math.floor(prng() * (i + 1)) : Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function selectCategoryBalancedQuestions(pool) {
-      const selected = [];
-      const usedCategories = new Set();
-
-      for (const q of pool) {
-        if (!usedCategories.has(q.cat)) {
-          selected.push(q);
-          usedCategories.add(q.cat);
-          if (selected.length === 8) break;
-        }
-      }
-
-      // Fallback if not enough distinct categories
-      if (selected.length < 8) {
-        for (const q of pool) {
-          if (!selected.includes(q)) {
-            selected.push(q);
-            if (selected.length === 8) break;
-          }
-        }
-      }
-      return selected;
-    }
-
-    function getNextQuestions(isDaily) {
-      if (isDaily) {
-        const prng = seededPRNG(getDailySeed());
-        const shuffled = shuffleArray(QUESTION_BANK, prng);
-        return selectCategoryBalancedQuestions(shuffled);
-      }
-
-      // If unseen deck has less than 16 questions left, refill and reshuffle whole bank
-      if (unseenQuestionPool.length < 16) {
-        unseenQuestionPool = shuffleArray(QUESTION_BANK);
-      }
-
-      const selected = selectCategoryBalancedQuestions(unseenQuestionPool);
-
-      // Remove selected questions from unseenQuestionPool so they never repeat across games
-      const selectedPrompts = new Set(selected.map(q => q.prompt));
-      unseenQuestionPool = unseenQuestionPool.filter(q => !selectedPrompts.has(q.prompt));
-
-      return selected;
-    }
-
-    /* ----------------------------------------------------
-       4. NAVIGATION & MENU TRANSITIONS
-    ---------------------------------------------------- */
-    function launchGame(mode) {
-      initAudio();
-      isTimedMode = (mode === 'timed');
-      isDailyMode = (mode === 'daily');
-
-      activeQuestions = getNextQuestions(isDailyMode);
-
-      currentQIndex = 0;
-      totalScore = 0;
-      totalDistance = 0;
-      userHistory = [];
-      usedAnswersSet.clear();
-
-      document.getElementById('menuScreen').classList.add('-translate-x-full');
-      const resultsSec = document.getElementById('resultsSection');
-      resultsSec.classList.remove('show-results');
-      resultsSec.classList.add('hidden-results');
-      document.getElementById('gameArea').classList.remove('hidden');
-
-      initSvgTrackLine();
-      renderQuestion(currentQIndex);
-    }
-
-    function returnToMenu() {
-      if (timerInterval) clearInterval(timerInterval);
-      const sliderContainer = document.getElementById('lineSliderContainer');
-      if (sliderContainer) sliderContainer.classList.add('hidden');
-      document.getElementById('menuScreen').classList.remove('-translate-x-full');
-      const resultsSec = document.getElementById('resultsSection');
-      resultsSec.classList.remove('show-results');
-      resultsSec.classList.add('hidden-results');
-      document.getElementById('gameArea').classList.remove('hidden');
-    }
-
     function toggleHelpModal(show) {
       const modal = document.getElementById('helpModal');
       if (modal) {
         if (show) modal.classList.remove('hidden');
         else modal.classList.add('hidden');
+      }
+    }
+
+    function returnToMenu() {
+      if (timerInterval) clearInterval(timerInterval);
+      clearPendingAutoCorrect();
+
+      const menuScreen = document.getElementById('menuScreen');
+      const gameArea = document.getElementById('gameArea');
+      const resultsSection = document.getElementById('resultsSection');
+
+      if (menuScreen) menuScreen.classList.remove('-translate-y-full');
+      if (gameArea) gameArea.classList.remove('hidden');
+      if (resultsSection) {
+        resultsSection.classList.add('hidden-results');
+        resultsSection.classList.remove('show-results');
+      }
+
+      initSvgTrackLine();
+    }
+
+    // Hash current UTC date (YYYYMMDD) for deterministic daily challenge generation
+    function getDailySeed() {
+      const d = new Date();
+      const dateStr = `${d.getUTCFullYear()}${(d.getUTCMonth() + 1).toString().padStart(2, '0')}${d.getUTCDate().toString().padStart(2, '0')}`;
+      let hash = 0;
+      for (let i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    // Fast PRNG algorithm seeded by daily hash
+    function mulberry32(a) {
+      return function() {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function selectCategoryBalancedQuestions(isDaily = false) {
+      // Deterministic generation for Daily Challenge based on today's seed
+      if (isDaily) {
+        const seed = getDailySeed();
+        const rng = mulberry32(seed);
+
+        const seededShuffle = (arr) => {
+          const array = [...arr];
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        };
+
+        const byCategory = {};
+        QUESTION_BANK.forEach((q) => {
+          if (!byCategory[q.cat]) byCategory[q.cat] = [];
+          byCategory[q.cat].push(q);
+        });
+
+        const categories = seededShuffle(Object.keys(byCategory));
+        categories.forEach((c) => {
+          byCategory[c] = seededShuffle(byCategory[c]);
+        });
+
+        const selected = [];
+        const usedPrompts = new Set();
+        let categoryIdx = 0;
+
+        while (selected.length < 8) {
+          const cat = categories[categoryIdx % categories.length];
+          const pool = byCategory[cat];
+          if (pool && pool.length > 0) {
+            const q = pool.pop();
+            if (q && !usedPrompts.has(q.prompt)) {
+              usedPrompts.add(q.prompt);
+              selected.push(q);
+            }
+          }
+          categoryIdx++;
+          if (selected.length < 8 && Object.values(byCategory).every((p) => p.length === 0)) break;
+        }
+
+        return selected;
+      }
+
+      // Standard and Timed randomized question selection
+      if (unseenQuestionPool.length < 8) {
+        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      }
+
+      const byCategory = {};
+      unseenQuestionPool.forEach(q => {
+        if (!byCategory[q.cat]) byCategory[q.cat] = [];
+        byCategory[q.cat].push(q);
+      });
+
+      const categories = shuffleArray(Object.keys(byCategory));
+      const selected = [];
+      const usedPrompts = new Set();
+
+      let categoryIdx = 0;
+      while (selected.length < 8 && unseenQuestionPool.length > 0) {
+        let poolToUse = unseenQuestionPool;
+        if (categories.length > 0) {
+          const cat = categories[categoryIdx % categories.length];
+          if (byCategory[cat] && byCategory[cat].length > 0) {
+            poolToUse = byCategory[cat];
+          }
+          categoryIdx++;
+        }
+
+        const q = poolToUse.pop();
+        const mainIdx = unseenQuestionPool.indexOf(q);
+        if (mainIdx !== -1) unseenQuestionPool.splice(mainIdx, 1);
+
+        if (q && !usedPrompts.has(q.prompt)) {
+          usedPrompts.add(q.prompt);
+          selected.push(q);
+        }
+
+        if (unseenQuestionPool.length === 0) {
+          unseenQuestionPool = shuffleArray(QUESTION_BANK);
+        }
+      }
+
+      return shuffleArray(selected);
+    }
+
+    function launchGame(mode) {
+      isTimedMode = (mode === 'timed');
+      isDailyMode = (mode === 'daily');
+
+      totalScore = 0;
+      totalDistance = 0;
+      currentQIndex = 0;
+      userHistory = [];
+      usedAnswersSet = new Set();
+      pendingAutoCorrect = null;
+
+      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+
+      const menuScreen = document.getElementById('menuScreen');
+      const gameArea = document.getElementById('gameArea');
+      const resultsSection = document.getElementById('resultsSection');
+      const lineSection = document.getElementById('lineSection');
+
+      if (menuScreen) menuScreen.classList.add('-translate-y-full');
+      if (resultsSection) {
+        resultsSection.classList.add('hidden-results');
+        resultsSection.classList.remove('show-results');
+      }
+      if (gameArea) gameArea.classList.remove('hidden');
+
+      if (lineSection) {
+        lineSection.classList.remove('order-1', 'order-3');
+        lineSection.classList.add('order-2');
+      }
+
+      initSvgTrackLine();
+      renderQuestion(0);
+    }
+
+    function clearPendingAutoCorrect() {
+      if (pendingAutoCorrect) {
+        pendingAutoCorrect = null;
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) submitBtn.textContent = 'Submit';
+        hideFeedback();
       }
     }
 
@@ -989,7 +1600,7 @@
     ---------------------------------------------------- */
     function renderQuestion(index) {
       if (timerInterval) clearInterval(timerInterval);
-      hideFeedback();
+      clearPendingAutoCorrect();
 
       const q = activeQuestions[index];
       const card = document.getElementById('questionCard');
@@ -1102,6 +1713,27 @@
         return;
       }
 
+      // If autocorrect confirmation is active and user submits again or clicks Confirm
+      if (pendingAutoCorrect) {
+        const confirmedResult = pendingAutoCorrect.result;
+        const confirmedAns = pendingAutoCorrect.suggestedName;
+        const normConfirmed = normalize(confirmedAns);
+
+        if (usedAnswersSet.has(normConfirmed)) {
+          showFeedback(`"${confirmedAns}" has already been used in this game.`);
+          playAudioTone('error');
+          clearPendingAutoCorrect();
+          return;
+        }
+
+        if (timerInterval) clearInterval(timerInterval);
+        usedAnswersSet.add(normConfirmed);
+        
+        clearPendingAutoCorrect();
+        processTurn(confirmedAns, confirmedResult);
+        return;
+      }
+
       const normInput = normalize(rawVal);
       if (usedAnswersSet.has(normInput)) {
         showFeedback(`"${rawVal}" has already been used in this game.`);
@@ -1118,20 +1750,32 @@
         return;
       }
 
-      if (timerInterval) clearInterval(timerInterval);
-
-      // Auto-correct spelling in input box if applicable
+      // Check if this requires Krillion-style autocorrect confirmation
       if (result.autoCorrected) {
+        pendingAutoCorrect = {
+          rawInput: rawVal,
+          suggestedName: result.matchedName,
+          result: result
+        };
+
         inputEl.value = result.matchedName;
+        showFeedback(`Autocorrect: Did you mean "${result.matchedName}"? Press Enter or click Confirm.`);
+        
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) submitBtn.textContent = `Confirm "${result.matchedName}"`;
+        
+        playAudioTone('stretch', 'uncommon');
+        return;
       }
 
+      if (timerInterval) clearInterval(timerInterval);
       usedAnswersSet.add(normInput);
       processTurn(result.matchedName || rawVal, result);
     }
 
     function skipQuestion(fromTimeout = false) {
       if (timerInterval) clearInterval(timerInterval);
-      hideFeedback();
+      clearPendingAutoCorrect();
 
       if (!fromTimeout) playAudioTone('skip');
 
@@ -1310,8 +1954,14 @@
 
       document.getElementById('gameArea').classList.add('hidden');
       const resultsSection = document.getElementById('resultsSection');
-      resultsSection.classList.remove('hidden-results');
-      resultsSection.classList.add('show-results');
+      resultsSection.classList.remove('hidden-results', 'order-3');
+      resultsSection.classList.add('show-results', 'order-1');
+
+      const lineSec = document.getElementById('lineSection');
+      if (lineSec) {
+        lineSec.classList.remove('order-2');
+        lineSec.classList.add('order-2');
+      }
 
       // Show interactive line scrubber slider and set to 100%
       const sliderContainer = document.getElementById('lineSliderContainer');
@@ -1335,22 +1985,22 @@
 
       userHistory.forEach((item, idx) => {
         const card = document.createElement('div');
-        card.className = 'bg-pik-bg border border-pik-border/80 rounded-xl p-3 flex flex-col justify-between text-left';
+        card.className = 'bg-pik-bg border border-pik-border/80 rounded-lg p-2 flex flex-col justify-between text-left min-w-0';
 
         const isSkip = item.rarityKey === 'skipped';
         const colorHex = isSkip ? '#475569' : item.color;
 
         card.innerHTML = `
           <div>
-            <div class="text-[10px] text-slate-500 font-display uppercase tracking-wider mb-1">Q${idx + 1} • ${item.prompt}</div>
-            <div class="font-display font-bold text-sm text-slate-200 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
+            <div class="text-[9px] sm:text-[10px] text-slate-400 font-display font-medium truncate mb-0.5" title="${item.prompt}">Q${idx + 1} • ${item.prompt}</div>
+            <div class="font-display font-bold text-xs sm:text-sm text-slate-100 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
           </div>
-          <div class="flex items-center justify-between mt-2 pt-2 border-t border-pik-border/40 text-xs">
-            <span class="font-display font-semibold flex items-center gap-1.5" style="color: ${colorHex}">
-              <span class="w-2 h-2 rounded-full" style="background-color: ${colorHex}"></span>
-              ${item.rarityName}
+          <div class="flex items-center justify-between mt-1 pt-1 border-t border-pik-border/40 text-[10px] sm:text-xs">
+            <span class="font-display font-semibold flex items-center gap-1 truncate" style="color: ${colorHex}">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${colorHex}"></span>
+              <span class="truncate">${item.rarityName}</span>
             </span>
-            <span class="font-display font-bold text-slate-400">+${item.length}px</span>
+            <span class="font-display font-bold text-slate-400 flex-shrink-0 ml-1">+${item.length}px</span>
           </div>
         `;
         grid.appendChild(card);
@@ -1365,6 +2015,11 @@
       if (input) {
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') submitAnswer();
+        });
+        input.addEventListener('input', () => {
+          if (pendingAutoCorrect) {
+            clearPendingAutoCorrect();
+          }
         });
       }
     });
