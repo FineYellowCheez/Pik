@@ -11,6 +11,9 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- PeerJS for Serverless P2P Multiplayer -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
   <!-- Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -166,6 +169,12 @@
         Play Standard
       </button>
 
+      <!-- Middle Button: Pik-ed Multiplayer (Placed under Play Standard, above Timed/Daily) -->
+      <button onclick="openPikedLobby()" class="w-64 py-3 bg-gradient-to-r from-pik-epic to-purple-600 hover:from-purple-600 hover:to-pik-epic text-white font-display font-black text-sm rounded-2xl transition shadow-xl transform rotate-1 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border border-purple-400/30">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Pik-ed (Multiplayer)
+      </button>
+
       <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
       <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
         <!-- Bottom Left: Play Timed (+2.5 deg rotation) -->
@@ -197,27 +206,110 @@
         </h3>
         <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
       </div>
+      <div class="space-y-2 text-slate-300">
+        <p><strong class="text-white">Goal:</strong> Stretch your line as far as possible over 8 rounds by naming rare, niche, or obscure answers.</p>
+        <p><strong class="text-white">Rarity Tiers:</strong></p>
+        <ul class="list-disc pl-4 space-y-1 text-slate-400">
+          <li><span class="text-pik-common font-bold">Common:</span> +110px</li>
+          <li><span class="text-pik-uncommon font-bold">Uncommon:</span> +180px</li>
+          <li><span class="text-pik-rare font-bold">Rare:</span> +270px</li>
+          <li><span class="text-pik-epic font-bold">Epic:</span> +390px</li>
+          <li><span class="text-pik-gold font-bold">The Pik (Gold):</span> +540px</li>
+        </ul>
+        <p><strong class="text-white">No Repeats:</strong> Each answer can only be used once per game.</p>
+        <p><strong class="text-white">Autocorrect:</strong> Minor typos will trigger a confirmation prompt before submitting.</p>
+      </div>
+    </div>
+  </div>
 
-      <div class="space-y-2">
-        <p><strong class="text-slate-100">Objective:</strong> For each question, try to guess valid answers that are <em class="text-pik-gold">uncommon or rare</em>. The rarer your answer, the further your line stretches!</p>
-        
-        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-1.5 font-display text-[11px]">
-          <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
+  <!-- ================= PIK-ED MULTIPLAYER LOBBY MODAL ================= -->
+  <div id="pikedLobbyScreen" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-6 flex flex-col gap-5 shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-pik-border pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-pik-epic animate-pulse"></span>
+          <h2 class="font-display font-black text-xl text-white tracking-wide">Pik-ed Battle Lobby</h2>
         </div>
-
-        <p class="text-slate-400">
-          The area below the line remains completely empty until you complete all 8 questions!
-        </p>
+        <button onclick="closePikedLobby()" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
       </div>
 
-      <button onclick="toggleHelpModal(false)" class="w-full py-2 bg-slate-100 text-slate-950 font-display font-bold rounded-xl text-xs transition mt-1">
-        Got It
-      </button>
+      <!-- Lobby Choice / Host / Join Views -->
+      <div id="lobbySetupView" class="flex flex-col gap-4">
+        <div class="bg-pik-bg p-4 rounded-xl border border-pik-border text-xs text-slate-300 space-y-2">
+          <p class="font-bold text-pik-gold text-sm">How Pik-ed Works:</p>
+          <ul class="list-disc pl-4 space-y-1 text-slate-400">
+            <li>Up to 4 players compete on stacked live track lines.</li>
+            <li>Everyone gets <strong class="text-white">35 seconds</strong> to answer each question.</li>
+            <li>The player with the <strong class="text-red-400">lowest rarity answer</strong> is eliminated!</li>
+            <li>If there is a tie for lowest rarity, the player who took the <strong class="text-amber-400">longest time to answer</strong> is eliminated.</li>
+            <li>The last player standing wins!</li>
+          </ul>
+        </div>
+
+        <!-- In-Lobby Status & Feedback Banner -->
+        <div id="lobbyErrorMsg" class="hidden text-xs font-display font-medium text-center py-2 px-3 rounded-xl"></div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <!-- Host Room Button -->
+          <button id="hostLobbyBtn" onclick="createPikedRoom()" class="py-3 px-4 bg-pik-epic hover:bg-purple-700 text-white font-display font-extrabold text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            Host Lobby
+          </button>
+          
+          <!-- Join Form -->
+          <div class="flex items-center gap-2">
+            <input type="text" id="joinCodeInput" placeholder="Room Code..." maxlength="6" class="w-full bg-pik-bg border border-pik-border focus:border-pik-epic rounded-xl px-3 py-2.5 text-sm text-center font-display font-bold uppercase tracking-wider text-slate-100 outline-none">
+            <button id="joinLobbyBtn" onclick="joinPikedRoom()" class="py-2.5 px-4 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-xl transition shadow-md whitespace-nowrap">
+              Join
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Lobby View -->
+      <div id="lobbyActiveView" class="hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between bg-pik-bg p-3.5 rounded-xl border border-pik-border">
+          <div>
+            <div class="text-[10px] text-slate-400 uppercase font-display font-bold tracking-wider">Room Code</div>
+            <div id="roomCodeDisplay" class="text-2xl font-display font-black text-pik-gold tracking-widest">----</div>
+          </div>
+          <button onclick="copyRoomCode()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-display font-bold rounded-lg border border-pik-border transition">
+            Copy Code
+          </button>
+        </div>
+
+        <div>
+          <div class="text-xs font-display font-bold text-slate-300 mb-2 flex items-center justify-between">
+            <span>Players in Lobby (<span id="playerCountText">1</span>/4)</span>
+            <span id="lobbyStatusBadge" class="text-[10px] text-pik-uncommon">Waiting for players...</span>
+          </div>
+          <div id="lobbyPlayerList" class="grid grid-cols-2 gap-2">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <button id="startPikedBtn" onclick="hostStartPikedGame()" class="hidden w-full py-3 bg-slate-100 hover:bg-white text-slate-950 font-display font-black text-sm rounded-xl transition shadow-xl mt-2">
+          Start Pik-ed Match
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MULTIPLAYER COUNTDOWN & REVEAL OVERLAYS ================= -->
+  <div id="countdownOverlay" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center">
+    <div id="countdownNumber" class="font-display font-black text-8xl text-pik-gold animate-bounce">3</div>
+    <div class="text-slate-300 font-display font-bold text-lg mt-4">Get Ready for the Next Question...</div>
+  </div>
+
+  <div id="pikedRevealOverlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-6 flex flex-col gap-4 text-center shadow-2xl">
+      <h2 class="font-display font-black text-2xl text-slate-100">Round Results</h2>
+      <div id="pikedRevealList" class="flex flex-col gap-2 my-2">
+        <!-- Injected via JS -->
+      </div>
+      <div id="eliminationBanner" class="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-300 text-xs font-display font-bold">
+        <!-- Injected via JS -->
+      </div>
     </div>
   </div>
 
@@ -289,9 +381,9 @@
       <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
     </div>
 
-    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-20 sm:h-24 overflow-visible">
-      
-      <!-- SVG Line Track Canvas -->
+    <!-- Stacked Player Tracks Container -->
+    <div id="trackCanvasContainer" class="w-full max-w-5xl px-4 sm:px-8 relative flex flex-col justify-center gap-1 min-h-[96px] sm:min-h-[110px] overflow-visible">
+      <!-- Dynamic SVG Line Track Canvas -->
       <svg id="mainLineSvg" class="w-full h-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
         <!-- Main Continuous Track Guide Line -->
         <line x1="0" y1="70" x2="6000" y2="70" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4"/>
@@ -1312,6 +1404,7 @@
     ---------------------------------------------------- */
     let isTimedMode = false;
     let isDailyMode = false;
+    let isPikedMode = false;
     let timerInterval = null;
     let timerValue = 30;
 
@@ -1323,20 +1416,138 @@
     let usedAnswersSet = new Set();
     let pendingAutoCorrect = null;
 
-    // Global SVG Canvas & Camera State
-    let accumulatedX = 60;
-    let currentViewBoxX = 0;
-    let targetViewBoxX = 0;
-    let panAnimationFrame = null;
-    let currentDotIndex = 0;
-    let placedBadges = [];
-
-    function toggleHelpModal(show) {
-      const modal = document.getElementById('helpModal');
-      if (modal) {
-        if (show) modal.classList.remove('hidden');
-        else modal.classList.add('hidden');
+    // Helper: UTC Seed Generator & Seeded Random for Daily Challenge
+    function getDailySeed() {
+      const now = new Date();
+      const dateStr = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, '0')}${String(now.getUTCDate()).padStart(2, '0')}`;
+      let hash = 0;
+      for (let i = 0; i < dateStr.length; i++) {
+        hash = (hash << 5) - hash + dateStr.charCodeAt(i);
+        hash |= 0;
       }
+      return Math.abs(hash);
+    }
+
+    function mulberry32(a) {
+      return function() {
+        let t = a += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function selectCategoryBalancedQuestions(isDaily = false) {
+      if (QUESTION_BANK.length === 0) buildMassiveQuestionBank();
+
+      let pool = [...QUESTION_BANK];
+      let rng = Math.random;
+
+      if (isDaily) {
+        const seed = getDailySeed();
+        const seededRng = mulberry32(seed);
+        rng = seededRng;
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(seededRng() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+      } else {
+        if (unseenQuestionPool.length < 8) {
+          unseenQuestionPool = shuffleArray(QUESTION_BANK);
+        }
+        pool = unseenQuestionPool;
+      }
+
+      const categories = {};
+      pool.forEach(q => {
+        if (!categories[q.cat]) categories[q.cat] = [];
+        categories[q.cat].push(q);
+      });
+
+      const catKeys = Object.keys(categories);
+      for (let i = catKeys.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [catKeys[i], catKeys[j]] = [catKeys[j], catKeys[i]];
+      }
+
+      const selected = [];
+      const usedPrompts = new Set();
+      let cIdx = 0;
+
+      while (selected.length < 8 && pool.length > 0) {
+        const cat = catKeys[cIdx % catKeys.length];
+        const catPool = categories[cat];
+        let picked = null;
+        if (catPool && catPool.length > 0) {
+          for (let i = 0; i < catPool.length; i++) {
+            if (!usedPrompts.has(catPool[i].prompt)) {
+              picked = catPool.splice(i, 1)[0];
+              break;
+            }
+          }
+        }
+
+        if (!picked) {
+          for (let i = 0; i < pool.length; i++) {
+            if (!usedPrompts.has(pool[i].prompt)) {
+              picked = pool.splice(i, 1)[0];
+              break;
+            }
+          }
+        }
+
+        if (picked) {
+          usedPrompts.add(picked.prompt);
+          selected.push(picked);
+          if (!isDaily) {
+            const poolIdx = unseenQuestionPool.findIndex(x => x.prompt === picked.prompt);
+            if (poolIdx !== -1) unseenQuestionPool.splice(poolIdx, 1);
+          }
+        } else {
+          break;
+        }
+        cIdx++;
+      }
+
+      for (let i = selected.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [selected[i], selected[j]] = [selected[j], selected[i]];
+      }
+
+      return selected;
+    }
+
+    /* ----------------------------------------------------
+       GAME LAUNCH & CONTROL FUNCTIONS
+    ---------------------------------------------------- */
+    function launchGame(mode) {
+      isTimedMode = (mode === 'timed');
+      isDailyMode = (mode === 'daily');
+      isPikedMode = false;
+      currentQIndex = 0;
+      totalScore = 0;
+      totalDistance = 0;
+      userHistory = [];
+      usedAnswersSet.clear();
+      clearPendingAutoCorrect();
+
+      resetSvgTrack();
+      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+
+      const menuScreen = document.getElementById('menuScreen');
+      const gameArea = document.getElementById('gameArea');
+      const resultsSection = document.getElementById('resultsSection');
+      const sliderContainer = document.getElementById('lineSliderContainer');
+
+      if (menuScreen) menuScreen.classList.add('-translate-y-full');
+      if (resultsSection) {
+        resultsSection.classList.add('hidden-results');
+        resultsSection.classList.remove('show-results');
+      }
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+      if (gameArea) gameArea.classList.remove('hidden');
+
+      renderQuestion(0);
     }
 
     function returnToMenu() {
@@ -1346,146 +1557,554 @@
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
+      const lineSec = document.getElementById('lineSection');
+      const sliderContainer = document.getElementById('lineSliderContainer');
 
       if (menuScreen) menuScreen.classList.remove('-translate-y-full');
-      if (gameArea) gameArea.classList.remove('hidden');
       if (resultsSection) {
         resultsSection.classList.add('hidden-results');
         resultsSection.classList.remove('show-results');
       }
-
-      initSvgTrackLine();
-    }
-
-    // Hash current UTC date (YYYYMMDD) for deterministic daily challenge generation
-    function getDailySeed() {
-      const d = new Date();
-      const dateStr = `${d.getUTCFullYear()}${(d.getUTCMonth() + 1).toString().padStart(2, '0')}${d.getUTCDate().toString().padStart(2, '0')}`;
-      let hash = 0;
-      for (let i = 0; i < dateStr.length; i++) {
-        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
-        hash |= 0;
+      if (gameArea) gameArea.classList.remove('hidden');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+      if (lineSec) {
+        lineSec.classList.remove('order-2');
+        lineSec.classList.add('order-2');
       }
-      return Math.abs(hash);
+
+      if (isPikedMode) {
+        closePikedLobby();
+        isPikedMode = false;
+      }
+
+      resetSvgTrack();
     }
 
-    // Fast PRNG algorithm seeded by daily hash
-    function mulberry32(a) {
-      return function() {
-        let t = (a += 0x6d2b79f5);
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
+    function toggleHelpModal(show) {
+      const modal = document.getElementById('helpModal');
+      if (!modal) return;
+      if (show) modal.classList.remove('hidden');
+      else modal.classList.add('hidden');
     }
 
-    function selectCategoryBalancedQuestions(isDaily = false) {
-      // Deterministic generation for Daily Challenge based on today's seed
-      if (isDaily) {
-        const seed = getDailySeed();
-        const rng = mulberry32(seed);
+    function handleTimeout() {
+      playAudioTone('timeout');
+      const card = document.getElementById('questionCard');
+      if (card) {
+        card.classList.add('card-flash-red');
+      }
+      showFeedback("Time's up!");
+      setTimeout(() => {
+        if (card) card.classList.remove('card-flash-red');
+        skipQuestion(true);
+      }, 600);
+    }
 
-        const seededShuffle = (arr) => {
-          const array = [...arr];
-          for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(rng() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-          return array;
-        };
+    function resetSvgTrack() {
+      accumulatedX = 60;
+      currentViewBoxX = 0;
+      targetViewBoxX = 0;
+      currentDotIndex = 0;
+      placedBadges = [];
 
-        const byCategory = {};
-        QUESTION_BANK.forEach((q) => {
-          if (!byCategory[q.cat]) byCategory[q.cat] = [];
-          byCategory[q.cat].push(q);
+      const svg = document.getElementById('mainLineSvg');
+      const segGroup = document.getElementById('svgLineSegments');
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const nodeGroup = document.getElementById('svgLineNodes');
+
+      if (segGroup) segGroup.innerHTML = '';
+      if (badgeGroup) badgeGroup.innerHTML = '';
+      if (nodeGroup) {
+        nodeGroup.innerHTML = `
+          <circle id="svg-node-0" cx="60" cy="70" r="7" stroke="#ffffff" stroke-width="3" fill="#121212" class="node-transition"/>
+        `;
+      }
+      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
+    }
+
+    function panCameraToFit(endX) {
+      const svg = document.getElementById('mainLineSvg');
+      if (!svg) return;
+
+      if (endX > 850) {
+        targetViewBoxX = endX - 850;
+      } else {
+        targetViewBoxX = 0;
+      }
+
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      function step() {
+        const diff = targetViewBoxX - currentViewBoxX;
+        if (Math.abs(diff) > 0.5) {
+          currentViewBoxX += diff * 0.15;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          panAnimationFrame = requestAnimationFrame(step);
+        } else {
+          currentViewBoxX = targetViewBoxX;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        }
+      }
+
+      step();
+    }
+
+    function scrubLineView(val) {
+      const svg = document.getElementById('mainLineSvg');
+      if (!svg) return;
+      const maxPan = Math.max(0, accumulatedX - 900);
+      const targetX = (val / 100) * maxPan;
+      svg.setAttribute('viewBox', `${targetX} 0 1000 140`);
+    }
+
+    function animateCardOut(fromTimeout, callback) {
+      const card = document.getElementById('questionCard');
+      if (!card) {
+        if (callback) callback();
+        return;
+      }
+
+      card.classList.add('card-slide-out');
+      setTimeout(() => {
+        card.classList.remove('card-slide-out');
+        card.classList.add('card-slide-in-prepare');
+        if (callback) callback();
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            card.classList.remove('card-slide-in-prepare');
+          });
         });
+      }, 300);
+    }
 
-        const categories = seededShuffle(Object.keys(byCategory));
-        categories.forEach((c) => {
-          byCategory[c] = seededShuffle(byCategory[c]);
-        });
+    function showFeedback(msg) {
+      const el = document.getElementById('feedbackText');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => {
+        if (el.textContent === msg) {
+          el.classList.add('hidden');
+        }
+      }, 3500);
+    }
 
-        const selected = [];
-        const usedPrompts = new Set();
-        let categoryIdx = 0;
+    function clearPendingAutoCorrect() {
+      pendingAutoCorrect = null;
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn) submitBtn.textContent = 'Submit';
+      const fb = document.getElementById('feedbackText');
+      if (fb) fb.classList.add('hidden');
+    }
 
-        while (selected.length < 8) {
-          const cat = categories[categoryIdx % categories.length];
-          const pool = byCategory[cat];
-          if (pool && pool.length > 0) {
-            const q = pool.pop();
-            if (q && !usedPrompts.has(q.prompt)) {
-              usedPrompts.add(q.prompt);
-              selected.push(q);
-            }
-          }
-          categoryIdx++;
-          if (selected.length < 8 && Object.values(byCategory).every((p) => p.length === 0)) break;
+    // Multiplayer (Pik-ed) P2P State
+    let peer = null;
+    let myPeerId = '';
+    let myPlayerName = 'Player 1';
+    let roomCode = '';
+    let isHost = false;
+    let connections = []; // Host's active peer connections
+    let hostConn = null; // Guest's connection to host
+    let pikedPlayers = []; // [{ id, name, isHost, isEliminated, color, distance, score, history, currentAnswer, timeTaken }]
+    let roundStartTime = 0;
+    let roomChannel = null; // BroadcastChannel for local/tab fallback syncing
+    const PLAYER_COLORS = ['#388e3c', '#1976d2', '#8e24aa', '#d4af37'];
+
+    // Global SVG Canvas & Camera State
+    let accumulatedX = 60;
+    let currentViewBoxX = 0;
+    let targetViewBoxX = 0;
+    let panAnimationFrame = null;
+    let currentDotIndex = 0;
+    let placedBadges = [];
+
+    /* ----------------------------------------------------
+       4. PIK-ED MULTIPLAYER NETWORKING & LOBBY SYSTEM
+    ---------------------------------------------------- */
+    function showLobbyFeedback(msg, isError = true) {
+      const el = document.getElementById('lobbyErrorMsg');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = `text-xs font-display font-medium text-center py-2 px-3 rounded-xl border ${
+        isError 
+          ? 'bg-red-950/60 border-red-500/40 text-red-300' 
+          : 'bg-pik-epic/20 border-pik-epic/40 text-pik-gold animate-pulse'
+      }`;
+      el.classList.remove('hidden');
+    }
+
+    function clearLobbyFeedback() {
+      const el = document.getElementById('lobbyErrorMsg');
+      if (el) el.classList.add('hidden');
+    }
+
+    function openPikedLobby() {
+      const modal = document.getElementById('pikedLobbyScreen');
+      if (modal) modal.classList.remove('hidden');
+      document.getElementById('lobbySetupView').classList.remove('hidden');
+      document.getElementById('lobbyActiveView').classList.add('hidden');
+      clearLobbyFeedback();
+    }
+
+    function closePikedLobby() {
+      const modal = document.getElementById('pikedLobbyScreen');
+      if (modal) modal.classList.add('hidden');
+      if (roomChannel) {
+        try { roomChannel.close(); } catch(e) {}
+        roomChannel = null;
+      }
+      if (peer) {
+        try { peer.destroy(); } catch(e) {}
+        peer = null;
+      }
+    }
+
+    function generateRoomCode() {
+      return Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+
+    function handlePlayerDisconnect(peerId) {
+      pikedPlayers = pikedPlayers.filter(p => p.id !== peerId);
+      connections = connections.filter(c => c.peer !== peerId);
+      if (isHost) {
+        broadcastLobbyState();
+        renderLobbyUI();
+      }
+    }
+
+    function initPeer(customCode = null) {
+      return new Promise((resolve, reject) => {
+        if (typeof Peer === 'undefined') {
+          reject(new Error("PeerJS network library missing."));
+          return;
         }
 
-        return selected;
+        if (peer) {
+          try { peer.destroy(); } catch(e) {}
+          peer = null;
+        }
+
+        let resolved = false;
+        const timeout = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            reject(new Error("Matchmaking server connection timed out."));
+          }
+        }, 3500);
+
+        try {
+          const id = customCode ? `PIK-${customCode}` : null;
+          peer = id ? new Peer(id) : new Peer();
+
+          peer.on('open', (assignedId) => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              myPeerId = assignedId;
+              resolve(assignedId);
+            }
+          });
+
+          peer.on('error', (err) => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              reject(err);
+            }
+          });
+        } catch (err) {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            reject(err);
+          }
+        }
+      });
+    }
+
+    function setupBroadcastChannel(code) {
+      if (roomChannel) {
+        try { roomChannel.close(); } catch(e) {}
+      }
+      if ('BroadcastChannel' in window) {
+        roomChannel = new BroadcastChannel('pik_room_' + code);
+        roomChannel.onmessage = (event) => {
+          const data = event.data;
+          if (isHost) {
+            if (data.type === 'JOIN') {
+              if (pikedPlayers.length >= 4) return;
+              const newPlayer = {
+                id: data.senderId,
+                name: data.playerName || `Player ${pikedPlayers.length + 1}`,
+                isHost: false,
+                isEliminated: false,
+                color: PLAYER_COLORS[pikedPlayers.length % 4],
+                distance: 0,
+                score: 0,
+                history: [],
+                currentAnswer: null,
+                timeTaken: 35
+              };
+              if (!pikedPlayers.some(p => p.id === data.senderId)) {
+                pikedPlayers.push(newPlayer);
+                broadcastLobbyState();
+                renderLobbyUI();
+              }
+            } else if (data.type === 'SUBMIT_ANSWER') {
+              const p = pikedPlayers.find(x => x.id === data.senderId);
+              if (p) {
+                p.currentAnswer = data.answer;
+                p.timeTaken = data.timeTaken;
+              }
+              checkAllAnswersSubmitted();
+            }
+          } else {
+            handleGuestData(data);
+          }
+        };
+      }
+    }
+
+    async function createPikedRoom() {
+      const hostBtn = document.getElementById('hostLobbyBtn');
+      if (hostBtn) {
+        hostBtn.disabled = true;
+        hostBtn.innerHTML = `
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          Creating...
+        `;
+      }
+      showLobbyFeedback("Creating lobby...", false);
+
+      roomCode = generateRoomCode();
+      isHost = true;
+      myPlayerName = 'Host (P1)';
+      myPeerId = 'HOST-' + Math.random().toString(36).substring(2, 7);
+
+      setupBroadcastChannel(roomCode);
+
+      try {
+        const peerId = await initPeer(roomCode);
+        myPeerId = peerId;
+      } catch (e) {
+        console.warn("PeerJS connection bypassed, using local channel:", e);
       }
 
-      // Standard and Timed randomized question selection
-      if (unseenQuestionPool.length < 8) {
-        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      if (hostBtn) {
+        hostBtn.disabled = false;
+        hostBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+          Host Lobby
+        `;
       }
 
-      const byCategory = {};
-      unseenQuestionPool.forEach(q => {
-        if (!byCategory[q.cat]) byCategory[q.cat] = [];
-        byCategory[q.cat].push(q);
+      pikedPlayers = [{
+        id: myPeerId,
+        name: myPlayerName,
+        isHost: true,
+        isEliminated: false,
+        color: PLAYER_COLORS[0],
+        distance: 0,
+        score: 0,
+        history: [],
+        currentAnswer: null,
+        timeTaken: 0
+      }];
+
+      if (peer) {
+        peer.on('connection', (conn) => {
+          if (pikedPlayers.length >= 4) {
+            conn.send({ type: 'FULL' });
+            conn.close();
+            return;
+          }
+          connections.push(conn);
+          conn.on('data', (data) => handleHostData(conn.peer, data));
+          conn.on('close', () => handlePlayerDisconnect(conn.peer));
+        });
+      }
+
+      clearLobbyFeedback();
+      renderLobbyUI();
+    }
+
+    async function joinPikedRoom() {
+      const input = document.getElementById('joinCodeInput');
+      const joinBtn = document.getElementById('joinLobbyBtn');
+      const code = input ? input.value.trim().toUpperCase() : '';
+
+      if (!code || code.length < 4) {
+        showLobbyFeedback("Please enter a valid 4-character Room Code.");
+        return;
+      }
+
+      if (joinBtn) {
+        joinBtn.disabled = true;
+        joinBtn.textContent = "Joining...";
+      }
+      showLobbyFeedback("Connecting to host...", false);
+
+      isHost = false;
+      roomCode = code;
+      myPeerId = 'GUEST-' + Math.random().toString(36).substring(2, 7);
+      myPlayerName = `Player ${Math.floor(Math.random() * 80) + 2}`;
+
+      setupBroadcastChannel(roomCode);
+
+      if (roomChannel) {
+        roomChannel.postMessage({
+          type: 'JOIN',
+          senderId: myPeerId,
+          playerName: myPlayerName
+        });
+      }
+
+      try {
+        await initPeer();
+        hostConn = peer.connect(`PIK-${roomCode}`);
+
+        hostConn.on('open', () => {
+          clearLobbyFeedback();
+          if (joinBtn) {
+            joinBtn.disabled = false;
+            joinBtn.textContent = "Join";
+          }
+          hostConn.send({
+            type: 'JOIN',
+            senderId: myPeerId,
+            playerName: myPlayerName
+          });
+        });
+
+        hostConn.on('data', (data) => handleGuestData(data));
+      } catch (e) {
+        console.warn("PeerJS connection failed, utilizing local sync channel:", e);
+      }
+
+      if (joinBtn) {
+        joinBtn.disabled = false;
+        joinBtn.textContent = "Join";
+      }
+    }
+
+    function handleHostData(senderId, data) {
+      if (data.type === 'JOIN') {
+        if (pikedPlayers.length >= 4) return;
+        const newPlayer = {
+          id: senderId,
+          name: data.playerName || `Player ${pikedPlayers.length + 1}`,
+          isHost: false,
+          isEliminated: false,
+          color: PLAYER_COLORS[pikedPlayers.length % 4],
+          distance: 0,
+          score: 0,
+          history: [],
+          currentAnswer: null,
+          timeTaken: 35
+        };
+        if (!pikedPlayers.some(p => p.id === senderId)) {
+          pikedPlayers.push(newPlayer);
+          broadcastLobbyState();
+          renderLobbyUI();
+        }
+      } else if (data.type === 'SUBMIT_ANSWER') {
+        const p = pikedPlayers.find(x => x.id === senderId);
+        if (p) {
+          p.currentAnswer = data.answer;
+          p.timeTaken = data.timeTaken;
+        }
+        checkAllAnswersSubmitted();
+      }
+    }
+
+    function handleGuestData(data) {
+      if (data.type === 'LOBBY_STATE') {
+        pikedPlayers = data.players;
+        renderLobbyUI();
+      } else if (data.type === 'START_GAME') {
+        activeQuestions = data.questions;
+        isPikedMode = true;
+        closePikedLobby();
+        launchPikedGameView();
+      } else if (data.type === 'START_ROUND') {
+        currentQIndex = data.qIndex;
+        startCountdown(() => {
+          renderQuestion(currentQIndex);
+        });
+      } else if (data.type === 'ROUND_REVEAL') {
+        showPikedRoundReveal(data);
+      }
+    }
+
+    function broadcastLobbyState() {
+      const payload = { type: 'LOBBY_STATE', players: pikedPlayers };
+      if (isHost) {
+        connections.forEach(c => c.send(payload));
+        if (roomChannel) roomChannel.postMessage(payload);
+      }
+    }
+
+    function renderLobbyUI() {
+      document.getElementById('lobbySetupView').classList.add('hidden');
+      document.getElementById('lobbyActiveView').classList.remove('hidden');
+
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
+      document.getElementById('playerCountText').textContent = pikedPlayers.length;
+
+      const list = document.getElementById('lobbyPlayerList');
+      list.innerHTML = '';
+
+      pikedPlayers.forEach((p) => {
+        const item = document.createElement('div');
+        item.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display font-bold';
+        item.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
+            <span class="text-slate-100">${p.name} ${p.id === myPeerId ? '(You)' : ''}</span>
+          </div>
+          ${p.isHost ? '<span class="text-[10px] bg-pik-gold/20 text-pik-gold px-2 py-0.5 rounded">HOST</span>' : ''}
+        `;
+        list.appendChild(item);
       });
 
-      const categories = shuffleArray(Object.keys(byCategory));
-      const selected = [];
-      const usedPrompts = new Set();
-
-      let categoryIdx = 0;
-      while (selected.length < 8 && unseenQuestionPool.length > 0) {
-        let poolToUse = unseenQuestionPool;
-        if (categories.length > 0) {
-          const cat = categories[categoryIdx % categories.length];
-          if (byCategory[cat] && byCategory[cat].length > 0) {
-            poolToUse = byCategory[cat];
-          }
-          categoryIdx++;
-        }
-
-        const q = poolToUse.pop();
-        const mainIdx = unseenQuestionPool.indexOf(q);
-        if (mainIdx !== -1) unseenQuestionPool.splice(mainIdx, 1);
-
-        if (q && !usedPrompts.has(q.prompt)) {
-          usedPrompts.add(q.prompt);
-          selected.push(q);
-        }
-
-        if (unseenQuestionPool.length === 0) {
-          unseenQuestionPool = shuffleArray(QUESTION_BANK);
-        }
+      const startBtn = document.getElementById('startPikedBtn');
+      if (isHost) {
+        startBtn.classList.remove('hidden');
+      } else {
+        startBtn.classList.add('hidden');
       }
-
-      return shuffleArray(selected);
     }
 
-    function launchGame(mode) {
-      isTimedMode = (mode === 'timed');
-      isDailyMode = (mode === 'daily');
+    function copyRoomCode() {
+      const code = document.getElementById('roomCodeDisplay').textContent;
+      navigator.clipboard.writeText(code);
+      alert(`Room Code ${code} copied to clipboard!`);
+    }
 
-      totalScore = 0;
-      totalDistance = 0;
-      currentQIndex = 0;
-      userHistory = [];
-      usedAnswersSet = new Set();
-      pendingAutoCorrect = null;
+    function hostStartPikedGame() {
+      if (!isHost) return;
+      activeQuestions = selectCategoryBalancedQuestions(false);
+      isPikedMode = true;
 
-      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+      const payload = {
+        type: 'START_GAME',
+        questions: activeQuestions
+      };
 
+      connections.forEach(c => c.send(payload));
+      if (roomChannel) roomChannel.postMessage(payload);
+
+      closePikedLobby();
+      launchPikedGameView();
+    }
+
+    function launchPikedGameView() {
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
-      const lineSection = document.getElementById('lineSection');
 
       if (menuScreen) menuScreen.classList.add('-translate-y-full');
       if (resultsSection) {
@@ -1494,105 +2113,157 @@
       }
       if (gameArea) gameArea.classList.remove('hidden');
 
-      if (lineSection) {
-        lineSection.classList.remove('order-1', 'order-3');
-        lineSection.classList.add('order-2');
-      }
-
-      initSvgTrackLine();
-      renderQuestion(0);
-    }
-
-    function clearPendingAutoCorrect() {
-      if (pendingAutoCorrect) {
-        pendingAutoCorrect = null;
-        const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) submitBtn.textContent = 'Submit';
-        hideFeedback();
+      renderMultiplayerTrackCanvas();
+      
+      if (isHost) {
+        hostStartNextRound(0);
       }
     }
 
-    /* ----------------------------------------------------
-       5. LINE CANVAS & SVG BADGES
-    ---------------------------------------------------- */
-    function initSvgTrackLine() {
-      const segGroup = document.getElementById('svgLineSegments');
-      const badgeGroup = document.getElementById('svgLineBadges');
-      const nodeGroup = document.getElementById('svgLineNodes');
-      const svg = document.getElementById('mainLineSvg');
+    function renderMultiplayerTrackCanvas() {
+      const container = document.getElementById('trackCanvasContainer');
+      if (!isPikedMode) return;
 
-      if (segGroup) segGroup.innerHTML = '';
-      if (badgeGroup) badgeGroup.innerHTML = '';
-      if (nodeGroup) nodeGroup.innerHTML = '';
-
-      accumulatedX = 60;
-      currentViewBoxX = 0;
-      targetViewBoxX = 0;
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-      currentDotIndex = 0;
-      placedBadges = [];
-      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
-
-      const sliderContainer = document.getElementById('lineSliderContainer');
-      if (sliderContainer) sliderContainer.classList.add('hidden');
-
-      const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      startNode.setAttribute('id', 'svg-node-0');
-      startNode.setAttribute('cx', '60');
-      startNode.setAttribute('cy', '70');
-      startNode.setAttribute('r', '7');
-      startNode.setAttribute('stroke', '#ffffff');
-      startNode.setAttribute('stroke-width', '3');
-      startNode.setAttribute('fill', '#121212');
-      startNode.classList.add('node-transition');
-      if (nodeGroup) nodeGroup.appendChild(startNode);
+      container.innerHTML = '';
+      pikedPlayers.forEach((p, idx) => {
+        const trackDiv = document.createElement('div');
+        trackDiv.className = 'w-full h-12 relative flex items-center overflow-visible border-b border-pik-border/40';
+        trackDiv.innerHTML = `
+          <div class="absolute left-0 -top-1.5 text-[9px] font-display font-bold uppercase tracking-wider flex items-center gap-1.5 ${p.isEliminated ? 'text-slate-500 line-through' : 'text-slate-200'}">
+            <span class="w-2 h-2 rounded-full" style="background-color: ${p.isEliminated ? '#475569' : p.color}"></span>
+            ${p.name} ${p.isEliminated ? '[ELIMINATED]' : ''}
+          </div>
+          <svg id="pikedSvg-${idx}" class="w-full h-full overflow-visible" viewBox="0 0 1000 60" preserveAspectRatio="xMinYMid meet">
+            <line x1="0" y1="30" x2="6000" y2="30" stroke="${p.isEliminated ? '#334155' : p.color}" stroke-opacity="${p.isEliminated ? '0.2' : '0.4'}" stroke-width="2" stroke-dasharray="4 4"/>
+            <g id="pikedSegs-${idx}"></g>
+            <circle cx="60" cy="30" r="5" stroke="${p.isEliminated ? '#475569' : p.color}" stroke-width="2" fill="#121212"/>
+          </svg>
+        `;
+        container.appendChild(trackDiv);
+      });
     }
 
-    function panCameraToFit(targetX, instant = false) {
-      const svg = document.getElementById('mainLineSvg');
-      if (!svg) return;
+    function startCountdown(onComplete) {
+      const overlay = document.getElementById('countdownOverlay');
+      const numEl = document.getElementById('countdownNumber');
+      overlay.classList.remove('hidden');
 
-      if (targetX > 750) {
-        targetViewBoxX = targetX - 650;
-      } else {
-        targetViewBoxX = 0;
-      }
+      let count = 3;
+      numEl.textContent = count;
 
-      if (instant) {
-        if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-        currentViewBoxX = targetViewBoxX;
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-        return;
-      }
-
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-
-      function animatePan() {
-        const diff = targetViewBoxX - currentViewBoxX;
-        if (Math.abs(diff) < 0.3) {
-          currentViewBoxX = targetViewBoxX;
-          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-          panAnimationFrame = null;
-          return;
+      const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          numEl.textContent = count;
+        } else {
+          clearInterval(timer);
+          overlay.classList.add('hidden');
+          onComplete();
         }
-        currentViewBoxX += diff * 0.08;
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-        panAnimationFrame = requestAnimationFrame(animatePan);
-      }
-
-      panAnimationFrame = requestAnimationFrame(animatePan);
+      }, 1000);
     }
 
-    function scrubLineView(percent) {
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-      const maxPanX = Math.max(0, accumulatedX - 650);
-      const targetX = (percent / 100) * maxPanX;
-      currentViewBoxX = targetX;
-      targetViewBoxX = targetX;
-      const svg = document.getElementById('mainLineSvg');
-      if (svg) {
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+    function hostStartNextRound(qIdx) {
+      if (!isHost) return;
+      currentQIndex = qIdx;
+      pikedPlayers.forEach(p => { p.currentAnswer = null; p.timeTaken = 35; });
+
+      const payload = { type: 'START_ROUND', qIndex: qIdx };
+      connections.forEach(c => c.send(payload));
+      if (roomChannel) roomChannel.postMessage(payload);
+
+      startCountdown(() => {
+        renderQuestion(currentQIndex);
+      });
+    }
+
+    function checkAllAnswersSubmitted() {
+      if (!isHost) return;
+      const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
+      const allSubmitted = activePlayers.every(p => p.currentAnswer !== null);
+
+      if (allSubmitted) {
+        evaluatePikedRound();
       }
+    }
+
+    function evaluatePikedRound() {
+      if (!isHost) return;
+      const qObj = activeQuestions[currentQIndex];
+
+      const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
+      const roundResults = activePlayers.map(p => {
+        const res = findAnswerRarity(p.currentAnswer || '', qObj);
+        return {
+          player: p,
+          answer: p.currentAnswer || 'No Answer',
+          rarity: res ? res : { key: 'skipped', name: 'Invalid/Skipped', color: '#475569', length: 0, points: 0 },
+          timeTaken: p.timeTaken
+        };
+      });
+
+      const rankOrder = { skipped: 0, common: 1, uncommon: 2, rare: 3, epic: 4, gold: 5 };
+      roundResults.sort((a, b) => {
+        const rA = rankOrder[a.rarity.key];
+        const rB = rankOrder[b.rarity.key];
+        if (rA !== rB) return rA - rB; // Lowest rarity first
+        return b.timeTaken - a.timeTaken; // Tie-breaker: longest time taken first
+      });
+
+      const eliminated = roundResults[0].player;
+      eliminated.isEliminated = true;
+
+      const payload = {
+        type: 'ROUND_REVEAL',
+        results: roundResults,
+        eliminatedId: eliminated.id,
+        isGameOver: pikedPlayers.filter(p => !p.isEliminated).length <= 1
+      };
+
+      connections.forEach(c => c.send(payload));
+      if (roomChannel) roomChannel.postMessage(payload);
+      showPikedRoundReveal(payload);
+    }
+
+    function showPikedRoundReveal(payload) {
+      const overlay = document.getElementById('pikedRevealOverlay');
+      const list = document.getElementById('pikedRevealList');
+      const banner = document.getElementById('eliminationBanner');
+
+      overlay.classList.remove('hidden');
+      list.innerHTML = '';
+
+      payload.results.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display';
+        card.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${r.player.color}"></span>
+            <span class="font-bold text-slate-100">${r.player.name}: "${r.answer}"</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-bold" style="color: ${r.rarity.color}">${r.rarity.name}</span>
+            <span class="text-slate-400 font-medium">${r.timeTaken.toFixed(1)}s</span>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+      const elimPlayer = pikedPlayers.find(p => p.id === payload.eliminatedId);
+      banner.textContent = `${elimPlayer ? elimPlayer.name : 'A player'} was ELIMINATED! (Lowest rarity / Longest response time)`;
+
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        renderMultiplayerTrackCanvas();
+
+        if (payload.isGameOver) {
+          const winner = pikedPlayers.find(p => !p.isEliminated) || pikedPlayers[0];
+          alert(`🎉 GAME OVER! ${winner.name} IS THE PIK-ED CHAMPION! 🎉`);
+          returnToMenu();
+        } else if (isHost) {
+          hostStartNextRound(currentQIndex + 1);
+        }
+      }, 4500);
     }
 
     /* ----------------------------------------------------
@@ -1634,16 +2305,18 @@
         }
       }
 
-      if (isTimedMode) {
+      if (isTimedMode || isPikedMode) {
         timerPill.classList.remove('hidden');
-        startQuestionTimer();
+        startQuestionTimer(isPikedMode ? 35 : 30);
       } else {
         timerPill.classList.add('hidden');
       }
+
+      roundStartTime = Date.now();
     }
 
-    function startQuestionTimer() {
-      timerValue = 30;
+    function startQuestionTimer(seconds = 30) {
+      timerValue = seconds;
       const timerText = document.getElementById('timerText');
       if (timerText) timerText.textContent = `${timerValue}s`;
 
@@ -1658,54 +2331,30 @@
       }, 1000);
     }
 
-    function handleTimeout() {
-      playAudioTone('timeout');
-      const card = document.getElementById('questionCard');
-      card.classList.add('card-flash-red');
-
-      setTimeout(() => {
-        skipQuestion(true);
-      }, 450);
-    }
-
-    function showFeedback(msg) {
-      const fb = document.getElementById('feedbackText');
-      if (fb) {
-        fb.textContent = msg;
-        fb.classList.remove('hidden');
-      }
-    }
-
-    function hideFeedback() {
-      const fb = document.getElementById('feedbackText');
-      if (fb) {
-        fb.textContent = '';
-        fb.classList.add('hidden');
-      }
-    }
-
-    function animateCardOut(isTimeout, callback) {
-      const card = document.getElementById('questionCard');
-      card.classList.add('card-slide-out');
-
-      setTimeout(() => {
-        card.classList.remove('card-slide-out', 'card-flash-red');
-        card.classList.add('card-slide-in-prepare');
-
-        callback();
-
-        // Force browser reflow to prevent subpixel layout shift glitch
-        void card.offsetHeight;
-
-        requestAnimationFrame(() => {
-          card.classList.remove('card-slide-in-prepare');
-        });
-      }, 300);
-    }
-
     function submitAnswer() {
       const inputEl = document.getElementById('answerInput');
       const rawVal = inputEl.value.trim();
+      const timeTakenSec = Math.min(35, (Date.now() - roundStartTime) / 1000);
+
+      if (isPikedMode) {
+        if (timerInterval) clearInterval(timerInterval);
+        if (isHost) {
+          const hostP = pikedPlayers.find(p => p.id === myPeerId);
+          if (hostP) {
+            hostP.currentAnswer = rawVal || 'Skipped';
+            hostP.timeTaken = timeTakenSec;
+          }
+          checkAllAnswersSubmitted();
+        } else if (hostConn) {
+          hostConn.send({
+            type: 'SUBMIT_ANSWER',
+            answer: rawVal || 'Skipped',
+            timeTaken: timeTakenSec
+          });
+        }
+        showFeedback("Answer submitted! Waiting for other players...");
+        return;
+      }
 
       if (!rawVal) {
         showFeedback("Please enter an answer or skip.");
