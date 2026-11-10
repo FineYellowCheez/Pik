@@ -913,6 +913,1784 @@
         }
       ];
 
+      // ----------------------------------------------------
+      // 80+ NEW DIVERSE QUESTIONS (EXACTLY 1 PIK PER QUESTION)
+      // ----------------------------------------------------
+      const newMassiveQuestionSet = [
+        // --- WORDPLAY & LANGUAGE ---
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing double "F"',
+          gold: ["Snaffling"],
+          epic: ["Chaffinch", "Scaffold", "Pillory", "Suffocate"],
+          rare: ["Scuffle", "Riffraff", "Affidavit", "Offal", "Tariff", "Bluff", "Baffle", "Muffle", "Afford"],
+          uncommon: ["Afford", "Effort", "Traffic", "Officer", "Offense", "Offer", "Coffee", "Toffee", "Staff", "Stiff", "Cliff", "Sheriff", "Muffin", "Buffer", "Suffer", "Differ", "Shuffle", "Raffle", "Waffle", "Gaff", "Flaff", "Puff", "Fluff", "Sniff", "Cuff"],
+          common: ["Off", "Offer", "Offered", "Offering", "Staff", "Staffed", "Stiff", "Cliff", "Cliffs", "Coffee", "Toffee", "Traffic", "Officer", "Officers", "Office", "Effort", "Efforts", "Puff", "Puffs", "Fluff", "Fluffy", "Sniff", "Sniffs", "Cuff", "Cuffs"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "N"',
+          gold: ["Solemnness"],
+          epic: ["Damnation", "Limner", "Columnist", "Condemnation"],
+          rare: ["Solemnity", "Hymnal", "Hymnbook", "Damnable", "Columnar"],
+          uncommon: ["Autumntime", "Autumnal", "Solemnly", "Damned", "Damning", "Condemned", "Condemning", "Columned", "Hymns", "Singing hymns", "Church hymn"],
+          common: ["Autumn", "Column", "Hymn", "Solemn", "Damn", "Condemn", "Autumns", "Columns", "Hymns", "Solemnity", "Damned"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word with 4 or more syllables',
+          gold: ["Honorificabilitudinitatibus"],
+          epic: ["Incomprehensible", "Extraordinary", "Disproportionate", "Uncharacteristically"],
+          rare: ["Unbelievable", "Intercontinental", "Biodegradable", "Multiplication", "Identification", "Reconciliation"],
+          uncommon: ["University", "Incredible", "Geographical", "Psychological", "Responsibility", "Opportunity", "Celebration", "Information", "Community", "Generation", "Organization", "Transportation", "Communication", "Investigation", "Administration", "Recommendation", "Participation", "Representative"],
+          common: ["Information", "Education", "Population", "Situation", "Technology", "Category", "Activity", "Ability", "Ecology", "Economy", "Delivery", "Discovery", "History", "Victory", "Memory"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with the letter "Z"',
+          gold: ["Zymurgy"],
+          epic: ["Zealot", "Zilch", "Zirconium", "Zephyr"],
+          rare: ["Zucchini", "Zodiac", "Zenith", "Zipper", "Zombie", "Zillion", "Zigzag"],
+          uncommon: ["Zeal", "Zealous", "Zero", "Zone", "Zoning", "Zinc", "Zest", "Zesty", "Zebra", "Zebras", "Zookeeper", "Zoology", "Zoological", "Zoom", "Zooming", "Zoomed", "Zip", "Zipping", "Zipped", "Zippers", "Zucchini", "Zuccinis", "Zodiac", "Zombies"],
+          common: ["Zero", "Zone", "Zoo", "Zebra", "Zip", "Zipper", "Zoom", "Zest", "Zinc", "Zombie", "Zucchini", "Zodiac", "Zoos", "Zebras", "Zeros", "Zones", "Zipped", "Zipping"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with the letter "Q"',
+          gold: ["Quisling"],
+          epic: ["Quagmire", "Quixotic", "Quorum", "Quirt"],
+          rare: ["Quintessential", "Quarantined", "Quasar", "Quiver", "Quench", "Quirky"],
+          uncommon: ["Query", "Queries", "Quota", "Quotas", "Qualify", "Quality", "Quantity", "Quantities", "Quarterly", "Quartet", "Quartets", "Quartz", "Quench", "Quenched", "Quirks", "Quirky", "Quiver", "Quivering", "Quizzes", "Quiz", "Quotas"],
+          common: ["Queen", "Quiet", "Quick", "Question", "Questions", "Quality", "Quantity", "Quarter", "Quarters", "Quit", "Quitting", "Quiz", "Quizzes", "Quote", "Quotes", "Quoted", "Quoting", "Quickly", "Quietly"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word ending in "-tion"',
+          gold: ["Antidisestablishmentarianism"],
+          epic: ["Juxtaposition", "Circumnavigation", "Reconfiguration", "Substantiation"],
+          rare: ["Exaggeration", "Implementation", "Recommendation", "Authentication", "Deterioration"],
+          uncommon: ["Nation", "Station", "Action", "Option", "Motion", "Potion", "Section", "Caption", "Fraction", "Friction", "Fiction", "Function", "Location", "Vacation", "Relation", "Creation", "Addition", "Edition", "Position", "Condition", "Reaction", "Traction", "Attraction", "Protection"],
+          common: ["Action", "Nation", "Station", "Option", "Motion", "Section", "Creation", "Location", "Vacation", "Question", "Information", "Education", "Population", "Attention", "Direction", "Connection", "Condition", "Position", "Solution", "Production"]
+        },
+
+        // --- CULINARY & FOOD ---
+        {
+          cat: 'culinary',
+          prompt: 'Name a vegetable that grows underground',
+          gold: ["Sunchoke"],
+          epic: ["Celeriac", "Salsify", "Jicama", "Daikon"],
+          rare: ["Horseradish", "Rutabaga", "Turnip", "Parsnip", "Shallot", "Cassava", "Taro"],
+          uncommon: ["Radish", "Radishes", "Garlic", "Garlic Clove", "Sweet Potato", "Yam", "Beet", "Beetroot", "Turnips", "Parsnips", "Shallots", "Onion", "Red Onion", "White Onion", "Yellow Onion", "Spring Onion", "Ginger", "Ginger Root", "Turmeric Root", "Leek"],
+          common: ["Potato", "Potatoes", "Carrot", "Carrots", "Onion", "Onions", "Garlic", "Sweet Potato", "Sweet Potatoes", "Radish", "Beet", "Beets", "Yam", "Yams", "Ginger"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a citrus fruit',
+          gold: ["Buddha's Hand"],
+          epic: ["Yuzu", "Kumquat", "Ugli Fruit", "Calamansi"],
+          rare: ["Meyer Lemon", "Blood Orange", "Pomelo", "Key Lime", "Satsuma", "Tangelo"],
+          uncommon: ["Mandarin", "Mandarin Orange", "Clementine", "Tangerine", "Grapefruit", "Lime", "Lemon", "Pink Grapefruit", "Ruby Red Grapefruit", "Bitter Orange", "Sweet Lime", "Citron", "Kaffir Lime", "Persian Lime"],
+          common: ["Orange", "Lemon", "Lime", "Grapefruit", "Tangerine", "Clementine", "Oranges", "Lemons", "Limes", "Grapefruits", "Tangerines", "Clementines", "Mandarin"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a classic flavor of ice cream',
+          gold: ["Ube"],
+          epic: ["Rum Raisin", "Butter Pecan", "Pistachio", "Cotton Candy"],
+          rare: ["Dulce de Leche", "Rocky Road", "Coffee", "Mint Chocolate Chip", "Salted Caramel", "Cookie Dough"],
+          uncommon: ["Vanilla", "Chocolate", "Strawberry", "Cookies and Cream", "Mint Chip", "Neapolitan", "Mango", "Peach", "Black Cherry", "Raspberry", "Peanut Butter", "Mocha", "Toffee", "Butterscotch", "Hazelnut"],
+          common: ["Vanilla", "Chocolate", "Strawberry", "Mint", "Coffee", "Caramel", "Cookies and Cream", "Vanilla Bean", "Dark Chocolate", "Chocolate Chip", "Peanut Butter"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of bread',
+          gold: ["Pain de Campagne"],
+          epic: ["Injera", "Challah", "Brioche", "Ciabatta"],
+          rare: ["Focaccia", "Pumpernickel", "Sourdough", "Naan", "Pita", "Rye Bread", "Baguette"],
+          uncommon: ["White Bread", "Wheat Bread", "Whole Wheat", "Multigrain", "Rye", "Sourdough", "Baguette", "Pita Bread", "Naan Bread", "Flatbread", "Tortilla", "Matzo", "Cornbread", "Garlic Bread", "Dinner Roll", "Hamburger Bun", "Hot Dog Bun", "Bagel", "English Muffin"],
+          common: ["White Bread", "Wheat Bread", "Sourdough", "Baguette", "Toast", "Pita", "Naan", "Flatbread", "Garlic Bread", "Rolls", "Bread Roll", "Bagel", "Bun"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a fruit used to make jam or jelly',
+          gold: ["Boysenberry"],
+          epic: ["Quince", "Gooseberry", "Marionberry", "Damson"],
+          rare: ["Elderberry", "Fig", "Rhubarb", "Apricot", "Cranberry", "Pomegranate"],
+          uncommon: ["Strawberry", "Raspberry", "Blackberry", "Blueberry", "Grape", "Peach", "Plum", "Cherry", "Apple", "Orange", "Marmalade", "Concord Grape", "Wild Berry", "Mixed Berry"],
+          common: ["Strawberry", "Grape", "Raspberry", "Blackberry", "Blueberry", "Peach", "Plum", "Cherry", "Apple", "Orange", "Strawberries", "Grapes", "Blueberries"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name an herb used in cooking',
+          gold: ["Chervil"],
+          epic: ["Tarragon", "Marjoram", "Savory", "Lovage"],
+          rare: ["Sage", "Thyme", "Dill", "Rosemary", "Chives", "Lemongrass"],
+          uncommon: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Spearmint", "Peppermint", "Bay Leaf", "Bay Leaves", "Fresh Basil", "Fresh Parsley", "Italian Parsley", "Flat Leaf Parsley", "Curly Parsley"],
+          common: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Thyme", "Rosemary", "Sage", "Dill", "Chives"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a soup or broth dish',
+          gold: ["Mulligatawny"],
+          epic: ["Vichyssoise", "Gazpacho", "Bouillabaisse", "Tom Yum"],
+          rare: ["Borscht", "Minestrone", "Pho", "Ramen", "Clam Chowder", "French Onion Soup"],
+          uncommon: ["Chicken Noodle", "Chicken Noodle Soup", "Tomato Soup", "Vegetable Soup", "Beef Stew", "Lentil Soup", "Split Pea Soup", "Potato Soup", "Miso Soup", "Wonton Soup", "Egg Drop Soup", "Lobster Bisque", "Corn Chowder"],
+          common: ["Chicken Soup", "Tomato Soup", "Vegetable Soup", "Chicken Noodle", "Beef Soup", "Potato Soup", "Chowder", "Stew", "Ramen", "Pho", "Miso Soup"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a style or shape of doughnut',
+          gold: ["Cruller"],
+          epic: ["Long John", "Apple Fritter", "Beignet", "Paczek"],
+          rare: ["Boston Cream", "Jelly Doughnut", "Bear Claw", "Glazed Twist", "Old Fashioned"],
+          uncommon: ["Glazed Doughnut", "Chocolate Glazed", "Powdered Doughnut", "Sugar Doughnut", "Doughnut Hole", "Cinnamon Twist", "Maple Bar", "Cream Filled", "Strawberry Glazed", "Cake Doughnut"],
+          common: ["Glazed", "Chocolate", "Jelly", "Powdered", "Donut Hole", "Glazed Donut", "Chocolate Donut", "Powdered Donut", "Boston Cream", "Frosted Donut"]
+        },
+
+        // --- GEOGRAPHY & LOCATIONS ---
+        {
+          cat: 'geography',
+          prompt: 'Name an island nation',
+          gold: ["Nauru"],
+          epic: ["Kiribati", "Tuvalu", "Palau", "Vanuatu"],
+          rare: ["Comoros", "Seychelles", "Sao Tome and Principe", "Cape Verde", "Maldives", "Mauritius"],
+          uncommon: ["Madagascar", "Sri Lanka", "Iceland", "Malta", "Cyprus", "Fiji", "Samoa", "Tonga", "Barbados", "Jamaica", "Bahamas", "Trinidad and Tobago", "Dominican Republic", "Haiti", "Cuba", "Grenada"],
+          common: ["Japan", "United Kingdom", "Ireland", "Australia", "New Zealand", "Philippines", "Indonesia", "Iceland", "Cuba", "Jamaica", "Bahamas", "Taiwan", "Hawaiian Islands"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a capital city in South America',
+          gold: ["Paramaribo"],
+          epic: ["Georgetown", "Cayenne", "Sucre", "Asuncion"],
+          rare: ["Quito", "La Paz", "Montevideo", "Caracas", "Bogota", "Lima"],
+          uncommon: ["Buenos Aires", "Santiago", "Brasilia", "Lima", "Bogota", "Caracas", "Quito", "La Paz", "Montevideo", "Asuncion", "Georgetown", "Paramaribo"],
+          common: ["Buenos Aires", "Rio de Janeiro", "Brasilia", "Santiago", "Lima", "Bogota", "Caracas"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US state starting with the letter "M"',
+          gold: ["Maine"],
+          epic: ["Montana", "Mississippi", "Missouri"],
+          rare: ["Maryland", "Minnesota", "Massachusetts", "Michigan"],
+          uncommon: ["Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana"],
+          common: ["Michigan", "Maryland", "Massachusetts", "Minnesota", "Mississippi", "Missouri", "Montana", "Maine"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a capital city in Europe',
+          gold: ["Ljubljana"],
+          epic: ["Valletta", "Podgorica", "Chisinau", "Tallinn"],
+          rare: ["Riga", "Vilnius", "Bratislava", "Zagreb", "Sarajevo", "Skopje"],
+          uncommon: ["Vienna", "Brussels", "Sofia", "Prague", "Copenhagen", "Helsinki", "Athens", "Budapest", "Dublin", "Oslo", "Warsaw", "Lisbon", "Bucharest", "Belgrade", "Stockholm", "Bern"],
+          common: ["London", "Paris", "Berlin", "Rome", "Madrid", "Amsterdam", "Dublin", "Athens", "Vienna", "Warsaw", "Prague", "Brussels", "Lisbon"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a famous desert in the world',
+          gold: ["Taklamakan Desert"],
+          epic: ["Atacama Desert", "Kalahari Desert", "Gobi Desert", "Namib Desert"],
+          rare: ["Mojave Desert", "Sonoran Desert", "Patagonian Desert", "Arabian Desert", "Thar Desert"],
+          uncommon: ["Sahara Desert", "Gobi Desert", "Mojave Desert", "Kalahari Desert", "Atacama Desert", "Arabian Desert", "Great Victoria Desert", "Chihuahuan Desert", "Death Valley"],
+          common: ["Sahara", "Sahara Desert", "Gobi", "Gobi Desert", "Mojave", "Mojave Desert", "Death Valley", "Arabian Desert"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a major river in the world',
+          gold: ["Lena River"],
+          epic: ["Yenisey River", "Ob River", "Mekong River", "Volga River"],
+          rare: ["Danube River", "Ganges River", "Yangtze River", "Congo River", "Rhine River", "Elbe River"],
+          uncommon: ["Amazon River", "Nile River", "Mississippi River", "Missouri River", "Colorado River", "Rio Grande", "Hudson River", "Thames River", "Seine River", "Yukon River"],
+          common: ["Amazon", "Nile", "Mississippi", "Missouri", "Colorado", "Rio Grande", "Thames", "Yangtze", "Danube"]
+        },
+
+        // --- SCIENCE & SPACE & NATURE ---
+        {
+          cat: 'science',
+          prompt: 'Name a noble gas from the Periodic Table',
+          gold: ["Oganesson"],
+          epic: ["Tennessine", "Xenon", "Krypton", "Radon"],
+          rare: ["Argon", "Neon", "Helium"],
+          uncommon: ["Helium Gas", "Neon Gas", "Argon Gas", "Krypton Gas", "Xenon Gas", "Radon Gas", "Noble Gases"],
+          common: ["Helium", "Neon", "Argon", "Krypton", "Xenon", "Radon"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a constellation in the night sky',
+          gold: ["Ophiuchus"],
+          epic: ["Cassiopeia", "Andromeda", "Centaurus", "Boötes"],
+          rare: ["Lyra", "Cygnus", "Orion", "Ursa Major", "Pegasus", "Aquila", "Scorpius"],
+          uncommon: ["Big Dipper", "Little Dipper", "Orion", "Ursa Major", "Ursa Minor", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
+          common: ["Big Dipper", "Little Dipper", "Orion", "Taurus", "Gemini", "Leo", "Virgo", "Scorpio", "Sagittarius", "Aquarius", "Pisces"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a bone in the human body',
+          gold: ["Hyoid"],
+          epic: ["Stapes", "Incus", "Malleus", "Pisiform"],
+          rare: ["Fibula", "Tibia", "Scapula", "Clavicle", "Radius", "Ulna", "Sternum", "Femur"],
+          uncommon: ["Skull", "Rib", "Ribs", "Spine", "Backbone", "Pelvis", "Hip Bone", "Kneecap", "Patella", "Jawbone", "Collarbone", "Shoulder Blade", "Tailbone", "Coccyx", "Finger Bones", "Toe Bones"],
+          common: ["Femur", "Skull", "Rib", "Spine", "Kneecap", "Jawbone", "Collarbone", "Shin Bone", "Arm Bone", "Leg Bone"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name an organ in the human body',
+          gold: ["Interstitium"],
+          epic: ["Thymus", "Pancreas", "Spleen", "Gallbladder"],
+          rare: ["Thyroid", "Adrenal Gland", "Bladder", "Kidney", "Liver", "Intestines", "Stomach"],
+          uncommon: ["Brain", "Heart", "Lungs", "Skin", "Liver", "Kidneys", "Stomach", "Large Intestine", "Small Intestine", "Eyes", "Ears", "Tongue", "Esophagus", "Trachea"],
+          common: ["Heart", "Brain", "Lungs", "Stomach", "Liver", "Kidneys", "Skin", "Eyes", "Ears"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a dinosaur species',
+          gold: ["Microraptor"],
+          epic: ["Deinonychus", "Parasaurolophus", "Ankylosaurus", "Spinosaurus"],
+          rare: ["Brachiosaurus", "Allosaurus", "Stegosaurus", "Velociraptor", "Pterodactyl", "Diplodocus"],
+          uncommon: ["Tyrannosaurus Rex", "T Rex", "Triceratops", "Stegosaurus", "Velociraptor", "Brontosaurus", "Pterodactyl", "Ankylosaurus", "Spinosaurus", "Iguanodon", "Compsognathus"],
+          common: ["T-Rex", "Tyrannosaurus", "Triceratops", "Velociraptor", "Stegosaurus", "Brontosaurus", "Pterodactyl"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a bird of prey',
+          gold: ["Harpy Eagle"],
+          epic: ["Secretarybird", "Osprey", "Kestrel", "Caracara"],
+          rare: ["Peregrine Falcon", "Golden Eagle", "Red-tailed Hawk", "Barn Owl", "Kite", "Harrier"],
+          uncommon: ["Eagle", "Falcon", "Hawk", "Owl", "Vulture", "Bald Eagle", "Golden Eagle", "Red Tailed Hawk", "Screech Owl", "Great Horned Owl", "Snowy Owl", "Falconet"],
+          common: ["Eagle", "Falcon", "Hawk", "Owl", "Vulture", "Bald Eagle", "Barn Owl", "Black Vulture"]
+        },
+
+        // --- EVERYDAY OBJECTS & HOUSEHOLD ---
+        {
+          cat: 'everyday',
+          prompt: 'Name an item inside a school backpack',
+          gold: ["Protractor"],
+          epic: ["Graphing Calculator", "Index Cards", "Correction Tape", "Divider"],
+          rare: ["Highlighter", "Folder", "Binder", "Notebook", "Pencil Sharpener", "Eraser"],
+          uncommon: ["Pencil", "Pencils", "Pen", "Pens", "Notebook", "Notebooks", "Paper", "Folder", "Folders", "Binder", "Textbook", "Calculator", "Ruler", "Scissors", "Glue Stick", "Lunch Box", "Water Bottle"],
+          common: ["Pencil", "Pen", "Paper", "Notebook", "Textbook", "Folder", "Binder", "Ruler", "Eraser", "Calculator", "Water Bottle"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item in a kitchen drawer',
+          gold: ["Melon Baller"],
+          epic: ["Microplane", "Pastry Cutter", "Apple Corer", "Wine Stopper"],
+          rare: ["Garlic Press", "Can Opener", "Whisk", "Peeler", "Measuring Spoons", "Spatula"],
+          uncommon: ["Spoon", "Spoons", "Fork", "Forks", "Knife", "Knives", "Butter Knife", "Steak Knife", "Spatula", "Can Opener", "Vegetable Peeler", "Measuring Cups", "Tongs", "Ladle", "Rolling Pin", "Plastic Wrap", "Aluminum Foil"],
+          common: ["Fork", "Spoon", "Knife", "Knives", "Forks", "Spoons", "Spatula", "Can Opener", "Whisk", "Scissors", "Aluminum Foil", "Plastic Wrap"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a style of shoe or footwear',
+          gold: ["Espadrille"],
+          epic: ["Monk Strap", "Oxford", "Derby", "Moccasin"],
+          rare: ["Loafer", "Clog", "Stiletto", "Chelsea Boot", "Ankle Boot", "Sandal"],
+          uncommon: ["Sneakers", "Running Shoes", "Tennis Shoes", "Boots", "High Heels", "Flats", "Sandals", "Flip Flops", "Slippers", "Loafers", "Cleats", "Hiking Boots", "Work Boots", "Dress Shoes"],
+          common: ["Sneakers", "Boots", "Sandals", "Flip Flops", "High Heels", "Shoes", "Slippers", "Running Shoes", "Loafers", "Tennis Shoes"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item taken on a beach trip',
+          gold: ["Boogie Board"],
+          epic: ["Snorkel", "Sun Hat", "Beach Umbrella", "Beach Mat"],
+          rare: ["Towel", "Sunscreen", "Cooler", "Flip Flops", "Sunglasses", "Goggles"],
+          uncommon: ["Beach Towel", "Sunscreen Lotion", "Sunglasses", "Flip Flops", "Beach Chair", "Umbrella", "Beach Ball", "Cooler", "Swimsuit", "Trunks", "Bikini", "Sand Toys", "Bucket and Spade", "Frisbee"],
+          common: ["Towel", "Sunscreen", "Sunglasses", "Swimsuit", "Flip Flops", "Umbrella", "Cooler", "Beach Ball", "Beach Towel"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a winter clothing item',
+          gold: ["Balaclava"],
+          epic: ["Earmuffs", "Gaiter", "Thermal Underwear", "Parka"],
+          rare: ["Beanie", "Scarf", "Mittens", "Gloves", "Puffer Jacket", "Overcoat"],
+          uncommon: ["Winter Coat", "Jacket", "Sweater", "Snow Boots", "Heavy Socks", "Thermal Shirt", "Wool Hat", "Gloves", "Mittens", "Scarf", "Earmuffs", "Snow Pants", "Ski Mask"],
+          common: ["Coat", "Jacket", "Sweater", "Scarf", "Gloves", "Hat", "Boots", "Beanie", "Mittens", "Winter Coat"]
+        },
+
+        // --- POP CULTURE, GAMES & ENTERTAINMENT ---
+        {
+          cat: 'popculture',
+          prompt: 'Name a sport played in the Summer Olympic Games',
+          gold: ["Modern Pentathlon"],
+          epic: ["Equestrian", "Badminton", "Taekwondo", "Fencing"],
+          rare: ["Archery", "Rowing", "Water Polo", "Handball", "Sailing", "Judo"],
+          uncommon: ["Swimming", "Track and Field", "Gymnastics", "Basketball", "Soccer", "Volleyball", "Beach Volleyball", "Tennis", "Table Tennis", "Boxing", "Wrestling", "Cycling", "Weightlifting", "Skateboarding", "Surfing"],
+          common: ["Swimming", "Running", "Gymnastics", "Basketball", "Soccer", "Volleyball", "Tennis", "Boxing", "Track and Field"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a Pixar animated feature film',
+          gold: ["Elemental"],
+          epic: ["Onward", "Luca", "Soul", "Turning Red"],
+          rare: ["Brave", "Wall-E", "Up", "Ratatouille", "Inside Out", "Coco"],
+          uncommon: ["Toy Story", "Toy Story 2", "Toy Story 3", "Toy Story 4", "Finding Nemo", "Finding Dory", "Monsters Inc", "Monsters University", "The Incredibles", "Incredibles 2", "Cars", "Cars 2", "Cars 3", "A Bugs Life"],
+          common: ["Toy Story", "Finding Nemo", "Cars", "The Incredibles", "Monsters Inc", "Up", "WALL-E", "Inside Out", "Coco", "Ratatouille"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a Mario franchise video game character',
+          gold: ["Wart"],
+          epic: ["Waluigi", "Rosalina", "Kamek", "Shy Guy"],
+          rare: ["Toad", "Yoshi", "Bowser", "Donkey Kong", "Wario", "Daisy"],
+          uncommon: ["Mario", "Luigi", "Princess Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario", "Waluigi", "Bowser Jr", "Goomba", "Koopa Troopa", "Boo", "Birdo", "Diddy Kong"],
+          common: ["Mario", "Luigi", "Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a genre of music',
+          gold: ["Shoegaze"],
+          epic: ["Math Rock", "Bossa Nova", "Dubstep", "Synthwave"],
+          rare: ["Jazz", "Blues", "Reggae", "Heavy Metal", "Ska", "Disco"],
+          uncommon: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "R&B", "Classical", "Electronic", "EDM", "Indie", "Alternative", "Punk", "Folk", "Soul", "Funk", "Techno", "House"],
+          common: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "Jazz", "Classical", "Blues", "Heavy Metal", "Disco", "Reggae"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a card game played with a standard deck',
+          gold: ["Cribbage"],
+          epic: ["Canasta", "Bridge", "Euchre", "Pinochle"],
+          rare: ["Hearts", "Spades", "Rummy", "Poker", "Blackjack", "Solitaire"],
+          uncommon: ["Poker", "Blackjack", "Solitaire", "Go Fish", "Crazy Eights", "War", "Old Maid", "Speed", "Gin Rummy", "Texas Holdem", "Slapjack", "Euchre", "Hearts", "Spades"],
+          common: ["Poker", "Blackjack", "Solitaire", "Go Fish", "War", "Gin Rummy", "Hearts", "Spades", "Texas Hold 'Em"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a video game console released before 2010',
+          gold: ["Atari 5200"],
+          epic: ["Sega Dreamcast", "Sega Saturn", "Neo Geo", "TurboGrafx-16"],
+          rare: ["Nintendo 64", "GameCube", "PlayStation 2", "Xbox", "Game Boy", "Sega Genesis"],
+          uncommon: ["NES", "SNES", "Nintendo 64", "GameCube", "Wii", "PlayStation", "PlayStation 2", "PlayStation 3", "Xbox", "Xbox 360", "Game Boy", "Game Boy Advance", "Nintendo DS", "PSP"],
+          common: ["Wii", "PlayStation 2", "PlayStation 3", "Xbox 360", "Nintendo 64", "GameCube", "Game Boy", "NES", "Sega Genesis"]
+        }
+      ];
+
+      // ----------------------------------------------------
+      // 80+ ADDITIONAL MULTI-CATEGORY QUESTIONS (EXACTLY 1 PIK PER QUESTION)
+      // ----------------------------------------------------
+      const extra75PlusQuestionSet = [
+        // --- WORDPLAY & LANGUAGE (15 QUESTIONS) ---
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "H"',
+          gold: ["Rhinoceros"],
+          epic: ["Gherkin", "Ghetto", "Ghostwriter"],
+          rare: ["Honest", "Honor", "Hour", "Heir", "Echo", "Rhythm", "Scheme", "Vehicle"],
+          uncommon: ["Exhaust", "Exhibit", "Exhilarate", "Honesty", "Honorable", "Hourly", "Heirloom", "Rhythmic", "Scheming", "Anchor", "Architect", "Chaos", "Character", "Chemistry", "Choreography", "Chorus", "Christian", "Ghostly", "Ghosting"],
+          common: ["Ghost", "Hour", "Honest", "Honor", "Heir", "Echo", "School", "Anchor", "Chaos", "Chorus", "Chemical", "Character", "Cheetah", "Rhino", "Rhythm", "Hours", "Ghosts", "Honesty"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "L"',
+          gold: ["Halfpenny"],
+          epic: ["Calmness", "Balked", "Yolks"],
+          rare: ["Salmon", "Almond", "Palms", "Falcon", "Calfskin"],
+          uncommon: ["Palm", "Calm", "Half", "Calf", "Talk", "Walk", "Chalk", "Stalk", "Folk", "Yolk", "Could", "Would", "Should", "Alms", "Balm", "Balmy", "Calmly", "Calming", "Halfway", "Halves", "Walked", "Walking", "Walker", "Talked", "Talking", "Talker", "Chalkboard", "Stalking"],
+          common: ["Walk", "Talk", "Half", "Calf", "Palm", "Calm", "Could", "Would", "Should", "Folk", "Yolk", "Salmon", "Almond", "Chalk", "Walked", "Walking", "Talked", "Talking", "Almonds", "Salmons"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "un-" and having 3 or more syllables',
+          gold: ["Uncharacteristically"],
+          epic: ["Unconstitutional", "Uncompromising", "Unpredictable"],
+          rare: ["Unbelievable", "Unforgettable", "Unconditional", "Uncomfortable", "Unfortunate"],
+          uncommon: ["Unreal", "Unfair", "Unusual", "Unlikely", "Uncertain", "Unlimited", "Unnecessary", "Unaware", "Uncertainty", "Unconscious", "Undeniable", "Underestimate", "Understanding", "Underneath", "Undo", "Undoubtedly", "Uneasy", "Unemployed", "Unequal", "Unexpected", "Unfriendly", "Unhappy"],
+          common: ["Unbelievable", "Uncomfortable", "Unfortunate", "Unusual", "Unnecessary", "Unreal", "Unfair", "Uncertain", "Unlimited", "Unaware", "Understanding", "Unexpected", "Uneasy", "Unemployed", "Unequal", "Unhappy", "Unkind"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word ending in "-ment"',
+          gold: ["Disillusionment"],
+          epic: ["Encroachment", "Embezzlement", "Disenfranchisement"],
+          rare: ["Establishment", "Accomplishment", "Reenactment", "Acknowledgement"],
+          uncommon: ["Payment", "Shipment", "Treatment", "Movement", "Agreement", "Statement", "Argument", "Department", "Government", "Environment", "Development", "Equipment", "Management", "Investment", "Improvement", "Document", "Element", "Moment", "Comment", "Segment", "Garment", "Tournament", "Ornament", "Monument"],
+          common: ["Payment", "Shipment", "Treatment", "Movement", "Agreement", "Statement", "Argument", "Department", "Government", "Environment", "Development", "Equipment", "Management", "Investment", "Improvement", "Document", "Element", "Moment", "Comment", "Segment", "Garment"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a double "M"',
+          gold: ["Flummoxed"],
+          epic: ["Flammable", "Symmetrical", "Dilemma"],
+          rare: ["Summon", "Hamper", "Immerse", "Smaragdine", "Stammer"],
+          uncommon: ["Summer", "Hammer", "Grammar", "Simmer", "Swimmer", "Dimmer", "Trimmer", "Plummer", "Drummer", "Strummer", "Glimmer", "Shimmer", "Bummer", "Jammer", "Slammer", "Rammer", "Crammer", "Spammer", "Skimmer", "Scammer", "Commute", "Command", "Comment", "Commit", "Communicate"],
+          common: ["Summer", "Hammer", "Grammar", "Simmer", "Swimmer", "Drummer", "Glimmer", "Shimmer", "Comment", "Command", "Commute", "Commit", "Community", "Common", "Commercial", "Summer time", "Hamming"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a double "P"',
+          gold: ["Whippersnapper"],
+          epic: ["Apparition", "Hippopotamus", "Flappable"],
+          rare: ["Supplicant", "Sapphire", "Clippers", "Stripper"],
+          uncommon: ["Happy", "Puppy", "Apple", "Paper", "Pepper", "Copper", "Supper", "Topper", "Hopper", "Shopper", "Chopper", "Dropper", "Stopper", "Cropper", "Flapper", "Tapper", "Rapper", "Zapper", "Napper", "Clapper", "Slapper", "Trapper", "Wrapper", "Stripper"],
+          common: ["Happy", "Puppy", "Apple", "Pepper", "Copper", "Supper", "Shopper", "Rapper", "Application", "Approval", "Appoint", "Approach", "Appear", "Appealing", "Support", "Oppose", "Opposite", "Apples", "Puppies"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "re-" and ending in "-ing"',
+          gold: ["Rejuvenating"],
+          epic: ["Reciprocating", "Reverberating", "Rehabilitating"],
+          rare: ["Reconfiguring", "Rebuilding", "Reconsidering", "Reconnecting"],
+          uncommon: ["Reading", "Running", "Resting", "Renting", "Removing", "Replacing", "Repairing", "Returning", "Receiving", "Recording", "Reporting", "Repeating", "Refusing", "Reflecting", "Refreshing", "Regretting", "Releasing", "Relocating", "Remaining", "Remembering", "Reminding", "Reopening"],
+          common: ["Reading", "Running", "Resting", "Removing", "Replacing", "Repairing", "Returning", "Receiving", "Recording", "Reporting", "Repeating", "Refusing", "Reflecting", "Refreshing", "Releasing", "Remaining", "Remembering"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing 3 consecutive vowels',
+          gold: ["Queueing"],
+          epic: ["Bougainvillea", "Onomatopoeia", "Sequenced"],
+          rare: ["Aquarium", "Precious", "Behavior", "Beautiful", "Guardian"],
+          uncommon: ["Beautiful", "Queen", "Queue", "Audio", "Adieu", "Autumn", "Sauce", "Gauge", "Joyous", "Serious", "Curious", "Furious", "Glorious", "Various", "Previous", "Obvious", "Anxious", "Jealous", "Zealous", "Famous", "Dangerous", "Generous", "Nervous"],
+          common: ["Beautiful", "Queen", "Audio", "Autumn", "Sauce", "Joyous", "Serious", "Curious", "Previous", "Obvious", "Anxious", "Jealous", "Famous", "Dangerous", "Generous", "Nervous"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a color starting with a consonant that has 6 or more letters',
+          gold: ["Chartreuse"],
+          epic: ["Cerulean", "Burgundy", "Vermilion"],
+          rare: ["Fuchsia", "Crimson", "Magenta", "Lavender", "Turquoise"],
+          uncommon: ["Magenta", "Lavender", "Crimson", "Fuchsia", "Turquoise", "Emerald", "Sapphire", "Scarlet", "Maroon", "Bronze", "Copper", "Silver", "Golden", "Mustard", "Charcoal", "Indigo", "Violet", "Salmon", "Coral", "Yellow"],
+          common: ["Yellow", "Purple", "Orange", "Silver", "Golden", "Maroon", "Bronze", "Copper", "Violet", "Indigo", "Scarlet", "Magenta", "Lavender"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word ending in "-ous"',
+          gold: ["Pusillanimous"],
+          epic: ["Magnanimous", "Gratuitous", "Treacherous"],
+          rare: ["Circuitous", "Spontaneous", "Chivalrous", "Ambitious", "Continuous"],
+          uncommon: ["Famous", "Nervous", "Dangerous", "Jealous", "Generous", "Serious", "Curious", "Furious", "Glorious", "Various", "Previous", "Obvious", "Anxious", "Joyous", "Humorous", "Religious", "Enormous", "Tremendous", "Gorgeous", "Precious", "Spacious", "Gracious", "Malicious", "Delicious"],
+          common: ["Famous", "Nervous", "Dangerous", "Jealous", "Generous", "Serious", "Curious", "Furious", "Glorious", "Various", "Previous", "Obvious", "Anxious", "Humorous", "Enormous", "Tremendous", "Gorgeous", "Delicious"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name a compound English word containing "water"',
+          gold: ["Waterlogged"],
+          epic: ["Watercourse", "Watershed", "Watercraft"],
+          rare: ["Watermark", "Waterfront", "Waterproof", "Waterfall", "Watermelon"],
+          uncommon: ["Watermelon", "Waterfall", "Waterproof", "Waterfront", "Watermark", "Waterbed", "Watercress", "Waterfowl", "Waterhole", "Waterline", "Waterpipe", "Waterspout", "Watertight", "Waterway", "Waterworks", "Watering", "Waterless"],
+          common: ["Watermelon", "Waterfall", "Waterproof", "Waterfront", "Watermark", "Waterbed", "Watering can", "Drinking water", "Bottled water", "Tap water"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with the prefix "ex-"',
+          gold: ["Exsanguinate"],
+          epic: ["Excoriate", "Exculpate", "Exemplar"],
+          rare: ["Exuberant", "Exasperate", "Exoskeleton", "Excavation", "Exemplary"],
+          uncommon: ["Example", "Exercise", "Exchange", "Exciting", "Exception", "Excellent", "Executive", "Exist", "Existence", "Expand", "Expect", "Expense", "Expensive", "Experience", "Experiment", "Expert", "Explain", "Explore", "Export", "Expose", "Express", "Extend", "Extent", "Extra", "Extract", "Extreme"],
+          common: ["Example", "Exercise", "Exchange", "Exciting", "Exception", "Excellent", "Exist", "Expand", "Expect", "Expensive", "Experience", "Expert", "Explain", "Explore", "Express", "Extra", "Extreme"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing "ph"',
+          gold: ["Phantasmagoria"],
+          epic: ["Phaeton", "Phronesis", "Phylactery"],
+          rare: ["Phantom", "Phosphorus", "Phenomenon", "Pharaoh", "Philanthropy"],
+          uncommon: ["Phone", "Telephone", "Smartphone", "Photo", "Photograph", "Photographer", "Photography", "Phrase", "Physical", "Physics", "Physician", "Phantom", "Phase", "Pharmacy", "Pharmacist", "Philosophy", "Philosopher", "Phobia", "Phoenix", "Phonics", "Alphabet", "Dolphin", "Elephant", "Graph", "Paragraph", "Sphere", "Trophy"],
+          common: ["Phone", "Photo", "Photograph", "Alphabet", "Dolphin", "Elephant", "Graph", "Paragraph", "Sphere", "Trophy", "Physics", "Pharmacy", "Phoenix", "Phrase"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English adverb ending in "-ly" with 4 or more syllables',
+          gold: ["Unquestionably"],
+          epic: ["Extraordinarily", "Catastrophically", "Incomprehensibly"],
+          rare: ["Automatically", "Enthusiastically", "Simultaneously", "Unbelievably", "Significantly"],
+          uncommon: ["Definitely", "Especially", "Immediately", "Eventually", "Completely", "Absolutely", "Originality", "Originally", "Usually", "Generally", "Specifically", "Particularly", "Naturally", "Seriously", "Obviously", "Probably", "Certainly", "Frequently", "Regularly", "Constantly", "Continually"],
+          common: ["Definitely", "Especially", "Immediately", "Eventually", "Completely", "Absolutely", "Originally", "Usually", "Generally", "Specifically", "Particularly", "Naturally", "Seriously", "Obviously", "Probably", "Certainly"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "micro-"',
+          gold: ["Microphotography"],
+          epic: ["Microcosm", "Microchip", "Microclimate"],
+          rare: ["Microorganism", "Microbiologist", "Microprocessor", "Microclimate", "Microfiber"],
+          uncommon: ["Microscope", "Microscopic", "Microphone", "Microwave", "Microchip", "Microbe", "Microbiology", "Microcomputer", "Microfilm", "Microfinance", "Micron", "Microsecond", "Microstructure"],
+          common: ["Microscope", "Microphone", "Microwave", "Microchip", "Microbe", "Microscopic", "Microscopes", "Microphones", "Microwaves", "Microchips"]
+        },
+
+        // --- CULINARY & FOOD (15 QUESTIONS) ---
+        {
+          cat: 'culinary',
+          prompt: 'Name an edible mushroom species',
+          gold: ["Matsutake"],
+          epic: ["Lion's Mane", "Morel", "Chanterelle", "Enoki"],
+          rare: ["Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Porcini", "Maitake", "Wood Ear"],
+          uncommon: ["White Button", "Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Enoki", "Morel", "Chanterelle", "Porcini", "Chestnut Mushroom", "King Oyster", "Paddy Straw", "Truffle", "Black Truffle", "White Truffle"],
+          common: ["Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "White Mushroom", "Truffle", "Mushrooms", "Wild Mushrooms", "Dried Mushrooms"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of nut or edible seed',
+          gold: ["Macadamia"],
+          epic: ["Pilu", "Baru Nut", "Pine Nut", "Brazil Nut"],
+          rare: ["Pecan", "Pistachio", "Hazelnut", "Chestnut", "Cashew", "Walnut"],
+          uncommon: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Brazil Nut", "Pine Nut", "Macadamia", "Sunflower Seed", "Pumpkin Seed", "Chia Seed", "Flaxseed", "Sesame Seed", "Hemp Seed", "Poppy Seed"],
+          common: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Sunflower Seeds", "Pumpkin Seeds", "Sesame Seeds", "Almonds", "Peanuts", "Cashews"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a classic salad dish',
+          gold: ["Salade Niçoise"],
+          epic: ["Waldorf Salad", "Caprese Salad", "Cobb Salad", "Larb"],
+          rare: ["Caesar Salad", "Greek Salad", "Tabbouleh", "Coleslaw", "Potato Salad", "Macaroni Salad"],
+          uncommon: ["Caesar Salad", "Greek Salad", "Garden Salad", "House Salad", "Cobb Salad", "Caprese Salad", "Waldorf Salad", "Fruit Salad", "Pasta Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Spinach Salad", "Kale Salad", "Wedge Salad"],
+          common: ["Caesar Salad", "Greek Salad", "Garden Salad", "Fruit Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Side Salad", "Green Salad"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of tea',
+          gold: ["Lapsang Souchong"],
+          epic: ["Genmaicha", "Pu-erh", "Assam", "Darjeeling"],
+          rare: ["Earl Grey", "Matcha", "Oolong", "Chai", "Rooibos", "English Breakfast", "Sencha"],
+          uncommon: ["Green Tea", "Black Tea", "White Tea", "Oolong Tea", "Herbal Tea", "Chai Tea", "Matcha Tea", "Earl Grey Tea", "Chamomile Tea", "Peppermint Tea", "Jasmine Tea", "Lemon Tea", "Ginger Tea", "Hibiscus Tea", "Spearmint Tea"],
+          common: ["Green Tea", "Black Tea", "Iced Tea", "Sweet Tea", "Chai", "Matcha", "Earl Grey", "Chamomile", "Peppermint", "Herbal Tea", "Hot Tea"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a style of egg preparation',
+          gold: ["Eggs Royale"],
+          epic: ["Shirred Eggs", "Eggs Florentine", "Eggs In Purgatory", "Tamagoyaki"],
+          rare: ["Eggs Benedict", "Poached Egg", "Soft Boiled", "Hard Boiled", "Sunny Side Up", "Over Easy"],
+          uncommon: ["Scrambled Eggs", "Fried Egg", "Hard Boiled Egg", "Soft Boiled Egg", "Poached Egg", "Sunny Side Up", "Over Easy", "Over Medium", "Over Hard", "Omelet", "Frittata", "Deviled Eggs", "Egg Salad", "Quiche"],
+          common: ["Scrambled Eggs", "Fried Egg", "Boiled Egg", "Omelet", "Sunny Side Up", "Over Easy", "Poached Egg", "Hard Boiled", "Deviled Eggs", "Eggs"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a kitchen tool or utensil used in preparation',
+          gold: ["Mandoline"],
+          epic: ["Microplane", "Spider Skimmer", "Potato Ricer", "Pastry Wheel"],
+          rare: ["Whisk", "Garlic Press", "Rolling Pin", "Colander", "Ladle", "Meat Tenderizer"],
+          uncommon: ["Spatula", "Whisk", "Peeler", "Can Opener", "Cutting Board", "Measuring Cup", "Measuring Spoon", "Tongs", "Ladle", "Colander", "Rolling Pin", "Grater", "Cheese Grater", "Kitchen Shears", "Mixing Bowl", "Food Processor", "Blender"],
+          common: ["Spatula", "Whisk", "Knife", "Peeler", "Can Opener", "Cutting Board", "Measuring Cup", "Tongs", "Ladle", "Grater", "Blender", "Mixing Bowl"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a seafood or fish species eaten as food',
+          gold: ["Escolar"],
+          epic: ["Barramundi", "Turbot", "Monkfish", "Arctic Char"],
+          rare: ["Salmon", "Tuna", "Halibut", "Cod", "Mahi Mahi", "Trout", "Snapper", "Sea Bass"],
+          uncommon: ["Salmon", "Tuna", "Cod", "Halibut", "Trout", "Tilapia", "Catfish", "Haddock", "Flounder", "Sole", "Sardine", "Anchovy", "Mackerel", "Herring", "Swordfish", "Snapper", "Sea Bass", "Shrimp", "Crab", "Lobster", "Clams", "Mussels", "Oysters", "Squid", "Octopus"],
+          common: ["Salmon", "Tuna", "Cod", "Trout", "Tilapia", "Catfish", "Shrimp", "Crab", "Lobster", "Clams", "Oysters", "Squid", "Fish"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a fresh or dried chili pepper',
+          gold: ["Carolina Reaper"],
+          epic: ["Scotch Bonnet", "Trinidad Scorpion", "Pequin", "Pasilla"],
+          rare: ["Habanero", "Jalapeno", "Serrano", "Poblano", "Ancho", "Chipotle", "Cayenne", "Thai Chili"],
+          uncommon: ["Jalapeno", "Habanero", "Serrano", "Poblano", "Chipotle", "Cayenne", "Anaheim", "Bell Pepper", "Banana Pepper", "Ghost Pepper", "Thai Chili", "Red Pepper", "Green Pepper", "Chili Pepper", "Shishito"],
+          common: ["Jalapeno", "Habanero", "Bell Pepper", "Chili Pepper", "Cayenne", "Red Pepper", "Green Pepper", "Chipotle", "Ghost Pepper"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of pie',
+          gold: ["Chess Pie"],
+          epic: ["Shoofly Pie", "Key Lime Pie", "Bumbleberry Pie", "Mince Pie"],
+          rare: ["Pecan Pie", "Pumpkin Pie", "Apple Pie", "Cherry Pie", "Peach Pie", "Rhubarb Pie", "Shepherd's Pie"],
+          uncommon: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Peach Pie", "Blueberry Pie", "Key Lime Pie", "Lemon Meringue", "Chocolate Pie", "Coconut Cream", "Banana Cream", "Pot Pie", "Chicken Pot Pie", "Shepherd Pie", "Meat Pie"],
+          common: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Blueberry Pie", "Key Lime Pie", "Pot Pie", "Chicken Pot Pie", "Meat Pie", "Pies"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of food condiment or sauce',
+          gold: ["Gremolata"],
+          epic: ["Chimichurri", "Tzatziki", "Harissa", "Ponzu"],
+          rare: ["Sriracha", "Guacamole", "Salsa", "Pesto", "Mayonnaise", "Mustard", "Horseradish"],
+          uncommon: ["Ketchup", "Mustard", "Mayonnaise", "Soy Sauce", "Hot Sauce", "BBQ Sauce", "Barbecue Sauce", "Salsa", "Guacamole", "Ranch", "Teriyaki", "Sriracha", "Tartar Sauce", "Cocktail Sauce", "Worcestershire", "Relish", "Pesto", "Hummus"],
+          common: ["Ketchup", "Mustard", "Mayonnaise", "Soy Sauce", "Hot Sauce", "BBQ Sauce", "Salsa", "Guacamole", "Ranch", "Teriyaki", "Sriracha"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a grain or cereal crop',
+          gold: ["Freekeh"],
+          epic: ["Fonio", "Amaranth", "Teff", "Farro"],
+          rare: ["Quinoa", "Spelt", "Millet", "Sorghum", "Barley", "Rye", "Buckwheat"],
+          uncommon: ["Rice", "Wheat", "Corn", "Oats", "Barley", "Rye", "Quinoa", "Couscous", "Wild Rice", "Brown Rice", "White Rice", "Bulgur", "Buckwheat", "Millet", "Sorghum"],
+          common: ["Rice", "Wheat", "Corn", "Oats", "Barley", "Rye", "Quinoa", "Oatmeal", "Brown Rice", "White Rice"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a popular breakfast dish or item',
+          gold: ["Shakshuka"],
+          epic: ["Huevos Rancheros", "Eggs Benedict", "Dutch Baby", "Congee"],
+          rare: ["Pancakes", "Waffles", "French Toast", "Omelet", "Hash Browns", "Crepes"],
+          uncommon: ["Pancakes", "Waffles", "French Toast", "Scrambled Eggs", "Omelet", "Bacon", "Sausage", "Toast", "Bagel", "Cereal", "Oatmeal", "Yogurt", "Smoothie", "Fruit Bowl", "Hash Browns", "Breakfast Burrito", "Breakfast Sandwich", "Muffin", "Croissant"],
+          common: ["Pancakes", "Waffles", "French Toast", "Eggs", "Bacon", "Sausage", "Toast", "Bagel", "Cereal", "Oatmeal", "Muffin", "Croissant"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of vinegar',
+          gold: ["Sherry Vinegar"],
+          epic: ["Champagne Vinegar", "Black Vinegar", "Cider Vinegar", "Malt Vinegar"],
+          rare: ["Balsamic Vinegar", "Apple Cider Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar"],
+          uncommon: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar", "Malt Vinegar", "Cider Vinegar", "Distilled Vinegar", "Tarragon Vinegar"],
+          common: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "Rice Vinegar", "Vinegar", "White Vinegar"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a style or roast of coffee bean',
+          gold: ["Ristretto Shot"],
+          epic: ["Vienna Roast", "Italian Roast", "French Roast", "City Roast"],
+          rare: ["Espresso Roast", "Dark Roast", "Medium Roast", "Light Roast", "Blond Roast", "Decaf"],
+          uncommon: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso Roast", "French Roast", "Italian Roast", "Blonde Roast", "Decaf Coffee", "Arabica", "Robusta", "Single Origin", "House Blend"],
+          common: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso", "Decaf", "Arabica", "Coffee Beans", "Ground Coffee"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of edible berry',
+          gold: ["Boysenberry"],
+          epic: ["Gooseberry", "Cloudberry", "Lingonberry", "Elderberry"],
+          rare: ["Blackberry", "Raspberry", "Blueberry", "Cranberry", "Acai", "Mulberry"],
+          uncommon: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Gooseberry", "Elderberry", "Acai Berry", "Goji Berry", "Marionberry", "Boysenberry", "Mulberry", "Huckleberry"],
+          common: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Strawberries", "Blueberries", "Raspberries", "Blackberries"]
+        },
+
+        // --- GEOGRAPHY & WORLD LOCATIONS (15 QUESTIONS) ---
+        {
+          cat: 'geography',
+          prompt: 'Name a national capital city in Africa',
+          gold: ["Ouagadougou"],
+          epic: ["Antananarivo", "Yamoussoukro", "Dodoma", "Asmara"],
+          rare: ["Cairo", "Nairobi", "Pretoria", "Cape Town", "Addis Ababa", "Dakar", "Accra", "Luanda"],
+          uncommon: ["Cairo", "Nairobi", "Pretoria", "Cape Town", "Johannesburg", "Addis Ababa", "Dakar", "Accra", "Lagos", "Abuja", "Harare", "Kinshasa", "Algiers", "Tunis", "Rabat", "Tripoli", "Kigali", "Kampala"],
+          common: ["Cairo", "Nairobi", "Pretoria", "Cape Town", "Addis Ababa", "Lagos", "Johannesburg", "Dakar", "Accra"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country in Asia',
+          gold: ["Tajikistan"],
+          epic: ["Kyrgyzstan", "Timor-Leste", "Brunei", "Maldives"],
+          rare: ["Japan", "China", "India", "South Korea", "Thailand", "Vietnam", "Mongolia", "Nepal", "Indonesia"],
+          uncommon: ["China", "India", "Japan", "South Korea", "North Korea", "Vietnam", "Thailand", "Indonesia", "Philippines", "Malaysia", "Singapore", "Pakistan", "Bangladesh", "Sri Lanka", "Nepal", "Mongolia", "Cambodia", "Laos", "Myanmar", "Taiwan", "Afghanistan", "Iran", "Iraq", "Saudi Arabia", "Turkey"],
+          common: ["China", "India", "Japan", "South Korea", "Vietnam", "Thailand", "Indonesia", "Philippines", "Pakistan", "Saudi Arabia", "Taiwan"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US State that borders an ocean',
+          gold: ["Rhode Island"],
+          epic: ["Delaware", "New Hampshire", "Maine", "Alaska"],
+          rare: ["California", "Florida", "New York", "Hawaii", "Texas", "Washington", "Oregon", "Georgia"],
+          uncommon: ["California", "Florida", "New York", "Texas", "Hawaii", "Washington", "Oregon", "Maine", "Massachusetts", "New Jersey", "Virginia", "North Carolina", "South Carolina", "Georgia", "Maryland", "Delaware", "Connecticut", "Rhode Island", "New Hampshire", "Alaska", "Alabama", "Mississippi", "Louisiana"],
+          common: ["California", "Florida", "New York", "Texas", "Hawaii", "Washington", "Oregon", "Maine", "Massachusetts", "New Jersey"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name an island in the Caribbean Sea',
+          gold: ["Saba"],
+          epic: ["Montserrat", "Bonaire", "Anguilla", "Saint Lucia"],
+          rare: ["Jamaica", "Puerto Rico", "Cuba", "Aruba", "Curacao", "Barbados", "Trinidad", "Grand Cayman"],
+          uncommon: ["Jamaica", "Cuba", "Puerto Rico", "Bahamas", "Aruba", "Curacao", "Barbados", "Trinidad", "Tobago", "Haiti", "Dominican Republic", "Saint Martin", "Saint Thomas", "Saint John", "Tortola", "Antigua"],
+          common: ["Jamaica", "Cuba", "Puerto Rico", "Bahamas", "Aruba", "Barbados", "Haiti", "Dominican Republic", "Cayman Islands"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a major mountain range in the world',
+          gold: ["Tian Shan"],
+          epic: ["Drakensberg", "Altai Mountains", "Carpathian Mountains", "Atlas Mountains"],
+          rare: ["Himalayas", "Andes", "Alps", "Rocky Mountains", "Appalachian Mountains", "Urals", "Cascades"],
+          uncommon: ["Rocky Mountains", "Rockies", "Andes", "Alps", "Himalayas", "Appalachian Mountains", "Appalachians", "Sierra Nevada", "Cascade Range", "Cascades", "Urals", "Ural Mountains", "Pyrenees", "Atlas Mountains"],
+          common: ["Rocky Mountains", "Andes", "Alps", "Himalayas", "Appalachian Mountains", "Rockies", "Sierra Nevada"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country starting with the letter "B"',
+          gold: ["Burkina Faso"],
+          epic: ["Belize", "Benin", "Brunei", "Burundi"],
+          rare: ["Brazil", "Belgium", "Bulgaria", "Bolivia", "Bahrain", "Barbados", "Botswana"],
+          uncommon: ["Brazil", "Belgium", "Bangladesh", "Bahamas", "Bolivia", "Bulgaria", "Belarus", "Bosnia", "Bosnia and Herzegovina", "Botswana", "Bahrain", "Barbados", "Belize", "Benin", "Bhutan", "Brunei"],
+          common: ["Brazil", "Belgium", "Bahamas", "Bangladesh", "Bolivia", "Bulgaria", "Belarus", "Bosnia"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name an active or famous volcano',
+          gold: ["Eyjafjallajökull"],
+          epic: ["Cotopaxi", "Popocatepetl", "Krakatoa", "Mount Pinatubo"],
+          rare: ["Mount Vesuvius", "Mount Fuji", "Kilauea", "Mauna Loa", "Mount St Helens", "Mount Etna", "Mount Rainier"],
+          uncommon: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Mauna Loa", "Krakatoa", "Mount Rainier", "Yellowstone Caldera", "Mount Stromboli", "Mount Erebus"],
+          common: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Krakatoa", "Volcano"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a river in North America',
+          gold: ["Mackenzie River"],
+          epic: ["Snake River", "Willamette River", "Yukon River", "Platte River"],
+          rare: ["Mississippi River", "Missouri River", "Colorado River", "Rio Grande", "Hudson River", "St Lawrence River"],
+          uncommon: ["Mississippi River", "Missouri River", "Colorado River", "Rio Grande", "Hudson River", "Ohio River", "Columbia River", "Potomac River", "Yukon River", "St Lawrence River", "Arkansas River", "Tennessee River", "Red River", "Snake River"],
+          common: ["Mississippi River", "Missouri River", "Colorado River", "Rio Grande", "Hudson River", "Ohio River", "Mississippi", "Missouri", "Colorado"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country in Central America',
+          gold: ["Belize"],
+          epic: ["Nicaragua", "Honduras", "El Salvador"],
+          rare: ["Costa Rica", "Panama", "Guatemala"],
+          uncommon: ["Costa Rica", "Panama", "Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua"],
+          common: ["Costa Rica", "Panama", "Guatemala", "Belize", "El Salvador", "Honduras", "Nicaragua"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a city in Japan',
+          gold: ["Kanazawa"],
+          epic: ["Sapporo", "Fukuoka", "Kobe", "Sendai"],
+          rare: ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Nagasaki", "Yokohama", "Nagoya"],
+          uncommon: ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Nagasaki", "Yokohama", "Nagoya", "Sapporo", "Kobe", "Fukuoka", "Nara", "Kawasaki", "Saitama", "Chiba"],
+          common: ["Tokyo", "Kyoto", "Osaka", "Hiroshima", "Nagasaki", "Yokohama", "Kobe", "Sapporo"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a sea or gulf in the world',
+          gold: ["Sargasso Sea"],
+          epic: ["Adriatic Sea", "Aegean Sea", "Barents Sea", "Persian Gulf"],
+          rare: ["Mediterranean Sea", "Caribbean Sea", "Red Sea", "Black Sea", "Coral Sea", "Baltic Sea", "Gulf of Mexico"],
+          uncommon: ["Mediterranean Sea", "Caribbean Sea", "Red Sea", "Black Sea", "Baltic Sea", "North Sea", "South China Sea", "Coral Sea", "Bering Sea", "Arabian Sea", "Tasman Sea", "Gulf of Mexico", "Persian Gulf", "Gulf of Alaska", "Gulf of California"],
+          common: ["Mediterranean Sea", "Caribbean Sea", "Red Sea", "Black Sea", "Baltic Sea", "Gulf of Mexico", "North Sea", "South China Sea"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country with blue on its national flag',
+          gold: ["Tuvalu"],
+          epic: ["Nauru", "Palau", "Micronesia", "Estonia"],
+          rare: ["France", "United Kingdom", "United States", "Australia", "New Zealand", "Greece", "Argentina", "Sweden", "Finland", "Brazil"],
+          uncommon: ["United States", "United Kingdom", "France", "Australia", "New Zealand", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Norway", "Netherlands", "Russia", "Chile", "Colombia", "Ukraine", "Israel", "Japan", "South Korea"],
+          common: ["United States", "United Kingdom", "France", "Australia", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Ukraine", "Israel"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US state capital starting with the letter "C"',
+          gold: ["Concord"],
+          epic: ["Carson City", "Charleston", "Cheyenne"],
+          rare: ["Columbus", "Columbia", "Denver"],
+          uncommon: ["Columbus", "Columbia", "Concord", "Carson City", "Charleston", "Cheyenne"],
+          common: ["Columbus", "Columbia", "Concord", "Carson City", "Charleston", "Cheyenne"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a European country with a population under 5 million',
+          gold: ["Andorra"],
+          epic: ["San Marino", "Liechtenstein", "Monaco", "Montenegro"],
+          rare: ["Iceland", "Malta", "Luxembourg", "Cyprus", "Estonia", "Latvia", "Lithuania", "Slovenia"],
+          uncommon: ["Iceland", "Malta", "Luxembourg", "Cyprus", "Estonia", "Latvia", "Lithuania", "Slovenia", "Croatia", "Albania", "Moldova", "Armenia", "Georgia", "North Macedonia"],
+          common: ["Iceland", "Malta", "Luxembourg", "Croatia", "Estonia", "Latvia", "Lithuania", "Slovenia"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name an African nation bordering the Atlantic Ocean',
+          gold: ["São Tomé and Príncipe"],
+          epic: ["Equatorial Guinea", "Mauritania", "Gabon", "The Gambia"],
+          rare: ["South Africa", "Morocco", "Nigeria", "Senegal", "Angola", "Ghana", "Namibia", "Ivory Coast"],
+          uncommon: ["South Africa", "Morocco", "Nigeria", "Senegal", "Angola", "Ghana", "Namibia", "Ivory Coast", "Cameroon", "Congo", "Democratic Republic of Congo", "Sierra Leone", "Liberia", "Guinea", "Benin", "Togo"],
+          common: ["South Africa", "Morocco", "Nigeria", "Senegal", "Angola", "Ghana", "Ivory Coast", "Cameroon"]
+        },
+
+        // --- SCIENCE & SPACE (15 QUESTIONS) ---
+        {
+          cat: 'science',
+          prompt: 'Name a chemical element ending in "-ium"',
+          gold: ["Mendelevium"],
+          epic: ["Technetium", "Promethium", "Curium", "Oganesson"],
+          rare: ["Titanium", "Uranium", "Plutonium", "Lithium", "Sodium", "Potassium", "Calcium", "Magnesium", "Helium"],
+          uncommon: ["Helium", "Lithium", "Sodium", "Potassium", "Calcium", "Magnesium", "Titanium", "Uranium", "Plutonium", "Barium", "Radium", "Cesium", "Rubidium", "Strontium", "Aluminum", "Gallium", "Indium", "Thallium"],
+          common: ["Helium", "Lithium", "Sodium", "Potassium", "Calcium", "Magnesium", "Titanium", "Uranium", "Plutonium", "Aluminum"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name an internal gland or organ in the human body',
+          gold: ["Adrenal Gland"],
+          epic: ["Pituitary Gland", "Pineal Gland", "Parathyroid Gland"],
+          rare: ["Thyroid", "Pancreas", "Gallbladder", "Spleen", "Kidney", "Liver"],
+          uncommon: ["Thyroid", "Pancreas", "Gallbladder", "Spleen", "Kidney", "Liver", "Heart", "Brain", "Lungs", "Stomach", "Bladder", "Intestines", "Thymus", "Appendix"],
+          common: ["Heart", "Brain", "Lungs", "Stomach", "Liver", "Kidney", "Thyroid", "Pancreas", "Spleen", "Bladder"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a dwarf planet or major moon in our Solar System',
+          gold: ["Makemake"],
+          epic: ["Haumea", "Eris", "Sedna", "Dysnomia"],
+          rare: ["Pluto", "Ceres", "Charon", "Titan", "Europa", "Ganymede", "Callisto", "Enceladus", "Triton"],
+          uncommon: ["Pluto", "Ceres", "Titan", "Europa", "Ganymede", "Callisto", "Io", "Phobos", "Deimos", "Enceladus", "Triton", "Moon", "Earth Moon", "Charon"],
+          common: ["Pluto", "The Moon", "Moon", "Ceres", "Titan", "Europa", "Ganymede", "Phobos", "Deimos"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a scientific field or discipline ending in "-ics"',
+          gold: ["Cybernetics"],
+          epic: ["Kinematics", "Geophysics", "Optoelectronics"],
+          rare: ["Physics", "Genetics", "Robotics", "Aerodynamics", "Astrophysics", "Quantum Mechanics"],
+          uncommon: ["Physics", "Genetics", "Robotics", "Mathematics", "Statistics", "Aerodynamics", "Thermodynamics", "Astrophysics", "Biomechanics", "Electronics", "Acoustics", "Optics", "Mechanics", "Kinematics", "Geophysics"],
+          common: ["Physics", "Genetics", "Robotics", "Mathematics", "Statistics", "Aerodynamics", "Thermodynamics", "Electronics"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a state or phase of matter',
+          gold: ["Bose-Einstein Condensate"],
+          epic: ["Quark-Gluon Plasma", "Degenerate Matter", "Superfluid"],
+          rare: ["Plasma", "Gas", "Liquid", "Solid", "Supercritical Fluid"],
+          uncommon: ["Solid", "Liquid", "Gas", "Plasma", "Bose Einstein Condensate", "Superfluid", "Vapor", "Ice", "Fluid", "Glass"],
+          common: ["Solid", "Liquid", "Gas", "Plasma", "Ice", "Vapor", "Water", "Steam"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of cloud formation',
+          gold: ["Mammatus"],
+          epic: ["Lenticular Cloud", "Kelvin-Helmholtz", "Anvil Cloud"],
+          rare: ["Cumulonimbus", "Cirrus", "Stratus", "Cumulus", "Altocumulus", "Stratocumulus"],
+          uncommon: ["Cumulus", "Cirrus", "Stratus", "Cumulonimbus", "Altocumulus", "Altostratus", "Cirrocumulus", "Cirrostratus", "Stratocumulus", "Nimbostratus", "Fog", "Contrail"],
+          common: ["Cumulus", "Cirrus", "Stratus", "Cumulonimbus", "Cloud", "Rain Cloud", "Storm Cloud", "Fog"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a unit of scientific measurement',
+          gold: ["Picofarad"],
+          epic: ["Becquerel", "Siemens", "Henrys", "Lux"],
+          rare: ["Joule", "Watt", "Pascal", "Newton", "Kelvin", "Ampere", "Hertz", "Volt", "Ohm"],
+          uncommon: ["Meter", "Gram", "Liter", "Second", "Kelvin", "Celsius", "Fahrenheit", "Joule", "Watt", "Pascal", "Newton", "Ampere", "Volt", "Ohm", "Hertz", "Lumen", "Decibel", "Mole", "Calorie", "Horsepower"],
+          common: ["Meter", "Gram", "Liter", "Second", "Celsius", "Fahrenheit", "Watt", "Joule", "Volt", "Ampere", "Hertz", "Decibel"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of rock or mineral',
+          gold: ["Obsidian"],
+          epic: ["Pumice", "Basalt", "Quartzite", "Gneiss"],
+          rare: ["Granite", "Marble", "Limestone", "Quartz", "Feldspar", "Mica", "Shale", "Sandstone"],
+          uncommon: ["Granite", "Marble", "Limestone", "Sandstone", "Quartz", "Obsidian", "Basalt", "Pumice", "Shale", "Slate", "Flint", "Coal", "Diamond", "Ruby", "Emerald", "Sapphire", "Gold", "Silver", "Copper"],
+          common: ["Granite", "Marble", "Limestone", "Quartz", "Diamond", "Gold", "Silver", "Coal", "Sandstone", "Slate"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name an insect or bug group',
+          gold: ["Damselfly"],
+          epic: ["Mayfly", "Lacewing", "Scorpionfly", "Silverfish"],
+          rare: ["Dragonfly", "Praying Mantis", "Firefly", "Cicada", "Beetle", "Ladybug", "Termite"],
+          uncommon: ["Ant", "Bee", "Wasp", "Fly", "Mosquito", "Butterfly", "Moth", "Beetle", "Ladybug", "Dragonfly", "Grasshopper", "Cricket", "Cockroach", "Flea", "Tick", "Praying Mantis", "Firefly", "Cicada", "Caterpillar"],
+          common: ["Ant", "Bee", "Wasp", "Fly", "Mosquito", "Butterfly", "Moth", "Beetle", "Ladybug", "Grasshopper", "Cricket", "Cockroach"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a species or type of tree',
+          gold: ["Bristlecone Pine"],
+          epic: ["Ginkgo Biloba", "Baobab", "Sequoia", "Douglas Fir"],
+          rare: ["Redwood", "Oak", "Maple", "Pine", "Birch", "Willow", "Cedar", "Elm", "Ash"],
+          uncommon: ["Oak", "Maple", "Pine", "Birch", "Willow", "Cedar", "Elm", "Ash", "Redwood", "Sequoia", "Spruce", "Fir", "Palm", "Banyan", "Cherry Blossom", "Poplar", "Sycamore", "Cypress", "Beech", "Chestnut"],
+          common: ["Oak", "Maple", "Pine", "Birch", "Willow", "Cedar", "Redwood", "Palm Tree", "Pine Tree", "Oak Tree", "Maple Tree"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a deep sea animal or marine creature',
+          gold: ["Vampire Squid"],
+          epic: ["Anglerfish", "Gulper Eel", "Blobfish", "Giant Isopod"],
+          rare: ["Giant Squid", "Goblin Shark", "Chimaera", "Nautilus", "Oarfish", "Lanternfish"],
+          uncommon: ["Whale", "Blue Whale", "Humpback Whale", "Dolphin", "Orca", "Shark", "Great White Shark", "Hammerhead Shark", "Giant Squid", "Octopus", "Sea Turtle", "Manta Ray", "Jellyfish", "Sea Anemone", "Coral", "Walrus", "Seal", "Sea Lion"],
+          common: ["Shark", "Whale", "Dolphin", "Octopus", "Jellyfish", "Sea Turtle", "Great White Shark", "Orca", "Blue Whale", "Squid"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of electromagnetic radiation',
+          gold: ["Gamma Rays"],
+          epic: ["X-Rays", "Ultraviolet", "Infrared", "Microwaves"],
+          rare: ["Radio Waves", "Visible Light", "Ultraviolet Light", "Infrared Light", "Gamma Radiation"],
+          uncommon: ["Radio Waves", "Microwaves", "Infrared", "Visible Light", "Ultraviolet", "X Rays", "Gamma Rays", "Solar Radiation", "Thermal Radiation", "Cosmic Rays"],
+          common: ["Radio Waves", "Microwaves", "Infrared", "Ultraviolet", "X Rays", "Gamma Rays", "Light", "Sunlight"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a part of a flower or plant',
+          gold: ["Pistil"],
+          epic: ["Stigma", "Anther", "Sepal", "Receptacle"],
+          rare: ["Stamen", "Petal", "Stem", "Root", "Pollen", "Chloroplast", "Xylem", "Phloem"],
+          uncommon: ["Petal", "Stem", "Root", "Leaf", "Pollen", "Seed", "Stamen", "Pistil", "Bud", "Thorn", "Bark", "Branch", "Twig", "Fruit", "Flower"],
+          common: ["Petal", "Stem", "Root", "Leaf", "Seed", "Pollen", "Flower", "Thorn", "Branch", "Fruit", "Bud"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a subatomic particle',
+          gold: ["Tau Neutrino"],
+          epic: ["Higgs Boson", "Top Quark", "Charm Quark", "Muon"],
+          rare: ["Electron", "Proton", "Neutron", "Photon", "Gluon", "Positron", "Neutrino", "Quark"],
+          uncommon: ["Proton", "Neutron", "Electron", "Photon", "Neutrino", "Positron", "Quark", "Gluon", "Boson", "Muon", "Lepton", "Particle"],
+          common: ["Proton", "Neutron", "Electron", "Photon", "Quark", "Atom", "Subatomic Particle"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of infectious agent or microbe',
+          gold: ["Bacteriophage"],
+          epic: ["Prion", "Viroid", "Archaeon", "Amoeba"],
+          rare: ["Virus", "Bacteria", "Fungus", "Protozoa", "Parasite", "Spore"],
+          uncommon: ["Virus", "Bacteria", "Fungus", "Parasite", "Amoeba", "Spore", "Microbe", "Germ", "Pathogen", "Mold", "Yeast", "Single Cell"],
+          common: ["Virus", "Bacteria", "Germ", "Fungus", "Parasite", "Mold", "Yeast", "Microbe"]
+        },
+
+        // --- EVERYDAY OBJECTS & HOUSEHOLD (10 QUESTIONS) ---
+        {
+          cat: 'everyday',
+          prompt: 'Name an item typically placed in a living room',
+          gold: ["Credenza"],
+          epic: ["Ottoman", "Chaise Longue", "Mantelpiece", "Etagere"],
+          rare: ["Sofa", "Couch", "Coffee Table", "Armchair", "Recliner", "Bookshelf", "Television", "Fireplace"],
+          uncommon: ["Sofa", "Couch", "Coffee Table", "Armchair", "Recliner", "Television", "TV", "Bookshelf", "Rug", "Area Rug", "Lamp", "Floor Lamp", "End Table", "Side Table", "Curtains", "Throw Pillow", "Blanket", "Picture Frame", "Vase", "Clock"],
+          common: ["Sofa", "Couch", "Television", "TV", "Coffee Table", "Chair", "Lamp", "Rug", "Bookshelf", "Fireplace", "Table"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a power tool found in a garage or workshop',
+          gold: ["Angle Grinder"],
+          epic: ["Biscuit Joiner", "Impact Driver", "Band Saw", "Scroll Saw"],
+          rare: ["Power Drill", "Circular Saw", "Table Saw", "Jigsaw", "Router", "Sander", "Air Compressor"],
+          uncommon: ["Drill", "Power Drill", "Cordless Drill", "Circular Saw", "Table Saw", "Jigsaw", "Chain Saw", "Sander", "Belt Sander", "Orbital Sander", "Router", "Air Compressor", "Nail Gun", "Heat Gun", "Pressure Washer"],
+          common: ["Drill", "Power Drill", "Saw", "Chainsaw", "Circular Saw", "Sander", "Table Saw", "Tool", "Nail Gun"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item carried inside a handbag or purse',
+          gold: ["Compact Mirror"],
+          epic: ["Pill Organizer", "Nail File", "Safety Pin", "Pocket Knife"],
+          rare: ["Wallet", "Keys", "Phone", "Lipstick", "Lip Balm", "Hand Sanitizer", "Tissues", "Sunglasses"],
+          uncommon: ["Wallet", "Keys", "Car Keys", "Smartphone", "Phone", "Lipstick", "Lip Gloss", "Lip Balm", "Hand Sanitizer", "Tissues", "Wet Wipes", "Makeup Bag", "Compact Mirror", "Perfume", "Hair Brush", "Hair Ties", "Mints", "Gum", "Receipts", "Pen", "Notepad", "Headphones"],
+          common: ["Wallet", "Keys", "Phone", "Lipstick", "Tissues", "Hand Sanitizer", "Sunglasses", "Gum", "Mints", "Pen"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found on an office desk',
+          gold: ["Paper Fastener"],
+          epic: ["Letter Opener", "Desk Pad", "Tape Dispenser", "Stamp Pad"],
+          rare: ["Computer", "Laptop", "Keyboard", "Mouse", "Monitor", "Stapler", "Paperclips", "Pen Holder"],
+          uncommon: ["Computer", "Laptop", "Monitor", "Keyboard", "Mouse", "Mousepad", "Stapler", "Paperclips", "Pens", "Pencils", "Notepad", "Sticky Notes", "Post It Notes", "Desk Lamp", "Coffee Mug", "Water Bottle", "Phone", "Calculator", "Scissors", "Folder", "Notebook"],
+          common: ["Computer", "Laptop", "Keyboard", "Mouse", "Stapler", "Pen", "Paper", "Notepad", "Coffee Mug", "Monitor", "Scissors"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a clothing accessory worn on the body',
+          gold: ["Cufflinks"],
+          epic: ["Tie Clip", "Pocket Square", "Ascot", "Suspenders"],
+          rare: ["Belt", "Scarf", "Tie", "Bowtie", "Gloves", "Hat", "Sunglasses", "Watch"],
+          uncommon: ["Belt", "Scarf", "Necktie", "Tie", "Bowtie", "Gloves", "Mittens", "Hat", "Cap", "Beanie", "Sunglasses", "Watch", "Wristwatch", "Jewelry", "Necklace", "Ring", "Bracelet", "Earrings", "Bandana", "Hair Tie", "Headband"],
+          common: ["Belt", "Scarf", "Tie", "Gloves", "Hat", "Sunglasses", "Watch", "Necklace", "Ring", "Bracelet", "Earrings"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a cleaning tool or supply',
+          gold: ["Pumice Stone"],
+          epic: ["Squeegee", "Microfiber Cloth", "Feather Duster", "Steel Wool"],
+          rare: ["Broom", "Mop", "Vacuum Cleaner", "Sponge", "Bleach", "Disinfectant Wipes", "Detergent"],
+          uncommon: ["Broom", "Mop", "Vacuum", "Vacuum Cleaner", "Sponge", "Scrub Brush", "Bucket", "Dustpan", "Duster", "Squeegee", "Microfiber Cloth", "Bleach", "Dish Soap", "Laundry Detergent", "Glass Cleaner", "Windex", "Disinfectant Spray", "Disinfectant Wipes", "Paper Towels", "Trash Bags"],
+          common: ["Broom", "Mop", "Vacuum", "Sponge", "Bleach", "Soap", "Dish Soap", "Paper Towels", "Trash Bags", "Bucket", "Duster"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a laundry room',
+          gold: ["Lint Roller"],
+          epic: ["Drying Rack", "Fabric Softener", "Stain Remover Pen", "Laundry Hamper"],
+          rare: ["Washing Machine", "Dryer", "Iron", "Ironing Board", "Laundry Detergent", "Bleach"],
+          uncommon: ["Washing Machine", "Dryer", "Laundry Detergent", "Fabric Softener", "Bleach", "Stain Remover", "Iron", "Ironing Board", "Laundry Basket", "Hamper", "Dryer Sheets", "Clothespins", "Hangers", "Lint Roller", "Drying Rack"],
+          common: ["Washing Machine", "Dryer", "Detergent", "Iron", "Ironing Board", "Laundry Basket", "Bleach", "Hangers", "Dryer Sheets"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a tool used in sewing or tailoring',
+          gold: ["Seam Ripper"],
+          epic: ["Pinking Shears", "Thimble", "Tailor's Chalk", "Bodkin"],
+          rare: ["Needle", "Thread", "Fabric Scissors", "Measuring Tape", "Pin Cushion", "Safety Pins"],
+          uncommon: ["Sewing Needle", "Thread", "Scissors", "Fabric Scissors", "Measuring Tape", "Tape Measure", "Thimble", "Pins", "Safety Pins", "Pin Cushion", "Seam Ripper", "Sewing Machine", "Buttons", "Zippers", "Elastic"],
+          common: ["Needle", "Thread", "Scissors", "Tape Measure", "Buttons", "Zipper", "Pins", "Safety Pins", "Sewing Machine"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a hotel room',
+          gold: ["Shoe Horn"],
+          epic: ["Ironing Board", "Mini Bar", "Luggage Rack", "Sewing Kit"],
+          rare: ["Bed", "Television", "Safe", "Bathrobe", "Towels", "Hair Dryer", "Coffee Maker"],
+          uncommon: ["Bed", "Pillows", "Blanket", "Sheets", "Television", "TV", "Remote Control", "Telephone", "Desk", "Chair", "Lamp", "Safe", "Mini Fridge", "Coffee Maker", "Towels", "Shampoo", "Conditioner", "Soap", "Hair Dryer", "Hangers", "Ice Bucket", "Bible"],
+          common: ["Bed", "Television", "Towels", "Soap", "Shampoo", "Hair Dryer", "Safe", "Coffee Maker", "Pillows", "TV Remote"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an outdoor camping gear item',
+          gold: ["Flint Striker"],
+          epic: ["Headlamp", "Camp Stove", "Water Purifier", "Bivy Sack"],
+          rare: ["Tent", "Sleeping Bag", "Flashlight", "Backpack", "Canteen", "First Aid Kit", "Compass"],
+          uncommon: ["Tent", "Sleeping Bag", "Sleeping Pad", "Backpack", "Flashlight", "Headlamp", "Lantern", "Camp Stove", "Matches", "Lighter", "Firestarter", "Camp Chair", "Cooler", "Water Bottle", "Canteen", "Pocket Knife", "Swiss Army Knife", "Rope", "Tarp", "Bug Spray", "Sunscreen"],
+          common: ["Tent", "Sleeping Bag", "Flashlight", "Backpack", "Campfire", "Lantern", "Matches", "Lighter", "Cooler", "Water Bottle"]
+        },
+
+        // --- POP CULTURE, ENTERTAINMENT & GAMES (10 QUESTIONS) ---
+        {
+          cat: 'popculture',
+          prompt: 'Name a tabletop board or card game',
+          gold: ["Twilight Imperium"],
+          epic: ["Gloomhaven", "Wingspan", "Terraforming Mars", "Ticket to Ride"],
+          rare: ["Monopoly", "Chess", "Checkers", "Scrabble", "Clue", "Catan", "Risk", "Battleship"],
+          uncommon: ["Monopoly", "Chess", "Checkers", "Scrabble", "Clue", "Risk", "Catan", "Battleship", "Sorry", "Trouble", "Connect Four", "Operation", "Jenga", "Pictionary", "Charades", "Uno", "Phase 10", "Skip Bo", "Poker", "Blackjack", "Solitaire"],
+          common: ["Monopoly", "Chess", "Checkers", "Scrabble", "Clue", "Catan", "Uno", "Poker", "Risk", "Battleship", "Jenga", "Connect 4"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a musical percussion instrument',
+          gold: ["Marimba"],
+          epic: ["Vibraphone", "Timpani", "Glockenspiel", "Castanets"],
+          rare: ["Snare Drum", "Bass Drum", "Cymbals", "Tambourine", "Bongos", "Xylophone", "Triangle", "Congas"],
+          uncommon: ["Drum Set", "Drums", "Snare Drum", "Bass Drum", "Cymbals", "Tambourine", "Bongos", "Congas", "Xylophone", "Triangle", "Cowbell", "Maracas", "Gong", "Chimes", "Timpani", "Wood Block", "Claves"],
+          common: ["Drums", "Drum Set", "Snare Drum", "Cymbals", "Tambourine", "Bongos", "Xylophone", "Triangle", "Cowbell", "Maracas", "Gong"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name an event in the Winter Olympic Games',
+          gold: ["Skeleton"],
+          epic: ["Nordic Combined", "Luge", "Curling", "Bobsleigh"],
+          rare: ["Figure Skating", "Alpine Skiing", "Snowboarding", "Ice Hockey", "Speed Skating", "Ski Jumping", "Biathlon"],
+          uncommon: ["Figure Skating", "Ice Hockey", "Snowboarding", "Alpine Skiing", "Cross Country Skiing", "Freestyle Skiing", "Ski Jumping", "Speed Skating", "Short Track", "Curling", "Bobsled", "Bobsleigh", "Luge", "Skeleton", "Biathlon"],
+          common: ["Figure Skating", "Ice Hockey", "Snowboarding", "Skiing", "Ski Jumping", "Speed Skating", "Curling", "Bobsled"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a film genre',
+          gold: ["Neo-Noir"],
+          epic: ["Film Noir", "Spaghetti Western", "Mockumentary", "Cyberpunk"],
+          rare: ["Horror", "Action", "Comedy", "Drama", "Science Fiction", "Romance", "Thriller", "Western", "Documentary"],
+          uncommon: ["Action", "Comedy", "Drama", "Horror", "Science Fiction", "Sci Fi", "Romance", "Romantic Comedy", "Rom Com", "Thriller", "Mystery", "Crime", "Western", "Fantasy", "Animation", "Animated", "Documentary", "Musical", "Adventure", "War", "Historical"],
+          common: ["Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", "Thriller", "Western", "Documentary", "Animation", "Fantasy"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a classic arcade video game released before 1995',
+          gold: ["Q*bert"],
+          epic: ["Joust", "Galaga", "Dig Dug", "Centipede"],
+          rare: ["Pac-Man", "Ms Pac-Man", "Donkey Kong", "Space Invaders", "Asteroids", "Street Fighter II", "Mortal Kombat", "Frogger"],
+          uncommon: ["Pac Man", "Ms Pac Man", "Donkey Kong", "Space Invaders", "Asteroids", "Frogger", "Galaga", "Dig Dug", "Centipede", "Tetris", "Street Fighter", "Mortal Kombat", "Double Dragon", "Punch Out", "Paperboy", "Defender", "Tempest", "Gauntlet"],
+          common: ["Pac-Man", "Donkey Kong", "Space Invaders", "Frogger", "Asteroids", "Tetris", "Street Fighter", "Mortal Kombat", "Galaga"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a comic book superhero team or organization',
+          gold: ["Doom Patrol"],
+          epic: ["Runaways", "Alpha Flight", "Defenders", "Suicide Squad"],
+          rare: ["Avengers", "X-Men", "Justice League", "Fantastic Four", "Teen Titans", "Guardians of the Galaxy", "Watchmen"],
+          uncommon: ["Avengers", "The Avengers", "X Men", "Justice League", "Fantastic Four", "Guardians of the Galaxy", "Teen Titans", "Suicide Squad", "Watchmen", "Defenders", "Inhumans", "Young Avengers", "Justice Society", "Legion of Super Heroes"],
+          common: ["Avengers", "X-Men", "Justice League", "Fantastic Four", "Guardians of the Galaxy", "Teen Titans", "Suicide Squad"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a recognized dog breed',
+          gold: ["Saluki"],
+          epic: ["Borzoi", "Komondor", "Basenji", "Tibetan Mastiff"],
+          rare: ["German Shepherd", "Golden Retriever", "Labrador Retriever", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Siberian Husky"],
+          uncommon: ["Labrador Retriever", "Golden Retriever", "German Shepherd", "French Bulldog", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "German Shorthaired Pointer", "Boxer", "Siberian Husky", "Great Dane", "Doberman Pinscher", "Australian Shepherd", "Corgi", "Pembroke Welsh Corgi", "Pug", "Chihuahua", "Shih Tzu", "Boston Terrier", "Pomeranian", "Havanese", "Shetland Sheepdog", "Bernese Mountain Dog"],
+          common: ["Labrador", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Husky", "Corgi", "Pug", "Chihuahua", "Great Dane"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a track and field Olympic event',
+          gold: ["Hammer Throw"],
+          epic: ["Triple Jump", "Discus Throw", "Race Walking", "Steeplechase"],
+          rare: ["100m Sprint", "Marathon", "High Jump", "Long Jump", "Pole Vault", "Shot Put", "Javelin Throw", "Hurdles"],
+          uncommon: ["100m", "200m", "400m", "800m", "1500m", "5000m", "10000m", "Marathon", "Hurdles", "High Jump", "Long Jump", "Triple Jump", "Pole Vault", "Shot Put", "Discus", "Discus Throw", "Javelin", "Javelin Throw", "Hammer Throw", "Relay", "4x100m Relay"],
+          common: ["100m", "Marathon", "High Jump", "Long Jump", "Pole Vault", "Shot Put", "Javelin", "Hurdles", "Sprint", "Relay"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a style of dance',
+          gold: ["Flamenco"],
+          epic: ["Paso Doble", "Bachata", "Capoeira", "Quickstep"],
+          rare: ["Ballet", "Tap Dance", "Hip Hop", "Salsa", "Tango", "Waltz", "Breakdancing", "Jazz Dance", "Contemporary"],
+          uncommon: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Foxtrot", "Cha Cha", "Rumba", "Samba", "Jazz Dance", "Modern Dance", "Contemporary", "Swing", "Belly Dance", "Line Dancing", "Square Dancing", "Folk Dance", "Ballroom"],
+          common: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Jazz Dance", "Line Dancing", "Belly Dance"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a classic comic book superhero secret identity',
+          gold: ["Clark Kent"],
+          epic: ["Hal Jordan", "Arthur Curry", "Barry Allen", "Diana Prince"],
+          rare: ["Bruce Wayne", "Tony Stark", "Peter Parker", "Steve Rogers", "Logan", "Matt Murdock"],
+          uncommon: ["Clark Kent", "Bruce Wayne", "Peter Parker", "Tony Stark", "Steve Rogers", "Bruce Banner", "Barry Allen", "Hal Jordan", "Diana Prince", "Arthur Curry", "Oliver Queen", "Matt Murdock", "Wade Wilson", "Logan", "James Howlett", "Dick Grayson", "Barbara Gordon", "Selina Kyle"],
+          common: ["Clark Kent", "Bruce Wayne", "Peter Parker", "Tony Stark", "Steve Rogers", "Bruce Banner", "Diana Prince", "Logan"]
+        }
+      ];
+
+      const additional76QuestionSet = [
+        // --- WORDPLAY & LANGUAGE ---
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "un-" and ending in "-able"',
+          gold: ["Uncharacterisable"],
+          epic: ["Unconscionable", "Unfathomable", "Unprecedentedly"],
+          rare: ["Unquestionable", "Unbelievable", "Unforgivable", "Unforgettable", "Unjustifiable", "Unmistakable"],
+          uncommon: ["Unstoppable", "Unbreakable", "Unbeatable", "Uncomfortable", "Unacceptable", "Unpredictable", "Unreliable", "Unreasonable", "Unsuitable", "Unusable", "Unspeakable", "Unthinkable", "Unworkable", "Unsinkable", "Unshakeable"],
+          common: ["Unbelievable", "Uncomfortable", "Unacceptable", "Unstoppable", "Unbeatable", "Unsuitable", "Unreliable", "Unpredictable", "Unusable", "Unreachable", "Unavoidable", "Unreadable"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing a triple letter pattern like "eee" or "lll"',
+          gold: ["Goddessship"],
+          epic: ["Headmistressship", "Wallless", "Ballless"],
+          rare: ["Postmistressship", "Hostessship", "Countessship"],
+          uncommon: ["Freeing", "Sleeeless", "Beekeeper", "Kneedeep", "Spreeing", "Fleeing", "Seeing", "Treeing", "Agreeing", "Guaranteeing", "Decreeing"],
+          common: ["Agreeing", "Fleeing", "Seeing", "Freeing", "Guaranteeing", "Decreeing", "Beekeeper", "Coffee", "Toffee"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word with 5 or more syllables',
+          gold: ["Floccinaucinihilipilification"],
+          epic: ["Pneumonoultramicroscopic", "Honorificabilitudinity", "Sesquipedalianism"],
+          rare: ["Incomprehensibility", "Uncharacteristically", "Disproportionately", "Counterrevolutionary", "Electroencephalogram"],
+          uncommon: ["Responsibility", "Individualism", "Autobiography", "Capitalization", "Classification", "Reorganization", "Misinterpretation", "Telecommunication", "Recommendation", "Declassification", "Biodegradability", "Intercontinental", "Multiculturalism"],
+          common: ["Responsibility", "Autobiography", "Classification", "Reorganization", "Recommendation", "Communication", "Transportation", "Investigation", "Administration", "Organization"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "kn-" that does not refer to a knife or knot',
+          gold: ["Knickerbocker"],
+          epic: ["Knapsack", "Knell", "Knoll", "Knave"],
+          rare: ["Knead", "Kneel", "Kneecap", "Knuckle", "Knickknack"],
+          uncommon: ["Knucklehead", "Knuckleball", "Kneepads", "Kneeling", "Knocked", "Knocking", "Knockout", "Knitwear", "Knitted", "Knitting", "Knowhow", "Knowledgeable"],
+          common: ["Knock", "Knocked", "Knocking", "Knee", "Knees", "Kneel", "Knit", "Knitting", "Knowledge", "Know", "Known", "Knowing"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with the letter "J"',
+          gold: ["Juxtaposition"],
+          epic: ["Juggernaut", "Jeopardize", "Jubilation", "Jettison"],
+          rare: ["Jealousy", "Jargon", "Joust", "Junction", "Javelin", "Jamboree", "Jubilee"],
+          uncommon: ["Jacket", "Journal", "Journey", "Judgement", "Jungle", "Justice", "Jewelry", "Juice", "Jumper", "Juggle", "Joker", "Joyful", "Jubilant", "Judicial", "Jam", "Jelly", "Jingle", "Jockey", "Join", "Joint", "Joke", "Journalist"],
+          common: ["Jacket", "Juice", "Jungle", "Jump", "Jumping", "Joke", "Jokes", "Joker", "Jam", "Jelly", "Jewelry", "Jeans", "Job", "Jobs", "Joy", "Joyful"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that ends in "-ment" and has 2 syllables',
+          gold: ["Pigment"],
+          epic: ["Filament", "Segment", "Garment", "Torment"],
+          rare: ["Agment", "Casement", "Basement", "Pavement", "Raiment", "Shipment"],
+          uncommon: ["Payment", "Judgment", "Comment", "Movement", "Statement", "Argument", "Element", "Moment", "Treatment", "Torment", "Segment", "Garment", "Fragment", "Document"],
+          common: ["Payment", "Comment", "Moment", "Movement", "Element", "Statement", "Argument", "Treatment", "Judgment", "Basement", "Pavement", "Shipment"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing a double "T"',
+          gold: ["Lattermost"],
+          epic: ["Scuttlebutt", "Rattlesnake", "Bottleneck", "Brittle"],
+          rare: ["Throttle", "Skitter", "Flutter", "Utterance", "Chatterbox", "Gutter"],
+          uncommon: ["Butter", "Batter", "Letter", "Better", "Bitter", "Latter", "Matter", "Scatter", "Shatter", "Pattern", "Pottery", "Kettle", "Cattle", "Little", "Bottle", "Battle", "Rattle", "Cotton", "Kitten", "Button", "Mutton", "Glitter", "Twitter", "Fitter"],
+          common: ["Butter", "Letter", "Better", "Bitter", "Matter", "Little", "Bottle", "Battle", "Button", "Cotton", "Kitten", "Glitter", "Twitter", "Pattern"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "sub-"',
+          gold: ["Subterranean"],
+          epic: ["Subservient", "Substantiate", "Subjugate", "Subconscious"],
+          rare: ["Submarine", "Subsequent", "Substitute", "Subsidiary", "Subheading", "Substance"],
+          uncommon: ["Subject", "Submission", "Submitting", "Submitted", "Submit", "Subtotal", "Subway", "Suburbs", "Suburban", "Subscribe", "Subscriber", "Subscription", "Subdivide", "Subdivision", "Submerge", "Submerged", "Submitter", "Subsection"],
+          common: ["Subject", "Subway", "Submit", "Submitted", "Subscribe", "Subscription", "Submarine", "Suburbs", "Substance", "Subtotal"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "inter-"',
+          gold: ["Interstellar"],
+          epic: ["Interlocking", "Intermediary", "Intergovernmental", "Interchangeable"],
+          rare: ["Interstate", "Interfere", "Intervention", "Intercept", "Intermission", "Interrupt"],
+          uncommon: ["Internet", "International", "Interaction", "Interactive", "Interface", "Internal", "Interview", "Interviewer", "Interval", "Intersection", "Interfere", "Interference", "Interrupted", "Interrupting", "Interruption", "Intertwine"],
+          common: ["Internet", "International", "Interview", "Internal", "Interaction", "Interstate", "Intersection", "Interface", "Interrupt"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word containing "light"',
+          gold: ["Lightheadedness"],
+          epic: ["Candlelight", "Searchlight", "Moonlight", "Starlight"],
+          rare: ["Flashlight", "Highlight", "Spotlight", "Limelight", "Tail light", "Headlight"],
+          uncommon: ["Daylight", "Sunlight", "Nightlight", "Twilight", "Skylight", "Flashlight", "Highlight", "Spotlight", "Lightening", "Lighthouse", "Lightweight", "Enlighten", "Enlightened", "Enlightenment", "Lighted", "Lighting"],
+          common: ["Light", "Lighting", "Lighted", "Flashlight", "Sunlight", "Daylight", "Moonlight", "Highlight", "Lighthouse", "Lightweight"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that ends in "-fold"',
+          gold: ["Hundredfold"],
+          epic: ["Sevenfold", "Eightfold", "Tenfold", "Manifold"],
+          rare: ["Blindfold", "Manifold", "Threefold", "Fourfold", "Fivefold", "Sixfold"],
+          uncommon: ["Twofold", "Doublefold", "Triplefold", "Manifold", "Scaffold", "Blindfold", "Centerfold", "Multifold"],
+          common: ["Twofold", "Blindfold", "Scaffold", "Manifold", "Tenfold", "Fourfold", "Threefold"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that ends in "-less"',
+          gold: ["Pricelessness"],
+          epic: ["Relentless", "Remorseless", "Priceless", "Peerless"],
+          rare: ["Countless", "Restless", "Reckless", "Breathless", "Flawless", "Fearless"],
+          uncommon: ["Careless", "Hopeless", "Helpless", "Endless", "Harmless", "Nameless", "Painless", "Powerless", "Thoughtless", "Useless", "Worthless", "Speechless", "Homeless", "Wireless", "Cloudless", "Limitless", "Matchless", "Tireless", "Weightless"],
+          common: ["Careless", "Hopeless", "Helpless", "Endless", "Harmless", "Painless", "Powerless", "Useless", "Homeless", "Wireless", "Speechless", "Fearless", "Restless"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that starts with "micro-" or "macro-"',
+          gold: ["Macromolecule"],
+          epic: ["Microclimate", "Microcosm", "Macroeconomics", "Microbiome"],
+          rare: ["Microorganism", "Microbiologist", "Microchip", "Macrobiotic", "Microfiber"],
+          uncommon: ["Microscope", "Microphone", "Microwave", "Microbe", "Microbiology", "Microcomputer", "Microfilm", "Microsecond", "Microstructure", "Macroscope", "Macroscopic"],
+          common: ["Microscope", "Microphone", "Microwave", "Microchip", "Microbe", "Microscopic", "Microwaves", "Microphones"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "trans-"',
+          gold: ["Transcendence"],
+          epic: ["Transgression", "Translucent", "Transient", "Transcontinental"],
+          rare: ["Transformer", "Transfusion", "Transparency", "Transmitter", "Transition"],
+          uncommon: ["Transfer", "Transform", "Translate", "Translation", "Transport", "Transportation", "Transaction", "Transplant", "Transmission", "Transmit", "Transparent", "Transit", "Transcontinental", "Transactor", "Transferable"],
+          common: ["Transfer", "Transform", "Translate", "Transport", "Transportation", "Transaction", "Transit", "Transparent", "Translation", "Transformer"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word starting with "tele-"',
+          gold: ["Telekinesis"],
+          epic: ["Telepathy", "Telephoto", "Telegraphy", "Telematics"],
+          rare: ["Telecommunication", "Telegraph", "Telescopic", "Telecast", "Teleprompter"],
+          uncommon: ["Telephone", "Television", "Telescope", "Telethon", "Teleport", "Teleportation", "Telecommute", "Telemarketing", "Telematic", "Telecast"],
+          common: ["Telephone", "Television", "Telescope", "Teleport", "Phone", "TV", "Telegraph", "Telemarketing"]
+        },
+
+        // --- CULINARY & FOOD ---
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of bean or legume',
+          gold: ["Adzuki Bean"],
+          epic: ["Mung Bean", "Navy Bean", "Fava Bean", "Cranberry Bean"],
+          rare: ["Garbanzo Bean", "Edamame", "Pinto Bean", "Kidney Bean", "Black Bean", "Lima Bean", "Chickpea"],
+          uncommon: ["Black Beans", "Kidney Beans", "Pinto Beans", "Lima Beans", "Green Beans", "String Beans", "Snap Beans", "Soybeans", "Lentils", "Red Lentils", "Green Lentils", "Chickpeas", "Garbanzo", "Peanuts", "Broad Beans", "Cannellini Beans", "Great Northern Beans"],
+          common: ["Black Beans", "Green Beans", "Pinto Beans", "Kidney Beans", "Lentils", "Chickpeas", "Peanuts", "Soybeans", "Beans"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a condiment served with sushi',
+          gold: ["Ponzu"],
+          epic: ["Tobiko", "Gari", "Unagi Sauce", "Yuzu Kosho"],
+          rare: ["Wasabi", "Pickled Ginger", "Soy Sauce", "Spicy Mayo", "Sesame Oil", "Teriyaki Sauce"],
+          uncommon: ["Soy Sauce", "Low Sodium Soy Sauce", "Wasabi Paste", "Ginger", "Pickled Ginger", "Spicy Mayonnaise", "Teriyaki", "Sriracha", "Sesame Seeds", "Sweet Soy Sauce", "Eel Sauce"],
+          common: ["Soy Sauce", "Wasabi", "Ginger", "Spicy Mayo", "Teriyaki Sauce", "Sriracha"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a vegetable that is botanically a fruit',
+          gold: ["Tomatillo"],
+          epic: ["Chayote", "Bitter Melon", "Kabocha", "Okra"],
+          rare: ["Eggplant", "Zucchini", "Avocado", "Pumpkin", "Squash", "Cucumber"],
+          uncommon: ["Tomato", "Tomatoes", "Cucumber", "Cucumbers", "Avocado", "Avocados", "Zucchini", "Eggplant", "Bell Pepper", "Green Pepper", "Red Pepper", "Yellow Pepper", "Chili Pepper", "Jalapeno", "Pumpkin", "Butternut Squash", "Acorn Squash"],
+          common: ["Tomato", "Cucumber", "Avocado", "Pepper", "Bell Pepper", "Pumpkin", "Squash", "Eggplant", "Zucchini"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a classic Italian dish',
+          gold: ["Osso Buco"],
+          epic: ["Cacio e Pepe", "Saltimbocca", "Arancini", "Carbonara"],
+          rare: ["Lasagna", "Spaghetti Bolognese", "Risotto", "Tiramisu", "Fettuccine Alfredo", "Gnocchi", "Minestrone"],
+          uncommon: ["Spaghetti", "Pizza", "Lasagna", "Ravioli", "Risotto", "Pasta Carbonara", "Fettuccine", "Chicken Parmesan", "Eggplant Parmesan", "Bruschetta", "Caprese", "Calzone", "Gnocchi", "Bolognese", "Pesto Pasta", "Panini"],
+          common: ["Spaghetti", "Pizza", "Lasagna", "Ravioli", "Risotto", "Chicken Parmesan", "Fettuccine Alfredo", "Pasta", "Calzone"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of cooking oil',
+          gold: ["Camelina Oil"],
+          epic: ["Grapeseed Oil", "Avocado Oil", "Walnut Oil", "Sesame Oil"],
+          rare: ["Extra Virgin Olive Oil", "Canola Oil", "Peanut Oil", "Sunflower Oil", "Coconut Oil", "Corn Oil"],
+          uncommon: ["Olive Oil", "Vegetable Oil", "Canola Oil", "Coconut Oil", "Peanut Oil", "Sunflower Oil", "Sesame Oil", "Avocado Oil", "Corn Oil", "Grapeseed Oil", "Safflower Oil", "Palm Oil", "Lard", "Shortening", "Butter"],
+          common: ["Olive Oil", "Vegetable Oil", "Canola Oil", "Coconut Oil", "Peanut Oil", "Sunflower Oil", "Butter", "Corn Oil"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a fruit starting with the letter "P"',
+          gold: ["Persimmon"],
+          epic: ["Passion Fruit", "Papaya", "Pomegranate", "Plumcot"],
+          rare: ["Peach", "Plum", "Pineapple", "Pear", "Papaya", "Plantain"],
+          uncommon: ["Pineapple", "Peach", "Pear", "Plum", "Papaya", "Pomegranate", "Passion Fruit", "Prune", "Persimmon", "Plantain", "Pawpaw", "Prickly Pear"],
+          common: ["Pineapple", "Peach", "Pear", "Plum", "Papaya", "Pomegranate", "Passion Fruit", "Prune"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a style of cooking steak',
+          gold: ["Sous Vide Steak"],
+          epic: ["Pan Seared Steak", "Reverse Sear Steak", "Broiled Steak"],
+          rare: ["Rare Steak", "Medium Rare Steak", "Medium Steak", "Medium Well Steak", "Well Done Steak", "Grilled Steak"],
+          uncommon: ["Rare", "Medium Rare", "Medium", "Medium Well", "Well Done", "Grilled", "Pan Seared", "Broiled", "Smoked Steak", "Barbecued Steak", "Chicken Fried Steak", "Country Fried Steak"],
+          common: ["Rare", "Medium Rare", "Medium", "Well Done", "Grilled", "Medium Well", "Pan Seared"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of sausage',
+          gold: ["Andouille"],
+          epic: ["Chorizo", "Bratwurst", "Kielbasa", "Merguez"],
+          rare: ["Italian Sausage", "Pepperoni", "Salami", "Bologna", "Breakfast Sausage", "Frankfurter", "Wiener"],
+          uncommon: ["Bratwurst", "Chorizo", "Italian Sausage", "Pork Sausage", "Beef Sausage", "Turkey Sausage", "Chicken Sausage", "Hot Dog", "Wiener", "Frankfurter", "Kielbasa", "Andouille", "Salami", "Pepperoni", "Bologna", "Summer Sausage", "Knackwurst"],
+          common: ["Bratwurst", "Hot Dog", "Italian Sausage", "Chorizo", "Pork Sausage", "Pepperoni", "Salami", "Bologna", "Breakfast Sausage"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a popular sandwich',
+          gold: ["Muffuletta"],
+          epic: ["Monte Cristo", "Cuban Sandwich", "Po' Boy", "Reuben"],
+          rare: ["BLT", "Club Sandwich", "Philly Cheesesteak", "Grilled Cheese", "Peanut Butter and Jelly", "Pulled Pork"],
+          uncommon: ["Grilled Cheese", "BLT", "Club Sandwich", "Philly Cheesesteak", "Reuben", "Cuban", "Po Boy", "Tuna Melt", "Turkey Club", "Ham and Cheese", "Egg Salad Sandwich", "Chicken Salad Sandwich", "Tuna Salad Sandwich", "PB&J", "Peanut Butter and Jelly", "French Dip", "Submarine Sandwich", "Meatball Sub"],
+          common: ["Grilled Cheese", "BLT", "Club Sandwich", "Philly Cheesesteak", "PB&J", "Ham and Cheese", "Turkey Sandwich", "Submarine", "Cheesesteak"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a food cooked in deep oil or fat',
+          gold: ["Churros"],
+          epic: ["Beignet", "Falafel", "Empanada", "Tempura"],
+          rare: ["French Fries", "Fried Chicken", "Doughnut", "Mozzarella Sticks", "Onion Rings", "Funnel Cake"],
+          uncommon: ["French Fries", "Fried Chicken", "Doughnut", "Onion Rings", "Mozzarella Sticks", "Corn Dog", "Chicken Tenders", "Chicken Nuggets", "Potato Chips", "Fried Fish", "Fish and Chips", "Churros", "Empanadas", "Falafel", "Tempura", "Hushpuppies", "Tater Tots"],
+          common: ["French Fries", "Fried Chicken", "Doughnut", "Onion Rings", "Chicken Tenders", "Chicken Nuggets", "Potato Chips", "Mozzarella Sticks", "Fish and Chips", "Tater Tots"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a dessert made with chocolate',
+          gold: ["Chocolate Soufflé"],
+          epic: ["Chocolate Truffle", "Chocolate Fondue", "Molten Lava Cake", "Chocolate Mousse"],
+          rare: ["Chocolate Cake", "Brownies", "Chocolate Pudding", "Chocolate Chip Cookies", "Chocolate Ice Cream", "Chocolate Fudge"],
+          uncommon: ["Brownies", "Chocolate Cake", "Chocolate Chip Cookie", "Chocolate Pudding", "Chocolate Mousse", "Chocolate Fudge", "Chocolate Donut", "Chocolate Milkshake", "Hot Chocolate", "Chocolate Sundae", "Chocolate Pie", "Chocolate Tart", "Chocolate Truffles", "Chocolate Eclair", "Chocolate Cupcake"],
+          common: ["Brownies", "Chocolate Cake", "Chocolate Chip Cookies", "Chocolate Ice Cream", "Chocolate Pudding", "Chocolate Milkshake", "Hot Chocolate", "Chocolate Donut", "Chocolate Fudge"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a cocktail drink containing rum',
+          gold: ["Zombie Cocktail"],
+          epic: ["Dark 'n' Stormy", "Mai Tai", "Hurricane", "Pina Colada"],
+          rare: ["Mojito", "Daiquiri", "Rum and Coke", "Cuba Libre", "Hot Toddy", "Planter's Punch"],
+          uncommon: ["Mojito", "Pina Colada", "Daiquiri", "Rum and Coke", "Cuba Libre", "Mai Tai", "Dark and Stormy", "Hurricane", "Rum Punch", "Long Island Iced Tea", "Rum Runner", "Bahama Mama"],
+          common: ["Mojito", "Pina Colada", "Daiquiri", "Rum and Coke", "Cuba Libre", "Rum Punch", "Mai Tai"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a dairy product other than milk or cheese',
+          gold: ["Clotted Cream"],
+          epic: ["Ghee", "Quark", "Kefir", "Crème Fraîche"],
+          rare: ["Yogurt", "Butter", "Sour Cream", "Heavy Cream", "Ice Cream", "Whipped Cream"],
+          uncommon: ["Yogurt", "Greek Yogurt", "Butter", "Sour Cream", "Heavy Cream", "Whipping Cream", "Whipped Cream", "Cream", "Half and Half", "Ice Cream", "Frozen Yogurt", "Cottage Cheese", "Custard", "Buttermilk", "Condensed Milk", "Evaporated Milk"],
+          common: ["Yogurt", "Butter", "Sour Cream", "Heavy Cream", "Ice Cream", "Whipped Cream", "Half and Half", "Cream", "Greek Yogurt"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a hot breakfast drink',
+          gold: ["Matcha Latte"],
+          epic: ["Chai Latte", "Hot Apple Cider", "Turkish Coffee", "Golden Milk"],
+          rare: ["Black Coffee", "Espresso", "Cappuccino", "Green Tea", "Hot Chocolate", "Earl Grey Tea"],
+          uncommon: ["Coffee", "Hot Coffee", "Espresso", "Latte", "Cappuccino", "Americano", "Hot Chocolate", "Green Tea", "Black Tea", "Chai", "Hot Tea", "Herbal Tea", "Decaf Coffee", "Mocha"],
+          common: ["Coffee", "Tea", "Hot Chocolate", "Hot Coffee", "Hot Tea", "Espresso", "Latte", "Cappuccino", "Green Tea"]
+        },
+
+        // --- GEOGRAPHY & WORLD LOCATIONS ---
+        {
+          cat: 'geography',
+          prompt: 'Name a US state starting with the letter "N"',
+          gold: ["New Mexico"],
+          epic: ["North Dakota", "Nebraska", "Nevada"],
+          rare: ["New York", "New Jersey", "North Carolina", "New Hampshire"],
+          uncommon: ["New York", "New Jersey", "North Carolina", "North Dakota", "Nebraska", "Nevada", "New Hampshire", "New Mexico"],
+          common: ["New York", "New Jersey", "North Carolina", "Nevada", "Nebraska", "North Dakota", "New Hampshire", "New Mexico"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US state starting with the letter "A"',
+          gold: ["Arkansas"],
+          epic: ["Alaska", "Alabama"],
+          rare: ["Arizona", "Arkansas"],
+          uncommon: ["Arizona", "Alaska", "Alabama", "Arkansas"],
+          common: ["Arizona", "Alaska", "Alabama", "Arkansas"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country in South America',
+          gold: ["Suriname"],
+          epic: ["Guyana", "French Guiana", "Paraguay", "Uruguay"],
+          rare: ["Brazil", "Argentina", "Colombia", "Peru", "Chile", "Ecuador", "Bolivia", "Venezuela"],
+          uncommon: ["Brazil", "Argentina", "Colombia", "Peru", "Chile", "Ecuador", "Bolivia", "Venezuela", "Uruguay", "Paraguay", "Guyana", "Suriname"],
+          common: ["Brazil", "Argentina", "Colombia", "Peru", "Chile", "Ecuador", "Venezuela", "Bolivia", "Uruguay"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country in North America',
+          gold: ["Saint Kitts and Nevis"],
+          epic: ["Belize", "El Salvador", "Honduras", "Nicaragua"],
+          rare: ["Canada", "United States", "Mexico", "Costa Rica", "Panama", "Guatemala", "Jamaica", "Cuba", "Haiti", "Dominican Republic"],
+          uncommon: ["United States", "Canada", "Mexico", "Costa Rica", "Panama", "Guatemala", "Honduras", "El Salvador", "Nicaragua", "Belize", "Jamaica", "Cuba", "Haiti", "Dominican Republic", "Bahamas", "Barbados", "Trinidad and Tobago"],
+          common: ["United States", "Canada", "Mexico", "Costa Rica", "Panama", "Jamaica", "Cuba", "Bahamas", "Guatemala"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a major ocean of the world',
+          gold: ["Southern Ocean"],
+          epic: ["Antarctic Ocean", "Arctic Ocean"],
+          rare: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean"],
+          uncommon: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Southern Ocean", "Antarctic Ocean", "Pacific", "Atlantic", "Indian", "Arctic"],
+          common: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific", "Atlantic", "Indian"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US state that borders Canada',
+          gold: ["Idaho"],
+          epic: ["North Dakota", "Montana", "Vermont", "New Hampshire"],
+          rare: ["Washington", "New York", "Maine", "Michigan", "Minnesota", "Alaska", "Pennsylvania", "Ohio"],
+          uncommon: ["Washington", "Idaho", "Montana", "North Dakota", "Minnesota", "Michigan", "New York", "Vermont", "New Hampshire", "Maine", "Alaska", "Pennsylvania", "Ohio"],
+          common: ["Washington", "New York", "Maine", "Michigan", "Minnesota", "Alaska", "Montana", "Vermont", "Idaho"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a US state that borders Mexico',
+          gold: ["New Mexico"],
+          epic: ["Arizona"],
+          rare: ["Texas", "California"],
+          uncommon: ["Texas", "California", "Arizona", "New Mexico"],
+          common: ["Texas", "California", "Arizona", "New Mexico"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country that starts with the letter "A"',
+          gold: ["Azerbaijan"],
+          epic: ["Armenia", "Algeria", "Angola", "Andorra"],
+          rare: ["Argentina", "Australia", "Austria", "Afghanistan", "Albania"],
+          uncommon: ["Australia", "Argentina", "Austria", "Afghanistan", "Albania", "Algeria", "Angola", "Armenia", "Azerbaijan", "Andorra", "Antigua and Barbuda"],
+          common: ["Australia", "Argentina", "Austria", "Afghanistan", "Albania", "Algeria", "Angola"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country that starts with the letter "C"',
+          gold: ["Central African Republic"],
+          epic: ["Cameroon", "Chad", "Comoros", "Cape Verde"],
+          rare: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic"],
+          uncommon: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic", "Czechia", "Cambodia", "Cameroon", "Chad", "Congo", "Cyprus", "Ivory Coast"],
+          common: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic", "Cyprus"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country that starts with the letter "I"',
+          gold: ["Ivory Coast"],
+          epic: ["Iceland", "Iran", "Iraq", "Indonesia"],
+          rare: ["India", "Italy", "Ireland", "Israel"],
+          uncommon: ["India", "Italy", "Ireland", "Israel", "Iceland", "Indonesia", "Iran", "Iraq", "Ivory Coast"],
+          common: ["India", "Italy", "Ireland", "Israel", "Iceland", "Indonesia", "Iran", "Iraq"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country that starts with the letter "S"',
+          gold: ["Suriname"],
+          epic: ["Slovakia", "Slovenia", "Senegal", "Somalia"],
+          rare: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland"],
+          uncommon: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland", "Serbia", "Slovakia", "Slovenia", "Senegal", "Somalia", "Sudan", "South Sudan", "Sri Lanka", "Syria"],
+          common: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland", "Serbia"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a major European river',
+          gold: ["Dnieper River"],
+          epic: ["Elbe River", "Oder River", "Tagus River", "Main River"],
+          rare: ["Danube River", "Rhine River", "Seine River", "Thames River", "Volga River", "Po River"],
+          uncommon: ["Danube", "Rhine", "Seine", "Thames", "Volga", "Elbe", "Po", "Loire", "Rhone", "Dnieper", "Tagus", "Main"],
+          common: ["Danube", "Rhine", "Seine", "Thames", "Volga", "Danube River", "Rhine River", "Seine River", "Thames River"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a country in the Middle East',
+          gold: ["Oman"],
+          epic: ["Bahrain", "Yemen", "Kuwait", "Qatar"],
+          rare: ["Israel", "Saudi Arabia", "Iran", "Iraq", "Jordan", "Lebanon", "United Arab Emirates", "Turkey"],
+          uncommon: ["Israel", "Saudi Arabia", "Iran", "Iraq", "Jordan", "Lebanon", "UAE", "United Arab Emirates", "Turkey", "Qatar", "Kuwait", "Oman", "Yemen", "Bahrain", "Syria"],
+          common: ["Israel", "Saudi Arabia", "Iran", "Iraq", "Jordan", "Lebanon", "UAE", "Turkey", "Qatar", "Kuwait", "Syria"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a city in Australia',
+          gold: ["Hobart"],
+          epic: ["Darwin", "Canberra", "Cairns", "Gold Coast"],
+          rare: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide"],
+          uncommon: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Canberra", "Gold Coast", "Hobart", "Darwin", "Cairns", "Geelong", "Townsville", "Newcastle"],
+          common: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Canberra", "Gold Coast"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a famous US landmark',
+          gold: ["Devil's Tower"],
+          epic: ["Gateway Arch", "Space Needle", "Alcatraz", "Mount Rushmore"],
+          rare: ["Statue of Liberty", "Empire State Building", "Golden Gate Bridge", "Grand Canyon", "White House", "Hollywood Sign"],
+          uncommon: ["Statue of Liberty", "Golden Gate Bridge", "Grand Canyon", "White House", "Empire State Building", "Mount Rushmore", "Space Needle", "Gateway Arch", "Hoover Dam", "Alcatraz", "Times Square", "Lincoln Memorial", "Washington Monument", "Brooklyn Bridge", "Niagara Falls"],
+          common: ["Statue of Liberty", "Golden Gate Bridge", "Grand Canyon", "White House", "Empire State Building", "Mount Rushmore", "Times Square", "Hoover Dam", "Niagara Falls"]
+        },
+
+        // --- SCIENCE & SPACE & NATURE ---
+        {
+          cat: 'science',
+          prompt: 'Name a unit of time',
+          gold: ["Picosecond"],
+          epic: ["Nanosecond", "Microsecond", "Millisecond", "Epoch"],
+          rare: ["Second", "Minute", "Hour", "Day", "Week", "Month", "Year", "Decade", "Century", "Millennium"],
+          uncommon: ["Second", "Minute", "Hour", "Day", "Week", "Month", "Year", "Decade", "Century", "Millennium", "Millisecond", "Microsecond", "Nanosecond", "Fortnight", "Leap Year", "Quarter", "Semester", "Fiscal Year"],
+          common: ["Second", "Minute", "Hour", "Day", "Week", "Month", "Year", "Decade", "Century", "Millennium"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a warm-blooded animal',
+          gold: ["Star-nosed Mole"],
+          epic: ["Capybara", "Pangolin", "Narwhal", "Aye-aye"],
+          rare: ["Dog", "Cat", "Human", "Eagle", "Penguin", "Whale", "Dolphin", "Lion", "Tiger", "Bear"],
+          uncommon: ["Dog", "Cat", "Horse", "Cow", "Pig", "Sheep", "Goat", "Bear", "Lion", "Tiger", "Elephant", "Monkey", "Whale", "Dolphin", "Eagle", "Hawk", "Owl", "Penguin", "Robin", "Sparrow", "Duck", "Chicken", "Turkey"],
+          common: ["Dog", "Cat", "Horse", "Cow", "Bear", "Lion", "Tiger", "Elephant", "Whale", "Eagle", "Penguin", "Human"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a cold-blooded animal',
+          gold: ["Axolotl"],
+          epic: ["Komodo Dragon", "Tuatara", "Gila Monster", "Chameleon"],
+          rare: ["Snake", "Lizard", "Frog", "Toad", "Alligator", "Crocodile", "Turtle", "Salamander", "Shark", "Goldfish"],
+          uncommon: ["Snake", "Lizard", "Frog", "Toad", "Turtle", "Tortoise", "Alligator", "Crocodile", "Salamander", "Newt", "Gecko", "Iguana", "Chameleon", "Komodo Dragon", "Shark", "Goldfish", "Salmon", "Trout", "Tuna", "Cod"],
+          common: ["Snake", "Lizard", "Frog", "Toad", "Turtle", "Alligator", "Crocodile", "Shark", "Goldfish", "Salmon"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a planet in our Solar System starting with a consonant',
+          gold: ["Neptune"],
+          epic: ["Mercury", "Venus", "Saturn"],
+          rare: ["Mars", "Jupiter", "Neptune", "Saturn"],
+          uncommon: ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Neptune"],
+          common: ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Neptune"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a layer of Earth atmosphere',
+          gold: ["Exosphere"],
+          epic: ["Thermosphere", "Mesosphere", "Stratosphere", "Troposphere"],
+          rare: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Ionosphere", "Ozone Layer"],
+          uncommon: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Exosphere", "Ionosphere", "Ozone Layer", "Magnetosphere"],
+          common: ["Troposphere", "Stratosphere", "Ozone Layer", "Ionosphere", "Exosphere", "Atmosphere"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a physical state of water',
+          gold: ["Superheated Steam"],
+          epic: ["Supercooled Water", "Water Vapor", "Plasma Water"],
+          rare: ["Ice", "Liquid Water", "Steam", "Water Vapor", "Frost", "Snow", "Sleet", "Hail"],
+          uncommon: ["Ice", "Liquid", "Steam", "Water Vapor", "Snow", "Frost", "Hail", "Sleet", "Mist", "Fog", "Dew", "Glacier Ice"],
+          common: ["Ice", "Liquid", "Steam", "Water Vapor", "Snow", "Frost", "Hail", "Sleet", "Fog", "Dew"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a sense in the human body',
+          gold: ["Proprioception"],
+          epic: ["Thermoception", "Equilibrioception", "Nociception"],
+          rare: ["Sight", "Hearing", "Touch", "Taste", "Smell", "Balance"],
+          uncommon: ["Sight", "Hearing", "Touch", "Taste", "Smell", "Vision", "Audition", "Olfaction", "Gustation", "Tactile", "Balance", "Pain Sense", "Temperature Sense"],
+          common: ["Sight", "Hearing", "Touch", "Taste", "Smell", "Vision"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a renewable energy source',
+          gold: ["Wave Energy"],
+          epic: ["Geothermal Energy", "Tidal Energy", "Biomass Energy", "Hydroelectric Energy"],
+          rare: ["Solar Power", "Wind Power", "Hydroelectric Power", "Geothermal Power", "Biomass"],
+          uncommon: ["Solar", "Wind", "Hydroelectric", "Geothermal", "Biomass", "Tidal", "Wave", "Solar Power", "Wind Power", "Wind Turbines", "Solar Panels", "Hydro Power", "Water Power"],
+          common: ["Solar Power", "Wind Power", "Solar", "Wind", "Hydroelectric", "Geothermal", "Water Power", "Solar Panels"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a non-renewable energy source',
+          gold: ["Oil Shale"],
+          epic: ["Tar Sands", "Uranium Ore", "Lignite Coal", "Bituminous Coal"],
+          rare: ["Coal", "Crude Oil", "Natural Gas", "Uranium", "Petroleum", "Propane"],
+          uncommon: ["Coal", "Oil", "Natural Gas", "Petroleum", "Gasoline", "Diesel", "Kerosene", "Propane", "Uranium", "Nuclear Fuel", "Fossil Fuels"],
+          common: ["Coal", "Oil", "Natural Gas", "Gasoline", "Petroleum", "Fossil Fuels", "Propane", "Diesel"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of cloud',
+          gold: ["Fractocumulus"],
+          epic: ["Cirrostratus", "Altostratus", "Nimbostratus", "Cumulonimbus"],
+          rare: ["Cirrus", "Cumulus", "Stratus", "Altocumulus", "Fog", "Contrail"],
+          uncommon: ["Cumulus", "Cirrus", "Stratus", "Cumulonimbus", "Altocumulus", "Altostratus", "Cirrocumulus", "Cirrostratus", "Stratocumulus", "Nimbostratus", "Fog", "Contrail", "Raincloud", "Stormcloud"],
+          common: ["Cumulus", "Cirrus", "Stratus", "Cumulonimbus", "Fog", "Raincloud", "Cloud"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a carnivorous mammal',
+          gold: ["Fossa"],
+          epic: ["Wolverine", "Ocelot", "Serval", "Kinkajou"],
+          rare: ["Lion", "Tiger", "Leopard", "Cheetah", "Wolf", "Bear", "Hyena", "Fox"],
+          uncommon: ["Lion", "Tiger", "Leopard", "Cheetah", "Wolf", "Bear", "Polar Bear", "Grizzly Bear", "Hyena", "Fox", "Red Fox", "Coyote", "Jackal", "Dingo", "Panther", "Jaguar", "Cougar", "Puma", "Bobcat", "Lynx", "Sea Otter", "Ferret", "Weasel"],
+          common: ["Lion", "Tiger", "Leopard", "Cheetah", "Wolf", "Bear", "Hyena", "Fox", "Coyote", "Jaguar", "Panther"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name an herbivorous mammal',
+          gold: ["Okapi"],
+          epic: ["Tapir", "Manatee", "Capybara", "Chinchilla"],
+          rare: ["Cow", "Horse", "Sheep", "Goat", "Deer", "Elephant", "Giraffe", "Zebra", "Hippo", "Rhino"],
+          uncommon: ["Cow", "Horse", "Sheep", "Goat", "Deer", "Elk", "Moose", "Elephant", "Giraffe", "Zebra", "Hippopotamus", "Rhinoceros", "Rabbit", "Hare", "Beaver", "Squirrel", "Kangaroo", "Koala", "Panda", "Giant Panda", "Camel", "Llama", "Alpaca"],
+          common: ["Cow", "Horse", "Sheep", "Goat", "Deer", "Elephant", "Giraffe", "Zebra", "Hippopotamus", "Rabbit", "Panda", "Camel"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a gas found in Earth atmosphere',
+          gold: ["Xenon Gas"],
+          epic: ["Neon Gas", "Helium Gas", "Krypton Gas", "Methane Gas"],
+          rare: ["Nitrogen", "Oxygen", "Argon", "Carbon Dioxide", "Water Vapor", "Ozone"],
+          uncommon: ["Nitrogen", "Oxygen", "Argon", "Carbon Dioxide", "Water Vapor", "Ozone", "Neon", "Helium", "Methane", "Krypton", "Hydrogen", "Xenon", "Nitrous Oxide", "Carbon Monoxide"],
+          common: ["Nitrogen", "Oxygen", "Carbon Dioxide", "Argon", "Water Vapor", "Ozone", "Helium", "Hydrogen"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a famous constellation',
+          gold: ["Cassiopeia"],
+          epic: ["Andromeda", "Centaurus", "Pegasus", "Bootes"],
+          rare: ["Orion", "Ursa Major", "Ursa Minor", "Scorpius", "Taurus", "Leo", "Cygnus"],
+          uncommon: ["Orion", "Big Dipper", "Little Dipper", "Ursa Major", "Ursa Minor", "Taurus", "Leo", "Virgo", "Scorpio", "Scorpius", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Gemini", "Aries", "Cancer", "Cassiopeia", "Pegasus"],
+          common: ["Orion", "Big Dipper", "Little Dipper", "Taurus", "Leo", "Scorpio", "Sagittarius", "Gemini", "Aries", "Aquarius"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a type of tree with needle leaves',
+          gold: ["Larch"],
+          epic: ["Yew", "Hemlock Tree", "Douglas Fir", "Cypress"],
+          rare: ["Pine Tree", "Spruce Tree", "Fir Tree", "Cedar Tree", "Redwood", "Sequoia"],
+          uncommon: ["Pine", "Pine Tree", "Spruce", "Spruce Tree", "Fir", "Fir Tree", "Cedar", "Cedar Tree", "Redwood", "Sequoia", "Cypress", "Juniper", "Yew", "Larch", "Hemlock"],
+          common: ["Pine", "Pine Tree", "Spruce", "Fir", "Cedar", "Redwood", "Sequoia", "Christmas Tree"]
+        },
+
+        // --- EVERYDAY OBJECTS & HOUSEHOLD ---
+        {
+          cat: 'everyday',
+          prompt: 'Name an object found in a bedroom',
+          gold: ["Valet Stand"],
+          epic: ["Nightstand Lamp", "Dressing Table", "Vanity Mirror", "Bedframe"],
+          rare: ["Bed", "Mattress", "Pillow", "Blanket", "Dresser", "Nightstand", "Closet", "Wardrobe"],
+          uncommon: ["Bed", "Mattress", "Pillow", "Pillows", "Blanket", "Duvet", "Comforter", "Sheets", "Bed Sheets", "Dresser", "Nightstand", "Alarm Clock", "Lamp", "Closet", "Wardrobe", "Mirror", "Rug", "Curtains", "Hangers", "Trash Can"],
+          common: ["Bed", "Mattress", "Pillow", "Blanket", "Dresser", "Nightstand", "Alarm Clock", "Lamp", "Closet", "Wardrobe", "Mirror"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a bathroom',
+          gold: ["Bidet"],
+          epic: ["Loofah", "Plunger", "Bath Mat", "Shower Curtain"],
+          rare: ["Toilet", "Sink", "Shower", "Bathtub", "Towel", "Soap", "Shampoo", "Toothbrush"],
+          uncommon: ["Toilet", "Sink", "Shower", "Bathtub", "Towel", "Bath Towel", "Hand Towel", "Soap", "Hand Soap", "Body Wash", "Shampoo", "Conditioner", "Toothbrush", "Toothpaste", "Toilet Paper", "Mirror", "Plunger", "Toilet Brush", "Bath Mat", "Loofah", "Razor", "Tissue Box"],
+          common: ["Toilet", "Sink", "Shower", "Bathtub", "Towel", "Soap", "Shampoo", "Toothbrush", "Toothpaste", "Toilet Paper", "Mirror"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found in a garage',
+          gold: ["Creeper Mat"],
+          epic: ["Car Jack", "Workbench", "Air Compressor", "Lawnmower"],
+          rare: ["Car", "Bicycle", "Toolbox", "Ladder", "Lawnmower", "Rake", "Shovel"],
+          uncommon: ["Car", "Automobile", "Bicycle", "Bike", "Toolbox", "Tools", "Ladder", "Step Ladder", "Lawnmower", "Lawn Mower", "Rake", "Shovel", "Broom", "Trash Can", "Gas Can", "Tires", "Car Jack", "Workbench", "Extension Cord", "Hose", "Garden Hose", "Leaf Blower"],
+          common: ["Car", "Bicycle", "Toolbox", "Ladder", "Lawnmower", "Rake", "Shovel", "Broom", "Trash Can", "Gas Can", "Tires"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item found on a dining table',
+          gold: ["Trivet"],
+          epic: ["Cruet Set", "Gravy Boat", "Placemat", "Charger Plate"],
+          rare: ["Plate", "Fork", "Knife", "Spoon", "Napkin", "Glass", "Salt Shaker", "Pepper Shaker"],
+          uncommon: ["Plate", "Dinner Plate", "Fork", "Dinner Fork", "Knife", "Butter Knife", "Spoon", "Teaspoon", "Soup Spoon", "Napkin", "Paper Napkin", "Cloth Napkin", "Glass", "Water Glass", "Wine Glass", "Cup", "Mug", "Bowl", "Salt Shaker", "Pepper Shaker", "Placemat", "Tablecloth", "Centerpiece", "Candle"],
+          common: ["Plate", "Fork", "Knife", "Spoon", "Napkin", "Glass", "Cup", "Bowl", "Salt Shaker", "Pepper Shaker", "Tablecloth"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a cleaning tool or appliance',
+          gold: ["Steam Mop"],
+          epic: ["Pressure Washer", "Squeegee", "Robot Vacuum", "Carpet Cleaner"],
+          rare: ["Vacuum Cleaner", "Broom", "Mop", "Sponge", "Duster", "Scrub Brush"],
+          uncommon: ["Vacuum", "Vacuum Cleaner", "Broom", "Mop", "Dustpan", "Sponge", "Duster", "Feather Duster", "Scrub Brush", "Squeegee", "Pressure Washer", "Steam Cleaner", "Dishwasher", "Washing Machine", "Clothes Dryer", "Bucket"],
+          common: ["Vacuum", "Broom", "Mop", "Dustpan", "Sponge", "Duster", "Scrub Brush", "Dishwasher", "Washing Machine", "Bucket"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a stationery item found in an office',
+          gold: ["Correction Tape"],
+          epic: ["Paper Fastener", "Binder Clip", "Label Maker", "Stamp Pad"],
+          rare: ["Stapler", "Paperclip", "Tape Dispenser", "Highlighter", "Sticky Notes", "Scissors"],
+          uncommon: ["Stapler", "Staples", "Paperclip", "Paperclips", "Tape", "Scotch Tape", "Tape Dispenser", "Highlighter", "Sticky Notes", "Post It Notes", "Scissors", "Pen", "Pencils", "Eraser", "Ruler", "Folder", "File Folder", "Binder", "Envelope", "Notepad", "Paper"],
+          common: ["Stapler", "Paperclip", "Tape", "Highlighter", "Sticky Notes", "Scissors", "Pen", "Pencil", "Ruler", "Folder", "Binder", "Paper"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name a device used for measuring something',
+          gold: ["Seismometer"],
+          epic: ["Barometer", "Manometer", "Hygrometer", "Anemometer"],
+          rare: ["Thermometer", "Ruler", "Tape Measure", "Scale", "Measuring Cup", "Stopwatch", "Speedometer"],
+          uncommon: ["Ruler", "Tape Measure", "Thermometer", "Scale", "Weight Scale", "Kitchen Scale", "Measuring Cup", "Measuring Spoons", "Stopwatch", "Timer", "Clock", "Watch", "Speedometer", "Odometer", "Barometer", "Protractor", "Compass", "Graduated Cylinder"],
+          common: ["Ruler", "Tape Measure", "Thermometer", "Scale", "Measuring Cup", "Stopwatch", "Clock", "Speedometer", "Watch"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an electronic device with a screen',
+          gold: ["Oscilloscope"],
+          epic: ["Smart Watch", "E-reader", "GPS Navigator", "Handheld Console"],
+          rare: ["Smartphone", "Television", "Laptop", "Computer Monitor", "Tablet", "iPad"],
+          uncommon: ["Smartphone", "Cell Phone", "Mobile Phone", "Television", "TV", "Laptop", "Computer Monitor", "Monitor", "Tablet", "iPad", "Smartwatch", "Smart Watch", "Kindle", "E Reader", "Nintendo Switch", "Game Boy", "Camera", "Digital Camera", "ATM Machine"],
+          common: ["Smartphone", "Cell Phone", "Television", "TV", "Laptop", "Tablet", "iPad", "Monitor", "Computer", "Smartwatch"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item used for personal hygiene',
+          gold: ["Tongue Scraper"],
+          epic: ["Pumice Stone", "Floss Pick", "Cuticle Nipper", "Nail Buffer"],
+          rare: ["Toothbrush", "Dental Floss", "Soap", "Shampoo", "Deodorant", "Nail Clippers", "Comb"],
+          uncommon: ["Toothbrush", "Toothpaste", "Dental Floss", "Floss", "Mouthwash", "Soap", "Bar Soap", "Body Wash", "Shampoo", "Conditioner", "Deodorant", "Antiperspirant", "Nail Clippers", "Nail File", "Hairbrush", "Comb", "Razor", "Shaving Cream", "Cotton Swabs", "Q Tips", "Face Wash", "Lotion"],
+          common: ["Toothbrush", "Toothpaste", "Soap", "Shampoo", "Deodorant", "Dental Floss", "Mouthwash", "Nail Clippers", "Razor", "Lotion", "Comb"]
+        },
+        {
+          cat: 'everyday',
+          prompt: 'Name an item kept in a refrigerator',
+          gold: ["Anchovy Paste"],
+          epic: ["Horseradish", "Capers", "Maple Syrup", "Miso Paste"],
+          rare: ["Milk", "Butter", "Eggs", "Cheese", "Ketchup", "Mustard", "Mayonnaise", "Yogurt"],
+          uncommon: ["Milk", "Butter", "Eggs", "Cheese", "Ketchup", "Mustard", "Mayonnaise", "Yogurt", "Sour Cream", "Jam", "Jelly", "Orange Juice", "Apple Juice", "Salad Dressing", "Pickles", "Salsa", "Leftovers", "Fruit", "Vegetables", "Bacon", "Cold Cuts", "Ham", "Hot Dogs"],
+          common: ["Milk", "Butter", "Eggs", "Cheese", "Ketchup", "Mustard", "Mayonnaise", "Yogurt", "Juice", "Pickles", "Water"]
+        },
+
+        // --- POP CULTURE, SPORTS & GAMES ---
+        {
+          cat: 'popculture',
+          prompt: 'Name a sport played with a racquet or paddle',
+          gold: ["Padel"],
+          epic: ["Squash", "Racquetball", "Pickleball", "Platform Tennis"],
+          rare: ["Tennis", "Badminton", "Table Tennis", "Ping Pong"],
+          uncommon: ["Tennis", "Badminton", "Table Tennis", "Ping Pong", "Pickleball", "Squash", "Racquetball", "Padel", "Beach Tennis", "Speedminton"],
+          common: ["Tennis", "Badminton", "Table Tennis", "Ping Pong", "Pickleball", "Squash", "Racquetball"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a sport played on ice',
+          gold: ["Bandy"],
+          epic: ["Ringette", "Ice Stock Sport", "Skeleton", "Luge"],
+          rare: ["Ice Hockey", "Figure Skating", "Curling", "Speed Skating", "Short Track Speed Skating"],
+          uncommon: ["Ice Hockey", "Hockey", "Figure Skating", "Curling", "Speed Skating", "Short Track", "Ice Dancing", "Bobsled", "Luge", "Skeleton", "Bandy"],
+          common: ["Ice Hockey", "Figure Skating", "Curling", "Speed Skating", "Bobsled", "Hockey", "Ice Skating"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a sport played with a round ball',
+          gold: ["Bocce"],
+          epic: ["Handball", "Water Polo", "Netball", "Cricket"],
+          rare: ["Soccer", "Basketball", "Baseball", "Tennis", "Volleyball", "Golf", "Bowling", "Dodgeball"],
+          uncommon: ["Soccer", "Basketball", "Baseball", "Softball", "Tennis", "Volleyball", "Beach Volleyball", "Golf", "Bowling", "Dodgeball", "Field Hockey", "Cricket", "Handball", "Water Polo", "Netball", "Bocce Ball", "Kickball", "Lacrosse", "Squash", "Table Tennis", "Ping Pong"],
+          common: ["Soccer", "Basketball", "Baseball", "Tennis", "Volleyball", "Golf", "Bowling", "Dodgeball", "Kickball", "Softball"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a superhero who is part of the Avengers',
+          gold: ["Wonder Man"],
+          epic: ["Spider-Woman", "She-Hulk", "Falcon", "Moon Knight", "Quicksilver"],
+          rare: ["Iron Man", "Captain America", "Thor", "Hulk", "Black Widow", "Hawkeye", "Spider-Man", "Black Panther", "Doctor Strange", "Ant-Man", "Wasp", "Scarlet Witch", "Vision"],
+          uncommon: ["Iron Man", "Captain America", "Thor", "Hulk", "The Hulk", "Black Widow", "Hawkeye", "Spider Man", "Black Panther", "Doctor Strange", "Ant Man", "The Wasp", "Scarlet Witch", "Vision", "Falcon", "War Machine", "Winter Soldier", "Captain Marvel", "Star Lord", "Groot", "Nebula", "Rocket Raccoon"],
+          common: ["Iron Man", "Captain America", "Thor", "Hulk", "Black Widow", "Hawkeye", "Spider-Man", "Black Panther", "Doctor Strange", "Ant-Man", "Captain Marvel"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a superhero who is part of the Justice League',
+          gold: ["Elongated Man"],
+          epic: ["Zatanna", "Booster Gold", "Hawkman", "Hawkgirl", "Firestorm"],
+          rare: ["Superman", "Batman", "Wonder Woman", "The Flash", "Green Lantern", "Aquaman", "Cyborg", "Martian Manhunter", "Green Arrow"],
+          uncommon: ["Superman", "Batman", "Wonder Woman", "Flash", "The Flash", "Green Lantern", "Aquaman", "Cyborg", "Martian Manhunter", "Green Arrow", "Shazam", "Black Canary", "Hawkman", "Hawkgirl", "Zatanna", "Supergirl", "Nightwing", "Batgirl"],
+          common: ["Superman", "Batman", "Wonder Woman", "The Flash", "Green Lantern", "Aquaman", "Cyborg", "Supergirl", "Flash", "Green Arrow"]
+        },
+        {
+          cat: 'popculture',
+          prompt: 'Name a Nintendo video game character',
+          gold: ["Captain Olimar"],
+          epic: ["Pit", "Captain Falcon", "Fox McCloud", "Samus Aran", "Ness"],
+          rare: ["Mario", "Luigi", "Princess Peach", "Bowser", "Yoshi", "Donkey Kong", "Link", "Zelda", "Kirby", "Pikachu", "Tom Nook", "Wario"],
+          uncommon: ["Mario", "Luigi", "Peach", "Princess Peach", "Bowser", "Yoshi", "Donkey Kong", "Link", "Zelda", "Princess Zelda", "Kirby", "Pikachu", "Charizard", "Mewtwo", "Samus", "Fox", "Captain Falcon", "Ness", "Lucas", "Pit", "Palutena", "Wario", "Waluigi", "Daisy", "Rosalina", "Toad", "Bowser Jr", "Diddy Kong", "Isabelle", "Tom Nook", "Olimar"],
+          common: ["Mario", "Luigi", "Peach", "Bowser", "Yoshi", "Donkey Kong", "Link", "Zelda", "Kirby", "Pikachu", "Wario", "Toad"]
+        }
+      ];
+
+      allKrillionSets.push(...newMassiveQuestionSet, ...extra75PlusQuestionSet, ...additional76QuestionSet);
+
       allKrillionSets.forEach((item) => {
         addQ(
           item.cat,
