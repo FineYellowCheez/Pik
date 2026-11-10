@@ -1708,18 +1708,15 @@
       }
     }
 
-    // Multiplayer (Pik-ed) P2P & Real-Time State
+    /* ----------------------------------------------------
+       4. PIK-ED MULTIPLAYER NETWORKING & LOBBY SYSTEM
+    ---------------------------------------------------- */
     let db = null;
     let auth = null;
     let currentUserId = 'usr_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now().toString(36);
     let roomUnsubscribe = null;
-    let peer = null;
-    let myPeerId = '';
-    let myPlayerName = 'Player 1';
     let roomCode = '';
     let isHost = false;
-    let connections = []; // Host's active peer connections
-    let hostConn = null; // Guest's connection to host
     let pikedPlayers = []; // [{ id, name, isHost, isEliminated, color, distance, score, history, currentAnswer, timeTaken }]
     let roundStartTime = 0;
     let roomChannel = null; // BroadcastChannel for local/tab fallback syncing
@@ -1742,8 +1739,9 @@
             await window.fb.signInAnonymously(auth);
           }
           if (auth.currentUser) {
-            // Append random tab/window suffix to ensure unique IDs during testing across multiple tabs
-            currentUserId = auth.currentUser.uid + '_' + Math.random().toString(36).substring(2, 6);
+            if (!currentUserId.startsWith(auth.currentUser.uid)) {
+              currentUserId = auth.currentUser.uid + '_' + Math.random().toString(36).substring(2, 6);
+            }
           }
         }
       } catch (err) {
@@ -1751,9 +1749,6 @@
       }
     }
 
-    /* ----------------------------------------------------
-       4. PIK-ED MULTIPLAYER NETWORKING & LOBBY SYSTEM
-    ---------------------------------------------------- */
     function showLobbyFeedback(msg, isError = true) {
       const el = document.getElementById('lobbyErrorMsg');
       if (!el) return;
@@ -1779,14 +1774,22 @@
       clearLobbyFeedback();
     }
 
-    function closePikedLobby() {
-      // Closes modal UI only; preserves live real-time subscription during game
+    function hidePikedLobbyModal() {
+      // Hides modal UI only; preserves live real-time subscription during game
       const modal = document.getElementById('pikedLobbyScreen');
       if (modal) modal.classList.add('hidden');
     }
 
+    function closePikedLobby() {
+      if (isPikedMode) {
+        hidePikedLobbyModal();
+      } else {
+        leavePikedRoom();
+      }
+    }
+
     function leavePikedRoom() {
-      closePikedLobby();
+      hidePikedLobbyModal();
       if (roomUnsubscribe) {
         try { roomUnsubscribe(); } catch(e) {}
         roomUnsubscribe = null;
@@ -1795,10 +1798,9 @@
         try { roomChannel.close(); } catch(e) {}
         roomChannel = null;
       }
-      if (peer) {
-        try { peer.destroy(); } catch(e) {}
-        peer = null;
-      }
+      isHost = false;
+      pikedPlayers = [];
+      roomCode = '';
     }
 
     function generateRoomCode() {
@@ -1810,23 +1812,21 @@
         try { roomUnsubscribe(); } catch(e) {}
         roomUnsubscribe = null;
       }
-      if (!window.fb || !window.fb.onSnapshot) return;
+      if (!db || !window.fb || !window.fb.onSnapshot) return;
 
       roomUnsubscribe = window.fb.onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot.exists()) return;
+        if (!snapshot || !snapshot.exists()) return;
         const data = snapshot.data();
-        pikedPlayers = data.players || [];
+        if (!data) return;
 
-        const lobbyModal = document.getElementById('pikedLobbyScreen');
-        if (lobbyModal && !lobbyModal.classList.contains('hidden')) {
-          renderLobbyUI();
-        }
+        pikedPlayers = data.players || [];
+        renderLobbyUI();
 
         if (data.status === 'playing') {
           if (!isPikedMode) {
             activeQuestions = data.questions || [];
             isPikedMode = true;
-            closePikedLobby();
+            hidePikedLobbyModal();
             launchPikedGameView();
           }
 
@@ -1858,9 +1858,11 @@
         roomChannel = new BroadcastChannel('pik_room_' + code);
         roomChannel.onmessage = (event) => {
           const data = event.data;
+          if (!data) return;
+
           if (isHost) {
-            if (data.type === 'JOIN') {
-              if (pikedPlayers.length >= 4) return;
+            if (data.type === 'JOIN' || data.type === 'PING_LOBBY') {
+              if (pikedPlayers.length >= 4 && !pikedPlayers.some(p => p.id === data.senderId)) return;
               if (!pikedPlayers.some(p => p.id === data.senderId)) {
                 const newPlayer = {
                   id: data.senderId,
@@ -1874,6 +1876,7 @@
                 pikedPlayers.push(newPlayer);
                 renderLobbyUI();
                 broadcastLobbyState();
+                syncFirestorePlayers();
               }
             } else if (data.type === 'SUBMIT_ANSWER') {
               const p = pikedPlayers.find(x => x.id === data.senderId);
@@ -1887,6 +1890,13 @@
             handleGuestData(data);
           }
         };
+
+        if (!isHost) {
+          roomChannel.postMessage({
+            type: 'PING_LOBBY',
+            senderId: currentUserId
+          });
+        }
       }
     }
 
@@ -1899,6 +1909,20 @@
       }
     }
 
+    async function syncFirestorePlayers() {
+      if (!isHost || !db || !roomCode || !window.fb) return;
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
+      try {
+        const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
+        await window.fb.updateDoc(roomRef, {
+          players: pikedPlayers,
+          updatedAt: Date.now()
+        });
+      } catch (e) {
+        console.warn("Firestore sync error:", e);
+      }
+    }
+
     async function createPikedRoom() {
       const hostBtn = document.getElementById('hostLobbyBtn');
       if (hostBtn) {
@@ -1907,23 +1931,22 @@
       }
       showLobbyFeedback("Creating lobby...", false);
 
+      await initFirebaseServices();
+
       roomCode = generateRoomCode();
       isHost = true;
-      myPlayerName = 'Host (P1)';
-      myPeerId = currentUserId;
-
-      await initFirebaseServices();
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
 
       pikedPlayers = [{
         id: currentUserId,
-        name: myPlayerName,
+        name: 'Host (P1)',
         isHost: true,
         isEliminated: false,
         color: PLAYER_COLORS[0],
         currentAnswer: null,
         timeTaken: 0
       }];
+
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
 
       if (db && window.fb) {
         try {
@@ -1941,7 +1964,7 @@
 
           subscribeToRoom(roomRef);
         } catch (e) {
-          console.warn("Firestore lobby creation error, falling back to local channel:", e);
+          console.warn("Firestore lobby creation error, falling back to BroadcastChannel:", e);
         }
       }
 
@@ -1972,13 +1995,14 @@
       }
       showLobbyFeedback("Connecting to room...", false);
 
+      await initFirebaseServices();
+
       isHost = false;
       roomCode = code;
 
-      await initFirebaseServices();
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-
       setupBroadcastChannel(roomCode);
+
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
 
       if (db && window.fb) {
         try {
@@ -2004,8 +2028,7 @@
             return;
           }
 
-          myPlayerName = `Player ${roomData.players.length + 1}`;
-          myPeerId = currentUserId;
+          const myPlayerName = `Player ${roomData.players.length + 1}`;
 
           const newPlayer = {
             id: currentUserId,
@@ -2041,7 +2064,7 @@
           senderId: currentUserId,
           playerName: `Player ${Math.floor(Math.random() * 80) + 2}`
         });
-        showLobbyFeedback("Joined local room! Waiting for host response...", false);
+        showLobbyFeedback("Connecting to local room...", false);
       } else {
         showLobbyFeedback("Could not connect to room. Check your connection.");
       }
@@ -2050,12 +2073,12 @@
 
     function handleGuestData(data) {
       if (data.type === 'LOBBY_STATE') {
-        pikedPlayers = data.players;
+        pikedPlayers = data.players || [];
         renderLobbyUI();
       } else if (data.type === 'START_GAME') {
         activeQuestions = data.questions;
         isPikedMode = true;
-        closePikedLobby();
+        hidePikedLobbyModal();
         launchPikedGameView();
         if (data.qIndex !== undefined) {
           currentQIndex = data.qIndex;
@@ -2074,33 +2097,38 @@
     }
 
     function renderLobbyUI() {
-      document.getElementById('lobbySetupView').classList.add('hidden');
-      document.getElementById('lobbyActiveView').classList.remove('hidden');
+      const activeView = document.getElementById('lobbyActiveView');
+      const setupView = document.getElementById('lobbySetupView');
+      
+      if (setupView) setupView.classList.add('hidden');
+      if (activeView) activeView.classList.remove('hidden');
 
-      document.getElementById('roomCodeDisplay').textContent = roomCode;
-      document.getElementById('playerCountText').textContent = pikedPlayers.length;
+      const roomCodeEl = document.getElementById('roomCodeDisplay');
+      const countEl = document.getElementById('playerCountText');
+      if (roomCodeEl) roomCodeEl.textContent = roomCode;
+      if (countEl) countEl.textContent = pikedPlayers.length;
 
       const list = document.getElementById('lobbyPlayerList');
-      list.innerHTML = '';
-
-      pikedPlayers.forEach((p) => {
-        const item = document.createElement('div');
-        item.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display font-bold';
-        item.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
-            <span class="text-slate-100">${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
-          </div>
-          ${p.isHost ? '<span class="text-[10px] bg-pik-gold/20 text-pik-gold px-2 py-0.5 rounded">HOST</span>' : ''}
-        `;
-        list.appendChild(item);
-      });
+      if (list) {
+        list.innerHTML = '';
+        pikedPlayers.forEach((p) => {
+          const item = document.createElement('div');
+          item.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display font-bold';
+          item.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
+              <span class="text-slate-100">${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
+            </div>
+            ${p.isHost ? '<span class="text-[10px] bg-pik-gold/20 text-pik-gold px-2 py-0.5 rounded">HOST</span>' : ''}
+          `;
+          list.appendChild(item);
+        });
+      }
 
       const startBtn = document.getElementById('startPikedBtn');
-      if (isHost) {
-        startBtn.classList.remove('hidden');
-      } else {
-        startBtn.classList.add('hidden');
+      if (startBtn) {
+        if (isHost) startBtn.classList.remove('hidden');
+        else startBtn.classList.add('hidden');
       }
     }
 
@@ -2150,7 +2178,7 @@
         });
       }
 
-      closePikedLobby();
+      hidePikedLobbyModal();
       launchPikedGameView();
 
       if (lastHandledRoundIndex !== 0) {
@@ -2161,374 +2189,6 @@
           renderQuestion(0);
         });
       }
-    }
-
-    /* ----------------------------------------------------
-       4. PIK-ED MULTIPLAYER NETWORKING & LOBBY SYSTEM
-    ---------------------------------------------------- */
-    function showLobbyFeedback(msg, isError = true) {
-      const el = document.getElementById('lobbyErrorMsg');
-      if (!el) return;
-      el.textContent = msg;
-      el.className = `text-xs font-display font-medium text-center py-2 px-3 rounded-xl border ${
-        isError 
-          ? 'bg-red-950/60 border-red-500/40 text-red-300' 
-          : 'bg-pik-epic/20 border-pik-epic/40 text-pik-gold animate-pulse'
-      }`;
-      el.classList.remove('hidden');
-    }
-
-    function clearLobbyFeedback() {
-      const el = document.getElementById('lobbyErrorMsg');
-      if (el) el.classList.add('hidden');
-    }
-
-    function openPikedLobby() {
-      const modal = document.getElementById('pikedLobbyScreen');
-      if (modal) modal.classList.remove('hidden');
-      document.getElementById('lobbySetupView').classList.remove('hidden');
-      document.getElementById('lobbyActiveView').classList.add('hidden');
-      clearLobbyFeedback();
-    }
-
-    function closePikedLobby() {
-      const modal = document.getElementById('pikedLobbyScreen');
-      if (modal) modal.classList.add('hidden');
-      if (roomUnsubscribe) {
-        try { roomUnsubscribe(); } catch(e) {}
-        roomUnsubscribe = null;
-      }
-      if (roomChannel) {
-        try { roomChannel.close(); } catch(e) {}
-        roomChannel = null;
-      }
-      if (peer) {
-        try { peer.destroy(); } catch(e) {}
-        peer = null;
-      }
-    }
-
-    function generateRoomCode() {
-      return Math.random().toString(36).substring(2, 6).toUpperCase();
-    }
-
-    function subscribeToRoom(roomRef) {
-      if (roomUnsubscribe) {
-        roomUnsubscribe();
-        roomUnsubscribe = null;
-      }
-      if (!window.fb || !window.fb.onSnapshot) return;
-
-      roomUnsubscribe = window.fb.onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
-        pikedPlayers = data.players || [];
-        renderLobbyUI();
-
-        if (data.status === 'playing') {
-          if (!isPikedMode) {
-            activeQuestions = data.questions || [];
-            isPikedMode = true;
-            closePikedLobby();
-            launchPikedGameView();
-          }
-
-          if (data.roundState === 'countdown' && data.currentQIndex !== currentQIndex) {
-            currentQIndex = data.currentQIndex;
-            startCountdown(() => {
-              renderQuestion(currentQIndex);
-            });
-          } else if (data.roundState === 'reveal' && data.roundResults) {
-            showPikedRoundReveal(data);
-          }
-        } else if (data.status === 'ended') {
-          if (data.roundState === 'reveal' && data.roundResults) {
-            showPikedRoundReveal(data);
-          }
-        }
-      }, (error) => {
-        console.error("Room snapshot error:", error);
-      });
-    }
-
-    function setupBroadcastChannel(code) {
-      if (roomChannel) {
-        try { roomChannel.close(); } catch(e) {}
-      }
-      if ('BroadcastChannel' in window) {
-        roomChannel = new BroadcastChannel('pik_room_' + code);
-        roomChannel.onmessage = (event) => {
-          const data = event.data;
-          if (isHost) {
-            if (data.type === 'JOIN') {
-              if (pikedPlayers.length >= 4) return;
-              const newPlayer = {
-                id: data.senderId,
-                name: data.playerName || `Player ${pikedPlayers.length + 1}`,
-                isHost: false,
-                isEliminated: false,
-                color: PLAYER_COLORS[pikedPlayers.length % 4],
-                currentAnswer: null,
-                timeTaken: 35
-              };
-              if (!pikedPlayers.some(p => p.id === data.senderId)) {
-                pikedPlayers.push(newPlayer);
-                renderLobbyUI();
-              }
-            } else if (data.type === 'SUBMIT_ANSWER') {
-              const p = pikedPlayers.find(x => x.id === data.senderId);
-              if (p) {
-                p.currentAnswer = data.answer;
-                p.timeTaken = data.timeTaken;
-              }
-              checkAllAnswersSubmitted();
-            }
-          } else {
-            handleGuestData(data);
-          }
-        };
-      }
-    }
-
-    async function createPikedRoom() {
-      const hostBtn = document.getElementById('hostLobbyBtn');
-      if (hostBtn) {
-        hostBtn.disabled = true;
-        hostBtn.textContent = "Creating...";
-      }
-      showLobbyFeedback("Creating lobby...", false);
-
-      roomCode = generateRoomCode();
-      isHost = true;
-      myPlayerName = 'Host (P1)';
-      myPeerId = currentUserId;
-
-      await initFirebaseServices();
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-
-      pikedPlayers = [{
-        id: currentUserId,
-        name: myPlayerName,
-        isHost: true,
-        isEliminated: false,
-        color: PLAYER_COLORS[0],
-        currentAnswer: null,
-        timeTaken: 0
-      }];
-
-      if (db && window.fb) {
-        try {
-          const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-          await window.fb.setDoc(roomRef, {
-            roomCode: roomCode,
-            hostId: currentUserId,
-            status: 'lobby',
-            roundState: 'waiting',
-            players: pikedPlayers,
-            questions: [],
-            currentQIndex: 0,
-            updatedAt: Date.now()
-          });
-
-          subscribeToRoom(roomRef);
-        } catch (e) {
-          console.warn("Firestore lobby creation error, falling back to local channel:", e);
-        }
-      }
-
-      setupBroadcastChannel(roomCode);
-
-      if (hostBtn) {
-        hostBtn.disabled = false;
-        hostBtn.textContent = "Host Lobby";
-      }
-
-      clearLobbyFeedback();
-      renderLobbyUI();
-    }
-
-    async function joinPikedRoom() {
-      const input = document.getElementById('joinCodeInput');
-      const joinBtn = document.getElementById('joinLobbyBtn');
-      const code = input ? input.value.trim().toUpperCase() : '';
-
-      if (!code || code.length < 4) {
-        showLobbyFeedback("Please enter a valid 4-character Room Code.");
-        return;
-      }
-
-      if (joinBtn) {
-        joinBtn.disabled = true;
-        joinBtn.textContent = "Joining...";
-      }
-      showLobbyFeedback("Connecting to room...", false);
-
-      isHost = false;
-      roomCode = code;
-
-      await initFirebaseServices();
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-
-      if (db && window.fb) {
-        try {
-          const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-          const roomSnap = await window.fb.getDoc(roomRef);
-
-          if (!roomSnap.exists()) {
-            showLobbyFeedback(`Room code "${roomCode}" not found. Check the code and try again.`);
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
-          }
-
-          const roomData = roomSnap.data();
-          if (roomData.status !== 'lobby') {
-            showLobbyFeedback("This game has already started.");
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
-          }
-
-          if (roomData.players && roomData.players.length >= 4) {
-            showLobbyFeedback("This lobby is already full (4/4 players).");
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
-          }
-
-          myPlayerName = `Player ${roomData.players.length + 1}`;
-          myPeerId = currentUserId;
-
-          const newPlayer = {
-            id: currentUserId,
-            name: myPlayerName,
-            isHost: false,
-            isEliminated: false,
-            color: PLAYER_COLORS[roomData.players.length % 4],
-            currentAnswer: null,
-            timeTaken: 35
-          };
-
-          const updatedPlayers = [...roomData.players, newPlayer];
-          await window.fb.updateDoc(roomRef, {
-            players: updatedPlayers,
-            updatedAt: Date.now()
-          });
-
-          pikedPlayers = updatedPlayers;
-          subscribeToRoom(roomRef);
-
-          clearLobbyFeedback();
-          if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-          renderLobbyUI();
-          return;
-        } catch (err) {
-          console.warn("Firestore join error, falling back to BroadcastChannel:", err);
-        }
-      }
-
-      setupBroadcastChannel(roomCode);
-      if (roomChannel) {
-        roomChannel.postMessage({
-          type: 'JOIN',
-          senderId: currentUserId,
-          playerName: `Player ${Math.floor(Math.random() * 80) + 2}`
-        });
-        showLobbyFeedback("Joined local room! Waiting for host response...", false);
-      } else {
-        showLobbyFeedback("Could not connect to room. Check your connection.");
-      }
-      if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-    }
-
-    function handleGuestData(data) {
-      if (data.type === 'LOBBY_STATE') {
-        pikedPlayers = data.players;
-        renderLobbyUI();
-      } else if (data.type === 'START_GAME') {
-        activeQuestions = data.questions;
-        isPikedMode = true;
-        closePikedLobby();
-        launchPikedGameView();
-      } else if (data.type === 'START_ROUND') {
-        currentQIndex = data.qIndex;
-        startCountdown(() => {
-          renderQuestion(currentQIndex);
-        });
-      } else if (data.type === 'ROUND_REVEAL') {
-        showPikedRoundReveal(data);
-      }
-    }
-
-    function renderLobbyUI() {
-      document.getElementById('lobbySetupView').classList.add('hidden');
-      document.getElementById('lobbyActiveView').classList.remove('hidden');
-
-      document.getElementById('roomCodeDisplay').textContent = roomCode;
-      document.getElementById('playerCountText').textContent = pikedPlayers.length;
-
-      const list = document.getElementById('lobbyPlayerList');
-      list.innerHTML = '';
-
-      pikedPlayers.forEach((p) => {
-        const item = document.createElement('div');
-        item.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display font-bold';
-        item.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
-            <span class="text-slate-100">${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
-          </div>
-          ${p.isHost ? '<span class="text-[10px] bg-pik-gold/20 text-pik-gold px-2 py-0.5 rounded">HOST</span>' : ''}
-        `;
-        list.appendChild(item);
-      });
-
-      const startBtn = document.getElementById('startPikedBtn');
-      if (isHost) {
-        startBtn.classList.remove('hidden');
-      } else {
-        startBtn.classList.add('hidden');
-      }
-    }
-
-    function copyRoomCode() {
-      const code = document.getElementById('roomCodeDisplay').textContent;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code);
-      } else {
-        const el = document.createElement('textarea');
-        el.value = code;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      }
-      showLobbyFeedback(`Copied room code ${code}!`, false);
-    }
-
-    async function hostStartPikedGame() {
-      if (!isHost) return;
-      activeQuestions = selectCategoryBalancedQuestions(false);
-      isPikedMode = true;
-
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-      if (db && roomCode && window.fb) {
-        const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-        await window.fb.updateDoc(roomRef, {
-          status: 'playing',
-          roundState: 'countdown',
-          questions: activeQuestions,
-          currentQIndex: 0,
-          updatedAt: Date.now()
-        });
-      }
-
-      if (roomChannel) {
-        roomChannel.postMessage({
-          type: 'START_GAME',
-          questions: activeQuestions
-        });
-      }
-
-      closePikedLobby();
-      launchPikedGameView();
     }
 
     function launchPikedGameView() {
@@ -2799,7 +2459,7 @@
             console.warn("Firestore answer submit error:", err);
           }
         } else if (isHost) {
-          const hostP = pikedPlayers.find(p => p.id === myPeerId);
+          const hostP = pikedPlayers.find(p => p.id === currentUserId);
           if (hostP) {
             hostP.currentAnswer = rawVal || 'Skipped';
             hostP.timeTaken = timeTakenSec;
