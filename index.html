@@ -310,16 +310,9 @@
     <div class="text-slate-300 font-display font-bold text-lg mt-4">Get Ready for the Next Question...</div>
   </div>
 
-  <div id="pikedRevealOverlay" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
-    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-6 flex flex-col gap-4 text-center shadow-2xl">
-      <h2 class="font-display font-black text-2xl text-slate-100">Round Results</h2>
-      <div id="pikedRevealList" class="flex flex-col gap-2 my-2">
-        <!-- Injected via JS -->
-      </div>
-      <div id="eliminationBanner" class="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-300 text-xs font-display font-bold">
-        <!-- Injected via JS -->
-      </div>
-    </div>
+  <!-- In-Line Notification Toast Banner (Replaces Big Overlay Card) -->
+  <div id="pikedToastBanner" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-pik-card/95 border border-pik-border shadow-2xl rounded-2xl px-5 py-2.5 text-center font-display text-xs font-bold transition-all duration-300">
+    <span id="pikedToastText" class="text-slate-200">Processing round answers...</span>
   </div>
 
   <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
@@ -1425,6 +1418,14 @@
     let usedAnswersSet = new Set();
     let pendingAutoCorrect = null;
 
+    // SVG Track & Camera Panning State Variables
+    let accumulatedX = 60;
+    let currentViewBoxX = 0;
+    let targetViewBoxX = 0;
+    let panAnimationFrame = null;
+    let currentDotIndex = 0;
+    let placedBadges = [];
+
     // Helper: UTC Seed Generator & Seeded Random for Daily Challenge
     function getDailySeed() {
       const now = new Date();
@@ -1628,7 +1629,17 @@
           <circle id="svg-node-0" cx="60" cy="70" r="7" stroke="#ffffff" stroke-width="3" fill="#121212" class="node-transition"/>
         `;
       }
-      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
+      if (svg) {
+        svg.setAttribute('viewBox', '0 0 1000 140');
+        svg.classList.remove('hidden');
+      }
+
+      // Remove any lingering multiplayer track rows to prevent line crossover
+      const container = document.getElementById('trackCanvasContainer');
+      if (container) {
+        const rows = container.querySelectorAll('[id^="playerTrackRow-"]');
+        rows.forEach(r => r.remove());
+      }
     }
 
     function panCameraToFit(endX) {
@@ -1718,6 +1729,8 @@
     let roomCode = '';
     let isHost = false;
     let pikedPlayers = []; // [{ id, name, isHost, isEliminated, color, distance, score, history, currentAnswer, timeTaken }]
+    let playerAnswersMap = {}; // { [userId]: { answer, timeTaken, submitted } }
+    let playerTrackXMap = {}; // { [userId]: currentAccumulatedX }
     let roundStartTime = 0;
     let roomChannel = null; // BroadcastChannel for local/tab fallback syncing
     let lastHandledRoundIndex = -1;
@@ -1766,6 +1779,20 @@
       if (el) el.classList.add('hidden');
     }
 
+    function showPikedToast(msg, isError = false) {
+      const banner = document.getElementById('pikedToastBanner');
+      const text = document.getElementById('pikedToastText');
+      if (!banner || !text) return;
+      text.textContent = msg;
+      text.className = isError ? 'text-red-400 font-extrabold' : 'text-pik-gold font-bold';
+      banner.classList.remove('hidden');
+    }
+
+    function hidePikedToast() {
+      const banner = document.getElementById('pikedToastBanner');
+      if (banner) banner.classList.add('hidden');
+    }
+
     function openPikedLobby() {
       const modal = document.getElementById('pikedLobbyScreen');
       if (modal) modal.classList.remove('hidden');
@@ -1775,7 +1802,6 @@
     }
 
     function hidePikedLobbyModal() {
-      // Hides modal UI only; preserves live real-time subscription during game
       const modal = document.getElementById('pikedLobbyScreen');
       if (modal) modal.classList.add('hidden');
     }
@@ -1800,7 +1826,10 @@
       }
       isHost = false;
       pikedPlayers = [];
+      playerAnswersMap = {};
+      playerTrackXMap = {};
       roomCode = '';
+      resetSvgTrack();
     }
 
     function generateRoomCode() {
@@ -1820,6 +1849,10 @@
         if (!data) return;
 
         pikedPlayers = data.players || [];
+        playerAnswersMap = data.answers || {};
+        
+        // Update live submission status on everybody's screen
+        renderMultiplayerTrackCanvas();
         renderLobbyUI();
 
         if (data.status === 'playing') {
@@ -1869,21 +1902,21 @@
                   name: data.playerName || `Player ${pikedPlayers.length + 1}`,
                   isHost: false,
                   isEliminated: false,
-                  color: PLAYER_COLORS[pikedPlayers.length % 4],
-                  currentAnswer: null,
-                  timeTaken: 35
+                  color: PLAYER_COLORS[pikedPlayers.length % 4]
                 };
                 pikedPlayers.push(newPlayer);
                 renderLobbyUI();
+                renderMultiplayerTrackCanvas();
                 broadcastLobbyState();
                 syncFirestorePlayers();
               }
             } else if (data.type === 'SUBMIT_ANSWER') {
-              const p = pikedPlayers.find(x => x.id === data.senderId);
-              if (p) {
-                p.currentAnswer = data.answer;
-                p.timeTaken = data.timeTaken;
-              }
+              playerAnswersMap[data.senderId] = {
+                answer: data.answer,
+                timeTaken: data.timeTaken,
+                submitted: true
+              };
+              renderMultiplayerTrackCanvas();
               checkAllAnswersSubmitted();
             }
           } else {
@@ -1904,7 +1937,8 @@
       if (roomChannel && isHost) {
         roomChannel.postMessage({
           type: 'LOBBY_STATE',
-          players: pikedPlayers
+          players: pikedPlayers,
+          answers: playerAnswersMap
         });
       }
     }
@@ -1935,16 +1969,18 @@
 
       roomCode = generateRoomCode();
       isHost = true;
+      playerAnswersMap = {};
+      playerTrackXMap = {};
 
       pikedPlayers = [{
         id: currentUserId,
         name: 'Host (P1)',
         isHost: true,
         isEliminated: false,
-        color: PLAYER_COLORS[0],
-        currentAnswer: null,
-        timeTaken: 0
+        color: PLAYER_COLORS[0]
       }];
+
+      playerTrackXMap[currentUserId] = 60;
 
       const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
 
@@ -1957,6 +1993,7 @@
             status: 'lobby',
             roundState: 'waiting',
             players: pikedPlayers,
+            answers: {},
             questions: [],
             currentQIndex: 0,
             updatedAt: Date.now()
@@ -2035,9 +2072,7 @@
             name: myPlayerName,
             isHost: false,
             isEliminated: false,
-            color: PLAYER_COLORS[roomData.players.length % 4],
-            currentAnswer: null,
-            timeTaken: 35
+            color: PLAYER_COLORS[roomData.players.length % 4]
           };
 
           const updatedPlayers = [...roomData.players.filter(p => p.id !== currentUserId), newPlayer];
@@ -2047,6 +2082,7 @@
           });
 
           pikedPlayers = updatedPlayers;
+          playerAnswersMap = roomData.answers || {};
           subscribeToRoom(roomRef);
 
           clearLobbyFeedback();
@@ -2074,7 +2110,9 @@
     function handleGuestData(data) {
       if (data.type === 'LOBBY_STATE') {
         pikedPlayers = data.players || [];
+        playerAnswersMap = data.answers || {};
         renderLobbyUI();
+        renderMultiplayerTrackCanvas();
       } else if (data.type === 'START_GAME') {
         activeQuestions = data.questions;
         isPikedMode = true;
@@ -2134,15 +2172,17 @@
 
     function copyRoomCode() {
       const code = document.getElementById('roomCodeDisplay').textContent;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code);
-      } else {
+      try {
         const el = document.createElement('textarea');
         el.value = code;
+        el.style.position = 'fixed';
+        el.style.left = '-9999px';
         document.body.appendChild(el);
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+      } catch (err) {
+        console.warn('Clipboard copy error:', err);
       }
       showLobbyFeedback(`Copied room code ${code}!`, false);
     }
@@ -2153,6 +2193,7 @@
       isPikedMode = true;
       lastHandledRoundIndex = -1;
       lastHandledRoundState = '';
+      playerAnswersMap = {};
 
       const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
       if (db && roomCode && window.fb) {
@@ -2162,6 +2203,7 @@
             status: 'playing',
             roundState: 'countdown',
             questions: activeQuestions,
+            answers: {},
             currentQIndex: 0,
             updatedAt: Date.now()
           });
@@ -2208,24 +2250,55 @@
 
     function renderMultiplayerTrackCanvas() {
       const container = document.getElementById('trackCanvasContainer');
-      if (!isPikedMode) return;
+      if (!isPikedMode || !container) return;
 
-      container.innerHTML = '';
+      // Hide single-player main line SVG while in multiplayer mode
+      const mainSvg = document.getElementById('mainLineSvg');
+      if (mainSvg) mainSvg.classList.add('hidden');
+
+      // Remove lingering rows if player count changed or game reset
+      const existingRows = container.querySelectorAll('[id^="playerTrackRow-"]');
+      existingRows.forEach(r => {
+        const idxStr = r.id.replace('playerTrackRow-', '');
+        const idx = parseInt(idxStr, 10);
+        if (isNaN(idx) || idx >= pikedPlayers.length) {
+          r.remove();
+        }
+      });
+
       pikedPlayers.forEach((p, idx) => {
-        const trackDiv = document.createElement('div');
-        trackDiv.className = 'w-full h-12 relative flex items-center overflow-visible border-b border-pik-border/40';
+        if (!playerTrackXMap[p.id]) playerTrackXMap[p.id] = 60;
+        let trackDiv = document.getElementById(`playerTrackRow-${idx}`);
+
+        if (!trackDiv) {
+          trackDiv = document.createElement('div');
+          trackDiv.id = `playerTrackRow-${idx}`;
+          trackDiv.className = 'w-full h-12 relative flex items-center overflow-visible border-b border-pik-border/40';
+          container.appendChild(trackDiv);
+        }
+
+        const ansData = playerAnswersMap[p.id];
+        const isSubmitted = ansData && ansData.submitted;
+
+        let statusTagHTML = `<span class="text-slate-400 font-normal">[THINKING...]</span>`;
+        if (p.isEliminated) {
+          statusTagHTML = `<span class="text-red-400 font-extrabold">[💀 ELIMINATED]</span>`;
+        } else if (isSubmitted) {
+          statusTagHTML = `<span class="text-emerald-400 font-extrabold animate-pulse">[SUBMITTED ✓]</span>`;
+        }
+
         trackDiv.innerHTML = `
-          <div class="absolute left-0 -top-1.5 text-[9px] font-display font-bold uppercase tracking-wider flex items-center gap-1.5 ${p.isEliminated ? 'text-slate-500 line-through' : 'text-slate-200'}">
-            <span class="w-2 h-2 rounded-full" style="background-color: ${p.isEliminated ? '#475569' : p.color}"></span>
-            ${p.name} ${p.isEliminated ? '[ELIMINATED]' : ''}
+          <div class="absolute left-0 -top-1.5 text-[9px] font-display font-bold uppercase tracking-wider flex items-center gap-2 ${p.isEliminated ? 'text-slate-500 line-through' : 'text-slate-200'}">
+            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: ${p.isEliminated ? '#475569' : p.color}"></span>
+            <span>${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
+            ${statusTagHTML}
           </div>
           <svg id="pikedSvg-${idx}" class="w-full h-full overflow-visible" viewBox="0 0 1000 60" preserveAspectRatio="xMinYMid meet">
             <line x1="0" y1="30" x2="6000" y2="30" stroke="${p.isEliminated ? '#334155' : p.color}" stroke-opacity="${p.isEliminated ? '0.2' : '0.4'}" stroke-width="2" stroke-dasharray="4 4"/>
             <g id="pikedSegs-${idx}"></g>
-            <circle cx="60" cy="30" r="5" stroke="${p.isEliminated ? '#475569' : p.color}" stroke-width="2" fill="#121212"/>
+            <circle id="pikedNode-${idx}" cx="${playerTrackXMap[p.id]}" cy="30" r="5" stroke="${p.isEliminated ? '#475569' : p.color}" stroke-width="2" fill="#121212"/>
           </svg>
         `;
-        container.appendChild(trackDiv);
       });
     }
 
@@ -2252,7 +2325,7 @@
     async function checkAllAnswersSubmitted() {
       if (!isHost) return;
       const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
-      const allSubmitted = activePlayers.every(p => p.currentAnswer !== null && p.currentAnswer !== undefined);
+      const allSubmitted = activePlayers.every(p => playerAnswersMap[p.id] && playerAnswersMap[p.id].submitted);
 
       if (allSubmitted) {
         await evaluatePikedRound();
@@ -2265,12 +2338,13 @@
 
       const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
       const roundResults = activePlayers.map(p => {
-        const res = findAnswerRarity(p.currentAnswer || '', qObj);
+        const pAns = playerAnswersMap[p.id] || { answer: 'Skipped', timeTaken: 35 };
+        const res = findAnswerRarity(pAns.answer || '', qObj);
         return {
           player: p,
-          answer: p.currentAnswer || 'No Answer',
+          answer: pAns.answer || 'Skipped',
           rarity: res ? res : { key: 'skipped', name: 'Invalid/Skipped', color: '#475569', length: 0, points: 0 },
-          timeTaken: p.timeTaken || 35
+          timeTaken: pAns.timeTaken || 35
         };
       });
 
@@ -2283,7 +2357,7 @@
       });
 
       const eliminated = roundResults[0].player;
-      const updatedPlayers = pikedPlayers.map(p => p.id === eliminated.id ? { ...p, isEliminated: true, currentAnswer: null } : { ...p, currentAnswer: null });
+      const updatedPlayers = pikedPlayers.map(p => p.id === eliminated.id ? { ...p, isEliminated: true } : p);
 
       pikedPlayers = updatedPlayers;
       const remainingActive = pikedPlayers.filter(p => !p.isEliminated);
@@ -2313,56 +2387,109 @@
     }
 
     function showPikedRoundReveal(payload) {
-      const overlay = document.getElementById('pikedRevealOverlay');
-      const list = document.getElementById('pikedRevealList');
-      const banner = document.getElementById('eliminationBanner');
-
-      overlay.classList.remove('hidden');
-      list.innerHTML = '';
-
       const results = payload.results || payload.roundResults || [];
+      const elimId = payload.eliminatedId;
 
+      showPikedToast("Revealing round answers and stretching lines...");
+
+      // STEP 1: Animate lines moving for EVERY player on screen BEFORE showing elimination
       results.forEach(r => {
-        const card = document.createElement('div');
-        card.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display';
-        card.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${r.player.color}"></span>
-            <span class="font-bold text-slate-100">${r.player.name}: "${r.answer}"</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="font-bold" style="color: ${r.rarity.color}">${r.rarity.name}</span>
-            <span class="text-slate-400 font-medium">${(r.timeTaken || 0).toFixed(1)}s</span>
-          </div>
-        `;
-        list.appendChild(card);
+        const pIdx = pikedPlayers.findIndex(p => p.id === r.player.id);
+        if (pIdx === -1) return;
+
+        const segGroup = document.getElementById(`pikedSegs-${pIdx}`);
+        const startX = playerTrackXMap[r.player.id] || 60;
+        const addLen = r.rarity.length || 0;
+        const endX = startX + addLen;
+        playerTrackXMap[r.player.id] = endX;
+
+        if (segGroup && addLen > 0) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', startX.toString());
+          line.setAttribute('y1', '30');
+          line.setAttribute('x2', endX.toString());
+          line.setAttribute('y2', '30');
+          line.setAttribute('stroke', r.rarity.color || r.player.color);
+          line.setAttribute('stroke-width', '4');
+          line.setAttribute('stroke-linecap', 'round');
+          line.classList.add('pik-line-stroke');
+          line.style.strokeDasharray = addLen;
+          line.style.strokeDashoffset = addLen;
+          segGroup.appendChild(line);
+
+          requestAnimationFrame(() => {
+            line.style.strokeDashoffset = '0';
+          });
+
+          // Floating inline answer text badge directly on the track line
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', ((startX + endX) / 2).toString());
+          text.setAttribute('y', '20');
+          text.setAttribute('text-anchor', 'middle');
+          text.setAttribute('fill', r.rarity.color || '#fff');
+          text.setAttribute('font-family', 'Space Grotesk, sans-serif');
+          text.setAttribute('font-size', '9');
+          text.setAttribute('font-weight', 'bold');
+          text.textContent = `"${r.answer}" (+${addLen}px)`;
+          segGroup.appendChild(text);
+        }
+
+        const node = document.getElementById(`pikedNode-${pIdx}`);
+        if (node) {
+          node.setAttribute('cx', endX.toString());
+          node.setAttribute('fill', r.rarity.color || r.player.color);
+        }
+
+        if (r.player.id === currentUserId) {
+          playAudioTone('stretch', r.rarity.key);
+        }
       });
 
-      const elimPlayer = pikedPlayers.find(p => p.id === payload.eliminatedId);
-      banner.textContent = `${elimPlayer ? elimPlayer.name : 'A player'} was ELIMINATED! (Lowest rarity / Longest response time)`;
+      // STEP 2: After lines have stretched (~1.8s), trigger elimination right near the line tracks (No overlay card!)
+      setTimeout(() => {
+        const elimPlayer = pikedPlayers.find(p => p.id === elimId);
+        const elimRes = results.find(r => r.player.id === elimId);
 
-      setTimeout(async () => {
-        overlay.classList.add('hidden');
-        renderMultiplayerTrackCanvas();
-
-        const remainingActive = pikedPlayers.filter(p => !p.isEliminated);
-        if (remainingActive.length <= 1 || payload.status === 'ended' || payload.isGameOver) {
-          const winner = remainingActive[0] || pikedPlayers[0];
-          banner.textContent = `🎉 GAME OVER! ${winner.name} IS THE PIK-ED CHAMPION! 🎉`;
-          setTimeout(() => { returnToMenu(); }, 2500);
-        } else if (isHost) {
-          const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-          const nextQ = currentQIndex + 1;
-          if (db && roomCode && window.fb) {
-            const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-            await window.fb.updateDoc(roomRef, {
-              currentQIndex: nextQ,
-              roundState: 'countdown',
-              updatedAt: Date.now()
-            });
+        if (elimPlayer) {
+          const pIdx = pikedPlayers.findIndex(p => p.id === elimId);
+          const trackRow = document.getElementById(`playerTrackRow-${pIdx}`);
+          if (trackRow) {
+            trackRow.classList.add('bg-red-950/40', 'border-red-500/50');
           }
+          showPikedToast(`${elimPlayer.name} was ELIMINATED! (${elimRes ? elimRes.rarity.name : 'Lowest Rarity'}, ${elimRes ? elimRes.timeTaken.toFixed(1) : 35}s)`, true);
+          playAudioTone('timeout');
         }
-      }, 4500);
+
+        // STEP 3: After viewing elimination (~2.5s), clear submission maps & transition to next round or finish
+        setTimeout(async () => {
+          hidePikedToast();
+          playerAnswersMap = {};
+          renderMultiplayerTrackCanvas();
+
+          const remainingActive = pikedPlayers.filter(p => !p.isEliminated);
+          if (remainingActive.length <= 1 || payload.status === 'ended' || payload.isGameOver) {
+            const winner = remainingActive[0] || pikedPlayers[0];
+            showPikedToast(`🎉 GAME OVER! ${winner.name} IS THE PIK-ED CHAMPION! 🎉`);
+            setTimeout(() => { 
+              hidePikedToast();
+              returnToMenu(); 
+            }, 3000);
+          } else if (isHost) {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
+            const nextQ = currentQIndex + 1;
+            if (db && roomCode && window.fb) {
+              const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
+              await window.fb.updateDoc(roomRef, {
+                currentQIndex: nextQ,
+                answers: {},
+                roundState: 'countdown',
+                updatedAt: Date.now()
+              });
+            }
+          }
+        }, 2500);
+
+      }, 1800);
     }
 
     /* ----------------------------------------------------
@@ -2404,9 +2531,9 @@
         }
       }
 
-      // Timed mode timer setup
-      if (isTimedMode) {
-        timerValue = 30;
+      // Timed mode or Pik-ed multiplayer timer setup
+      if (isTimedMode || isPikedMode) {
+        timerValue = isPikedMode ? 35 : 30;
         if (timerPill) timerPill.classList.remove('hidden');
         const timerText = document.getElementById('timerText');
         if (timerText) timerText.textContent = `${timerValue}s`;
@@ -2416,7 +2543,11 @@
           if (timerText) timerText.textContent = `${timerValue}s`;
           if (timerValue <= 0) {
             clearInterval(timerInterval);
-            handleTimeout();
+            if (isPikedMode) {
+              submitAnswer();
+            } else {
+              handleTimeout();
+            }
           }
         }, 1000);
       } else {
@@ -2428,50 +2559,47 @@
 
     async function submitAnswer() {
       const inputEl = document.getElementById('answerInput');
-      const rawVal = inputEl.value.trim();
+      const rawVal = inputEl ? inputEl.value.trim() : '';
       const timeTakenSec = Math.min(35, (Date.now() - roundStartTime) / 1000);
 
       if (isPikedMode) {
         if (timerInterval) clearInterval(timerInterval);
 
+        playerAnswersMap[currentUserId] = {
+          answer: rawVal || 'Skipped',
+          timeTaken: timeTakenSec,
+          submitted: true
+        };
+        renderMultiplayerTrackCanvas();
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
         if (db && roomCode && window.fb) {
           try {
             const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-            const roomSnap = await window.fb.getDoc(roomRef);
-            if (roomSnap.exists()) {
-              const roomData = roomSnap.data();
-              const updatedPlayers = (roomData.players || pikedPlayers).map(p => 
-                p.id === currentUserId ? { ...p, currentAnswer: rawVal || 'Skipped', timeTaken: timeTakenSec } : p
-              );
-
-              await window.fb.updateDoc(roomRef, {
-                players: updatedPlayers,
-                updatedAt: Date.now()
-              });
-
-              pikedPlayers = updatedPlayers;
-              if (isHost) {
-                checkAllAnswersSubmitted();
-              }
-            }
+            await window.fb.updateDoc(roomRef, {
+              [`answers.${currentUserId}`]: {
+                answer: rawVal || 'Skipped',
+                timeTaken: timeTakenSec,
+                submitted: true
+              },
+              updatedAt: Date.now()
+            });
           } catch (err) {
             console.warn("Firestore answer submit error:", err);
           }
-        } else if (isHost) {
-          const hostP = pikedPlayers.find(p => p.id === currentUserId);
-          if (hostP) {
-            hostP.currentAnswer = rawVal || 'Skipped';
-            hostP.timeTaken = timeTakenSec;
-          }
-          checkAllAnswersSubmitted();
-        } else if (roomChannel) {
+        }
+
+        if (roomChannel) {
           roomChannel.postMessage({
             type: 'SUBMIT_ANSWER',
             senderId: currentUserId,
             answer: rawVal || 'Skipped',
             timeTaken: timeTakenSec
           });
+        }
+
+        if (isHost) {
+          checkAllAnswersSubmitted();
         }
         showFeedback("Answer submitted! Waiting for other players...");
         return;
