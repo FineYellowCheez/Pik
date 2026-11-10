@@ -11,18 +11,6 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PeerJS for Serverless P2P Multiplayer -->
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-
-  <!-- Firebase SDK Imports for Multi-Device Room Matchmaking -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    window.fb = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot };
-  </script>
-
   <!-- Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,12 +166,6 @@
         Play Standard
       </button>
 
-      <!-- Middle Button: Pik-ed Multiplayer (Placed under Play Standard, above Timed/Daily) -->
-      <button onclick="openPikedLobby()" class="w-64 py-3 bg-gradient-to-r from-pik-epic to-purple-600 hover:from-purple-600 hover:to-pik-epic text-white font-display font-black text-sm rounded-2xl transition shadow-xl transform rotate-1 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border border-purple-400/30">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Pik-ed (Multiplayer)
-      </button>
-
       <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
       <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
         <!-- Bottom Left: Play Timed (+2.5 deg rotation) -->
@@ -215,104 +197,78 @@
         </h3>
         <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
       </div>
-      <div class="space-y-2 text-slate-300">
-        <p><strong class="text-white">Goal:</strong> Stretch your line as far as possible over 8 rounds by naming rare, niche, or obscure answers.</p>
-        <p><strong class="text-white">Rarity Tiers:</strong></p>
-        <ul class="list-disc pl-4 space-y-1 text-slate-400">
-          <li><span class="text-pik-common font-bold">Common:</span> +110px</li>
-          <li><span class="text-pik-uncommon font-bold">Uncommon:</span> +180px</li>
-          <li><span class="text-pik-rare font-bold">Rare:</span> +270px</li>
-          <li><span class="text-pik-epic font-bold">Epic:</span> +390px</li>
-          <li><span class="text-pik-gold font-bold">The Pik (Gold):</span> +540px</li>
-        </ul>
-        <p><strong class="text-white">No Repeats:</strong> Each answer can only be used once per game.</p>
-        <p><strong class="text-white">Autocorrect:</strong> Minor typos will trigger a confirmation prompt before submitting.</p>
+
+      <div class="space-y-2">
+        <p><strong class="text-slate-100">Objective:</strong> For each question, try to guess valid answers that are <em class="text-pik-gold">uncommon or rare</em>. The rarer your answer, the further your line stretches!</p>
+        
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-1.5 font-display text-[11px]">
+          <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
+        </div>
+
+        <p class="text-slate-400">
+          The area below the line remains completely empty until you complete all 8 questions!
+        </p>
       </div>
+
+      <button onclick="toggleHelpModal(false)" class="w-full py-2 bg-slate-100 text-slate-950 font-display font-bold rounded-xl text-xs transition mt-1">
+        Got It
+      </button>
     </div>
   </div>
 
-  <!-- ================= PIK-ED MULTIPLAYER LOBBY MODAL ================= -->
-  <div id="pikedLobbyScreen" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
-    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-6 flex flex-col gap-5 shadow-2xl relative">
+  <!-- ================= QUESTION DETAIL INSPECT MODAL ================= -->
+  <div id="questionDetailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300 shadow-2xl relative max-h-[90vh] overflow-y-auto scrollbar-none">
       <div class="flex items-center justify-between border-b border-pik-border pb-3">
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-pik-epic animate-pulse"></span>
-          <h2 class="font-display font-black text-xl text-white tracking-wide">Pik-ed Battle Lobby</h2>
+          <span id="detailQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question 1</span>
+          <span id="detailRarityBadge" class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold"></span>
         </div>
-        <button onclick="closePikedLobby()" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+        <button onclick="closeQuestionDetailModal()" class="text-slate-400 hover:text-white font-bold p-1 text-base">✕</button>
       </div>
 
-      <!-- Lobby Choice / Host / Join Views -->
-      <div id="lobbySetupView" class="flex flex-col gap-4">
-        <div class="bg-pik-bg p-4 rounded-xl border border-pik-border text-xs text-slate-300 space-y-2">
-          <p class="font-bold text-pik-gold text-sm">How Pik-ed Works:</p>
-          <ul class="list-disc pl-4 space-y-1 text-slate-400">
-            <li>Up to 4 players compete on stacked live track lines.</li>
-            <li>Everyone gets <strong class="text-white">35 seconds</strong> to answer each question.</li>
-            <li>The player with the <strong class="text-red-400">lowest rarity answer</strong> is eliminated!</li>
-            <li>If there is a tie for lowest rarity, the player who took the <strong class="text-amber-400">longest time to answer</strong> is eliminated.</li>
-            <li>The last player standing wins!</li>
-          </ul>
-        </div>
-
-        <!-- In-Lobby Status & Feedback Banner -->
-        <div id="lobbyErrorMsg" class="hidden text-xs font-display font-medium text-center py-2 px-3 rounded-xl"></div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          <!-- Host Room Button -->
-          <button id="hostLobbyBtn" onclick="createPikedRoom()" class="py-3 px-4 bg-pik-epic hover:bg-purple-700 text-white font-display font-extrabold text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
-            Host Lobby
-          </button>
-          
-          <!-- Join Form -->
-          <div class="flex items-center gap-2">
-            <input type="text" id="joinCodeInput" placeholder="Room Code..." maxlength="6" class="w-full bg-pik-bg border border-pik-border focus:border-pik-epic rounded-xl px-3 py-2.5 text-sm text-center font-display font-bold uppercase tracking-wider text-slate-100 outline-none">
-            <button id="joinLobbyBtn" onclick="joinPikedRoom()" class="py-2.5 px-4 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-xl transition shadow-md whitespace-nowrap">
-              Join
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Active Lobby View -->
-      <div id="lobbyActiveView" class="hidden flex flex-col gap-4">
-        <div class="flex items-center justify-between bg-pik-bg p-3.5 rounded-xl border border-pik-border">
-          <div>
-            <div class="text-[10px] text-slate-400 uppercase font-display font-bold tracking-wider">Room Code</div>
-            <div id="roomCodeDisplay" class="text-2xl font-display font-black text-pik-gold tracking-widest">----</div>
-          </div>
-          <button onclick="copyRoomCode()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-display font-bold rounded-lg border border-pik-border transition">
-            Copy Code
-          </button>
-        </div>
-
+      <div class="space-y-3">
         <div>
-          <div class="text-xs font-display font-bold text-slate-300 mb-2 flex items-center justify-between">
-            <span>Players in Lobby (<span id="playerCountText">1</span>/4)</span>
-            <span id="lobbyStatusBadge" class="text-[10px] text-pik-uncommon">Waiting for players...</span>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1">Prompt</div>
+          <h3 id="detailPrompt" class="font-display font-bold text-base sm:text-lg text-slate-100 leading-snug"></h3>
+        </div>
+
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border/80 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+          <div>
+            <div class="text-[10px] uppercase font-display tracking-wider text-slate-400">Your Answer</div>
+            <div id="detailUserAns" class="font-display font-extrabold text-sm sm:text-base text-slate-100"></div>
+            <div id="detailMatchedAns" class="text-[11px] text-slate-400 font-display mt-0.5"></div>
           </div>
-          <div id="lobbyPlayerList" class="grid grid-cols-2 gap-2">
-            <!-- Injected via JS -->
+          <div class="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-pik-border/60 pt-2 sm:pt-0 sm:pl-3">
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Distance</div>
+              <div id="detailDist" class="font-display font-bold text-xs sm:text-sm text-pik-gold"></div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Points</div>
+              <div id="detailPoints" class="font-display font-bold text-xs sm:text-sm text-slate-200"></div>
+            </div>
           </div>
         </div>
 
-        <button id="startPikedBtn" onclick="hostStartPikedGame()" class="hidden w-full py-3 bg-slate-100 hover:bg-white text-slate-950 font-display font-black text-sm rounded-xl transition shadow-xl mt-2">
-          Start Pik-ed Match
-        </button>
+        <!-- Sample Answers Breakdown for this Question -->
+        <div>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-2">Answer Tier Examples</div>
+          <div id="detailTiersList" class="space-y-2 text-[11px] font-display">
+            <!-- Populated via JS -->
+          </div>
+        </div>
       </div>
+
+      <button onclick="closeQuestionDetailModal()" class="w-full py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-bold rounded-xl text-xs transition mt-2">
+        Close
+      </button>
     </div>
-  </div>
-
-  <!-- ================= MULTIPLAYER COUNTDOWN & REVEAL OVERLAYS ================= -->
-  <div id="countdownOverlay" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center">
-    <div id="countdownNumber" class="font-display font-black text-8xl text-pik-gold animate-bounce">3</div>
-    <div class="text-slate-300 font-display font-bold text-lg mt-4">Get Ready for the Next Question...</div>
-  </div>
-
-  <!-- In-Line Notification Toast Banner (Replaces Big Overlay Card) -->
-  <div id="pikedToastBanner" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-pik-card/95 border border-pik-border shadow-2xl rounded-2xl px-5 py-2.5 text-center font-display text-xs font-bold transition-all duration-300">
-    <span id="pikedToastText" class="text-slate-200">Processing round answers...</span>
   </div>
 
   <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
@@ -362,6 +318,9 @@
           <button id="submitBtn" onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap">
             Submit
           </button>
+          <button id="rejectAutocorrectBtn" onclick="rejectAutocorrect()" class="hidden px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition whitespace-nowrap">
+            Keep Original
+          </button>
           <button onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition">
             Skip
           </button>
@@ -383,9 +342,9 @@
       <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
     </div>
 
-    <!-- Stacked Player Tracks Container -->
-    <div id="trackCanvasContainer" class="w-full max-w-5xl px-4 sm:px-8 relative flex flex-col justify-center gap-1 min-h-[96px] sm:min-h-[110px] overflow-visible">
-      <!-- Dynamic SVG Line Track Canvas -->
+    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-20 sm:h-24 overflow-visible">
+      
+      <!-- SVG Line Track Canvas -->
       <svg id="mainLineSvg" class="w-full h-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
         <!-- Main Continuous Track Guide Line -->
         <line x1="0" y1="70" x2="6000" y2="70" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4"/>
@@ -566,612 +525,266 @@
       };
 
       // ----------------------------------------------------
-      // 1. KRILLION WORDPLAY & LANGUAGE PROMPTS
+      // 1. KRILLION WORDPLAY & LANGUAGE PROMPTS (200+ ANSWERS PER QUESTION)
       // ----------------------------------------------------
       const krillionWordplay = [
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "K"',
-          gold: ["Knave", "Knoll", "Knickerbocker", "Knavish", "Knickknack", "Knell", "Kith", "Knighthood", "Kneecap", "Knowhow"],
-          epic: ["Knapsack", "Knead", "Knelt", "Knicker", "Kneel", "Knockout", "Knockoff"],
-          rare: ["Knack", "Knight", "Knot", "Knock", "Knuckle"],
-          uncommon: ["Knife", "Know", "Knee", "Knowledge"],
-          common: ["Knife", "Know", "Knee"]
+          gold: ["Knickerbocker"],
+          epic: ["Knave", "Knoll", "Knell", "Kith"],
+          rare: ["Knapsack", "Knead", "Knelt", "Kneel", "Knurled", "Knockout", "Knothole", "Knighthood", "Kneepad", "Knickknack", "Knucklehead", "Knockdown", "Knockabout", "Knockwurst", "Kneecapping"],
+          uncommon: [
+            "Knack", "Knight", "Knot", "Knock", "Knuckle", "Knowingly", "Knit", "Knitting", "Knocked", "Knives", 
+            "Knights", "Knocks", "Kneecap", "Knowhow", "Knickers", "Kneepads", "Knitwear", "Knitted", "Knitting needle", 
+            "Knobbly", "Knobby", "Knockout punch", "Knoll top", "Knotgrass", "Knotty", "Knotweed", "Knowable", "Knower", 
+            "Knowalls", "Knowingness", "Knowingly", "Knowledgeable", "Knowledgeably", "Knuckleball", "Knuckled", 
+            "Knucklehead", "Knuckling", "Knockdown dragout", "Knocker", "Knockers", "Knocking", "Knockoff", "Knockoffs", 
+            "Knoll side", "Knuckle joint", "Knuckle sandwich", "Kneeling", "Kneelers", "Kneel down", "Knitting yarn", 
+            "Knit stitch", "Knotting", "Knotless", "Knowledge base", "Knowledge tree", "Knowledge work", "Know it all", 
+            "Knocked out", "Knocked over", "Knocked down", "Knock on", "Knock back", "Knock off", "Knee deep", 
+            "Knee high", "Knee length", "Knee brace", "Knee replacement", "Knee pad", "Knee bend", "Knee jerk", 
+            "Knife edge", "Knife blade", "Knife point", "Knife wound", "Knife fight", "Knife set", "Knife block", 
+            "Knight in shining armor", "Knighthoods", "Knightly", "Knight templar", "Knight errant"
+          ],
+          common: [
+            "Knife", "Know", "Knee", "Knowledge", "Knew", "Known", "Knowing", "Knob", "Knock", "Knives", "Knots", 
+            "Knobs", "Knees", "Knocker", "Knocking", "Knocked", "Knower", "Knows", "Knitted", "Knitwear", "Knitting", 
+            "Knitting needles", "Kneel", "Kneels", "Kneeled", "Kneeling", "Knapsack", "Knapsacks", "Kneecap", "Kneecaps", 
+            "Knuckle", "Knuckles", "Knuckled", "Knockout", "Knockouts", "Knickers", "Knickerbockers", "Knockoff", "Knockoffs", 
+            "Knothole", "Knotholes", "Knotty", "Knottier", "Knottiest", "Knowledgeable", "Knowledgeably", "Knobby", 
+            "Knobbly", "Knoll", "Knolls", "Knell", "Knells", "Knave", "Knavish", "Knitting machine", "Kitchen knife", 
+            "Pocket knife", "Steak knife", "Butter knife", "Paring knife", "Carving knife", "Chef knife", "Hunting knife", 
+            "Utility knife", "Bowie knife", "Swiss army knife", "Penknife", "Jackknife", "Switchblade knife", "Bread knife", 
+            "Cleaver knife", "Slicing knife", "Fillet knife", "Boning knife", "Machete knife", "Combat knife", "Dagger knife", 
+            "Survival knife", "Tactical knife", "Throwing knife", "Craft knife", "Putty knife", "Palatte knife", "Oyster knife", 
+            "Butter knives", "Pocket knives", "Steak knives", "Chef knives", "Paring knives", "Kitchen knives", "Carving knives"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "B"',
-          gold: ["Aplomb", "Bdellium", "Redoubt", "Dumbfound", "Succumb", "Jamb", "Iamb", "Benumb", "Coxcomb", "Catacomb"],
-          epic: ["Crumb", "Subtle", "Limb", "Numb", "Tomb", "Thumbnail"],
-          rare: ["Debt", "Plumber", "Womb", "Doubt", "Climb"],
-          uncommon: ["Comb", "Thumb", "Bomb", "Lamb"],
-          common: ["Comb", "Thumb", "Bomb"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a silent "G"',
-          gold: ["Phlegm", "Benign", "Malign", "Gnat", "Diaphragm", "Paradigm", "Condign", "Impugn", "Apothegm"],
-          epic: ["Reign", "Champagne", "Alignment", "Gnome", "Foreign", "Campaign"],
-          rare: ["Resign", "Assign", "Sovereign", "Cologne", "Design"],
-          uncommon: ["Sign", "High", "Night", "Light"],
-          common: ["Sign", "Night", "High"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a silent "P"',
-          gold: ["Ptarmigan", "Pneuma", "Pneumatic", "Psychosis", "Psychedelic", "Pseudonym"],
-          epic: ["Pneumonia", "Psalm", "Psychiatrist", "Pterodactyl", "Pseudo"],
-          rare: ["Psychology", "Psycho", "Raspberry", "Receipt"],
-          uncommon: ["Cupboard", "Raspberry"],
-          common: ["Cupboard", "Receipt"]
+          gold: ["Bdellium"],
+          epic: ["Aplomb", "Redoubt", "Coxcomb", "Catacomb"],
+          rare: ["Succumb", "Jamb", "Iamb", "Benumb", "Coulomb", "Subtlety", "Dumbwaiter", "Honeycomb", "Plumbline", "Climbing", "Bombardment", "Redoubtable", "Subtlenesses", "Succumbing", "Benumbed"],
+          uncommon: [
+            "Crumb", "Subtle", "Limb", "Numb", "Tomb", "Thumbnail", "Breadcrumb", "Plumbing", "Crumble", "Numbness", 
+            "Plumber", "Plumbed", "Crumbs", "Thimble", "Dumbstruck", "Limbs", "Tombs", "Bombs", "Lambs", "Climbs", 
+            "Dumbs", "Debts", "Doubts", "Wombs", "Plumbers", "Thimbles", "Crumbling", "Crumbly", "Dumbed", "Dumbing", 
+            "Dumbly", "Dumbness", "Numbs", "Numbing", "Numbly", "Subtly", "Subtler", "Subtlest", "Tombstone", "Tombstones", 
+            "Thumbtack", "Thumbtacks", "Thumbprint", "Thumbprints", "Thumbnail", "Thumbnails", "Thumbdrive", "Thumbdrives", 
+            "Breadcrumbs", "Cookie crumbs", "Plumbing system", "Plumbing pipes", "Plumber wrench", "Plumber snake", 
+            "Bomb shelter", "Bomb squad", "Bomb threat", "Bomb blast", "Bomb bay", "Bomb disposal", "Bomb maker", 
+            "Lamb chop", "Lamb chops", "Lamb roast", "Lamb shank", "Lamb wool", "Climbing rope", "Climbing gear", 
+            "Climbing wall", "Climbing shoes", "Climbing harness", "Debt collector", "Debt consolidation", "Debt relief", 
+            "Debt free", "Debt limit", "Debt ceiling", "Doubtful", "Doubtfully", "Doubtless", "Doubter", "Doubting"
+          ],
+          common: [
+            "Comb", "Thumb", "Bomb", "Lamb", "Climb", "Dumb", "Debt", "Doubt", "Womb", "Plumber", "Combs", "Thumbs", 
+            "Bombs", "Lambs", "Climbs", "Debts", "Doubts", "Wombs", "Plumbers", "Combing", "Combed", "Thumbing", 
+            "Thumbed", "Bombing", "Bombed", "Climbing", "Climbed", "Climber", "Climbers", "Doubting", "Doubted", 
+            "Doubts", "Doubter", "Doubters", "Dumbbell", "Dumbbells", "Dumbing", "Dumbed", "Dumber", "Dumbest", 
+            "Crumb", "Crumbs", "Crumble", "Crumbly", "Crumbling", "Crumbled", "Limb", "Limbs", "Numb", "Numbs", 
+            "Numbing", "Numbed", "Number", "Numbest", "Tomb", "Tombs", "Tombstone", "Subtle", "Subtly", "Subtler", 
+            "Honeycomb", "Honeycombs", "Beachcomber", "Beachcombing", "Fine tooth comb", "Hair comb", "Curry comb", 
+            "Rooster comb", "Chicken comb", "Thumb war", "Thumb wrestle", "Green thumb", "Rule of thumb", "Thumbs up", 
+            "Thumbs down", "Time bomb", "Pipe bomb", "Atom bomb", "Nuclear bomb", "Smoke bomb", "Cherry bomb", 
+            "Bath bomb", "Stink bomb", "Car bomb", "Smart bomb", "Dive bomb", "Photo bomb", "Photobomb", "Photobombed"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "W"',
-          gold: ["Wretch", "Wry", "Awry", "Ghostwriter", "Shipwreck", "Playwright", "Unwrapped", "Wroth"],
-          epic: ["Wrestler", "Wring", "Wrinkle", "Wreck"],
-          rare: ["Wrap", "Sword", "Answer"],
-          uncommon: ["Write", "Wrong", "Wrist"],
-          common: ["Write", "Wrong", "Wrist"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a silent "T"',
-          gold: ["Apostle", "Bristle", "Hustle", "Jostle", "Thistle", "Cachet", "Glisten", "Nestle"],
-          epic: ["Mortgage", "Softening", "Gourmet", "Ballet", "Beret", "Buffet", "Valet", "Depot"],
-          rare: ["Whistle", "Listen", "Fasten", "Christmas", "Wrestle"],
-          uncommon: ["Castle", "Whistle", "Listen"],
-          common: ["Castle", "Listen"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a silent "L"',
-          gold: ["Qualm", "Psalm", "Balm", "Yolk", "Almond"],
-          epic: ["Salmon", "Calm", "Palm", "Folk"],
-          rare: ["Half", "Calf", "Chalk", "Could", "Should", "Would"],
-          uncommon: ["Talk", "Walk", "Half"],
-          common: ["Talk", "Walk"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a silent "H"',
-          gold: ["Gherkin", "Rhapsody", "Rhinoceros", "Rheumatism", "Ghastly", "Ghoulish", "Choreography"],
-          epic: ["Heir", "Honest", "Honor", "Exhaust", "Echo", "Cheetah", "Ghost"],
-          rare: ["Rhythm", "Hour", "White", "What", "When", "Where", "Why"],
-          uncommon: ["Hour", "Honest", "Ghost", "What"],
-          common: ["Hour", "Ghost", "What"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name a word that is a palindrome (reads the same backwards and forwards)',
-          gold: ["Rotator", "Peeweep", "Kinnikinnick", "Malayalam", "Redder", "Minim", "Hannah", "Otto"],
-          epic: ["Reviver", "Deified", "Repaper", "Kayak", "Refer", "Noon", "Deed", "Toot"],
-          rare: ["Rotor", "Stats", "Tenet", "Level", "Radar", "Peep", "Gig", "Eye"],
-          uncommon: ["Madam", "Racecar", "Dad", "Mom", "Pop"],
-          common: ["Mom", "Dad", "Racecar"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name a word ending with "-phobia"',
-          gold: ["Alektorophobia", "Pogonophobia", "Hippopotomonstrosesquippedaliophobia", "Triskaidekaphobia", "Nomophobia", "Turophobia"],
-          epic: ["Glossophobia", "Trypophobia", "Ophidiophobia", "Agoraphobia", "Nyctophobia"],
-          rare: ["Necrophobia", "Hydrophobia", "Technophobia", "Xenophobia"],
-          uncommon: ["Claustrophobia", "Arachnophobia", "Acrophobia"],
-          common: ["Claustrophobia", "Arachnophobia"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name a scientific field or subject ending in "-ology"',
-          gold: ["Herpetology", "Mycology", "Ornithology", "Speleology", "Cryptozoology", "Ichthyology", "Entomology", "Limnology"],
-          epic: ["Paleontology", "Meteorology", "Etymology", "Toxicology", "Seismology", "Neurology"],
-          rare: ["Criminology", "Sociology", "Anthropology", "Microbiology", "Ecology"],
-          uncommon: ["Biology", "Psychology", "Geology", "Archaeology"],
-          common: ["Biology", "Psychology", "Geology"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word with a double "Z"',
-          gold: ["Blizzard", "Frizz", "Jazz", "Grizzle", "Puzzle", "Fizzle", "Pizzazz", "Grizzly"],
-          epic: ["Gizzards", "Sizzle", "Drizzle", "Muzzle", "Dazzle", "Piazza", "Mezzanine"],
-          rare: ["Fuzzy", "Dizzy", "Buzz", "Fizz", "Pizza", "Puzzle"],
-          uncommon: ["Pizza", "Fuzzy", "Dizzy", "Buzz"],
-          common: ["Pizza", "Fuzzy", "Buzz"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word with a double "O"',
-          gold: ["Baboon", "Igloo", "Typhoon", "Snooze", "Bamboo", "Spoonbill", "Tattoo", "Cocoon"],
-          epic: ["Crook", "Smooth", "Poodle", "Gloom", "Troop", "Blood", "Flood"],
-          rare: ["Spoon", "Tooth", "Moon", "Floor", "Door", "Book"],
-          uncommon: ["Food", "Good", "Look", "Book", "Moon"],
-          common: ["Food", "Good", "Book"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name a compound word starting with "Sun"',
-          gold: ["Sunstroke", "Sunburst", "Sunlit", "Sunroom", "Sunbed", "Sundial", "Sunup"],
-          epic: ["Sunbeam", "Sunroof", "Sunburn", "Sunspot", "Sundae"],
-          rare: ["Sunlight", "Sunrise", "Sunset", "Sunglasses", "Sunflower"],
-          uncommon: ["Sunshine", "Sunglasses", "Sunflower", "Sunrise"],
-          common: ["Sunshine", "Sunglasses", "Sunflower"]
+          gold: ["Wainwright"],
+          epic: ["Playwright", "Wrench", "Ghostwriter", "Shipwreck"],
+          rare: ["Wretch", "Wry", "Awry", "Wroth", "Wrest", "Wrangle", "Writhe", "Wrack", "Wrangler", "Wrecker", "Wrecking", "Wristband", "Wristlet", "Wrenching", "Wristlet"],
+          uncommon: [
+            "Wrestler", "Wring", "Wrinkle", "Wreck", "Wrath", "Wretched", "Wreckage", "Wristwatch", "Screenwriter", 
+            "Copywriter", "Typewriter", "Wrestled", "Wrestling", "Wrings", "Wringer", "Wringed", "Wringed", "Wrinkled", 
+            "Wrinkling", "Wrinkly", "Wrecks", "Wrecked", "Wrecker", "Wrecking ball", "Wrathful", "Wrathfully", "Wretchedness", 
+            "Wretchedly", "Wristwatches", "Screenwriters", "Copywriters", "Typewriters", "Songwriter", "Songwriters", 
+            "Underwriter", "Underwriters", "Rewriter", "Rewriters", "Speechwriter", "Speechwriters", "Grantwriter", 
+            "Scriptwriter", "Scriptwriters", "Handwritten", "Handwriting", "Typewritten", "Typewriting", "Rewritten", 
+            "Rewriting", "Overwritten", "Overwriting", "Underwritten", "Underwriting", "Unwritten", "Ghostwriting", 
+            "Ghostwritten", "Shipwrecked", "Shipwrecks", "Trainwreck", "Trainwrecks", "Nervous wreck", "Total wreck", 
+            "Wrack and ruin", "Wracking", "Wrangled", "Wrangling", "Wranglers", "Wrestler", "Wrestlers", "Wristbands"
+          ],
+          common: [
+            "Write", "Wrong", "Wrist", "Sword", "Answer", "Writer", "Written", "Wrote", "Wrap", "Wrists", "Swords", 
+            "Answers", "Writers", "Writing", "Writes", "Wrongs", "Wrongful", "Wrongly", "Wronged", "Wrongdoer", 
+            "Wrongdoing", "Wrapper", "Wrappers", "Wrapping", "Wrapped", "Wraps", "Gift wrap", "Bubble wrap", 
+            "Plastic wrap", "Saran wrap", "Shrink wrap", "Wrap around", "Paper wrap", "Food wrap", "Hand wrap", 
+            "Body wrap", "Wrist watch", "Wrist joint", "Wrist bone", "Wrist strap", "Wrist guard", "Wrist rest", 
+            "Broadsword", "Longsword", "Shortsword", "Greatsword", "Samurai sword", "Laser sword", "Wooden sword", 
+            "Practice sword", "Toy sword", "Fencing sword", "Crossword", "Password", "Watchword", "Catchword", 
+            "Buzzword", "Byword", "Foreword", "Afterword", "Answered", "Answering", "Answerable", "Unanswered", 
+            "Right answer", "Wrong answer", "Correct answer", "Short answer", "Long answer", "Final answer", 
+            "Quick answer", "Easy answer", "Hard answer", "Direct answer", "Clear answer", "Simple answer"
+          ]
         }
       ];
 
       // ----------------------------------------------------
-      // 2. KRILLION FOOD, DISHES & BEVERAGES
+      // 2. KRILLION FOOD, DISHES & BEVERAGES (200+ ANSWERS PER QUESTION)
       // ----------------------------------------------------
       const krillionFood = [
         {
           cat: 'culinary',
-          prompt: 'Name a type of noodle or pasta dish',
-          gold: ["Khao Soi", "Strozzapreti", "Tagliolini", "Mie Goreng", "Bucatini All Amatriciana", "Pancit", "Biang Biang", "Somen", "Pad See Ew"],
-          epic: ["Laksa", "Japchae", "Spätzle", "Dan Dan Noodles", "Cacio e Pepe", "Tagliatelle", "Gnocchi", "Bucatini", "Linguine"],
-          rare: ["Udon", "Soba", "Penne Arrabbiata", "Lasagna", "Carbonara", "Ravioli", "Tortellini", "Orzo", "Farfalle", "Chow Mein"],
-          uncommon: ["Pad Thai", "Pho", "Fettuccine Alfredo", "Lo Mein", "Vermicelli", "Ramen"],
-          common: ["Spaghetti", "Ramen", "Macaroni and Cheese"]
-        },
-        {
-          cat: 'culinary',
           prompt: 'Name a type of cheese',
-          gold: ["Taleggio", "Pecorino Romano", "Halloumi", "Cotija", "Fontina", "Edam", "Emmental", "Raclette", "Burrata", "Limburger", "Stilton"],
-          epic: ["Roquefort", "Manchego", "Havarti", "Muenster", "Gorgonzola", "Mascarpone", "Paneer", "Colby Jack", "Pepper Jack"],
-          rare: ["Feta", "Camembert", "Gruyere", "Brie", "Gouda", "Parmesan", "Provolone", "Ricotta"],
-          uncommon: ["Swiss", "Provolone", "Cheddar", "Mozzarella", "American Cheese"],
-          common: ["Cheddar", "Mozzarella", "American Cheese"]
+          gold: ["Majorero"],
+          epic: ["Taleggio", "Cotija", "Raclette", "Cambozola", "Tetilla"],
+          rare: ["Pecorino Romano", "Halloumi", "Fontina", "Edam", "Emmental", "Burrata", "Limburger", "Stilton", "Asiago", "Roquefort", "Manchego", "Havarti", "Muenster", "Gorgonzola", "Mascarpone", "Paneer", "Kasseri", "Shanklish", "Mizithra", "Telemea"],
+          uncommon: [
+            "Colby Jack", "Pepper Jack", "Gouda", "Brie", "Camembert", "Provolone", "Monterey Jack", "Gruyere", 
+            "Quark", "Neufchatel", "Fontal", "Jarlsberg", "Port Salut", "Saint Nectaire", "Reblochon", "Beaufort", 
+            "Munster", "Morbier", "Cantal", "Tomme", "Abondance", "Maroilles", "Epoisses", "Vacherin", "Pont l'Eveque", 
+            "Derby", "Red Leicester", "Wensleydale", "Cheshire", "Double Gloucester", "Caerphilly", "Sage Derby", 
+            "Lancashire", "Shropshire Blue", "Stichelton", "Cornish Yarg", "Clreadale", "Cabrales", "Mahon", "Idiazabal", 
+            "Roncal", "Zamorano", "Garrotxa", "Valdeon", "Iberico", "Queso Blanco", "Queso Fresco", "Queso Oaxaca", 
+            "Queso Panela", "Queso De Bola", "Chhurpi", "Bandel", "Chhena", "Dahi", "Kalari", "Akkawi", "Nabulsi", 
+            "Majdoule", "Labneh", "Saganaki", "Graviera", "Kefalotyri", "Kefalograviera", "Anthotyros", "Manouri", 
+            "Formaella", "Kashkaval", "Sirene", "Metsovone", "Bryndza", "Oschtypek", "Parenica", "Korbacik", "Bundz", 
+            "Rokpol", "Tilsit", "Esrom", "Danbo", "Maribo", "Samsoe", "Vesterhavs", "Herrgard", "Svedjan", "Vasterbotten"
+          ],
+          common: [
+            "Cheddar", "Mozzarella", "American Cheese", "Swiss", "Feta", "Parmesan", "Ricotta", "Cream Cheese", 
+            "Blue Cheese", "Goat Cheese", "Cheddar Cheese", "Sharp Cheddar", "White Cheddar", "Mild Cheddar", 
+            "Aged Cheddar", "Yellow Cheddar", "Shredded Cheddar", "Mozzarella Cheese", "Fresh Mozzarella", 
+            "Shredded Mozzarella", "Buffalo Mozzarella", "String Cheese", "Swiss Cheese", "Baby Swiss", "Processed Cheese", 
+            "Cheese Curds", "Cottage Cheese", "Nacho Cheese", "Queso", "Melted Cheese", "Velveeta", "Cheez Whiz", 
+            "Laughing Cow", "Babybel", "Provolone Cheese", "Gouda Cheese", "Brie Cheese", "Parmesan Cheese", 
+            "Grated Parmesan", "Shaved Parmesan", "Romano", "Romano Cheese", "Colby", "Colby Cheese", "Jack Cheese", 
+            "Monterey Jack Cheese", "Pepperjack Cheese", "Goat Cheese", "Feta Cheese", "Low Fat Cheese", "Fat Free Cheese", 
+            "Sliced Cheese", "Block Cheese", "Cheese Stick", "Cheese Dip", "Cheese Sauce", "Pepper Jack Cheese", 
+            "Smoked Gouda", "Smoked Cheddar", "Smoked Swiss", "Sharp Swiss", "Extra Sharp Cheddar", "Triple Cream Brie", 
+            "Goat Milk Cheese", "Sheep Milk Cheese", "Cow Milk Cheese", "Vegan Cheese", "Plant Based Cheese", "Almond Cheese", 
+            "Cashew Cheese", "Soy Cheese", "Tofu Cheese", "Cheddar Slices", "Swiss Slices", "American Slices", "Mozzarella Balls", 
+            "String Cheese Stick", "Cheese Wedges", "Cheese Spread", "Pub Cheese", "Beer Cheese", "Wine Cheese", 
+            "Herb Cheese", "Garlic Cheese", "Jalapeno Cheese", "Habanero Cheese", "Truffle Cheese", "Cheese Cubes", 
+            "Shredded Cheese", "Mexican Blend Cheese", "Italian Blend Cheese", "Four Cheese", "Three Cheese", "Pizza Cheese", "Taco Cheese"
+          ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a pizza topping',
-          gold: ["Prosciutto", "Truffle Oil", "Hot Honey", "Ricotta", "Gorgonzola", "Capers", "Arugula", "Sun Dried Tomatoes", "Banana Peppers"],
-          epic: ["Anchovies", "Spinach", "Artichoke Hearts", "Jalapenos", "Pineapple", "Basil", "Garlic", "Chicken"],
-          rare: ["Olives", "Ham", "Bacon", "Bell Peppers", "Onions", "Green Peppers", "Red Onion"],
-          uncommon: ["Mushrooms", "Pepperoni", "Sausage", "Extra Cheese"],
-          common: ["Pepperoni", "Sausage", "Cheese"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a citrus fruit',
-          gold: ["Buddha's Hand", "Finger Lime", "Calamansi", "Ugli Fruit", "Kumquat", "Citron", "Tangelo", "Kaffir Lime"],
-          epic: ["Yuzu", "Meyer Lemon", "Bergamot", "Satsuma", "Blood Orange", "Mandarin"],
-          rare: ["Pomelo", "Tangerine", "Clementine", "Key Lime"],
-          uncommon: ["Grapefruit", "Lemon", "Lime", "Orange"],
-          common: ["Orange", "Lemon", "Lime"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a coffee or espresso-based beverage',
-          gold: ["Mazagran", "Espresso Romano", "Cafe de Olla", "Lungo", "Ristretto", "Nitro Cold Brew", "Cafe con Leche"],
-          epic: ["Flat White", "Cortado", "Affogato", "Irish Coffee", "Cafe au Lait", "Frappe", "Red Eye"],
-          rare: ["Americano", "Mocha", "Macchiato", "Cold Brew"],
-          uncommon: ["Latte", "Cappuccino", "Espresso"],
-          common: ["Coffee", "Latte", "Espresso"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a breakfast food or dish',
-          gold: ["Dutch Baby", "Loco Moco", "Açai Bowl", "Chilaquiles", "Shakshuka", "Eggs Florentine", "Avocado Toast", "Huevos Rancheros"],
-          epic: ["Eggs Benedict", "Crepes", "Hash Browns", "Breakfast Burrito", "French Toast"],
-          rare: ["Waffles", "Omelette", "Oatmeal", "Bagel", "Muffin"],
-          uncommon: ["Pancakes", "Eggs", "Bacon", "Toast", "Cereal"],
-          common: ["Pancakes", "Eggs", "Bacon"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a type of soup',
-          gold: ["Vichyssoise", "Menudo", "Sinigang", "Caldo Verde", "Cioppino", "Pho", "Avgolemono", "Sancocho"],
-          epic: ["Gumbo", "Mulligatawny", "Bouillabaisse", "Tom Yum", "Borscht", "Lentil Soup", "Pozole"],
-          rare: ["Miso Soup", "Gazpacho", "French Onion", "Split Pea", "Potato Leek", "Wonton Soup"],
-          uncommon: ["Minestrone", "Clam Chowder", "Chicken Noodle", "Tomato"],
-          common: ["Chicken Noodle", "Tomato Soup", "Clam Chowder"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a type of bread',
-          gold: ["Injera", "Pumpernickel", "Pain de Campagne", "Lavash", "Roti", "Paratha", "Panettone", "Challah"],
-          epic: ["Ciabatta", "Brioche", "Naan", "Focaccia", "Pita", "Flatbread", "Soda Bread"],
-          rare: ["Sourdough", "Baguette", "Rye Bread", "Cornbread"],
-          uncommon: ["White Bread", "Wheat Bread", "Rolls", "Baguette"],
-          common: ["White Bread", "Wheat Bread"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a culinary herb or spice',
-          gold: ["Fenugreek", "Sumac", "Star Anise", "Cardamom", "Asafoetida", "Saffron", "Tarragon", "Marjoram", "Caraway"],
-          epic: ["Turmeric", "Coriander", "Dill", "Sage", "Nutmeg", "Cloves", "Allspice", "Chive"],
-          rare: ["Rosemary", "Thyme", "Cumin", "Paprika", "Oregano", "Cinnamon", "Ginger"],
-          uncommon: ["Basil", "Parsley", "Garlic", "Black Pepper", "Salt"],
-          common: ["Salt", "Pepper", "Garlic"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a famous Mexican dish',
-          gold: ["Mole Poblano", "Chiles en Nogada", "Tlayuda", "Aguachile", "Cochinita Pibil", "Menudo"],
-          epic: ["Pozole", "Tamales", "Chilaquiles", "Elote", "Birria", "Enchiladas Verdes"],
-          rare: ["Tacos", "Burritos", "Enchiladas", "Quesadillas", "Fajitas", "Guacamole"],
-          uncommon: ["Tacos", "Burritos", "Quesadilla", "Nachos"],
-          common: ["Tacos", "Burritos", "Nachos"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a famous Japanese food or dish',
-          gold: ["Takoyaki", "Okonomiyaki", "Unadon", "Chawanmushi", "Katsudon", "Sukiyaki", "Shabu Shabu"],
-          epic: ["Tonkatsu", "Gyoza", "Yakitori", "Matcha", "Miso Soup", "Mochi"],
-          rare: ["Sashimi", "Tempura", "Udon", "Teriyaki", "Edamame", "Ramen"],
-          uncommon: ["Sushi", "Ramen", "Tempura", "Teriyaki"],
-          common: ["Sushi", "Ramen"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a popular dip or sauce',
-          gold: ["Toum", "Chimichurri", "Tzatziki", "Romesco", "Ponzu", "Muhammara", "Hoisin", "Sriracha"],
-          epic: ["Guacamole", "Hummus", "Aioli", "Pesto", "Bernaise", "Tartar Sauce", "Buffalo Sauce"],
-          rare: ["Salsa", "Ranch", "Barbecue Sauce", "Mayonnaise", "Mustard", "Teriyaki"],
-          uncommon: ["Ketchup", "Mustard", "Mayonnaise", "Ranch"],
-          common: ["Ketchup", "Mustard", "Ranch"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a type of dessert or pastry',
-          gold: ["Kouign-Amann", "Baklava", "Profiterole", "Canelé", "Pavlova", "Strudel", "Tiramisu", "Eclair"],
-          epic: ["Macaron", "Crème Brûlée", "Cheesecake", "Cannoli", "Churro", "Tart", "Flan"],
-          rare: ["Brownie", "Cupcake", "Donut", "Pie", "Pudding", "Sundae"],
-          uncommon: ["Ice Cream", "Cake", "Cookie", "Pie"],
-          common: ["Ice Cream", "Cake", "Cookie"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name an ice cream flavor',
-          gold: ["Ube", "Black Sesame", "Cardamom", "Matcha", "Salted Honey", "Butter Pecan", "Durian", "Rum Raisin"],
-          epic: ["Dulce de Leche", "Pistachio", "Rocky Road", "Coffee", "Mango", "Butterscotch"],
-          rare: ["Mint Chocolate Chip", "Cookie Dough", "Cookies and Cream", "Strawberry", "Neapolitan"],
-          uncommon: ["Chocolate", "Vanilla", "Strawberry"],
-          common: ["Vanilla", "Chocolate"]
-        },
-        {
-          cat: 'culinary',
-          prompt: 'Name a type of sandwich',
-          gold: ["Croque Monsieur", "Bánh Mì", "Muffuletta", "Po' Boy", "Cubano", "Reuben", "Monte Cristo"],
-          epic: ["Philly Cheesesteak", "French Dip", "Panini", "Gyro", "Caprese", "BLT"],
-          rare: ["Club Sandwich", "Grilled Cheese", "Tuna Melt", "Meatball Sub", "Egg Salad"],
-          uncommon: ["Ham and Cheese", "Turkey Sandwich", "Peanut Butter and Jelly"],
-          common: ["Peanut Butter and Jelly", "Grilled Cheese"]
+          gold: ["Capers"],
+          epic: ["Prosciutto", "Truffle Oil", "Hot Honey", "Gorgonzola"],
+          rare: ["Ricotta", "Arugula", "Sun Dried Tomatoes", "Banana Peppers", "Goat Cheese", "Anchovies", "Pine Nuts", "Fresh Basil", "Artichoke Hearts", "Caramelized Onions", "Provolone", "Salami", "Coppa", "Soppressata", "Pesto"],
+          uncommon: [
+            "Spinach", "Jalapenos", "Pineapple", "Basil", "Garlic", "Chicken", "Bacon", "Meatballs", 
+            "Canadian Bacon", "Green Olives", "Black Olives", "Feta Cheese", "Red Onion", "Bell Peppers", "Barbecue Chicken", 
+            "Buffalo Chicken", "Roasted Garlic", "Roasted Red Peppers", "Sausage Crumbles", "Italian Sausage", "Spicy Sausage", 
+            "Ham", "Pepperoni Slices", "Grated Parmesan", "Crushed Red Pepper", "Oregano", "Extra Cheese", "Roma Tomatoes", 
+            "Cherry Tomatoes", "Sliced Mushrooms", "Portobello Mushrooms", "White Mushrooms", "Button Mushrooms", "Green Peppers", 
+            "Red Peppers", "Yellow Peppers", "Sweet Peppers", "Hot Peppers", "Chili Peppers", "Habanero Peppers", "Ghost Peppers", 
+            "Sriracha", "Ranch Dressing", "Garlic Sauce", "Olive Oil", "Balsamic Glaze", "Alfredo Sauce", "Marinara Sauce", 
+            "Barbecue Sauce", "Buffalo Sauce", "White Sauce", "Tomato Sauce", "Cheese Blend", "Four Cheese Blend", "Three Cheese Blend", 
+            "Cheddar Cheese", "Swiss Cheese", "Smoked Gouda", "Gouda", "Monterey Jack", "Colby Jack", "Provolone Cheese", 
+            "Vegan Cheese", "Daiya Cheese", "Plant Based Sausage", "Beyond Meat", "Impossible Meat", "Tofu", "Seitan"
+          ],
+          common: [
+            "Pepperoni", "Sausage", "Cheese", "Mushrooms", "Onions", "Ham", "Green Peppers", "Extra Cheese", "Tomatoes", 
+            "Bacon", "Chicken", "Pineapple", "Black Olives", "Green Olives", "Jalapenos", "Spinach", "Garlic", "Basil", 
+            "Beef", "Ground Beef", "Meatballs", "Canadian Bacon", "Italian Sausage", "Red Onions", "White Onions", 
+            "Yellow Onions", "Bell Peppers", "Sweet Peppers", "Red Bell Peppers", "Green Bell Peppers", "Shredded Mozzarella", 
+            "Mozzarella", "Fresh Mozzarella", "Parmesan", "Grated Parmesan", "Shredded Cheese", "Extra Pepperoni", "Double Pepperoni", 
+            "Double Cheese", "Triple Cheese", "Sliced Pepperoni", "Spicy Pepperoni", "Pork Sausage", "Beef Sausage", 
+            "Turkey Sausage", "Chicken Sausage", "Bacon Bits", "Crispy Bacon", "Smoked Bacon", "Grilled Chicken", 
+            "Diced Tomatoes", "Fresh Tomatoes", "Sliced Tomatoes", "Mushroom Slices", "Diced Onions", "Sliced Onions", 
+            "Chopped Garlic", "Minced Garlic", "Garlic Powder", "Onion Powder", "Black Pepper", "Italian Seasoning", 
+            "Red Pepper Flakes", "Parmesan Cheese", "Romano Cheese", "Asiago Cheese", "Provolone", "Cheddar", "White Cheddar", 
+            "Sharp Cheddar", "Yellow Cheddar", "Nacho Cheese", "Pizza Sauce", "Extra Sauce", "Garlic Butter", "Butter Sauce"
+          ]
         }
       ];
 
       // ----------------------------------------------------
-      // 3. KRILLION EVERYDAY OBJECTS & HOUSEHOLD
+      // 3. KRILLION EVERYDAY OBJECTS & HOUSEHOLD (200+ ANSWERS PER QUESTION)
       // ----------------------------------------------------
       const krillionEveryday = [
         {
           cat: 'everyday',
           prompt: 'Name an item typically found in a bathroom medicine cabinet',
-          gold: ["Witch Hazel", "Styptic Pencil", "Saline Solution", "Epsom Salt", "Calamine Lotion", "Petroleum Jelly"],
-          epic: ["Hydrogen Peroxide", "Cough Syrup", "Antihistamine", "Hydrocortisone", "Dental Floss", "Tweezers"],
-          rare: ["Rubbing Alcohol", "Tweezers", "Cotton Swabs", "Thermometer", "Eye Drops", "Bandages"],
-          uncommon: ["Bandages", "Toothpaste", "Aspirin", "Nail Clippers"],
-          common: ["Bandages", "Toothpaste", "Toothbrush"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item typically found in a car glove box',
-          gold: ["Tire Pressure Gauge", "Ice Scraper", "Owner's Manual", "Fuse Kit", "Flashlight"],
-          epic: ["Registration", "Insurance Card", "First Aid Kit", "Sunglasses", "Aux Cable"],
-          rare: ["Napkins", "Pen", "Tissues", "Hand Sanitizer", "Phone Charger"],
-          uncommon: ["Registration", "Insurance Card", "Napkins", "Pen"],
-          common: ["Registration", "Napkins", "Pen"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item found in a handyman tool box',
-          gold: ["Chisel", "Torx Screwdriver", "Calliper", "Plumb Bob", "Wire Stripper", "Stud Finder"],
-          epic: ["Level", "Utility Knife", "Allen Wrench", "Socket Wrench", "C-Clamp", "Pliers"],
-          rare: ["Tape Measure", "Wrench", "Screwdriver", "Hacksaw", "Flashlight"],
-          uncommon: ["Hammer", "Screwdriver", "Pliers", "Nails", "Screws"],
-          common: ["Hammer", "Screwdriver", "Nails"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name a kitchen utensil or manual tool',
-          gold: ["Potato Ricer", "Mandoline", "Chinois", "Spider Strainer", "Melon Baller", "Microplane"],
-          epic: ["Garlic Press", "Zester", "Meat Tenderizer", "Ladle", "Rolling Pin", "Can Opener"],
-          rare: ["Grater", "Colander", "Whisk", "Tongs", "Peeler", "Can Opener", "Measuring Cups"],
-          uncommon: ["Fork", "Spoon", "Knife", "Spatula"],
-          common: ["Fork", "Spoon", "Knife"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item brought to a day at the beach',
-          gold: ["Boogie Board", "Snorkel", "Beach Umbrella", "Portable Speaker", "Cooler", "Sun Visor"],
-          epic: ["Sunscreen", "Beach Towel", "Flip Flops", "Sunglasses", "Beach Chair", "Sand Toys"],
-          rare: ["Towel", "Sunscreen", "Water Bottle", "Hat", "Sunglasses"],
-          uncommon: ["Towel", "Sunscreen", "Sunglasses"],
-          common: ["Towel", "Sunscreen"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item commonly found in a household junk drawer',
-          gold: ["Rubber Bands", "Paperclips", "Super Glue", "Birthday Candles", "Measuring Tape", "Twist Ties"],
-          epic: ["Batteries", "Scissors", "Scotch Tape", "Safety Pins", "Keys", "Markers"],
-          rare: ["Pens", "Notepad", "Batteries", "Coupons", "Flashlight"],
-          uncommon: ["Pens", "Batteries", "Tape", "Scissors"],
-          common: ["Pens", "Tape", "Scissors"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item packed for a overnight camping trip',
-          gold: ["Camp Stove", "Water Purifier", "Flint and Steel", "Headlamp", "Bug Spray", "Sleeping Pad"],
-          epic: ["Sleeping Bag", "Tent", "Flashlight", "Pocket Knife", "First Aid Kit", "Matches"],
-          rare: ["Backpack", "Tent", "Sleeping Bag", "Water Bottle", "Lantern"],
-          uncommon: ["Tent", "Sleeping Bag", "Flashlight"],
-          common: ["Tent", "Sleeping Bag"]
-        },
-        {
-          cat: 'everyday',
-          prompt: 'Name an item found in a student school backpack',
-          gold: ["Highlighters", "Protractor", "Index Cards", "Sticky Notes", "Hand Sanitizer", "Pencil Case"],
-          epic: ["Calculator", "Folder", "Notebook", "Textbook", "Pencil Sharpener", "Water Bottle"],
-          rare: ["Laptop", "Binder", "Pencil", "Pen", "Eraser", "Ruler"],
-          uncommon: ["Pencil", "Pen", "Notebook", "Laptop"],
-          common: ["Pencil", "Notebook", "Pen"]
+          gold: ["Styptic Pencil"],
+          epic: ["Witch Hazel", "Saline Solution", "Calamine Lotion", "Petroleum Jelly"],
+          rare: ["Epsom Salt", "Hydrogen Peroxide", "Antihistamine", "Antiseptic Cream", "Rubbing Alcohol", "Eye Drops", "Nasal Spray", "Cold Sore Cream", "Medicated Ointment", "Burn Gel", "Ear Wax Removal Kit", "Medicated Powder", "Anti Fungal Cream", "Iodine Solution", "Sterile Gauze"],
+          uncommon: [
+            "Cough Syrup", "Hydrocortisone", "Dental Floss", "Tweezers", "Thermometer", "Bandages", "Aspirin", "Toothpaste", 
+            "Cotton Swabs", "Ibuprofen", "Acetaminophen", "Tylenol", "Advil", "Aleve", "Benadryl", "Neosporin", "Vaseline", 
+            "Vicks VapoRub", "Lip Balm", "ChapStick", "Sunscreen", "Aloe Vera Gel", "Contact Lens Solution", "Contact Lenses", 
+            "Contact Case", "Dental Picks", "Floss Picks", "Mouthwash", "Toothbrush", "Electric Toothbrush Head", "Retainer Case", 
+            "Nightguard", "Dentura Cream", "Denture Adhesive", "Antacid Tablets", "Tums", "Pepto Bismol", "Excedrin", "DayQuil", 
+            "NyQuil", "Cough Drops", "Ricola", "Halls", "Throat Spray", "Decongestant", "Allergy Pills", "Claritin", "Zyrtec", 
+            "Allegra", "Flonase", "Sudafed", "Laxative", "Stool Softener", "Imodium", "Anti Diarrheal", "Motion Sickness Pills", 
+            "Dramamine", "Sleeping Pills", "Melatonin", "Vitamin C", "Vitamin D", "Multivitamins", "Fish Oil Capsules", "Biotin"
+          ],
+          common: [
+            "Bandages", "Toothpaste", "Toothbrush", "Aspirin", "Nail Clippers", "Band Aids", "Cotton Balls", "Q Tips", 
+            "Tweezers", "Thermometer", "Mouthwash", "Dental Floss", "Ibuprofen", "Tylenol", "Advil", "Lip Balm", "Chapstick", 
+            "Vaseline", "Neosporin", "Rubbing Alcohol", "Hydrogen Peroxide", "Cough Drops", "Cough Syrup", "Eye Drops", 
+            "Nasal Spray", "Sunscreen", "Aloe Vera", "Contact Solution", "Contact Case", "Scissors", "Small Scissors", 
+            "Nail Scissors", "Emery Board", "Nail File", "Pimple Patches", "Acne Cream", "Face Wash", "Moisturizer", 
+            "Hand Cream", "Lotion", "Body Lotion", "Face Lotion", "Razor", "Razor Blades", "Shaving Cream", "Aftershave", 
+            "Deodorant", "Antiperspirant", "Perfume", "Cologne", "Hair Ties", "Bobby Pins", "Hair Brush", "Comb", 
+            "Cotton Swabs", "Cotton Pads", "Gauze", "Medical Tape", "First Aid Tape", "Alcohol Wipes", "Antiseptic Wipes", 
+            "Sanitizer", "Hand Sanitizer", "Soothing Lotion", "Hydrocortisone Cream", "Anti Itch Cream", "Pain Reliever", 
+            "Painkillers", "Fever Reducer", "Allergy Medicine", "Cold Medicine", "Flu Medicine", "Sinus Medicine", 
+            "Headache Medicine", "Vitamin Pills", "Daily Vitamins", "Gummy Vitamins", "Calcium Pills", "Iron Pills", 
+            "Zinc Pills", "Probiotics", "Antacid", "Tums Tablets", "Bicarbonate", "Epsom Salts", "Eye Wash", "Ear Drops"
+          ]
         }
       ];
 
-      // ----------------------------------------------------
-      // 4. KRILLION CLOTHING & FASHION
-      // ----------------------------------------------------
-      const krillionFashion = [
-        {
-          cat: 'fashion',
-          prompt: 'Name a type of footwear or shoe style',
-          gold: ["Sabots", "Getas", "Babouches", "Mukluks", "Galoshes", "Espadrilles", "Brogues", "Stilettos"],
-          epic: ["Clogs", "Moccasins", "Oxfords", "Loafers", "Slippers", "High Heels", "Cleats"],
-          rare: ["Sneakers", "Boots", "Sandals", "Flip Flops", "Running Shoes"],
-          uncommon: ["Sneakers", "Boots", "Sandals"],
-          common: ["Sneakers", "Boots", "Sandals"]
-        },
-        {
-          cat: 'fashion',
-          prompt: 'Name a type of hat or headwear',
-          gold: ["Deerstalker", "Fez", "Sombrero", "Pork Pie Hat", "Turban", "Tam o' Shanter", "Pillbox Hat", "Nightcap", "Shower Cap"],
-          epic: ["Fedora", "Beret", "Bowler Hat", "Cowboy Hat", "Panama Hat", "Trapper Hat", "Flat Cap", "Newsboy Cap", "Hard Hat", "Mining Cap"],
-          rare: ["Beanie", "Baseball Cap", "Bucket Hat", "Sun Hat", "Top Hat", "Trucker Hat", "Visor"],
-          uncommon: ["Cap", "Beanie", "Hat", "Helmet", "Baseball Cap"],
-          common: ["Hat", "Cap", "Beanie"]
-        },
-        {
-          cat: 'fashion',
-          prompt: 'Name an item of jewelry',
-          gold: ["Tiara", "Locket", "Signet Ring", "Anklet", "Brooch", "Cufflinks", "Choker", "Toe Ring", "Nose Stud", "Belly Ring", "Mood Ring"],
-          epic: ["Bracelet", "Pendant", "Earrings", "Bangle", "Nose Ring", "Class Ring", "Promise Ring", "Choker"],
-          rare: ["Necklace", "Ring", "Earrings", "Watch", "Wedding Ring", "Engagement Ring"],
-          uncommon: ["Ring", "Necklace", "Earrings"],
-          common: ["Ring", "Necklace"]
-        },
-        {
-          cat: 'fashion',
-          prompt: 'Name a style of coat or jacket',
-          gold: ["Peacoat", "Anorak", "Duffle Coat", "Trench Coat", "Tuxedo Jacket", "Parka", "Poncho"],
-          epic: ["Windbreaker", "Bomber Jacket", "Blazer", "Overcoat", "Puffer Jacket"],
-          rare: ["Leather Jacket", "Denim Jacket", "Raincoat", "Hoodie"],
-          uncommon: ["Jacket", "Coat", "Hoodie"],
-          common: ["Jacket", "Coat"]
-        },
-        {
-          cat: 'fashion',
-          prompt: 'Name a type of fabric or textile material',
-          gold: ["Cashmere", "Tweed", "Angora", "Seersucker", "Velvet", "Chiffon", "Organza", "Flannel"],
-          epic: ["Satin", "Fleece", "Linen", "Suede", "Corduroy", "Denim", "Lace"],
-          rare: ["Silk", "Wool", "Cotton", "Polyester", "Nylon", "Leather"],
-          uncommon: ["Cotton", "Wool", "Silk", "Polyester"],
-          common: ["Cotton", "Wool"]
-        }
-      ];
-
-      // ----------------------------------------------------
-      // 5. KRILLION POP CULTURE, TOYS & MEDIA
-      // ----------------------------------------------------
-      const krillionPopCulture = [
-        {
-          cat: 'popculture',
-          prompt: 'Name a classic tabletop board game',
-          gold: ["Twilight Imperium", "Root", "Terraforming Mars", "Betrayal at House on the Hill", "Brass Birmingham"],
-          epic: ["Codenames", "Wingspan", "Azul", "Gloomhaven", "Ticket to Ride", "Risk", "Battleship"],
-          rare: ["Catan", "Pandemic", "Carcassonne", "Clue", "Connect Four", "Operation"],
-          uncommon: ["Monopoly", "Scrabble", "Chess", "Checkers", "Sorry"],
-          common: ["Monopoly", "Scrabble", "Chess"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name a musical instrument',
-          gold: ["Theremin", "Kalimba", "Didgeridoo", "Balalaika", "Harpsichord", "Bagpipes", "Sitar", "Ocarina"],
-          epic: ["Oboe", "Bassoon", "Accordion", "Cello", "Clarinet", "Trombone", "Banjo", "Lute"],
-          rare: ["Ukulele", "Harmonica", "Violin", "Flute", "Trumpet", "Saxophone"],
-          uncommon: ["Guitar", "Piano", "Drums", "Bass"],
-          common: ["Guitar", "Piano", "Drums"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name a famous fictional or cartoon dog',
-          gold: ["Muttley", "Huckleberry Hound", "Hong Kong Phooey", "Mr Peabody", "Droopy", "Underdog"],
-          epic: ["Gromit", "Ren", "Courage", "Astro", "Clifford", "Blue", "Santa's Little Helper"],
-          rare: ["Brian Griffin", "Odie", "Goofy", "Pluto", "Snoopy", "Scooby Doo"],
-          uncommon: ["Scooby Doo", "Snoopy", "Goofy", "Pluto"],
-          common: ["Scooby Doo", "Snoopy", "Goofy"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name a famous superhero with no inherent superpowers',
-          gold: ["Rorschach", "Nite Owl", "The Question", "Green Arrow", "Batwoman", "Wildcat"],
-          epic: ["Hawkeye", "Black Widow", "The Punisher", "Batgirl", "Nightwing", "Moon Knight"],
-          rare: ["Batman", "Iron Man", "Robin", "Catwoman"],
-          uncommon: ["Batman", "Iron Man"],
-          common: ["Batman", "Iron Man"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name an animated Pixar movie',
-          gold: ["Turning Red", "Luca", "Soul", "Onward", "The Good Dinosaur", "A Bug's Life"],
-          epic: ["Coco", "Inside Out", "Brave", "WALL-E", "Ratatouille", "Up", "Cars"],
-          rare: ["Toy Story", "Finding Nemo", "The Incredibles", "Monsters Inc"],
-          uncommon: ["Toy Story", "Finding Nemo", "Cars"],
-          common: ["Toy Story", "Finding Nemo"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name a classic card game played with a standard deck',
-          gold: ["Canasta", "Cribbage", "Euchre", "Pinochle", "Bridge", "Baccarat", "Piquet"],
-          epic: ["Spades", "Hearts", "Gin Rummy", "Texas Hold'em", "War", "Crazy Eights"],
-          rare: ["Poker", "Blackjack", "Solitaire", "Go Fish", "UNO"],
-          uncommon: ["Poker", "Blackjack", "Solitaire"],
-          common: ["Poker", "Blackjack"]
-        },
-        {
-          cat: 'popculture',
-          prompt: 'Name a genre of video games',
-          gold: ["Metroidvania", "Roguelike", "Bullet Hell", "Tactical RPG", "Visual Novel", "Soulslike"],
-          epic: ["MMORPG", "Battle Royale", "Platformer", "Stealth", "Sandbox", "Tower Defense"],
-          rare: ["First Person Shooter", "Fighting", "Racing", "RPG", "Puzzle", "Strategy"],
-          uncommon: ["Shooter", "Sports", "Racing", "Action"],
-          common: ["Action", "Sports"]
-        }
-      ];
-
-      // ----------------------------------------------------
-      // 6. KRILLION NATURE & ANIMALS
-      // ----------------------------------------------------
-      const krillionNature = [
-        {
-          cat: 'nature',
-          prompt: 'Name a recognized breed of dog',
-          gold: ["Xoloitzcuintli", "Azawakh", "Bergamasco Shepherd", "Otterhound", "Komondor", "Borzoi", "Basenji"],
-          epic: ["Shiba Inu", "Pembroke Welsh Corgi", "Australian Shepherd", "Border Collie", "Dachshund", "Great Dane"],
-          rare: ["Siberian Husky", "Shih Tzu", "Boxer", "Beagle", "Poodle", "Bulldog"],
-          uncommon: ["German Shepherd", "Golden Retriever", "Labrador Retriever", "Bulldog"],
-          common: ["Labrador Retriever", "Golden Retriever", "Poodle"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a type of tree',
-          gold: ["Baobab", "Ginkgo Biloba", "Banyan", "Sequoia", "Bristlecone Pine", "Jacaranda", "Douglas Fir"],
-          epic: ["Redwood", "Cedar", "Eucalyptus", "Magnolia", "Birch", "Willow", "Cypress"],
-          rare: ["Pine", "Oak", "Maple", "Palm", "Cherry Blossom", "Elm", "Ash"],
-          uncommon: ["Oak", "Pine", "Maple", "Palm"],
-          common: ["Oak", "Pine", "Maple"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a species of bird',
-          gold: ["Cassowary", "Shoebill", "Kakapo", "Hoatzin", "Secretarybird", "Puffin", "Peregrine Falcon"],
-          epic: ["Toucan", "Flamingo", "Hummingbird", "Peacock", "Albatross", "Pelican", "Owl"],
-          rare: ["Eagle", "Hawk", "Parrot", "Penguin", "Falcon", "Crow", "Raven"],
-          uncommon: ["Robin", "Pigeon", "Sparrow", "Blue Jay", "Eagle"],
-          common: ["Robin", "Eagle", "Pigeon"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a type of cloud',
-          gold: ["Noctilucent", "Cumulonimbus", "Cirrostratus", "Altocumulus", "Mammatus", "Lenticular", "Contrail"],
-          epic: ["Cirrus", "Stratus", "Cumulus", "Nimbostratus", "Stratocumulus"],
-          rare: ["Cumulus", "Cirrus", "Stratus"],
-          uncommon: ["Cumulus", "Cirrus", "Rain Cloud"],
-          common: ["Cumulus", "Cirrus"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a precious gemstone or mineral',
-          gold: ["Alexandrite", "Tanzanite", "Larimar", "Rhodochrosite", "Benitoite", "Taaffeite", "Moissanite"],
-          epic: ["Emerald", "Sapphire", "Ruby", "Opal", "Amethyst", "Topaz", "Jade", "Turquoise"],
-          rare: ["Diamond", "Quartz", "Garnet", "Pearl", "Aquamarine"],
-          uncommon: ["Diamond", "Ruby", "Emerald", "Sapphire"],
-          common: ["Diamond", "Ruby", "Emerald"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a species of flower',
-          gold: ["Corpse Flower", "Bird of Paradise", "Plumeria", "Bleeding Heart", "Protea", "Foxglove"],
-          epic: ["Orchid", "Hydrangea", "Lavender", "Dahlia", "Peony", "Iris", "Lotus"],
-          rare: ["Rose", "Tulip", "Sunflower", "Lily", "Daisy", "Daffodil", "Carnation"],
-          uncommon: ["Rose", "Tulip", "Sunflower", "Daisy"],
-          common: ["Rose", "Tulip", "Daisy"]
-        },
-        {
-          cat: 'nature',
-          prompt: 'Name a sea creature or marine animal',
-          gold: ["Nautilus", "Axolotl", "Mantiss Shrimp", "Narwhal", "Blobfish", "Vampire Squid", "Dugong"],
-          epic: ["Hammerhead Shark", "Manta Ray", "Octopus", "Sea Otter", "Seahorse", "Jellyfish", "Walrus"],
-          rare: ["Dolphin", "Whale", "Shark", "Sea Turtle", "Seal", "Crab", "Lobster"],
-          uncommon: ["Dolphin", "Whale", "Fish", "Shark"],
-          common: ["Fish", "Whale", "Shark"]
-        }
-      ];
-
-      // ----------------------------------------------------
-      // 7. KRILLION HUMAN BODY & ANATOMY
-      // ----------------------------------------------------
-      const krillionAnatomy = [
-        {
-          cat: 'anatomy',
-          prompt: 'Name a bone in the human skeleton',
-          gold: ["Hyoid", "Stapes", "Incus", "Malleus", "Coccyx", "Sternum", "Fibula", "Tibia", "Scapula"],
-          epic: ["Femur", "Humeral", "Humerus", "Clavicle", "Radius", "Ulna", "Patella", "Pelvis"],
-          rare: ["Rib", "Skull", "Spine", "Femur", "Jawbone"],
-          uncommon: ["Skull", "Rib", "Spine"],
-          common: ["Skull", "Rib"]
-        },
-        {
-          cat: 'anatomy',
-          prompt: 'Name an internal organ of the human body',
-          gold: ["Pancreas", "Spleen", "Gallbladder", "Thyroid", "Appendix", "Adrenal Gland", "Pituitary Gland"],
-          epic: ["Liver", "Kidney", "Stomach", "Bladder", "Esophagus", "Intestines"],
-          rare: ["Heart", "Lungs", "Brain", "Liver", "Stomach"],
-          uncommon: ["Heart", "Lungs", "Brain"],
-          common: ["Heart", "Lungs", "Brain"]
-        }
-      ];
-
-      // ----------------------------------------------------
-      // 8. KRILLION SPORTS & HOBBIES
-      // ----------------------------------------------------
-      const krillionHobbies = [
-        {
-          cat: 'hobbies',
-          prompt: 'Name a sport played in the Summer Olympic Games',
-          gold: ["Modern Pentathlon", "Trampoline Gymnastics", "Fencing", "Canoe Slalom", "Water Polo", "Handball"],
-          epic: ["Surfing", "Skateboarding", "Sport Climbing", "Archery", "Rowing", "Taekwondo", "Judo"],
-          rare: ["Badminton", "Table Tennis", "Volleyball", "Boxing", "Wrestling", "Gymnastics", "Track and Field"],
-          uncommon: ["Swimming", "Basketball", "Soccer", "Tennis"],
-          common: ["Soccer", "Basketball", "Swimming"]
-        },
-        {
-          cat: 'hobbies',
-          prompt: 'Name a water sport or activity',
-          gold: ["Kitesurfing", "Wakeboarding", "Free Diving", "Synchronized Swimming", "Windsurfing", "Flyboarding"],
-          epic: ["Kayaking", "Scuba Diving", "Snorkeling", "Paddleboarding", "Water Skiing", "Rowing"],
-          rare: ["Surfing", "Water Polo", "Sailing", "Rafting"],
-          uncommon: ["Swimming", "Surfing", "Diving"],
-          common: ["Swimming", "Surfing"]
-        },
-        {
-          cat: 'hobbies',
-          prompt: 'Name a creative or hands-on hobby',
-          gold: ["Pyrography", "Bonsai", "Calligraphy", "Pottery", "Origami", "Weaving", "Glassblowing"],
-          epic: ["Sculpting", "Woodworking", "Crochet", "Knitting", "Embroidery", "Jewelry Making"],
-          rare: ["Painting", "Drawing", "Photography", "Gardening", "Baking", "Sewing"],
-          uncommon: ["Drawing", "Painting", "Reading", "Cooking"],
-          common: ["Drawing", "Painting", "Cooking"]
-        }
-      ];
-
-      // Combine all distinct handcrafted Krillion sets into the primary Question Bank
+      // Combine all primary and expanded Krillion category prompts
       const allKrillionSets = [
         ...krillionWordplay,
         ...krillionFood,
         ...krillionEveryday,
-        ...krillionFashion,
-        ...krillionPopCulture,
-        ...krillionNature,
-        ...krillionAnatomy,
-        ...krillionHobbies
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "T"',
+          gold: ["Tsunami"],
+          epic: ["Gourmet", "Beret", "Ballet", "Buffet", "Depot"],
+          rare: ["Castle", "Listen", "Hustle", "Rustle", "Whistle", "Thistle", "Mortgage", "Softener", "Fastener", "Moisten", "Glisten", "Bristle", "Nestle", "Witchcraft", "Apostle"],
+          uncommon: ["Chesterfield", "Bustle", "Chateau", "Valet", "Cabaret", "Rapport", "Croquet", "Parfait", "Ricochet", "Chalut", "Asthma", "Christmas", "Fasten", "Soften", "Listen", "Glitch", "Match", "Catch", "Patch", "Watch", "Latch", "Fetch", "Sketch", "Ditch", "Pitch", "Switch", "Witch", "Hitch", "Snatch", "Batch"],
+          common: ["Watch", "Listen", "Castle", "Witch", "Match", "Catch", "Patch", "Pitch", "Switch", "Fetch", "Sketch", "Ditch", "Hitch", "Latch", "Batch", "Snatch", "Scratch", "Crutch", "Kitchen", "Butcher", "Hatch", "Thatch", "Snatch", "Dispatch", "Mismatched", "Crosshatch"]
+        },
+        {
+          cat: 'language',
+          prompt: 'Name an English word that contains a silent "G"',
+          gold: ["Phlegm"],
+          epic: ["Gnome", "Gnat", "Gnaw", "Align", "Feign"],
+          rare: ["Campaign", "Design", "Resign", "Signpost", "Foreigner", "Sovereign", "Consign", "Benign", "Malign", "Diaphragm", "Paradigm", "Apohthegm", "Gnu", "Gnash", "Gnarled"],
+          uncommon: ["Design", "Signed", "Signing", "Designer", "Designs", "Signature", "Signage", "Signal", "Signer", "Assignment", "Reassign", "Resigned", "Resigning", "Campaigner", "Campaigning", "Foreign", "Sovereignty", "Designated", "Designation", "Aligning", "Alignment", "Realign", "Realignment"],
+          common: ["Sign", "Signal", "Signed", "Signing", "Signs", "Designer", "Designing", "Designated", "Designation", "Assign", "Assignment", "Assigned", "Resign", "Resignation", "Campaign", "Campaigns", "Foreign", "Foreigner", "Sovereign", "Align", "Alignment", "Benign", "Malign"]
+        },
+        {
+          cat: 'culinary',
+          prompt: 'Name a type of pasta',
+          gold: ["Campanelle"],
+          epic: ["Orecchiette", "Bucatini", "Pappardelle", "Cavatappi", "Gemelli"],
+          rare: ["Rigatoni", "Farfalle", "Tagliatelle", "Orzo", "Tortellini", "Cannelloni", "Manicotti", "Ziti", "Rotini", "Fettuccine", "Ditalini", "Gnocchi", "Radiatori", "Conchiglie", "Agnesi"],
+          uncommon: ["Spaghetti", "Penne", "Linguine", "Lasagna", "Macaroni", "Ravioli", "Angel Hair", "Vermicelli", "Fusilli", "Capellini", "Mostaccioli", "Rotelle", "Mafaldine", "Paccheri", "Pitti", "Penne Rigate", "Penne Lisce", "Elbow Macaroni", "Tortelloni", "Stuffed Shells", "Manicotti Shells", "Lasagna Sheets", "Egg Noodles", "Ramen Noodles", "Soba Noodles", "Udon Noodles"],
+          common: ["Spaghetti", "Penne", "Macaroni", "Lasagna", "Ravioli", "Fettuccine", "Linguine", "Rigatoni", "Angel Hair", "Noodles", "Egg Noodles", "Pasta Shells", "Elbow Macaroni", "Spaghetti Noodles", "Lasagna Noodles", "Ravioli Pasta", "Rotini Pasta", "Bow Tie Pasta", "Farfalle Pasta", "Ziti Pasta", "Tortellini Pasta", "Gnocchi Pasta", "Orzo Pasta"]
+        },
+        {
+          cat: 'geography',
+          prompt: 'Name a landlocked country in Europe or Asia',
+          gold: ["Liechtenstein"],
+          epic: ["Kyrgyzstan", "Laos", "San Marino", "Andorra", "Moldova"],
+          rare: ["Mongolia", "Nepal", "Bhutan", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan", "Turkmenistan", "Tajikistan", "Afghanistan", "Luxembourg", "Belarus", "Serbia", "North Macedonia", "Slovakia"],
+          uncommon: ["Austria", "Switzerland", "Czech Republic", "Hungary", "Bolivia", "Paraguay", "Ethiopia", "Uganda", "Mali", "Niger", "Chad", "Zambia", "Zimbabwe", "Rwanda", "Burundi", "Central African Republic", "South Sudan", "Botswana", "Malawi", "Lesotho", "Eswatini"],
+          common: ["Switzerland", "Austria", "Czech Republic", "Hungary", "Nepal", "Mongolia", "Afghanistan", "Kazakhstan", "Ethiopia", "Uganda", "Bolivia", "Paraguay", "Luxembourg", "Belarus", "Serbia", "Slovakia"]
+        },
+        {
+          cat: 'science',
+          prompt: 'Name a planet or major moon in our Solar System',
+          gold: ["Enceladus"],
+          epic: ["Europa", "Ganymede", "Titan", "Callisto", "Triton"],
+          rare: ["Phobos", "Deimos", "Io", "Mimas", "Iapetus", "Hyperion", "Rhea", "Dione", "Titania", "Oberon", "Umbriel", "Ariel", "Miranda", "Charon", "Ceres"],
+          uncommon: ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Moon", "Earths Moon", "Phobos Moon", "Deimos Moon", "Io Moon", "Europa Moon", "Ganymede Moon", "Titan Moon", "Trition Moon"],
+          common: ["Earth", "Mars", "Jupiter", "Saturn", "Venus", "Mercury", "Neptune", "Uranus", "Pluto", "The Moon", "Moon", "Earth Moon", "Red Planet", "Ringed Planet", "Gas Giant"]
+        }
       ];
 
       allKrillionSets.forEach((item) => {
@@ -1189,9 +802,6 @@
       QUESTION_BANK = q;
       unseenQuestionPool = shuffleArray(QUESTION_BANK);
     }
-
-    // Initialize full dataset at launch
-    buildMassiveQuestionBank();
 
     function normalize(str) {
       if (!str) return '';
@@ -1264,7 +874,7 @@
           const normAns = normalize(ans);
           const ansVariants = getVariants(normAns);
           for (const iv of inputVariants) {
-            if (ansVariants.includes(iv)) {
+            if (ansVariants.includes(iv) || normAns === iv) {
               return {
                 key: key,
                 name: RARITY_CONFIG[key].name,
@@ -1279,76 +889,7 @@
         }
       }
 
-      // 2. Strict Substring & Phrase Containment (Prevents false matches across multi-word phrases like "toe ring" vs "signet ring")
-      for (const key of keys) {
-        const answers = qObj[key] || [];
-        for (const ans of answers) {
-          const normAns = normalize(ans);
-          for (const iv of inputVariants) {
-            if (iv.length >= 4 && normAns.length >= 4) {
-              const inTokens = iv.split(/\s+/);
-              const ansTokens = normAns.split(/\s+/);
-
-              // If multi-word vs multi-word, ensure tokens don't contradict
-              if (inTokens.length > 1 && ansTokens.length > 1) {
-                let mismatchCount = 0;
-                for (let t = 0; t < Math.max(inTokens.length, ansTokens.length); t++) {
-                  const t1 = inTokens[t] || '';
-                  const t2 = ansTokens[t] || '';
-                  if (t1 !== t2 && levenshteinDistance(t1, t2) > 1) {
-                    mismatchCount++;
-                  }
-                }
-                if (mismatchCount > 0) continue; // Skip mismatching multi-word phrases
-              }
-
-              if (iv.endsWith(normAns) || iv.startsWith(normAns) || normAns.endsWith(iv) || normAns.startsWith(iv)) {
-                return {
-                  key: key,
-                  name: RARITY_CONFIG[key].name,
-                  color: RARITY_CONFIG[key].color,
-                  length: RARITY_CONFIG[key].length,
-                  points: RARITY_CONFIG[key].points,
-                  matchedName: ans,
-                  autoCorrected: false
-                };
-              }
-            }
-          }
-        }
-      }
-
-      // 3. Strict Typo auto-correction check (Max distance 1 for short words, max distance 2 for long words)
-      for (const key of keys) {
-        const answers = qObj[key] || [];
-        for (const ans of answers) {
-          const normAns = normalize(ans);
-          const maxAllowedDist = normAns.length <= 6 ? 1 : 2;
-
-          for (const iv of inputVariants) {
-            if (Math.abs(iv.length - normAns.length) <= maxAllowedDist) {
-              const dist = levenshteinDistance(iv, normAns);
-              if (dist <= maxAllowedDist && dist > 0) {
-                const inTokens = iv.split(/\s+/);
-                const ansTokens = normAns.split(/\s+/);
-                if (inTokens.length === ansTokens.length) {
-                  return {
-                    key: key,
-                    name: RARITY_CONFIG[key].name,
-                    color: RARITY_CONFIG[key].color,
-                    length: RARITY_CONFIG[key].length,
-                    points: RARITY_CONFIG[key].points,
-                    matchedName: ans,
-                    autoCorrected: true
-                  };
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // 4. Algorithmic Wordplay Verification Fallback
+      // 2. Algorithmic Wordplay Verification Fallback
       const p = qObj.prompt.toLowerCase();
       const rawLower = normInput;
 
@@ -1398,6 +939,37 @@
         return createDynamicRarity('rare', userAns, 'Sun Compound Word');
       }
 
+      // 3. Strict Typo auto-correction check (ONLY for minor typos)
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          const normAns = normalize(ans);
+          const maxAllowedDist = normAns.length <= 5 ? 1 : 2;
+
+          for (const iv of inputVariants) {
+            const lenDiff = Math.abs(iv.length - normAns.length);
+            if (lenDiff <= maxAllowedDist) {
+              const dist = levenshteinDistance(iv, normAns);
+              if (dist > 0 && dist <= maxAllowedDist) {
+                const inTokens = iv.split(/\s+/);
+                const ansTokens = normAns.split(/\s+/);
+                if (inTokens.length === ansTokens.length) {
+                  return {
+                    key: key,
+                    name: RARITY_CONFIG[key].name,
+                    color: RARITY_CONFIG[key].color,
+                    length: RARITY_CONFIG[key].length,
+                    points: RARITY_CONFIG[key].points,
+                    matchedName: ans,
+                    autoCorrected: true
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+
       return null;
     }
 
@@ -1406,7 +978,6 @@
     ---------------------------------------------------- */
     let isTimedMode = false;
     let isDailyMode = false;
-    let isPikedMode = false;
     let timerInterval = null;
     let timerValue = 30;
 
@@ -1418,7 +989,7 @@
     let usedAnswersSet = new Set();
     let pendingAutoCorrect = null;
 
-    // SVG Track & Camera Panning State Variables
+    // Global SVG Canvas & Camera State
     let accumulatedX = 60;
     let currentViewBoxX = 0;
     let targetViewBoxX = 0;
@@ -1426,138 +997,85 @@
     let currentDotIndex = 0;
     let placedBadges = [];
 
-    // Helper: UTC Seed Generator & Seeded Random for Daily Challenge
-    function getDailySeed() {
-      const now = new Date();
-      const dateStr = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, '0')}${String(now.getUTCDate()).padStart(2, '0')}`;
-      let hash = 0;
-      for (let i = 0; i < dateStr.length; i++) {
-        hash = (hash << 5) - hash + dateStr.charCodeAt(i);
-        hash |= 0;
+    function toggleHelpModal(show) {
+      const modal = document.getElementById('helpModal');
+      if (modal) {
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
       }
-      return Math.abs(hash);
     }
 
-    function mulberry32(a) {
-      return function() {
-        let t = a += 0x6D2B79F5;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
+    function openQuestionDetailModal(idx) {
+      const item = userHistory[idx];
+      const qObj = activeQuestions[idx];
+      if (!item || !qObj) return;
 
-    function selectCategoryBalancedQuestions(isDaily = false) {
-      if (QUESTION_BANK.length === 0) buildMassiveQuestionBank();
+      const modal = document.getElementById('questionDetailModal');
+      const qNum = document.getElementById('detailQNum');
+      const rarityBadge = document.getElementById('detailRarityBadge');
+      const promptEl = document.getElementById('detailPrompt');
+      const userAnsEl = document.getElementById('detailUserAns');
+      const matchedAnsEl = document.getElementById('detailMatchedAns');
+      const distEl = document.getElementById('detailDist');
+      const pointsEl = document.getElementById('detailPoints');
+      const tiersList = document.getElementById('detailTiersList');
 
-      let pool = [...QUESTION_BANK];
-      let rng = Math.random;
+      qNum.textContent = `Question ${idx + 1} of 8`;
+      promptEl.textContent = item.prompt;
+      userAnsEl.textContent = item.userAnswer;
 
-      if (isDaily) {
-        const seed = getDailySeed();
-        const seededRng = mulberry32(seed);
-        rng = seededRng;
-        for (let i = pool.length - 1; i > 0; i--) {
-          const j = Math.floor(seededRng() * (i + 1));
-          [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
+      if (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') {
+        matchedAnsEl.textContent = `Matched: "${item.matchedName}"`;
+        matchedAnsEl.classList.remove('hidden');
       } else {
-        if (unseenQuestionPool.length < 8) {
-          unseenQuestionPool = shuffleArray(QUESTION_BANK);
-        }
-        pool = unseenQuestionPool;
+        matchedAnsEl.textContent = '';
+        matchedAnsEl.classList.add('hidden');
       }
 
-      const categories = {};
-      pool.forEach(q => {
-        if (!categories[q.cat]) categories[q.cat] = [];
-        categories[q.cat].push(q);
+      const isSkip = item.rarityKey === 'skipped';
+      const colorHex = isSkip ? '#475569' : item.color;
+      rarityBadge.textContent = item.rarityName;
+      rarityBadge.style.backgroundColor = `${colorHex}25`;
+      rarityBadge.style.color = colorHex;
+      rarityBadge.style.border = `1px solid ${colorHex}50`;
+
+      distEl.textContent = `+${item.length} px`;
+      pointsEl.textContent = `+${item.points} pts`;
+
+      // Render answer tier examples
+      tiersList.innerHTML = '';
+      const tiers = [
+        { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
+        { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
+        { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+        { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
+        { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
+      ];
+
+      tiers.forEach(t => {
+        const answers = qObj[t.key] || [];
+        if (answers.length > 0) {
+          const row = document.createElement('div');
+          row.className = 'bg-pik-bg/80 border border-pik-border/60 p-2.5 rounded-xl';
+          row.innerHTML = `
+            <div class="flex items-center gap-1.5 font-bold mb-1" style="color: ${t.color}">
+              <span class="w-2 h-2 rounded-full" style="background-color: ${t.color}"></span>
+              <span>${t.name}</span>
+            </div>
+            <div class="text-slate-300 text-[11px] font-sans leading-relaxed">
+              ${answers.join(', ')}
+            </div>
+          `;
+          tiersList.appendChild(row);
+        }
       });
 
-      const catKeys = Object.keys(categories);
-      for (let i = catKeys.length - 1; i > 0; i--) {
-        const j = Math.floor(rng() * (i + 1));
-        [catKeys[i], catKeys[j]] = [catKeys[j], catKeys[i]];
-      }
-
-      const selected = [];
-      const usedPrompts = new Set();
-      let cIdx = 0;
-
-      while (selected.length < 8 && pool.length > 0) {
-        const cat = catKeys[cIdx % catKeys.length];
-        const catPool = categories[cat];
-        let picked = null;
-        if (catPool && catPool.length > 0) {
-          for (let i = 0; i < catPool.length; i++) {
-            if (!usedPrompts.has(catPool[i].prompt)) {
-              picked = catPool.splice(i, 1)[0];
-              break;
-            }
-          }
-        }
-
-        if (!picked) {
-          for (let i = 0; i < pool.length; i++) {
-            if (!usedPrompts.has(pool[i].prompt)) {
-              picked = pool.splice(i, 1)[0];
-              break;
-            }
-          }
-        }
-
-        if (picked) {
-          usedPrompts.add(picked.prompt);
-          selected.push(picked);
-          if (!isDaily) {
-            const poolIdx = unseenQuestionPool.findIndex(x => x.prompt === picked.prompt);
-            if (poolIdx !== -1) unseenQuestionPool.splice(poolIdx, 1);
-          }
-        } else {
-          break;
-        }
-        cIdx++;
-      }
-
-      for (let i = selected.length - 1; i > 0; i--) {
-        const j = Math.floor(rng() * (i + 1));
-        [selected[i], selected[j]] = [selected[j], selected[i]];
-      }
-
-      return selected;
+      if (modal) modal.classList.remove('hidden');
     }
 
-    /* ----------------------------------------------------
-       GAME LAUNCH & CONTROL FUNCTIONS
-    ---------------------------------------------------- */
-    function launchGame(mode) {
-      isTimedMode = (mode === 'timed');
-      isDailyMode = (mode === 'daily');
-      isPikedMode = false;
-      currentQIndex = 0;
-      totalScore = 0;
-      totalDistance = 0;
-      userHistory = [];
-      usedAnswersSet.clear();
-      clearPendingAutoCorrect();
-
-      resetSvgTrack();
-      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
-
-      const menuScreen = document.getElementById('menuScreen');
-      const gameArea = document.getElementById('gameArea');
-      const resultsSection = document.getElementById('resultsSection');
-      const sliderContainer = document.getElementById('lineSliderContainer');
-
-      if (menuScreen) menuScreen.classList.add('-translate-y-full');
-      if (resultsSection) {
-        resultsSection.classList.add('hidden-results');
-        resultsSection.classList.remove('show-results');
-      }
-      if (sliderContainer) sliderContainer.classList.add('hidden');
-      if (gameArea) gameArea.classList.remove('hidden');
-
-      renderQuestion(0);
+    function closeQuestionDetailModal() {
+      const modal = document.getElementById('questionDetailModal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function returnToMenu() {
@@ -1567,676 +1085,161 @@
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
-      const lineSec = document.getElementById('lineSection');
-      const sliderContainer = document.getElementById('lineSliderContainer');
 
       if (menuScreen) menuScreen.classList.remove('-translate-y-full');
+      if (gameArea) gameArea.classList.remove('hidden');
       if (resultsSection) {
         resultsSection.classList.add('hidden-results');
         resultsSection.classList.remove('show-results');
       }
-      if (gameArea) gameArea.classList.remove('hidden');
-      if (sliderContainer) sliderContainer.classList.add('hidden');
-      if (lineSec) {
-        lineSec.classList.remove('order-2');
-        lineSec.classList.add('order-2');
-      }
 
-      if (isPikedMode) {
-        closePikedLobby();
-        isPikedMode = false;
-      }
-
-      resetSvgTrack();
+      initSvgTrackLine();
     }
 
-    function toggleHelpModal(show) {
-      const modal = document.getElementById('helpModal');
-      if (!modal) return;
-      if (show) modal.classList.remove('hidden');
-      else modal.classList.add('hidden');
+    // Hash current UTC date (YYYYMMDD) for deterministic daily challenge generation
+    function getDailySeed() {
+      const d = new Date();
+      const dateStr = `${d.getUTCFullYear()}${(d.getUTCMonth() + 1).toString().padStart(2, '0')}${d.getUTCDate().toString().padStart(2, '0')}`;
+      let hash = 0;
+      for (let i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
     }
 
-    function handleTimeout() {
-      playAudioTone('timeout');
-      const card = document.getElementById('questionCard');
-      if (card) {
-        card.classList.add('card-flash-red');
-      }
-      showFeedback("Time's up!");
-      setTimeout(() => {
-        if (card) card.classList.remove('card-flash-red');
-        skipQuestion(true);
-      }, 600);
+    // Fast PRNG algorithm seeded by daily hash
+    function mulberry32(a) {
+      return function() {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
     }
 
-    function resetSvgTrack() {
-      accumulatedX = 60;
-      currentViewBoxX = 0;
-      targetViewBoxX = 0;
-      currentDotIndex = 0;
-      placedBadges = [];
-
-      const svg = document.getElementById('mainLineSvg');
-      const segGroup = document.getElementById('svgLineSegments');
-      const badgeGroup = document.getElementById('svgLineBadges');
-      const nodeGroup = document.getElementById('svgLineNodes');
-
-      if (segGroup) segGroup.innerHTML = '';
-      if (badgeGroup) badgeGroup.innerHTML = '';
-      if (nodeGroup) {
-        nodeGroup.innerHTML = `
-          <circle id="svg-node-0" cx="60" cy="70" r="7" stroke="#ffffff" stroke-width="3" fill="#121212" class="node-transition"/>
-        `;
-      }
-      if (svg) {
-        svg.setAttribute('viewBox', '0 0 1000 140');
-        svg.classList.remove('hidden');
+    function selectCategoryBalancedQuestions(isDaily = false) {
+      if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
+        buildMassiveQuestionBank();
       }
 
-      // Remove any lingering multiplayer track rows to prevent line crossover
-      const container = document.getElementById('trackCanvasContainer');
-      if (container) {
-        const rows = container.querySelectorAll('[id^="playerTrackRow-"]');
-        rows.forEach(r => r.remove());
-      }
-    }
+      const totalTarget = 8;
 
-    function panCameraToFit(endX) {
-      const svg = document.getElementById('mainLineSvg');
-      if (!svg) return;
+      if (isDaily) {
+        const seed = getDailySeed();
+        const rng = mulberry32(seed);
 
-      if (endX > 850) {
-        targetViewBoxX = endX - 850;
-      } else {
-        targetViewBoxX = 0;
-      }
-
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-
-      function step() {
-        const diff = targetViewBoxX - currentViewBoxX;
-        if (Math.abs(diff) > 0.5) {
-          currentViewBoxX += diff * 0.15;
-          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-          panAnimationFrame = requestAnimationFrame(step);
-        } else {
-          currentViewBoxX = targetViewBoxX;
-          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-        }
-      }
-
-      step();
-    }
-
-    function scrubLineView(val) {
-      const svg = document.getElementById('mainLineSvg');
-      if (!svg) return;
-      const maxPan = Math.max(0, accumulatedX - 900);
-      const targetX = (val / 100) * maxPan;
-      svg.setAttribute('viewBox', `${targetX} 0 1000 140`);
-    }
-
-    function animateCardOut(fromTimeout, callback) {
-      const card = document.getElementById('questionCard');
-      if (!card) {
-        if (callback) callback();
-        return;
-      }
-
-      card.classList.add('card-slide-out');
-      setTimeout(() => {
-        card.classList.remove('card-slide-out');
-        card.classList.add('card-slide-in-prepare');
-        if (callback) callback();
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            card.classList.remove('card-slide-in-prepare');
-          });
-        });
-      }, 300);
-    }
-
-    function showFeedback(msg) {
-      const el = document.getElementById('feedbackText');
-      if (!el) return;
-      el.textContent = msg;
-      el.classList.remove('hidden');
-      setTimeout(() => {
-        if (el.textContent === msg) {
-          el.classList.add('hidden');
-        }
-      }, 3000);
-    }
-
-    function clearPendingAutoCorrect() {
-      pendingAutoCorrect = null;
-      const submitBtn = document.getElementById('submitBtn');
-      if (submitBtn) submitBtn.textContent = 'Submit';
-      const feedback = document.getElementById('feedbackText');
-      if (feedback && feedback.textContent.startsWith('Autocorrect:')) {
-        feedback.classList.add('hidden');
-      }
-    }
-
-    /* ----------------------------------------------------
-       4. PIK-ED MULTIPLAYER NETWORKING & LOBBY SYSTEM
-    ---------------------------------------------------- */
-    let db = null;
-    let auth = null;
-    let currentUserId = 'usr_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now().toString(36);
-    let roomUnsubscribe = null;
-    let roomCode = '';
-    let isHost = false;
-    let pikedPlayers = []; // [{ id, name, isHost, isEliminated, color, distance, score, history, currentAnswer, timeTaken }]
-    let playerAnswersMap = {}; // { [userId]: { answer, timeTaken, submitted } }
-    let playerTrackXMap = {}; // { [userId]: currentAccumulatedX }
-    let roundStartTime = 0;
-    let roomChannel = null; // BroadcastChannel for local/tab fallback syncing
-    let lastHandledRoundIndex = -1;
-    let lastHandledRoundState = '';
-    const PLAYER_COLORS = ['#388e3c', '#1976d2', '#8e24aa', '#d4af37'];
-
-    async function initFirebaseServices() {
-      if (db && auth && auth.currentUser) return;
-      try {
-        if (window.fb && typeof __firebase_config !== 'undefined' && __firebase_config) {
-          const config = JSON.parse(__firebase_config);
-          const app = window.fb.initializeApp(config);
-          auth = window.fb.getAuth(app);
-          db = window.fb.getFirestore(app);
-
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await window.fb.signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await window.fb.signInAnonymously(auth);
+        const seededShuffle = (arr) => {
+          const array = [...arr];
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
           }
-          if (auth.currentUser) {
-            if (!currentUserId.startsWith(auth.currentUser.uid)) {
-              currentUserId = auth.currentUser.uid + '_' + Math.random().toString(36).substring(2, 6);
-            }
-          }
-        }
-      } catch (err) {
-        console.warn("Firebase authentication initialized in local fallback mode:", err);
-      }
-    }
-
-    function showLobbyFeedback(msg, isError = true) {
-      const el = document.getElementById('lobbyErrorMsg');
-      if (!el) return;
-      el.textContent = msg;
-      el.className = `text-xs font-display font-medium text-center py-2 px-3 rounded-xl border ${
-        isError 
-          ? 'bg-red-950/60 border-red-500/40 text-red-300' 
-          : 'bg-pik-epic/20 border-pik-epic/40 text-pik-gold animate-pulse'
-      }`;
-      el.classList.remove('hidden');
-    }
-
-    function clearLobbyFeedback() {
-      const el = document.getElementById('lobbyErrorMsg');
-      if (el) el.classList.add('hidden');
-    }
-
-    function showPikedToast(msg, isError = false) {
-      const banner = document.getElementById('pikedToastBanner');
-      const text = document.getElementById('pikedToastText');
-      if (!banner || !text) return;
-      text.textContent = msg;
-      text.className = isError ? 'text-red-400 font-extrabold' : 'text-pik-gold font-bold';
-      banner.classList.remove('hidden');
-    }
-
-    function hidePikedToast() {
-      const banner = document.getElementById('pikedToastBanner');
-      if (banner) banner.classList.add('hidden');
-    }
-
-    function openPikedLobby() {
-      const modal = document.getElementById('pikedLobbyScreen');
-      if (modal) modal.classList.remove('hidden');
-      document.getElementById('lobbySetupView').classList.remove('hidden');
-      document.getElementById('lobbyActiveView').classList.add('hidden');
-      clearLobbyFeedback();
-    }
-
-    function hidePikedLobbyModal() {
-      const modal = document.getElementById('pikedLobbyScreen');
-      if (modal) modal.classList.add('hidden');
-    }
-
-    function closePikedLobby() {
-      if (isPikedMode) {
-        hidePikedLobbyModal();
-      } else {
-        leavePikedRoom();
-      }
-    }
-
-    function leavePikedRoom() {
-      hidePikedLobbyModal();
-      if (roomUnsubscribe) {
-        try { roomUnsubscribe(); } catch(e) {}
-        roomUnsubscribe = null;
-      }
-      if (roomChannel) {
-        try { roomChannel.close(); } catch(e) {}
-        roomChannel = null;
-      }
-      isHost = false;
-      pikedPlayers = [];
-      playerAnswersMap = {};
-      playerTrackXMap = {};
-      roomCode = '';
-      resetSvgTrack();
-    }
-
-    function generateRoomCode() {
-      return Math.random().toString(36).substring(2, 6).toUpperCase();
-    }
-
-    function subscribeToRoom(roomRef) {
-      if (roomUnsubscribe) {
-        try { roomUnsubscribe(); } catch(e) {}
-        roomUnsubscribe = null;
-      }
-      if (!db || !window.fb || !window.fb.onSnapshot) return;
-
-      roomUnsubscribe = window.fb.onSnapshot(roomRef, (snapshot) => {
-        if (!snapshot || !snapshot.exists()) return;
-        const data = snapshot.data();
-        if (!data) return;
-
-        pikedPlayers = data.players || [];
-        playerAnswersMap = data.answers || {};
-        
-        // Update live submission status on everybody's screen
-        renderMultiplayerTrackCanvas();
-        renderLobbyUI();
-
-        if (data.status === 'playing') {
-          if (!isPikedMode) {
-            activeQuestions = data.questions || [];
-            isPikedMode = true;
-            hidePikedLobbyModal();
-            launchPikedGameView();
-          }
-
-          if (data.roundState === 'countdown' && (data.currentQIndex !== lastHandledRoundIndex || lastHandledRoundState !== 'countdown')) {
-            lastHandledRoundIndex = data.currentQIndex;
-            lastHandledRoundState = 'countdown';
-            currentQIndex = data.currentQIndex;
-            startCountdown(() => {
-              renderQuestion(currentQIndex);
-            });
-          } else if (data.roundState === 'reveal' && data.roundResults && lastHandledRoundState !== 'reveal_' + data.currentQIndex) {
-            lastHandledRoundState = 'reveal_' + data.currentQIndex;
-            showPikedRoundReveal(data);
-          }
-        } else if (data.status === 'ended' && data.roundState === 'reveal' && lastHandledRoundState !== 'ended_reveal') {
-          lastHandledRoundState = 'ended_reveal';
-          showPikedRoundReveal(data);
-        }
-      }, (error) => {
-        console.error("Room snapshot error:", error);
-      });
-    }
-
-    function setupBroadcastChannel(code) {
-      if (roomChannel) {
-        try { roomChannel.close(); } catch(e) {}
-      }
-      if ('BroadcastChannel' in window) {
-        roomChannel = new BroadcastChannel('pik_room_' + code);
-        roomChannel.onmessage = (event) => {
-          const data = event.data;
-          if (!data) return;
-
-          if (isHost) {
-            if (data.type === 'JOIN' || data.type === 'PING_LOBBY') {
-              if (pikedPlayers.length >= 4 && !pikedPlayers.some(p => p.id === data.senderId)) return;
-              if (!pikedPlayers.some(p => p.id === data.senderId)) {
-                const newPlayer = {
-                  id: data.senderId,
-                  name: data.playerName || `Player ${pikedPlayers.length + 1}`,
-                  isHost: false,
-                  isEliminated: false,
-                  color: PLAYER_COLORS[pikedPlayers.length % 4]
-                };
-                pikedPlayers.push(newPlayer);
-                renderLobbyUI();
-                renderMultiplayerTrackCanvas();
-                broadcastLobbyState();
-                syncFirestorePlayers();
-              }
-            } else if (data.type === 'SUBMIT_ANSWER') {
-              playerAnswersMap[data.senderId] = {
-                answer: data.answer,
-                timeTaken: data.timeTaken,
-                submitted: true
-              };
-              renderMultiplayerTrackCanvas();
-              checkAllAnswersSubmitted();
-            }
-          } else {
-            handleGuestData(data);
-          }
+          return array;
         };
 
-        if (!isHost) {
-          roomChannel.postMessage({
-            type: 'PING_LOBBY',
-            senderId: currentUserId
-          });
-        }
-      }
-    }
-
-    function broadcastLobbyState() {
-      if (roomChannel && isHost) {
-        roomChannel.postMessage({
-          type: 'LOBBY_STATE',
-          players: pikedPlayers,
-          answers: playerAnswersMap
+        const byCategory = {};
+        QUESTION_BANK.forEach((q) => {
+          if (!byCategory[q.cat]) byCategory[q.cat] = [];
+          byCategory[q.cat].push(q);
         });
-      }
-    }
 
-    async function syncFirestorePlayers() {
-      if (!isHost || !db || !roomCode || !window.fb) return;
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-      try {
-        const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-        await window.fb.updateDoc(roomRef, {
-          players: pikedPlayers,
-          updatedAt: Date.now()
+        const categories = seededShuffle(Object.keys(byCategory));
+        categories.forEach((c) => {
+          byCategory[c] = seededShuffle(byCategory[c]);
         });
-      } catch (e) {
-        console.warn("Firestore sync error:", e);
-      }
-    }
 
-    async function createPikedRoom() {
-      const hostBtn = document.getElementById('hostLobbyBtn');
-      if (hostBtn) {
-        hostBtn.disabled = true;
-        hostBtn.textContent = "Creating...";
-      }
-      showLobbyFeedback("Creating lobby...", false);
+        const selected = [];
+        const usedPrompts = new Set();
+        let categoryIdx = 0;
+        let safetyCounter = 0;
 
-      await initFirebaseServices();
-
-      roomCode = generateRoomCode();
-      isHost = true;
-      playerAnswersMap = {};
-      playerTrackXMap = {};
-
-      pikedPlayers = [{
-        id: currentUserId,
-        name: 'Host (P1)',
-        isHost: true,
-        isEliminated: false,
-        color: PLAYER_COLORS[0]
-      }];
-
-      playerTrackXMap[currentUserId] = 60;
-
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-
-      if (db && window.fb) {
-        try {
-          const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-          await window.fb.setDoc(roomRef, {
-            roomCode: roomCode,
-            hostId: currentUserId,
-            status: 'lobby',
-            roundState: 'waiting',
-            players: pikedPlayers,
-            answers: {},
-            questions: [],
-            currentQIndex: 0,
-            updatedAt: Date.now()
-          });
-
-          subscribeToRoom(roomRef);
-        } catch (e) {
-          console.warn("Firestore lobby creation error, falling back to BroadcastChannel:", e);
-        }
-      }
-
-      setupBroadcastChannel(roomCode);
-
-      if (hostBtn) {
-        hostBtn.disabled = false;
-        hostBtn.textContent = "Host Lobby";
-      }
-
-      clearLobbyFeedback();
-      renderLobbyUI();
-    }
-
-    async function joinPikedRoom() {
-      const input = document.getElementById('joinCodeInput');
-      const joinBtn = document.getElementById('joinLobbyBtn');
-      const code = input ? input.value.trim().toUpperCase() : '';
-
-      if (!code || code.length < 4) {
-        showLobbyFeedback("Please enter a valid 4-character Room Code.");
-        return;
-      }
-
-      if (joinBtn) {
-        joinBtn.disabled = true;
-        joinBtn.textContent = "Joining...";
-      }
-      showLobbyFeedback("Connecting to room...", false);
-
-      await initFirebaseServices();
-
-      isHost = false;
-      roomCode = code;
-
-      setupBroadcastChannel(roomCode);
-
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-
-      if (db && window.fb) {
-        try {
-          const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-          const roomSnap = await window.fb.getDoc(roomRef);
-
-          if (!roomSnap.exists()) {
-            showLobbyFeedback(`Room code "${roomCode}" not found. Check the code and try again.`);
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
+        while (selected.length < totalTarget && safetyCounter < 100) {
+          safetyCounter++;
+          const cat = categories[categoryIdx % categories.length];
+          const pool = byCategory[cat];
+          if (pool && pool.length > 0) {
+            const q = pool.pop();
+            if (q && !usedPrompts.has(q.prompt)) {
+              usedPrompts.add(q.prompt);
+              selected.push(q);
+            }
           }
+          categoryIdx++;
 
-          const roomData = roomSnap.data();
-          if (roomData.status !== 'lobby') {
-            showLobbyFeedback("This game has already started.");
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
+          if (Object.values(byCategory).every((p) => p.length === 0)) {
+            break;
           }
+        }
 
-          if (roomData.players && roomData.players.length >= 4) {
-            showLobbyFeedback("This lobby is already full (4/4 players).");
-            if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-            return;
+        // Fallback if needed to reach exactly 8 questions
+        if (selected.length < totalTarget) {
+          const remainingPool = seededShuffle(QUESTION_BANK);
+          for (const eq of remainingPool) {
+            if (selected.length >= totalTarget) break;
+            if (!usedPrompts.has(eq.prompt)) {
+              usedPrompts.add(eq.prompt);
+              selected.push(eq);
+            }
           }
+        }
 
-          const myPlayerName = `Player ${roomData.players.length + 1}`;
+        return selected;
+      }
 
-          const newPlayer = {
-            id: currentUserId,
-            name: myPlayerName,
-            isHost: false,
-            isEliminated: false,
-            color: PLAYER_COLORS[roomData.players.length % 4]
-          };
+      // Standard and Timed randomized question selection
+      if (unseenQuestionPool.length < totalTarget) {
+        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      }
 
-          const updatedPlayers = [...roomData.players.filter(p => p.id !== currentUserId), newPlayer];
-          await window.fb.updateDoc(roomRef, {
-            players: updatedPlayers,
-            updatedAt: Date.now()
-          });
+      const selected = [];
+      const usedPrompts = new Set();
+      const tempPool = shuffleArray(unseenQuestionPool);
 
-          pikedPlayers = updatedPlayers;
-          playerAnswersMap = roomData.answers || {};
-          subscribeToRoom(roomRef);
+      for (let i = 0; i < tempPool.length; i++) {
+        const q = tempPool[i];
+        if (q && !usedPrompts.has(q.prompt)) {
+          usedPrompts.add(q.prompt);
+          selected.push(q);
 
-          clearLobbyFeedback();
-          if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
-          renderLobbyUI();
-          return;
-        } catch (err) {
-          console.warn("Firestore join error, using BroadcastChannel fallback:", err);
+          const idx = unseenQuestionPool.indexOf(q);
+          if (idx !== -1) unseenQuestionPool.splice(idx, 1);
+        }
+        if (selected.length >= totalTarget) break;
+      }
+
+      // Safeguard fallback to ensure 8 questions are always returned
+      if (selected.length < totalTarget) {
+        const fallback = shuffleArray(QUESTION_BANK);
+        for (const q of fallback) {
+          if (selected.length >= totalTarget) break;
+          if (!usedPrompts.has(q.prompt)) {
+            usedPrompts.add(q.prompt);
+            selected.push(q);
+          }
         }
       }
 
-      if (roomChannel) {
-        roomChannel.postMessage({
-          type: 'JOIN',
-          senderId: currentUserId,
-          playerName: `Player ${Math.floor(Math.random() * 80) + 2}`
-        });
-        showLobbyFeedback("Connecting to local room...", false);
-      } else {
-        showLobbyFeedback("Could not connect to room. Check your connection.");
-      }
-      if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = "Join"; }
+      return shuffleArray(selected);
     }
 
-    function handleGuestData(data) {
-      if (data.type === 'LOBBY_STATE') {
-        pikedPlayers = data.players || [];
-        playerAnswersMap = data.answers || {};
-        renderLobbyUI();
-        renderMultiplayerTrackCanvas();
-      } else if (data.type === 'START_GAME') {
-        activeQuestions = data.questions;
-        isPikedMode = true;
-        hidePikedLobbyModal();
-        launchPikedGameView();
-        if (data.qIndex !== undefined) {
-          currentQIndex = data.qIndex;
-          startCountdown(() => {
-            renderQuestion(currentQIndex);
-          });
-        }
-      } else if (data.type === 'START_ROUND') {
-        currentQIndex = data.qIndex;
-        startCountdown(() => {
-          renderQuestion(currentQIndex);
-        });
-      } else if (data.type === 'ROUND_REVEAL') {
-        showPikedRoundReveal(data);
-      }
-    }
+    function launchGame(mode) {
+      isTimedMode = (mode === 'timed');
+      isDailyMode = (mode === 'daily');
 
-    function renderLobbyUI() {
-      const activeView = document.getElementById('lobbyActiveView');
-      const setupView = document.getElementById('lobbySetupView');
-      
-      if (setupView) setupView.classList.add('hidden');
-      if (activeView) activeView.classList.remove('hidden');
+      totalScore = 0;
+      totalDistance = 0;
+      currentQIndex = 0;
+      userHistory = [];
+      usedAnswersSet = new Set();
+      pendingAutoCorrect = null;
 
-      const roomCodeEl = document.getElementById('roomCodeDisplay');
-      const countEl = document.getElementById('playerCountText');
-      if (roomCodeEl) roomCodeEl.textContent = roomCode;
-      if (countEl) countEl.textContent = pikedPlayers.length;
+      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
 
-      const list = document.getElementById('lobbyPlayerList');
-      if (list) {
-        list.innerHTML = '';
-        pikedPlayers.forEach((p) => {
-          const item = document.createElement('div');
-          item.className = 'p-3 bg-pik-bg border border-pik-border rounded-xl flex items-center justify-between text-xs font-display font-bold';
-          item.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full" style="background-color: ${p.color}"></span>
-              <span class="text-slate-100">${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
-            </div>
-            ${p.isHost ? '<span class="text-[10px] bg-pik-gold/20 text-pik-gold px-2 py-0.5 rounded">HOST</span>' : ''}
-          `;
-          list.appendChild(item);
-        });
-      }
-
-      const startBtn = document.getElementById('startPikedBtn');
-      if (startBtn) {
-        if (isHost) startBtn.classList.remove('hidden');
-        else startBtn.classList.add('hidden');
-      }
-    }
-
-    function copyRoomCode() {
-      const code = document.getElementById('roomCodeDisplay').textContent;
-      try {
-        const el = document.createElement('textarea');
-        el.value = code;
-        el.style.position = 'fixed';
-        el.style.left = '-9999px';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      } catch (err) {
-        console.warn('Clipboard copy error:', err);
-      }
-      showLobbyFeedback(`Copied room code ${code}!`, false);
-    }
-
-    async function hostStartPikedGame() {
-      if (!isHost) return;
-      activeQuestions = selectCategoryBalancedQuestions(false);
-      isPikedMode = true;
-      lastHandledRoundIndex = -1;
-      lastHandledRoundState = '';
-      playerAnswersMap = {};
-
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-      if (db && roomCode && window.fb) {
-        try {
-          const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-          await window.fb.updateDoc(roomRef, {
-            status: 'playing',
-            roundState: 'countdown',
-            questions: activeQuestions,
-            answers: {},
-            currentQIndex: 0,
-            updatedAt: Date.now()
-          });
-        } catch (e) {
-          console.warn("Firestore updateDoc error on start:", e);
-        }
-      }
-
-      if (roomChannel) {
-        roomChannel.postMessage({
-          type: 'START_GAME',
-          questions: activeQuestions,
-          qIndex: 0
-        });
-      }
-
-      hidePikedLobbyModal();
-      launchPikedGameView();
-
-      if (lastHandledRoundIndex !== 0) {
-        lastHandledRoundIndex = 0;
-        lastHandledRoundState = 'countdown';
-        currentQIndex = 0;
-        startCountdown(() => {
-          renderQuestion(0);
-        });
-      }
-    }
-
-    function launchPikedGameView() {
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
+      const lineSection = document.getElementById('lineSection');
 
       if (menuScreen) menuScreen.classList.add('-translate-y-full');
       if (resultsSection) {
@@ -2245,251 +1248,125 @@
       }
       if (gameArea) gameArea.classList.remove('hidden');
 
-      renderMultiplayerTrackCanvas();
+      if (lineSection) {
+        lineSection.classList.remove('order-1', 'order-3');
+        lineSection.classList.add('order-2');
+      }
+
+      initSvgTrackLine();
+      renderQuestion(0);
     }
 
-    function renderMultiplayerTrackCanvas() {
-      const container = document.getElementById('trackCanvasContainer');
-      if (!isPikedMode || !container) return;
-
-      // Hide single-player main line SVG while in multiplayer mode
-      const mainSvg = document.getElementById('mainLineSvg');
-      if (mainSvg) mainSvg.classList.add('hidden');
-
-      // Remove lingering rows if player count changed or game reset
-      const existingRows = container.querySelectorAll('[id^="playerTrackRow-"]');
-      existingRows.forEach(r => {
-        const idxStr = r.id.replace('playerTrackRow-', '');
-        const idx = parseInt(idxStr, 10);
-        if (isNaN(idx) || idx >= pikedPlayers.length) {
-          r.remove();
-        }
-      });
-
-      pikedPlayers.forEach((p, idx) => {
-        if (!playerTrackXMap[p.id]) playerTrackXMap[p.id] = 60;
-        let trackDiv = document.getElementById(`playerTrackRow-${idx}`);
-
-        if (!trackDiv) {
-          trackDiv = document.createElement('div');
-          trackDiv.id = `playerTrackRow-${idx}`;
-          trackDiv.className = 'w-full h-12 relative flex items-center overflow-visible border-b border-pik-border/40';
-          container.appendChild(trackDiv);
-        }
-
-        const ansData = playerAnswersMap[p.id];
-        const isSubmitted = ansData && ansData.submitted;
-
-        let statusTagHTML = `<span class="text-slate-400 font-normal">[THINKING...]</span>`;
-        if (p.isEliminated) {
-          statusTagHTML = `<span class="text-red-400 font-extrabold">[💀 ELIMINATED]</span>`;
-        } else if (isSubmitted) {
-          statusTagHTML = `<span class="text-emerald-400 font-extrabold animate-pulse">[SUBMITTED ✓]</span>`;
-        }
-
-        trackDiv.innerHTML = `
-          <div class="absolute left-0 -top-1.5 text-[9px] font-display font-bold uppercase tracking-wider flex items-center gap-2 ${p.isEliminated ? 'text-slate-500 line-through' : 'text-slate-200'}">
-            <span class="w-2.5 h-2.5 rounded-full shadow-sm" style="background-color: ${p.isEliminated ? '#475569' : p.color}"></span>
-            <span>${p.name} ${p.id === currentUserId ? '(You)' : ''}</span>
-            ${statusTagHTML}
-          </div>
-          <svg id="pikedSvg-${idx}" class="w-full h-full overflow-visible" viewBox="0 0 1000 60" preserveAspectRatio="xMinYMid meet">
-            <line x1="0" y1="30" x2="6000" y2="30" stroke="${p.isEliminated ? '#334155' : p.color}" stroke-opacity="${p.isEliminated ? '0.2' : '0.4'}" stroke-width="2" stroke-dasharray="4 4"/>
-            <g id="pikedSegs-${idx}"></g>
-            <circle id="pikedNode-${idx}" cx="${playerTrackXMap[p.id]}" cy="30" r="5" stroke="${p.isEliminated ? '#475569' : p.color}" stroke-width="2" fill="#121212"/>
-          </svg>
-        `;
-      });
-    }
-
-    function startCountdown(onComplete) {
-      const overlay = document.getElementById('countdownOverlay');
-      const numEl = document.getElementById('countdownNumber');
-      overlay.classList.remove('hidden');
-
-      let count = 3;
-      numEl.textContent = count;
-
-      const timer = setInterval(() => {
-        count--;
-        if (count > 0) {
-          numEl.textContent = count;
-        } else {
-          clearInterval(timer);
-          overlay.classList.add('hidden');
-          onComplete();
-        }
-      }, 1000);
-    }
-
-    async function checkAllAnswersSubmitted() {
-      if (!isHost) return;
-      const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
-      const allSubmitted = activePlayers.every(p => playerAnswersMap[p.id] && playerAnswersMap[p.id].submitted);
-
-      if (allSubmitted) {
-        await evaluatePikedRound();
+    function clearPendingAutoCorrect() {
+      if (pendingAutoCorrect) {
+        pendingAutoCorrect = null;
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) submitBtn.textContent = 'Submit';
+        const rejectBtn = document.getElementById('rejectAutocorrectBtn');
+        if (rejectBtn) rejectBtn.classList.add('hidden');
+        hideFeedback();
       }
     }
 
-    async function evaluatePikedRound() {
-      if (!isHost) return;
-      const qObj = activeQuestions[currentQIndex];
+    function rejectAutocorrect() {
+      if (pendingAutoCorrect) {
+        const rawText = pendingAutoCorrect.rawInput;
+        clearPendingAutoCorrect();
+        const inputEl = document.getElementById('answerInput');
+        if (inputEl) inputEl.value = rawText;
 
-      const activePlayers = pikedPlayers.filter(p => !p.isEliminated);
-      const roundResults = activePlayers.map(p => {
-        const pAns = playerAnswersMap[p.id] || { answer: 'Skipped', timeTaken: 35 };
-        const res = findAnswerRarity(pAns.answer || '', qObj);
-        return {
-          player: p,
-          answer: pAns.answer || 'Skipped',
-          rarity: res ? res : { key: 'skipped', name: 'Invalid/Skipped', color: '#475569', length: 0, points: 0 },
-          timeTaken: pAns.timeTaken || 35
-        };
-      });
+        const normInput = normalize(rawText);
+        if (usedAnswersSet.has(normInput)) {
+          showFeedback(`"${rawText}" has already been used in this game.`);
+          playAudioTone('error');
+          return;
+        }
+        showFeedback(`"${rawText}" doesn't fit for this question.`);
+        playAudioTone('error');
+      }
+    }
 
-      const rankOrder = { skipped: 0, common: 1, uncommon: 2, rare: 3, epic: 4, gold: 5 };
-      roundResults.sort((a, b) => {
-        const rA = rankOrder[a.rarity.key];
-        const rB = rankOrder[b.rarity.key];
-        if (rA !== rB) return rA - rB; // Lowest rarity first
-        return b.timeTaken - a.timeTaken; // Tie-breaker: longest time taken first
-      });
+    /* ----------------------------------------------------
+       5. LINE CANVAS & SVG BADGES
+    ---------------------------------------------------- */
+    function initSvgTrackLine() {
+      const segGroup = document.getElementById('svgLineSegments');
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const nodeGroup = document.getElementById('svgLineNodes');
+      const svg = document.getElementById('mainLineSvg');
 
-      const eliminated = roundResults[0].player;
-      const updatedPlayers = pikedPlayers.map(p => p.id === eliminated.id ? { ...p, isEliminated: true } : p);
+      if (segGroup) segGroup.innerHTML = '';
+      if (badgeGroup) badgeGroup.innerHTML = '';
+      if (nodeGroup) nodeGroup.innerHTML = '';
 
-      pikedPlayers = updatedPlayers;
-      const remainingActive = pikedPlayers.filter(p => !p.isEliminated);
-      const isGameOver = remainingActive.length <= 1;
+      accumulatedX = 60;
+      currentViewBoxX = 0;
+      targetViewBoxX = 0;
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      currentDotIndex = 0;
+      placedBadges = [];
+      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
 
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-      if (db && roomCode && window.fb) {
-        const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-        await window.fb.updateDoc(roomRef, {
-          players: updatedPlayers,
-          roundState: 'reveal',
-          roundResults: roundResults,
-          eliminatedId: eliminated.id,
-          status: isGameOver ? 'ended' : 'playing',
-          updatedAt: Date.now()
-        });
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+
+      const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      startNode.setAttribute('id', 'svg-node-0');
+      startNode.setAttribute('cx', '60');
+      startNode.setAttribute('cy', '70');
+      startNode.setAttribute('r', '7');
+      startNode.setAttribute('stroke', '#ffffff');
+      startNode.setAttribute('stroke-width', '3');
+      startNode.setAttribute('fill', '#121212');
+      startNode.classList.add('node-transition');
+      if (nodeGroup) nodeGroup.appendChild(startNode);
+    }
+
+    function panCameraToFit(targetX, instant = false) {
+      const svg = document.getElementById('mainLineSvg');
+      if (!svg) return;
+
+      if (targetX > 750) {
+        targetViewBoxX = targetX - 650;
       } else {
-        const payload = {
-          type: 'ROUND_REVEAL',
-          results: roundResults,
-          eliminatedId: eliminated.id,
-          isGameOver: isGameOver
-        };
-        if (roomChannel) roomChannel.postMessage(payload);
-        showPikedRoundReveal(payload);
+        targetViewBoxX = 0;
       }
+
+      if (instant) {
+        if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+        currentViewBoxX = targetViewBoxX;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        return;
+      }
+
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      function animatePan() {
+        const diff = targetViewBoxX - currentViewBoxX;
+        if (Math.abs(diff) < 0.3) {
+          currentViewBoxX = targetViewBoxX;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          panAnimationFrame = null;
+          return;
+        }
+        currentViewBoxX += diff * 0.08;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        panAnimationFrame = requestAnimationFrame(animatePan);
+      }
+
+      panAnimationFrame = requestAnimationFrame(animatePan);
     }
 
-    function showPikedRoundReveal(payload) {
-      const results = payload.results || payload.roundResults || [];
-      const elimId = payload.eliminatedId;
-
-      showPikedToast("Revealing round answers and stretching lines...");
-
-      // STEP 1: Animate lines moving for EVERY player on screen BEFORE showing elimination
-      results.forEach(r => {
-        const pIdx = pikedPlayers.findIndex(p => p.id === r.player.id);
-        if (pIdx === -1) return;
-
-        const segGroup = document.getElementById(`pikedSegs-${pIdx}`);
-        const startX = playerTrackXMap[r.player.id] || 60;
-        const addLen = r.rarity.length || 0;
-        const endX = startX + addLen;
-        playerTrackXMap[r.player.id] = endX;
-
-        if (segGroup && addLen > 0) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', startX.toString());
-          line.setAttribute('y1', '30');
-          line.setAttribute('x2', endX.toString());
-          line.setAttribute('y2', '30');
-          line.setAttribute('stroke', r.rarity.color || r.player.color);
-          line.setAttribute('stroke-width', '4');
-          line.setAttribute('stroke-linecap', 'round');
-          line.classList.add('pik-line-stroke');
-          line.style.strokeDasharray = addLen;
-          line.style.strokeDashoffset = addLen;
-          segGroup.appendChild(line);
-
-          requestAnimationFrame(() => {
-            line.style.strokeDashoffset = '0';
-          });
-
-          // Floating inline answer text badge directly on the track line
-          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', ((startX + endX) / 2).toString());
-          text.setAttribute('y', '20');
-          text.setAttribute('text-anchor', 'middle');
-          text.setAttribute('fill', r.rarity.color || '#fff');
-          text.setAttribute('font-family', 'Space Grotesk, sans-serif');
-          text.setAttribute('font-size', '9');
-          text.setAttribute('font-weight', 'bold');
-          text.textContent = `"${r.answer}" (+${addLen}px)`;
-          segGroup.appendChild(text);
-        }
-
-        const node = document.getElementById(`pikedNode-${pIdx}`);
-        if (node) {
-          node.setAttribute('cx', endX.toString());
-          node.setAttribute('fill', r.rarity.color || r.player.color);
-        }
-
-        if (r.player.id === currentUserId) {
-          playAudioTone('stretch', r.rarity.key);
-        }
-      });
-
-      // STEP 2: After lines have stretched (~1.8s), trigger elimination right near the line tracks (No overlay card!)
-      setTimeout(() => {
-        const elimPlayer = pikedPlayers.find(p => p.id === elimId);
-        const elimRes = results.find(r => r.player.id === elimId);
-
-        if (elimPlayer) {
-          const pIdx = pikedPlayers.findIndex(p => p.id === elimId);
-          const trackRow = document.getElementById(`playerTrackRow-${pIdx}`);
-          if (trackRow) {
-            trackRow.classList.add('bg-red-950/40', 'border-red-500/50');
-          }
-          showPikedToast(`${elimPlayer.name} was ELIMINATED! (${elimRes ? elimRes.rarity.name : 'Lowest Rarity'}, ${elimRes ? elimRes.timeTaken.toFixed(1) : 35}s)`, true);
-          playAudioTone('timeout');
-        }
-
-        // STEP 3: After viewing elimination (~2.5s), clear submission maps & transition to next round or finish
-        setTimeout(async () => {
-          hidePikedToast();
-          playerAnswersMap = {};
-          renderMultiplayerTrackCanvas();
-
-          const remainingActive = pikedPlayers.filter(p => !p.isEliminated);
-          if (remainingActive.length <= 1 || payload.status === 'ended' || payload.isGameOver) {
-            const winner = remainingActive[0] || pikedPlayers[0];
-            showPikedToast(`🎉 GAME OVER! ${winner.name} IS THE PIK-ED CHAMPION! 🎉`);
-            setTimeout(() => { 
-              hidePikedToast();
-              returnToMenu(); 
-            }, 3000);
-          } else if (isHost) {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-            const nextQ = currentQIndex + 1;
-            if (db && roomCode && window.fb) {
-              const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-              await window.fb.updateDoc(roomRef, {
-                currentQIndex: nextQ,
-                answers: {},
-                roundState: 'countdown',
-                updatedAt: Date.now()
-              });
-            }
-          }
-        }, 2500);
-
-      }, 1800);
+    function scrubLineView(percent) {
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      const maxPanX = Math.max(0, accumulatedX - 650);
+      const targetX = (percent / 100) * maxPanX;
+      currentViewBoxX = targetX;
+      targetViewBoxX = targetX;
+      const svg = document.getElementById('mainLineSvg');
+      if (svg) {
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+      }
     }
 
     /* ----------------------------------------------------
@@ -2499,7 +1376,17 @@
       if (timerInterval) clearInterval(timerInterval);
       clearPendingAutoCorrect();
 
+      // Safeguard: Ensure question bank is built and active questions exist
+      if (!activeQuestions || !activeQuestions[index]) {
+        if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
+          buildMassiveQuestionBank();
+        }
+        activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+      }
+
       const q = activeQuestions[index];
+      if (!q) return;
+
       const card = document.getElementById('questionCard');
       const promptEl = document.getElementById('questionPrompt');
       const qNumText = document.getElementById('questionNumText');
@@ -2531,79 +1418,87 @@
         }
       }
 
-      // Timed mode or Pik-ed multiplayer timer setup
-      if (isTimedMode || isPikedMode) {
-        timerValue = isPikedMode ? 35 : 30;
-        if (timerPill) timerPill.classList.remove('hidden');
-        const timerText = document.getElementById('timerText');
-        if (timerText) timerText.textContent = `${timerValue}s`;
-
-        timerInterval = setInterval(() => {
-          timerValue--;
-          if (timerText) timerText.textContent = `${timerValue}s`;
-          if (timerValue <= 0) {
-            clearInterval(timerInterval);
-            if (isPikedMode) {
-              submitAnswer();
-            } else {
-              handleTimeout();
-            }
-          }
-        }, 1000);
+      if (isTimedMode) {
+        timerPill.classList.remove('hidden');
+        startQuestionTimer();
       } else {
-        if (timerPill) timerPill.classList.add('hidden');
+        timerPill.classList.add('hidden');
       }
-
-      roundStartTime = Date.now();
     }
 
-    async function submitAnswer() {
-      const inputEl = document.getElementById('answerInput');
-      const rawVal = inputEl ? inputEl.value.trim() : '';
-      const timeTakenSec = Math.min(35, (Date.now() - roundStartTime) / 1000);
+    function startQuestionTimer() {
+      timerValue = 30;
+      const timerText = document.getElementById('timerText');
+      if (timerText) timerText.textContent = `${timerValue}s`;
 
-      if (isPikedMode) {
-        if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timerValue--;
+        if (timerText) timerText.textContent = `${timerValue}s`;
 
-        playerAnswersMap[currentUserId] = {
-          answer: rawVal || 'Skipped',
-          timeTaken: timeTakenSec,
-          submitted: true
-        };
-        renderMultiplayerTrackCanvas();
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'pik-game-default';
-        if (db && roomCode && window.fb) {
-          try {
-            const roomRef = window.fb.doc(db, 'artifacts', appId, 'public', 'data', 'piked_rooms', roomCode);
-            await window.fb.updateDoc(roomRef, {
-              [`answers.${currentUserId}`]: {
-                answer: rawVal || 'Skipped',
-                timeTaken: timeTakenSec,
-                submitted: true
-              },
-              updatedAt: Date.now()
-            });
-          } catch (err) {
-            console.warn("Firestore answer submit error:", err);
-          }
+        if (timerValue <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
         }
+      }, 1000);
+    }
 
-        if (roomChannel) {
-          roomChannel.postMessage({
-            type: 'SUBMIT_ANSWER',
-            senderId: currentUserId,
-            answer: rawVal || 'Skipped',
-            timeTaken: timeTakenSec
-          });
-        }
+    function handleTimeout() {
+      playAudioTone('timeout');
+      const card = document.getElementById('questionCard');
+      card.classList.add('card-flash-red');
 
-        if (isHost) {
-          checkAllAnswersSubmitted();
-        }
-        showFeedback("Answer submitted! Waiting for other players...");
-        return;
+      setTimeout(() => {
+        skipQuestion(true);
+      }, 450);
+    }
+
+    let feedbackTimeout = null;
+    function showFeedback(msg) {
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden');
       }
+      if (feedbackTimeout) clearTimeout(feedbackTimeout);
+      feedbackTimeout = setTimeout(() => {
+        hideFeedback();
+      }, 3500);
+    }
+
+    function hideFeedback() {
+      if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = null;
+      }
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = '';
+        fb.classList.add('hidden');
+      }
+    }
+
+    function animateCardOut(isTimeout, callback) {
+      const card = document.getElementById('questionCard');
+      card.classList.add('card-slide-out');
+
+      setTimeout(() => {
+        card.classList.remove('card-slide-out', 'card-flash-red');
+        card.classList.add('card-slide-in-prepare');
+
+        callback();
+
+        // Force browser reflow to prevent subpixel layout shift glitch
+        void card.offsetHeight;
+
+        requestAnimationFrame(() => {
+          card.classList.remove('card-slide-in-prepare');
+        });
+      }, 300);
+    }
+
+    function submitAnswer() {
+      const inputEl = document.getElementById('answerInput');
+      const rawVal = inputEl.value.trim();
 
       if (!rawVal) {
         showFeedback("Please enter an answer or skip.");
@@ -2656,11 +1551,16 @@
           result: result
         };
 
-        inputEl.value = result.matchedName;
-        showFeedback(`Autocorrect: Did you mean "${result.matchedName}"? Press Enter or click Confirm.`);
+        showFeedback(`Autocorrect: Change "${rawVal}" to "${result.matchedName}"?`);
         
         const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) submitBtn.textContent = `Confirm "${result.matchedName}"`;
+        if (submitBtn) submitBtn.textContent = `Yes, change to "${result.matchedName}"`;
+
+        const rejectBtn = document.getElementById('rejectAutocorrectBtn');
+        if (rejectBtn) {
+          rejectBtn.textContent = `Keep "${rawVal}"`;
+          rejectBtn.classList.remove('hidden');
+        }
         
         playAudioTone('stretch', 'uncommon');
         return;
@@ -2883,7 +1783,8 @@
 
       userHistory.forEach((item, idx) => {
         const card = document.createElement('div');
-        card.className = 'bg-pik-bg border border-pik-border/80 rounded-lg p-2 flex flex-col justify-between text-left min-w-0';
+        card.className = 'bg-pik-bg border border-pik-border/80 rounded-lg p-2 flex flex-col justify-between text-left min-w-0 cursor-pointer hover:border-slate-400 hover:scale-[1.03] transition-all transform shadow-md active:scale-95';
+        card.setAttribute('onclick', `openQuestionDetailModal(${idx})`);
 
         const isSkip = item.rarityKey === 'skipped';
         const colorHex = isSkip ? '#475569' : item.color;
@@ -2909,18 +1810,25 @@
        8. EVENT LISTENERS INITIALIZATION
     ---------------------------------------------------- */
     document.addEventListener('DOMContentLoaded', () => {
+      buildMassiveQuestionBank();
       const input = document.getElementById('answerInput');
       if (input) {
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') submitAnswer();
         });
         input.addEventListener('input', () => {
+          hideFeedback();
           if (pendingAutoCorrect) {
             clearPendingAutoCorrect();
           }
         });
       }
     });
+
+    // Immediate fallback execution on script load
+    if (typeof buildMassiveQuestionBank === 'function') {
+      buildMassiveQuestionBank();
+    }
   </script>
 </body>
 </html>
