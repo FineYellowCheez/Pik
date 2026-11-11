@@ -258,9 +258,24 @@
 
         <!-- Sample Answers Breakdown for this Question -->
         <div>
-          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-2">Answer Tier Examples</div>
-          <div id="detailTiersList" class="space-y-2 text-[11px] font-display">
-            <!-- Populated via JS -->
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-[10px] uppercase font-display tracking-wider text-slate-400">Answer Tier Examples</div>
+            <button id="modalToggleAnswersBtn" onclick="toggleModalAnswers()" class="text-[10px] font-display font-bold px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-pik-gold border border-pik-border transition flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <span>Show Answers</span>
+            </button>
+          </div>
+          <div class="relative rounded-xl overflow-hidden min-h-[100px]">
+            <div id="detailTiersList" class="space-y-2 text-[11px] font-display filter blur-sm select-none pointer-events-none transition-all duration-300">
+              <!-- Populated via JS -->
+            </div>
+            <div id="modalTiersOverlay" class="absolute inset-0 bg-pik-card/90 backdrop-blur-md flex flex-col items-center justify-center gap-1.5 z-10 transition-all duration-300">
+              <svg class="w-5 h-5 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <span class="text-xs font-display font-bold text-slate-200">Other Answers Hidden</span>
+              <button onclick="toggleModalAnswers()" class="px-3 py-1 bg-pik-gold hover:bg-amber-400 text-slate-950 font-display font-extrabold text-xs rounded-lg transition shadow">
+                Reveal Other Answers
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -358,18 +373,19 @@
     </div>
   </section>
 
-  <!-- ================= BOTTOM SECTION: RESULTS AREA (COMPLETELY BLANK UNTIL GAME END) ================= -->
-  <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex-1 flex flex-col items-center justify-center overflow-hidden min-h-0 z-20 order-3">
-    <div class="w-full bg-pik-card border border-pik-border rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5 sm:gap-3 shadow-2xl my-auto">
-      
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-1.5 border-b border-pik-border/60 pb-2">
-        <div>
-          <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
-            Game Completed
-          </h2>
-          <p id="finalRankSub" class="text-xs text-pik-gold font-display font-medium">Rank: Pik Master</p>
-        </div>
-        <div class="flex items-center gap-3 sm:gap-4 text-right">
+  <!-- ================= RESULTS AREA (FRAMELESS BACKGROUND PROJECTION LAYOUT) ================= -->
+  <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 flex-1 flex flex-col justify-between overflow-hidden min-h-0 z-20 order-1">
+    <!-- Header Controls & Score Bar -->
+    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
+      <div>
+        <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
+          Game Completed
+        </h2>
+        <p id="finalRankSub" class="text-xs text-pik-gold font-display font-medium">Rank: Pik Master</p>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 text-right">
           <div>
             <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
             <div id="finalDistanceText" class="font-display font-extrabold text-sm sm:text-lg text-pik-gold">0 px</div>
@@ -380,33 +396,522 @@
             <div id="finalScoreText" class="font-display font-extrabold text-sm sm:text-lg text-slate-100">0 pts</div>
           </div>
         </div>
-      </div>
 
-      <!-- 8 Question Summary Cards Grid (4 cols on mobile, 8 cols on desktop for 0 vertical scroll) -->
-      <div id="summaryCardsGrid" class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="returnToMenu()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Menu
+          </button>
+          <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Left-Edge Question Cards & Projected Info Area -->
+    <div id="projectionContainer" class="relative flex gap-3 sm:gap-6 w-full flex-1 my-1.5 items-stretch overflow-hidden min-h-0">
+      <!-- Dynamic SVG Overlay for Connecting Lines -->
+      <svg id="projectionSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+
+      <!-- Left Edge Question Boxes Column (All 8 visible, no scroll) -->
+      <div id="summaryCardsList" class="w-44 sm:w-56 flex flex-col gap-1 z-20 flex-shrink-0 h-full overflow-hidden">
         <!-- Injected via JavaScript -->
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center justify-center gap-3 pt-0.5">
-        <button onclick="returnToMenu()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          Main Menu
-        </button>
-        <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-5 py-2 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          Play Again
-        </button>
-      </div>
+      <!-- Right Side Projected Detail Panel (No scroll) -->
+      <div id="projectedDetailPanel" class="flex-1 z-20 bg-pik-card/50 border border-pik-border/80 backdrop-blur-sm rounded-xl relative overflow-hidden transition-all duration-300">
+        <!-- Middle Overview Dashboard (Default, slides UP when inspected) -->
+        <div id="overviewDashboard" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-10 pointer-events-auto">
+          <!-- Injected via JS -->
+        </div>
 
+        <!-- Projected Question Detail Panel (Slides IN from bottom when inspected) -->
+        <div id="inspectedDetailContent" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-full opacity-0 z-20 pointer-events-none">
+          <!-- Injected via JS -->
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- ================= JAVASCRIPT ENGINE ================= -->
   <script>
-    /* ----------------------------------------------------
-       1. RARITY CONFIGURATION & AUDIO SYNTHESIZER
-    ---------------------------------------------------- */
+    let projAnswersVisible = false;
+    let modalAnswersVisible = false;
+
+    function toggleProjAnswers(forceState = null) {
+      if (forceState !== null) projAnswersVisible = forceState;
+      else projAnswersVisible = !projAnswersVisible;
+
+      const content = document.getElementById('projTiersContent');
+      const overlay = document.getElementById('projTiersOverlay');
+      const btn = document.getElementById('projToggleAnswersBtn');
+
+      if (content && overlay) {
+        if (projAnswersVisible) {
+          content.classList.remove('blur-sm', 'select-none', 'pointer-events-none');
+          overlay.classList.add('opacity-0', 'pointer-events-none');
+          if (btn) btn.querySelector('span').textContent = 'Hide Answers';
+        } else {
+          content.classList.add('blur-sm', 'select-none', 'pointer-events-none');
+          overlay.classList.remove('opacity-0', 'pointer-events-none');
+          if (btn) btn.querySelector('span').textContent = 'Show Answers';
+        }
+      }
+    }
+
+    function toggleModalAnswers(forceState = null) {
+      if (forceState !== null) modalAnswersVisible = forceState;
+      else modalAnswersVisible = !modalAnswersVisible;
+
+      const content = document.getElementById('detailTiersList');
+      const overlay = document.getElementById('modalTiersOverlay');
+      const btn = document.getElementById('modalToggleAnswersBtn');
+
+      if (content && overlay) {
+        if (modalAnswersVisible) {
+          content.classList.remove('blur-sm', 'select-none', 'pointer-events-none');
+          overlay.classList.add('opacity-0', 'pointer-events-none');
+          if (btn) btn.querySelector('span').textContent = 'Hide Answers';
+        } else {
+          content.classList.add('blur-sm', 'select-none', 'pointer-events-none');
+          overlay.classList.remove('opacity-0', 'pointer-events-none');
+          if (btn) btn.querySelector('span').textContent = 'Show Answers';
+        }
+      }
+    }
+
+    function drawProjectionLines(leftCardEl, rightPanelEl, color = '#d4af37') {
+      const container = document.getElementById('projectionContainer');
+      const svg = document.getElementById('projectionSvg');
+      if (!container || !svg || !leftCardEl || !rightPanelEl) return;
+
+      const cRect = container.getBoundingClientRect();
+      const lRect = leftCardEl.getBoundingClientRect();
+      const rRect = rightPanelEl.getBoundingClientRect();
+
+      const x1 = lRect.right - cRect.left;
+      const y1 = lRect.top - cRect.top;
+      const x2 = lRect.right - cRect.left;
+      const y2 = lRect.bottom - cRect.top;
+
+      const x3 = rRect.left - cRect.left;
+      const y3 = rRect.top - cRect.top;
+      const x4 = rRect.left - cRect.left;
+      const y4 = rRect.bottom - cRect.top;
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="projGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="${color}" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="${color}" stop-opacity="0.03"/>
+          </linearGradient>
+        </defs>
+        <!-- Light Projection Frustum Polygon -->
+        <polygon points="${x1},${y1} ${x3},${y3} ${x4},${y4} ${x2},${y2}" fill="url(#projGrad)"/>
+        <!-- Upper Connecting Line -->
+        <line x1="${x1}" y1="${y1}" x2="${x3}" y2="${y3}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <!-- Lower Connecting Line -->
+        <line x1="${x2}" y1="${y2}" x2="${x4}" y2="${y4}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <!-- Left Edge Accent Marker -->
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2.5"/>
+      `;
+    }
+
+    function renderOverviewDashboard() {
+      const dashboard = document.getElementById('overviewDashboard');
+      if (!dashboard) return;
+
+      const tierCounts = { gold: 0, epic: 0, rare: 0, uncommon: 0, common: 0, skipped: 0 };
+      let totalDistSum = 0;
+      let clearedCount = 0;
+      let bestPik = null;
+
+      userHistory.forEach(item => {
+        if (item.rarityKey && tierCounts[item.rarityKey] !== undefined) {
+          tierCounts[item.rarityKey]++;
+        }
+        if (item.rarityKey !== 'skipped') {
+          clearedCount++;
+          totalDistSum += item.length;
+          if (!bestPik || item.length > bestPik.length) {
+            bestPik = item;
+          }
+        }
+      });
+
+      const avgDist = userHistory.length > 0 ? Math.round(totalDistSum / userHistory.length) : 0;
+      const bestName = bestPik ? bestPik.userAnswer : 'None';
+      const bestColor = bestPik ? (bestPik.rarityKey === 'skipped' ? '#475569' : bestPik.color) : '#7e8c8d';
+      const bestRarityName = bestPik ? bestPik.rarityName : 'N/A';
+
+      const tierColors = {
+        gold: '#d4af37',
+        epic: '#8e24aa',
+        rare: '#1976d2',
+        uncommon: '#388e3c',
+        common: '#7e8c8d',
+        skipped: '#475569'
+      };
+
+      let barSegmentsHtml = '';
+      let countPillsHtml = '';
+
+      const tiersList = ['gold', 'epic', 'rare', 'uncommon', 'common', 'skipped'];
+      tiersList.forEach(t => {
+        const cnt = tierCounts[t];
+        if (cnt > 0) {
+          const pct = (cnt / 8) * 100;
+          const c = tierColors[t];
+          barSegmentsHtml += `<div style="width: ${pct}%; background-color: ${c};" class="h-full transition-all duration-500" title="${RARITY_CONFIG[t]?.name || 'Skipped'}: ${cnt}"></div>`;
+          
+          const label = t === 'gold' ? 'The Pik' : (RARITY_CONFIG[t]?.name || 'Skipped');
+          countPillsHtml += `
+            <div class="flex items-center gap-1 text-[10px] font-display font-medium px-2 py-0.5 rounded-md bg-pik-bg border border-pik-border/60">
+              <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${c}"></span>
+              <span class="text-slate-300">${label}</span>
+              <span class="font-bold text-slate-100 ml-0.5">${cnt}</span>
+            </div>
+          `;
+        }
+      });
+
+      const modeLabel = isDailyMode ? 'Daily Challenge' : (isTimedMode ? 'Timed Mode' : 'Standard Mode');
+
+      dashboard.innerHTML = `
+        <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+          <span class="font-display font-extrabold text-xs uppercase tracking-wider text-pik-gold">Session Performance Overview</span>
+          <span class="px-2 py-0.5 rounded-md font-display text-[10px] font-bold bg-pik-bg border border-pik-border text-slate-300">${modeLabel}</span>
+        </div>
+
+        <!-- 3 Key Metric Cards -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Avg Stretch</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-pik-gold mt-0.5">${avgDist} <span class="text-xs font-normal text-slate-400">px</span></div>
+          </div>
+
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between overflow-hidden">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Best Pick</div>
+            <div class="font-display font-extrabold text-xs sm:text-sm truncate mt-0.5" style="color: ${bestColor}" title="${bestName}">
+              ${bestName}
+            </div>
+            <div class="text-[9px] font-display text-slate-400 truncate">${bestRarityName}</div>
+          </div>
+
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Questions Cleared</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${clearedCount} <span class="text-xs font-normal text-slate-400">/ 8</span></div>
+          </div>
+        </div>
+
+        <!-- Rarity Distribution Section -->
+        <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarity Tier Distribution</span>
+            <span class="text-[9px] font-display text-slate-400">8 total answers</span>
+          </div>
+
+          <!-- Stacked Bar -->
+          <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
+            ${barSegmentsHtml}
+          </div>
+
+          <!-- Count Badges -->
+          <div class="flex flex-wrap gap-1 mt-0.5">
+            ${countPillsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+  function uninspectQuestion() {
+    selectedProjectedIndex = -1;
+    const projSvg = document.getElementById('projectionSvg');
+    if (projSvg) projSvg.innerHTML = '';
+
+    // Un-highlight all left cards
+    for (let i = 0; i < userHistory.length; i++) {
+      const cardEl = document.getElementById(`proj-left-card-${i}`);
+      if (cardEl) {
+        cardEl.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden';
+        cardEl.style.borderColor = '';
+      }
+    }
+
+    const panel = document.getElementById('projectedDetailPanel');
+    if (panel) panel.style.borderColor = '';
+
+    // Move middle overview back DOWN into place, and hide detail panel
+    const dashboard = document.getElementById('overviewDashboard');
+    const detailContent = document.getElementById('inspectedDetailContent');
+
+    if (dashboard) {
+      dashboard.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-10 pointer-events-auto';
+    }
+    if (detailContent) {
+      detailContent.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-full opacity-0 z-20 pointer-events-none';
+    }
+  }
+
+  function selectQuestionForProjection(idx) {
+    // Toggle un-inspect if clicking the currently inspected question
+    if (selectedProjectedIndex === idx) {
+      uninspectQuestion();
+      return;
+    }
+
+    selectedProjectedIndex = idx;
+    const item = userHistory[idx];
+    const qObj = activeQuestions[idx];
+    if (!item || !qObj) return;
+
+    const isSkip = item.rarityKey === 'skipped';
+    const colorHex = isSkip ? '#475569' : item.color;
+
+    // 1. Highlight selected left box
+    for (let i = 0; i < userHistory.length; i++) {
+      const cardEl = document.getElementById(`proj-left-card-${i}`);
+      if (cardEl) {
+        if (i === idx) {
+          cardEl.className = 'bg-pik-card border-2 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all shadow-lg scale-[1.01] z-30 overflow-hidden';
+          cardEl.style.borderColor = colorHex;
+        } else {
+          cardEl.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-70 hover:opacity-100 z-20 overflow-hidden';
+          cardEl.style.borderColor = '';
+        }
+      }
+    }
+
+    // 2. Populate projected detail content
+    const detailContent = document.getElementById('inspectedDetailContent');
+    const panel = document.getElementById('projectedDetailPanel');
+    if (panel) panel.style.borderColor = `${colorHex}80`;
+
+    // Render tier examples
+    const tiers = [
+      { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
+      { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
+      { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+      { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
+      { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
+    ];
+
+    let tierExamplesHtml = '';
+    tiers.forEach(t => {
+      const answers = qObj[t.key] || [];
+      if (answers.length > 0) {
+        const sampleList = answers.slice(0, 5).join(', ') + (answers.length > 5 ? '...' : '');
+        tierExamplesHtml += `
+          <div class="bg-pik-bg/70 border border-pik-border/60 p-1.5 rounded-md">
+            <div class="flex items-center gap-1 font-bold mb-0.5 text-[10px]" style="color: ${t.color}">
+              <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${t.color}"></span>
+              <span>${t.name}</span>
+            </div>
+            <div class="text-slate-300 text-[10px] font-sans leading-tight truncate">
+              ${sampleList}
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    const matchedText = (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') 
+      ? `<div class="text-[10px] text-slate-400 font-display truncate">Matched: "${item.matchedName}"</div>` : '';
+
+    if (detailContent) {
+      detailContent.innerHTML = `
+        <div class="space-y-2 flex-1 flex flex-col justify-between overflow-hidden">
+          <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+            <span class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question ${idx + 1} of 8 Breakdown</span>
+            <span class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold" style="background-color: ${colorHex}25; color: ${colorHex}; border: 1px solid ${colorHex}50">
+              ${item.rarityName}
+            </span>
+          </div>
+
+          <div>
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Prompt</div>
+            <h3 class="font-display font-bold text-xs sm:text-sm text-slate-100 leading-snug truncate">${item.prompt}</h3>
+          </div>
+
+          <div class="bg-pik-bg p-2 rounded-lg border border-pik-border/80 flex items-center justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Your Answer</div>
+              <div class="font-display font-extrabold text-xs sm:text-sm text-slate-100 truncate">${item.userAnswer}</div>
+              ${matchedText}
+            </div>
+            <div class="flex items-center gap-2 border-l border-pik-border/60 pl-2 flex-shrink-0">
+              <div>
+                <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Distance</div>
+                <div class="font-display font-bold text-xs text-pik-gold">+${item.length} px</div>
+              </div>
+              <div>
+                <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Points</div>
+                <div class="font-display font-bold text-xs text-slate-200">+${item.points} pts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col justify-end">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400 mb-1">Answer Tier Breakdown</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 font-display">
+              ${tierExamplesHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Move middle overview UP out of the way, and bring detail panel IN
+    const dashboard = document.getElementById('overviewDashboard');
+    if (dashboard) {
+      dashboard.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform -translate-y-full opacity-0 z-10 pointer-events-none';
+    }
+    if (detailContent) {
+      detailContent.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-20 pointer-events-auto';
+    }
+
+    // 4. Draw projection lines connecting left box to right panel
+    requestAnimationFrame(() => {
+      const activeCard = document.getElementById(`proj-left-card-${idx}`);
+      if (activeCard && panel) {
+        drawProjectionLines(activeCard, panel, colorHex);
+      }
+    });
+  }
+
+  function finishGame() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    document.getElementById('gameArea').classList.add('hidden');
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.classList.remove('hidden-results', 'order-3');
+    resultsSection.classList.add('show-results', 'order-1');
+
+    const lineSec = document.getElementById('lineSection');
+    if (lineSec) {
+      lineSec.classList.remove('order-2');
+      lineSec.classList.add('order-2');
+    }
+
+    // Show interactive line scrubber slider and set to 100%
+    const sliderContainer = document.getElementById('lineSliderContainer');
+    const slider = document.getElementById('lineScrubber');
+    if (sliderContainer) sliderContainer.classList.remove('hidden');
+    if (slider) slider.value = 100;
+
+    // Reset selected projection index so nothing projects initially
+    selectedProjectedIndex = -1;
+    const projSvg = document.getElementById('projectionSvg');
+    if (projSvg) projSvg.innerHTML = '';
+
+    // Calculate points conversion (1 point = 5 Px)
+    const calculatedPoints = Math.round(totalDistance / 5);
+    totalScore = calculatedPoints;
+
+    const distEl = document.getElementById('finalDistanceText');
+    const scoreEl = document.getElementById('finalScoreText');
+
+    distEl.textContent = `0 px`;
+    scoreEl.textContent = `0 pts`;
+
+    // 1. Animated Px Count Up
+    let startTimestamp = null;
+    const duration = 1200; // 1.2s smooth count up
+
+    function stepCountUp(timestamp) {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 2);
+      const currentPx = Math.floor(easedProgress * totalDistance);
+
+      distEl.textContent = `${currentPx} px`;
+
+      if (progress < 1) {
+        requestAnimationFrame(stepCountUp);
+      } else {
+        // Count finished!
+        distEl.textContent = `${totalDistance} px`;
+
+        // 2. Equals sign appears next to Px
+        setTimeout(() => {
+          distEl.innerHTML = `${totalDistance} px <span id="pxEquals" class="text-slate-400 mx-1 inline-block transition-all duration-300 transform scale-50 opacity-0">=</span>`;
+
+          requestAnimationFrame(() => {
+            const eqEl = document.getElementById('pxEquals');
+            if (eqEl) {
+              eqEl.classList.remove('scale-50', 'opacity-0');
+              eqEl.classList.add('scale-100', 'opacity-100');
+            }
+          });
+
+          // 3. Convert to Points (1 Point = 5 Px)
+          setTimeout(() => {
+            distEl.innerHTML = `${totalDistance} px <span class="text-slate-400 mx-1">=</span> <span id="ptsConverted" class="text-pik-gold font-extrabold inline-block transition-all duration-500 transform scale-75 opacity-0">${calculatedPoints} pts</span>`;
+
+            requestAnimationFrame(() => {
+              const ptsEl = document.getElementById('ptsConverted');
+              if (ptsEl) {
+                ptsEl.classList.remove('scale-75', 'opacity-0');
+                ptsEl.classList.add('scale-100', 'opacity-100');
+              }
+            });
+
+            scoreEl.textContent = `${calculatedPoints} pts`;
+
+            let rankTitle = 'Pik Explorer';
+            if (calculatedPoints >= 600) rankTitle = 'Pik Grandmaster';
+            else if (calculatedPoints >= 450) rankTitle = 'Pik Master';
+            else if (calculatedPoints >= 300) rankTitle = 'Pik Expert';
+            else if (calculatedPoints >= 150) rankTitle = 'Pik Scholar';
+
+            document.getElementById('finalRankSub').textContent = `Rank: ${rankTitle}`;
+          }, 400);
+
+        }, 300);
+      }
+    }
+
+    requestAnimationFrame(stepCountUp);
+
+    // Render Left Edge Question Column List (All 8 fit cleanly)
+    const listContainer = document.getElementById('summaryCardsList');
+    listContainer.innerHTML = '';
+
+    userHistory.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.id = `proj-left-card-${idx}`;
+      card.setAttribute('onclick', `selectQuestionForProjection(${idx})`);
+      card.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden';
+
+      const isSkip = item.rarityKey === 'skipped';
+      const colorHex = isSkip ? '#475569' : item.color;
+
+      card.innerHTML = `
+        <div class="overflow-hidden">
+          <div class="text-[9px] text-slate-400 font-display font-medium truncate" title="${item.prompt}">Q${idx + 1} • ${item.prompt}</div>
+          <div class="font-display font-bold text-[11px] text-slate-100 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
+        </div>
+        <div class="flex items-center justify-between mt-0.5 pt-0.5 border-t border-pik-border/40 text-[9px]">
+          <span class="font-display font-semibold flex items-center gap-1 truncate" style="color: ${colorHex}">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${colorHex}"></span>
+            <span class="truncate">${item.rarityName}</span>
+          </span>
+          <span class="font-display font-bold text-slate-400 flex-shrink-0 ml-1">+${item.length}px</span>
+        </div>
+      `;
+      listContainer.appendChild(card);
+    });
+
+    // Populate overview dashboard & set un-inspected initial state
+    renderOverviewDashboard();
+    uninspectQuestion();
+  }
+
+  /* ----------------------------------------------------
+     8. EVENT LISTENERS INITIALIZATION
+  ---------------------------------------------------- */
     const RARITY_CONFIG = {
       common: { name: 'Common', color: '#7e8c8d', length: 110, points: 10 },
       uncommon: { name: 'Uncommon', color: '#388e3c', length: 180, points: 25 },
@@ -690,7 +1195,7 @@
             "Nightguard", "Dentura Cream", "Denture Adhesive", "Antacid Tablets", "Tums", "Pepto Bismol", "Excedrin", "DayQuil", 
             "NyQuil", "Cough Drops", "Ricola", "Halls", "Throat Spray", "Decongestant", "Allergy Pills", "Claritin", "Zyrtec", 
             "Allegra", "Flonase", "Sudafed", "Laxative", "Stool Softener", "Imodium", "Anti Diarrheal", "Motion Sickness Pills", 
-            "Dramamine", "Sleeping Pills", "Melatonin", "Vitamin C", "Vitamin D", "Pill container", "Drugs", "Pills", "Medicine", "Pill Bottle", "Multivitamins", "Fish Oil Capsules", "Biotin"
+            "Dramamine", "Sleeping Pills", "Drugs", "Pill container", "Pills", "Medicine", "Pill bottle", "Melatonin", "Vitamin C", "Vitamin D", "Multivitamins", "Fish Oil Capsules", "Biotin"
           ],
           common: [
             "Bandages", "Toothpaste", "Toothbrush", "Aspirin", "Nail Clippers", "Band Aids", "Cotton Balls", "Q Tips", 
@@ -846,7 +1351,7 @@
           gold: ["Golden Sun"],
           epic: ["Chibi Robo", "F Zero", "Star Fox", "Pikmin", "Punch Out"],
           rare: ["Xenoblade Chronicles", "Fire Emblem", "Metroid", "Kirby", "Donkey Kong", "EarthBound", "Kid Icarus", "Splatoon", "Animal Crossing", "WarioWare", "Paper Mario", "Luigi Mansion"],
-          uncommon: ["Mario", "Super Mario", "The Legend of Zelda", "Zelda", "Pokemon", "Kirby", "Donkey Kong", "Metroid", "Super Smash Bros", "Smash Bros", "Animal Crossing", "Splatoon 2", "Fire Emblem", "Star Fox", "Pikmin", "Mario Kart", "Luigi Mansion", "Paper Mario", "Yoshi", "Nintendo Switch Sports"],
+          uncommon: ["Mario", "Super Mario", "The Legend of Zelda", "Zelda", "Pokemon", "Kirby", "Donkey Kong", "Metroid", "Super Smash Bros", "Smash Bros", "Animal Crossing", "Splatoon", "Fire Emblem", "Star Fox", "Pikmin", "Mario Kart", "Luigi Mansion", "Paper Mario", "Yoshi", "Nintendo Switch Sports"],
           common: ["Mario", "Super Mario Bros", "Zelda", "Pokemon", "Donkey Kong", "Kirby", "Mario Kart", "Super Smash Bros", "Animal Crossing", "Splatoon", "Metroid", "Luigi"]
         },
         {
@@ -1167,7 +1672,7 @@
           gold: ["Boogie Board"],
           epic: ["Snorkel", "Sun Hat", "Beach Umbrella", "Beach Mat"],
           rare: ["Towel", "Sunscreen", "Cooler", "Flip Flops", "Sunglasses", "Goggles"],
-          uncommon: ["Beach Towel", "Sunscreen Lotion", "Sunglasses", "Flip Flops", "Beach Chair", "Umbrella", "Beach Ball", "Ball", "Cooler", "Swimsuit", "Trunks", "Bikini", "Sand Toys", "Bucket and Spade", "Frisbee"],
+          uncommon: ["Beach Towel", "Ball", "Sunscreen Lotion", "Sunglasses", "Flip Flops", "Beach Chair", "Umbrella", "Beach Ball", "Cooler", "Swimsuit", "Trunks", "Bikini", "Sand Toys", "Bucket and Spade", "Frisbee"],
           common: ["Towel", "Sunscreen", "Sunglasses", "Swimsuit", "Flip Flops", "Umbrella", "Cooler", "Beach Ball", "Beach Towel"]
         },
         {
@@ -1188,7 +1693,7 @@
           epic: ["Equestrian", "Badminton", "Taekwondo", "Fencing"],
           rare: ["Archery", "Rowing", "Water Polo", "Handball", "Sailing", "Judo"],
           uncommon: ["Swimming", "Track and Field", "Gymnastics", "Basketball", "Soccer", "Volleyball", "Beach Volleyball", "Tennis", "Table Tennis", "Boxing", "Wrestling", "Cycling", "Weightlifting", "Skateboarding", "Surfing"],
-          common: ["Swimming", "Running", "Gymnastics", "Basketball", "Soccer", "Volleyball", "Pole Vaulting", "Tennis", "Boxing", "Track and Field"]
+          common: ["Swimming", "Running", "Gymnastics", "Basketball", "Soccer", "Volleyball", "Tennis", "Boxing", "Track and Field"]
         },
         {
           cat: 'popculture',
@@ -1196,14 +1701,14 @@
           gold: ["Elemental"],
           epic: ["Onward", "Luca", "Soul", "Turning Red"],
           rare: ["Brave", "Wall-E", "Up", "Ratatouille", "Inside Out", "Coco"],
-          uncommon: ["Toy Story", "Toy Story 2", "Toy Story 3", "Toy Story 4", "Toy Story 5", "Finding Nemo", "Finding Dory", "Monsters Inc", "Monsters University", "The Incredibles", "Incredibles 2", "Cars", "Cars 2", "Cars 3", "A Bugs Life"],
-          common: ["Toy Story", "Finding Nemo", "Cars", "The Incredibles", "Monsters Inc", "Up", "WALL-E", "Inside Out", "Coco", "Planes", "Ratatouille"]
+          uncommon: ["Toy Story", "Toy Story 2", "Toy Story 3", "Toy Story 4", "Finding Nemo", "Finding Dory", "Monsters Inc", "Monsters University", "The Incredibles", "Incredibles 2", "Cars", "Cars 2", "Cars 3", "A Bugs Life"],
+          common: ["Toy Story", "Planes", "Finding Nemo", "Cars", "The Incredibles", "Monsters Inc", "Up", "WALL-E", "Inside Out", "Coco", "Ratatouille"]
         },
         {
           cat: 'popculture',
           prompt: 'Name a Mario franchise video game character',
           gold: ["Wart"],
-          epic: ["Waluigi", "Rosalina", "Kamek", "Shy Guy"],
+          epic: ["Toadette", "Waluigi", "Rosalina", "Kamek", "Shy Guy"],
           rare: ["Toad", "Yoshi", "Bowser", "Donkey Kong", "Wario", "Daisy"],
           uncommon: ["Mario", "Luigi", "Princess Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario", "Waluigi", "Bowser Jr", "Goomba", "Koopa Troopa", "Boo", "Birdo", "Diddy Kong"],
           common: ["Mario", "Luigi", "Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario"]
@@ -1212,8 +1717,8 @@
           cat: 'popculture',
           prompt: 'Name a genre of music',
           gold: ["Shoegaze"],
-          epic: ["Jumpsytle", "Vocaloid", "Math Rock", "Bossa Nova", "Dubstep", "Synthwave"],
-          rare: ["Jazz", "Blues", "Reggae", "Heavy Metal", "Ska", "Disco"],
+          epic: ["Math Rock", "Bossa Nova", "Dubstep", "Synthwave"],
+          rare: ["Vocaloid", "Jumpstyle", "Jazz", "Blues", "Reggae", "Heavy Metal", "Ska", "Disco"],
           uncommon: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "R&B", "Classical", "Electronic", "EDM", "Indie", "Alternative", "Punk", "Folk", "Soul", "Funk", "Techno", "House"],
           common: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "Jazz", "Classical", "Blues", "Heavy Metal", "Disco", "Reggae"]
         },
@@ -1223,8 +1728,8 @@
           gold: ["Cribbage"],
           epic: ["Canasta", "Bridge", "Euchre", "Pinochle"],
           rare: ["Hearts", "Spades", "Rummy", "Poker", "Blackjack", "Solitaire"],
-          uncommon: ["Poker", "Blackjack", "Solitaire", "Go Fish", "BS", "Cheat", "Rummy", "Crazy Eights", "War", "Old Maid", "Speed", "Gin Rummy", "Texas Holdem", "Slapjack", "Euchre", "Hearts", "Spades"],
-          common: ["Poker", "Blackjack", "Solitaire", "Go Fish", "War", "Gin Rummy", "Hearts", "Spades", "Texas Hold 'Em"]
+          uncommon: ["Poker", "Blackjack", "Solitaire", "Go Fish", "Crazy Eights", "War", "Old Maid", "Speed", "Gin Rummy", "Texas Holdem", "Slapjack", "Euchre", "Hearts", "Spades"],
+          common: ["Poker", "Rummy", "BS", "Cheat", "Blackjack", "Solitaire", "Go Fish", "War", "Gin Rummy", "Hearts", "Spades", "Texas Hold 'Em"]
         },
         {
           cat: 'popculture',
@@ -1822,9 +2327,9 @@
           prompt: 'Name an item found on an office desk',
           gold: ["Paper Fastener"],
           epic: ["Letter Opener", "Desk Pad", "Tape Dispenser", "Stamp Pad"],
-          rare: ["Computer", "Laptop", "Keyboard", "Mouse", "Monitor", "Stapler", "Paperclips", "Pen Holder"],
+          rare: ["Computer", "Hole Puncher", "Laptop", "Keyboard", "Mouse", "Monitor", "Stapler", "Paperclips", "Pen Holder"],
           uncommon: ["Computer", "Laptop", "Monitor", "Keyboard", "Mouse", "Mousepad", "Stapler", "Paperclips", "Pens", "Pencils", "Notepad", "Sticky Notes", "Post It Notes", "Desk Lamp", "Coffee Mug", "Water Bottle", "Phone", "Calculator", "Scissors", "Folder", "Notebook"],
-          common: ["Computer", "Laptop", "Keyboard", "Mouse", "Stapler", "Pen", "Paper", "Notepad", "Coffee Mug", "Monitor", "Scissors"]
+          common: ["Computer", "Coffee Cup", "Cup", "Laptop", "Keyboard", "Mouse", "Stapler", "Pen", "Paper", "Notepad", "Coffee Mug", "Monitor", "Scissors"]
         },
         {
           cat: 'everyday',
@@ -1943,7 +2448,7 @@
           epic: ["Borzoi", "Komondor", "Basenji", "Tibetan Mastiff"],
           rare: ["German Shepherd", "Golden Retriever", "Labrador Retriever", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Siberian Husky"],
           uncommon: ["Labrador Retriever", "Golden Retriever", "German Shepherd", "French Bulldog", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "German Shorthaired Pointer", "Boxer", "Siberian Husky", "Great Dane", "Doberman Pinscher", "Australian Shepherd", "Corgi", "Pembroke Welsh Corgi", "Pug", "Chihuahua", "Shih Tzu", "Boston Terrier", "Pomeranian", "Havanese", "Shetland Sheepdog", "Bernese Mountain Dog"],
-          common: ["Labrador", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Husky", "Corgi", "Pug", "Chihuahua", "Great Dane"]
+          common: ["Labrador", "Lab", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Husky", "Corgi", "Pug", "Chihuahua", "Great Dane"]
         },
         {
           cat: 'popculture',
@@ -1961,7 +2466,7 @@
           epic: ["Paso Doble", "Bachata", "Capoeira", "Quickstep"],
           rare: ["Ballet", "Tap Dance", "Hip Hop", "Salsa", "Tango", "Waltz", "Breakdancing", "Jazz Dance", "Contemporary"],
           uncommon: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Foxtrot", "Cha Cha", "Rumba", "Samba", "Jazz Dance", "Modern Dance", "Contemporary", "Swing", "Belly Dance", "Line Dancing", "Square Dancing", "Folk Dance", "Ballroom"],
-          common: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Jazz Dance", "Line Dancing", "Belly Dance"]
+          common: ["Ballet", "Tap Dance", "Slow Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Jazz Dance", "Line Dancing", "Belly Dance"]
         },
         {
           cat: 'popculture',
@@ -2416,7 +2921,7 @@
         },
         {
           cat: 'science',
-          prompt: 'Name a layer of Earth atmosphere',
+          prompt: 'Name a layer of Earths atmosphere',
           gold: ["Exosphere"],
           epic: ["Thermosphere", "Mesosphere", "Stratosphere", "Troposphere"],
           rare: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Ionosphere", "Ozone Layer"],
@@ -2566,8 +3071,8 @@
           gold: ["Correction Tape"],
           epic: ["Paper Fastener", "Binder Clip", "Label Maker", "Stamp Pad"],
           rare: ["Stapler", "Paperclip", "Tape Dispenser", "Highlighter", "Sticky Notes", "Scissors"],
-          uncommon: ["Stapler", "Staples", "Paperclip", "Paperclips", "Tape", "Scotch Tape", "Tape Dispenser", "Highlighter", "Sticky Notes", "Post It Notes", "Scissors", "Pen", "Pencils", "Eraser", "Ruler", "Folder", "File Folder", "Binder", "Envelope", "Notepad", "Paper"],
-          common: ["Stapler", "Paperclip", "Tape", "Highlighter", "Sticky Notes", "Scissors", "Pen", "Pencil", "Ruler", "Folder", "Binder", "Paper"]
+          uncommon: ["Stapler", "Staples", "Paperclip", "Paperclips", "Tape", "Scotch Tape", "Tape Dispenser", "Hole Puncher", "Highlighter", "Sticky Notes", "Post It Notes", "Scissors", "Pen", "Pencils", "Eraser", "Ruler", "Folder", "File Folder", "Binder", "Envelope", "Notepad", "Paper"],
+          common: ["Stapler", "Paperclip", "Tape", "Highlighter", "Cup", "Coffee", "Sticky Notes", "Scissors", "Pen", "Pencil", "Ruler", "Folder", "Binder", "Paper"]
         },
         {
           cat: 'everyday',
@@ -2583,8 +3088,8 @@
           prompt: 'Name an electronic device with a screen',
           gold: ["Oscilloscope"],
           epic: ["Smart Watch", "E-reader", "GPS Navigator", "Handheld Console"],
-          rare: ["Smartphone", "Television", "Laptop", "Computer Monitor", "Tablet", "iPad"],
-          uncommon: ["Smartphone", "Cell Phone", "Mobile Phone", "Television", "TV", "Laptop", "Computer Monitor", "Monitor", "Tablet", "iPad", "Smartwatch", "Smart Watch", "Kindle", "E Reader", "Nintendo Switch", "Game Boy", "Camera", "Digital Camera", "ATM Machine"],
+          rare: ["Smartphone", "Television", "Laptop", "Monitor", "Tablet", "iPad"],
+          uncommon: ["Smartphone", "Phone", "Cell Phone", "Mobile Phone", "Television", "TV", "Laptop", "Computer Monitor", "Monitor", "Tablet", "iPad", "Smartwatch", "Smart Watch", "Kindle", "E Reader", "Nintendo Switch", "Game Boy", "Camera", "Digital Camera", "ATM Machine"],
           common: ["Smartphone", "Cell Phone", "Television", "TV", "Laptop", "Tablet", "iPad", "Monitor", "Computer", "Smartwatch"]
         },
         {
@@ -3009,6 +3514,7 @@
     let userHistory = [];
     let usedAnswersSet = new Set();
     let pendingAutoCorrect = null;
+    let selectedProjectedIndex = 0;
 
     // Global SVG Canvas & Camera State
     let accumulatedX = 60;
@@ -3091,13 +3597,153 @@
         }
       });
 
+      // Reset covered state by default when opening modal
+      toggleModalAnswers(false);
+
       if (modal) modal.classList.remove('hidden');
     }
-
-    function closeQuestionDetailModal() {
-      const modal = document.getElementById('questionDetailModal');
-      if (modal) modal.classList.add('hidden');
+  function selectQuestionForProjection(idx) {
+    // Toggle un-inspect if clicking the currently inspected question
+    if (selectedProjectedIndex === idx) {
+      uninspectQuestion();
+      return;
     }
+
+    selectedProjectedIndex = idx;
+    projAnswersVisible = false;
+
+    const item = userHistory[idx];
+    const qObj = activeQuestions[idx];
+    if (!item || !qObj) return;
+
+    const isSkip = item.rarityKey === 'skipped';
+    const colorHex = isSkip ? '#475569' : item.color;
+
+    // 1. Highlight selected left box
+    for (let i = 0; i < userHistory.length; i++) {
+      const cardEl = document.getElementById(`proj-left-card-${i}`);
+      if (cardEl) {
+        if (i === idx) {
+          cardEl.className = 'bg-pik-card border-2 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all shadow-lg scale-[1.01] z-30 overflow-hidden';
+          cardEl.style.borderColor = colorHex;
+        } else {
+          cardEl.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-70 hover:opacity-100 z-20 overflow-hidden';
+          cardEl.style.borderColor = '';
+        }
+      }
+    }
+
+    // 2. Populate projected detail content
+    const detailContent = document.getElementById('inspectedDetailContent');
+    const panel = document.getElementById('projectedDetailPanel');
+    if (panel) panel.style.borderColor = `${colorHex}80`;
+
+    // Render tier examples
+    const tiers = [
+      { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
+      { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
+      { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+      { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
+      { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
+    ];
+
+    let tierExamplesHtml = '';
+    tiers.forEach(t => {
+      const answers = qObj[t.key] || [];
+      if (answers.length > 0) {
+        const sampleList = answers.slice(0, 5).join(', ') + (answers.length > 5 ? '...' : '');
+        tierExamplesHtml += `
+          <div class="bg-pik-bg/70 border border-pik-border/60 p-1.5 rounded-md">
+            <div class="flex items-center gap-1 font-bold mb-0.5 text-[10px]" style="color: ${t.color}">
+              <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${t.color}"></span>
+              <span>${t.name}</span>
+            </div>
+            <div class="text-slate-300 text-[10px] font-sans leading-tight truncate">
+              ${sampleList}
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    const matchedText = (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') 
+      ? `<div class="text-[10px] text-slate-400 font-display truncate">Matched: "${item.matchedName}"</div>` : '';
+
+    if (detailContent) {
+      detailContent.innerHTML = `
+        <div class="space-y-2 flex-1 flex flex-col justify-between overflow-hidden">
+          <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+            <span class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question ${idx + 1} of 8 Breakdown</span>
+            <span class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold" style="background-color: ${colorHex}25; color: ${colorHex}; border: 1px solid ${colorHex}50">
+              ${item.rarityName}
+            </span>
+          </div>
+
+          <div>
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Prompt</div>
+            <h3 class="font-display font-bold text-xs sm:text-sm text-slate-100 leading-snug truncate">${item.prompt}</h3>
+          </div>
+
+          <div class="bg-pik-bg p-2 rounded-lg border border-pik-border/80 flex items-center justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Your Answer</div>
+              <div class="font-display font-extrabold text-xs sm:text-sm text-slate-100 truncate">${item.userAnswer}</div>
+              ${matchedText}
+            </div>
+            <div class="flex items-center gap-2 border-l border-pik-border/60 pl-2 flex-shrink-0">
+              <div>
+                <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Distance</div>
+                <div class="font-display font-bold text-xs text-pik-gold">+${item.length} px</div>
+              </div>
+              <div>
+                <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Points</div>
+                <div class="font-display font-bold text-xs text-slate-200">+${item.points} pts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col justify-end">
+            <div class="flex items-center justify-between mb-1">
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Answer Tier Breakdown</div>
+              <button id="projToggleAnswersBtn" onclick="toggleProjAnswers()" class="text-[9px] font-display font-bold px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-pik-gold border border-pik-border transition flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <span>Show Answers</span>
+              </button>
+            </div>
+            <div class="relative rounded-lg overflow-hidden">
+              <div id="projTiersContent" class="grid grid-cols-1 sm:grid-cols-2 gap-1 font-display filter blur-sm select-none pointer-events-none transition-all duration-300">
+                ${tierExamplesHtml}
+              </div>
+              <div id="projTiersOverlay" class="absolute inset-0 bg-pik-card/90 backdrop-blur-md flex flex-col items-center justify-center gap-1 z-10 transition-all duration-300">
+                <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <span class="text-[10px] font-display font-bold text-slate-300">Other Answers Hidden</span>
+                <button onclick="toggleProjAnswers()" class="px-2.5 py-0.5 bg-pik-gold hover:bg-amber-400 text-slate-950 font-display font-extrabold text-[10px] rounded transition shadow">
+                  Reveal Other Answers
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Move middle overview UP out of the way, and bring detail panel IN
+    const dashboard = document.getElementById('overviewDashboard');
+    if (dashboard) {
+      dashboard.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform -translate-y-full opacity-0 z-10 pointer-events-none';
+    }
+    if (detailContent) {
+      detailContent.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-20 pointer-events-auto';
+    }
+
+    // 4. Draw projection lines connecting left box to right panel
+    requestAnimationFrame(() => {
+      const activeCard = document.getElementById(`proj-left-card-${idx}`);
+      if (activeCard && panel) {
+        drawProjectionLines(activeCard, panel, colorHex);
+      }
+    });
+  }
 
     function returnToMenu() {
       if (timerInterval) clearInterval(timerInterval);
@@ -3790,68 +4436,6 @@
     }
 
     /* ----------------------------------------------------
-       7. END GAME RESULTS & SUMMARY CARDS
-    ---------------------------------------------------- */
-    function finishGame() {
-      if (timerInterval) clearInterval(timerInterval);
-
-      document.getElementById('gameArea').classList.add('hidden');
-      const resultsSection = document.getElementById('resultsSection');
-      resultsSection.classList.remove('hidden-results', 'order-3');
-      resultsSection.classList.add('show-results', 'order-1');
-
-      const lineSec = document.getElementById('lineSection');
-      if (lineSec) {
-        lineSec.classList.remove('order-2');
-        lineSec.classList.add('order-2');
-      }
-
-      // Show interactive line scrubber slider and set to 100%
-      const sliderContainer = document.getElementById('lineSliderContainer');
-      const slider = document.getElementById('lineScrubber');
-      if (sliderContainer) sliderContainer.classList.remove('hidden');
-      if (slider) slider.value = 100;
-
-      document.getElementById('finalDistanceText').textContent = `${totalDistance} px`;
-      document.getElementById('finalScoreText').textContent = `${totalScore} pts`;
-
-      let rankTitle = 'Pik Explorer';
-      if (totalScore >= 600) rankTitle = 'Pik Grandmaster';
-      else if (totalScore >= 450) rankTitle = 'Pik Master';
-      else if (totalScore >= 300) rankTitle = 'Pik Expert';
-      else if (totalScore >= 150) rankTitle = 'Pik Scholar';
-
-      document.getElementById('finalRankSub').textContent = `Rank: ${rankTitle}`;
-
-      const grid = document.getElementById('summaryCardsGrid');
-      grid.innerHTML = '';
-
-      userHistory.forEach((item, idx) => {
-        const card = document.createElement('div');
-        card.className = 'bg-pik-bg border border-pik-border/80 rounded-lg p-2 flex flex-col justify-between text-left min-w-0 cursor-pointer hover:border-slate-400 hover:scale-[1.03] transition-all transform shadow-md active:scale-95';
-        card.setAttribute('onclick', `openQuestionDetailModal(${idx})`);
-
-        const isSkip = item.rarityKey === 'skipped';
-        const colorHex = isSkip ? '#475569' : item.color;
-
-        card.innerHTML = `
-          <div>
-            <div class="text-[9px] sm:text-[10px] text-slate-400 font-display font-medium truncate mb-0.5" title="${item.prompt}">Q${idx + 1} • ${item.prompt}</div>
-            <div class="font-display font-bold text-xs sm:text-sm text-slate-100 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
-          </div>
-          <div class="flex items-center justify-between mt-1 pt-1 border-t border-pik-border/40 text-[10px] sm:text-xs">
-            <span class="font-display font-semibold flex items-center gap-1 truncate" style="color: ${colorHex}">
-              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${colorHex}"></span>
-              <span class="truncate">${item.rarityName}</span>
-            </span>
-            <span class="font-display font-bold text-slate-400 flex-shrink-0 ml-1">+${item.length}px</span>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    /* ----------------------------------------------------
        8. EVENT LISTENERS INITIALIZATION
     ---------------------------------------------------- */
     document.addEventListener('DOMContentLoaded', () => {
@@ -3868,6 +4452,19 @@
           }
         });
       }
+
+      window.addEventListener('resize', () => {
+        if (selectedProjectedIndex !== undefined && selectedProjectedIndex !== null && selectedProjectedIndex >= 0 && userHistory[selectedProjectedIndex]) {
+          const activeCard = document.getElementById(`proj-left-card-${selectedProjectedIndex}`);
+          const panel = document.getElementById('projectedDetailPanel');
+          if (activeCard && panel) {
+            const item = userHistory[selectedProjectedIndex];
+            const isSkip = item.rarityKey === 'skipped';
+            const colorHex = isSkip ? '#475569' : item.color;
+            drawProjectionLines(activeCard, panel, colorHex);
+          }
+        }
+      });
     });
 
     // Immediate fallback execution on script load
