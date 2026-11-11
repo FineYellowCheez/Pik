@@ -381,7 +381,6 @@
         <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
           Game Completed
         </h2>
-        <p id="finalRankSub" class="text-xs text-pik-gold font-display font-medium">Rank: Pik Master</p>
       </div>
 
       <div class="flex items-center gap-4">
@@ -859,14 +858,6 @@
             });
 
             scoreEl.textContent = `${calculatedPoints} pts`;
-
-            let rankTitle = 'Pik Explorer';
-            if (calculatedPoints >= 600) rankTitle = 'Pik Grandmaster';
-            else if (calculatedPoints >= 450) rankTitle = 'Pik Master';
-            else if (calculatedPoints >= 300) rankTitle = 'Pik Expert';
-            else if (calculatedPoints >= 150) rankTitle = 'Pik Scholar';
-
-            document.getElementById('finalRankSub').textContent = `Rank: ${rankTitle}`;
           }, 400);
 
         }, 300);
@@ -1195,7 +1186,7 @@
             "Nightguard", "Dentura Cream", "Denture Adhesive", "Antacid Tablets", "Tums", "Pepto Bismol", "Excedrin", "DayQuil", 
             "NyQuil", "Cough Drops", "Ricola", "Halls", "Throat Spray", "Decongestant", "Allergy Pills", "Claritin", "Zyrtec", 
             "Allegra", "Flonase", "Sudafed", "Laxative", "Stool Softener", "Imodium", "Anti Diarrheal", "Motion Sickness Pills", 
-            "Dramamine", "Sleeping Pills", "Drugs", "Pill container", "Pills", "Medicine", "Pill bottle", "Melatonin", "Vitamin C", "Vitamin D", "Multivitamins", "Fish Oil Capsules", "Biotin"
+            "Dramamine", "Sleeping Pills", "Melatonin", "Vitamin C", "Vitamin D", "Multivitamins", "Fish Oil Capsules", "Biotin"
           ],
           common: [
             "Bandages", "Toothpaste", "Toothbrush", "Aspirin", "Nail Clippers", "Band Aids", "Cotton Balls", "Q Tips", 
@@ -1301,15 +1292,6 @@
           common: ["France", "Poland", "Austria", "Switzerland", "Netherlands", "Belgium", "Denmark", "Czech Republic"]
         },
         {
-          cat: 'geography',
-          prompt: 'Name a capital city of a US state starting with a vowel',
-          gold: ["Augusta"],
-          epic: ["Albany", "Annapolis", "Olympia"],
-          rare: ["Austin", "Atlanta", "Oklahoma City", "Indianapolis", "Des Moines"],
-          uncommon: ["Austin", "Atlanta", "Oklahoma City", "Indianapolis", "Albany", "Annapolis", "Augusta", "Olympia"],
-          common: ["Austin", "Atlanta", "Indianapolis", "Oklahoma City", "Albany"]
-        },
-        {
           cat: 'science',
           prompt: 'Name a planet or major moon in our Solar System',
           gold: ["Enceladus"],
@@ -1352,7 +1334,7 @@
           epic: ["Chibi Robo", "F Zero", "Star Fox", "Pikmin", "Punch Out"],
           rare: ["Xenoblade Chronicles", "Fire Emblem", "Metroid", "Kirby", "Donkey Kong", "EarthBound", "Kid Icarus", "Splatoon", "Animal Crossing", "WarioWare", "Paper Mario", "Luigi Mansion"],
           uncommon: ["Mario", "Super Mario", "The Legend of Zelda", "Zelda", "Pokemon", "Kirby", "Donkey Kong", "Metroid", "Super Smash Bros", "Smash Bros", "Animal Crossing", "Splatoon", "Fire Emblem", "Star Fox", "Pikmin", "Mario Kart", "Luigi Mansion", "Paper Mario", "Yoshi", "Nintendo Switch Sports"],
-          common: ["Mario", "Super Mario Bros", "Zelda", "Pokemon", "Donkey Kong", "Kirby", "Mario Kart", "Super Smash Bros", "Animal Crossing", "Splatoon", "Metroid", "Luigi"]
+          common: ["Mario", "Super Mario", "Zelda", "Pokemon", "Donkey Kong", "Kirby", "Mario Kart", "Super Smash Bros", "Animal Crossing", "Splatoon", "Metroid", "Luigi"]
         },
         {
           cat: 'popculture',
@@ -1399,48 +1381,12 @@
         // --- WORDPLAY & LANGUAGE ---
         {
           cat: 'language',
-          prompt: 'Name an English word containing double "F"',
-          gold: ["Snaffling"],
-          epic: ["Chaffinch", "Scaffold", "Pillory", "Suffocate"],
-          rare: ["Scuffle", "Riffraff", "Affidavit", "Offal", "Tariff", "Bluff", "Baffle", "Muffle", "Afford"],
-          uncommon: ["Afford", "Effort", "Traffic", "Officer", "Offense", "Offer", "Coffee", "Toffee", "Staff", "Stiff", "Cliff", "Sheriff", "Muffin", "Buffer", "Suffer", "Differ", "Shuffle", "Raffle", "Waffle", "Gaff", "Flaff", "Puff", "Fluff", "Sniff", "Cuff"],
-          common: ["Off", "Offer", "Offered", "Offering", "Staff", "Staffed", "Stiff", "Cliff", "Cliffs", "Coffee", "Toffee", "Traffic", "Officer", "Officers", "Office", "Effort", "Efforts", "Puff", "Puffs", "Fluff", "Fluffy", "Sniff", "Sniffs", "Cuff", "Cuffs"]
-        },
-        {
-          cat: 'language',
           prompt: 'Name an English word that contains a silent "N"',
           gold: ["Solemnness"],
           epic: ["Damnation", "Limner", "Columnist", "Condemnation"],
           rare: ["Solemnity", "Hymnal", "Hymnbook", "Damnable", "Columnar"],
           uncommon: ["Autumntime", "Autumnal", "Solemnly", "Damned", "Damning", "Condemned", "Condemning", "Columned", "Hymns", "Singing hymns", "Church hymn"],
           common: ["Autumn", "Column", "Hymn", "Solemn", "Damn", "Condemn", "Autumns", "Columns", "Hymns", "Solemnity", "Damned"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word with 4 or more syllables',
-          gold: ["Honorificabilitudinitatibus"],
-          epic: ["Incomprehensible", "Extraordinary", "Disproportionate", "Uncharacteristically"],
-          rare: ["Unbelievable", "Intercontinental", "Biodegradable", "Multiplication", "Identification", "Reconciliation"],
-          uncommon: ["University", "Incredible", "Geographical", "Psychological", "Responsibility", "Opportunity", "Celebration", "Information", "Community", "Generation", "Organization", "Transportation", "Communication", "Investigation", "Administration", "Recommendation", "Participation", "Representative"],
-          common: ["Information", "Education", "Population", "Situation", "Technology", "Category", "Activity", "Ability", "Ecology", "Economy", "Delivery", "Discovery", "History", "Victory", "Memory"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with the letter "Z"',
-          gold: ["Zymurgy"],
-          epic: ["Zealot", "Zilch", "Zirconium", "Zephyr"],
-          rare: ["Zucchini", "Zodiac", "Zenith", "Zipper", "Zombie", "Zillion", "Zigzag"],
-          uncommon: ["Zeal", "Zealous", "Zero", "Zone", "Zoning", "Zinc", "Zest", "Zesty", "Zebra", "Zebras", "Zookeeper", "Zoology", "Zoological", "Zoom", "Zooming", "Zoomed", "Zip", "Zipping", "Zipped", "Zippers", "Zucchini", "Zuccinis", "Zodiac", "Zombies"],
-          common: ["Zero", "Zone", "Zoo", "Zebra", "Zip", "Zipper", "Zoom", "Zest", "Zinc", "Zombie", "Zucchini", "Zodiac", "Zoos", "Zebras", "Zeros", "Zones", "Zipped", "Zipping"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with the letter "Q"',
-          gold: ["Quisling"],
-          epic: ["Quagmire", "Quixotic", "Quorum", "Quirt"],
-          rare: ["Quintessential", "Quarantined", "Quasar", "Quiver", "Quench", "Quirky"],
-          uncommon: ["Query", "Queries", "Quota", "Quotas", "Qualify", "Quality", "Quantity", "Quantities", "Quarterly", "Quartet", "Quartets", "Quartz", "Quench", "Quenched", "Quirks", "Quirky", "Quiver", "Quivering", "Quizzes", "Quiz", "Quotas"],
-          common: ["Queen", "Quiet", "Quick", "Question", "Questions", "Quality", "Quantity", "Quarter", "Quarters", "Quit", "Quitting", "Quiz", "Quizzes", "Quote", "Quotes", "Quoted", "Quoting", "Quickly", "Quietly"]
         },
         {
           cat: 'language',
@@ -1544,15 +1490,6 @@
           rare: ["Quito", "La Paz", "Montevideo", "Caracas", "Bogota", "Lima"],
           uncommon: ["Buenos Aires", "Santiago", "Brasilia", "Lima", "Bogota", "Caracas", "Quito", "La Paz", "Montevideo", "Asuncion", "Georgetown", "Paramaribo"],
           common: ["Buenos Aires", "Rio de Janeiro", "Brasilia", "Santiago", "Lima", "Bogota", "Caracas"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a US state starting with the letter "M"',
-          gold: ["Maine"],
-          epic: ["Montana", "Mississippi", "Missouri"],
-          rare: ["Maryland", "Minnesota", "Massachusetts", "Michigan"],
-          uncommon: ["Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana"],
-          common: ["Michigan", "Maryland", "Massachusetts", "Minnesota", "Mississippi", "Missouri", "Montana", "Maine"]
         },
         {
           cat: 'geography',
@@ -1672,7 +1609,7 @@
           gold: ["Boogie Board"],
           epic: ["Snorkel", "Sun Hat", "Beach Umbrella", "Beach Mat"],
           rare: ["Towel", "Sunscreen", "Cooler", "Flip Flops", "Sunglasses", "Goggles"],
-          uncommon: ["Beach Towel", "Ball", "Sunscreen Lotion", "Sunglasses", "Flip Flops", "Beach Chair", "Umbrella", "Beach Ball", "Cooler", "Swimsuit", "Trunks", "Bikini", "Sand Toys", "Bucket and Spade", "Frisbee"],
+          uncommon: ["Beach Towel", "Sunscreen Lotion", "Sunglasses", "Flip Flops", "Beach Chair", "Umbrella", "Beach Ball", "Cooler", "Swimsuit", "Trunks", "Bikini", "Sand Toys", "Bucket and Spade", "Frisbee"],
           common: ["Towel", "Sunscreen", "Sunglasses", "Swimsuit", "Flip Flops", "Umbrella", "Cooler", "Beach Ball", "Beach Towel"]
         },
         {
@@ -1702,13 +1639,13 @@
           epic: ["Onward", "Luca", "Soul", "Turning Red"],
           rare: ["Brave", "Wall-E", "Up", "Ratatouille", "Inside Out", "Coco"],
           uncommon: ["Toy Story", "Toy Story 2", "Toy Story 3", "Toy Story 4", "Finding Nemo", "Finding Dory", "Monsters Inc", "Monsters University", "The Incredibles", "Incredibles 2", "Cars", "Cars 2", "Cars 3", "A Bugs Life"],
-          common: ["Toy Story", "Planes", "Finding Nemo", "Cars", "The Incredibles", "Monsters Inc", "Up", "WALL-E", "Inside Out", "Coco", "Ratatouille"]
+          common: ["Toy Story", "Finding Nemo", "Cars", "The Incredibles", "Monsters Inc", "Up", "WALL-E", "Inside Out", "Coco", "Ratatouille"]
         },
         {
           cat: 'popculture',
           prompt: 'Name a Mario franchise video game character',
           gold: ["Wart"],
-          epic: ["Toadette", "Waluigi", "Rosalina", "Kamek", "Shy Guy"],
+          epic: ["Waluigi", "Rosalina", "Kamek", "Shy Guy"],
           rare: ["Toad", "Yoshi", "Bowser", "Donkey Kong", "Wario", "Daisy"],
           uncommon: ["Mario", "Luigi", "Princess Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario", "Waluigi", "Bowser Jr", "Goomba", "Koopa Troopa", "Boo", "Birdo", "Diddy Kong"],
           common: ["Mario", "Luigi", "Peach", "Bowser", "Yoshi", "Toad", "Donkey Kong", "Wario"]
@@ -1718,7 +1655,7 @@
           prompt: 'Name a genre of music',
           gold: ["Shoegaze"],
           epic: ["Math Rock", "Bossa Nova", "Dubstep", "Synthwave"],
-          rare: ["Vocaloid", "Jumpstyle", "Jazz", "Blues", "Reggae", "Heavy Metal", "Ska", "Disco"],
+          rare: ["Jazz", "Blues", "Reggae", "Heavy Metal", "Ska", "Disco"],
           uncommon: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "R&B", "Classical", "Electronic", "EDM", "Indie", "Alternative", "Punk", "Folk", "Soul", "Funk", "Techno", "House"],
           common: ["Rock", "Pop", "Hip Hop", "Rap", "Country", "Jazz", "Classical", "Blues", "Heavy Metal", "Disco", "Reggae"]
         },
@@ -1729,7 +1666,7 @@
           epic: ["Canasta", "Bridge", "Euchre", "Pinochle"],
           rare: ["Hearts", "Spades", "Rummy", "Poker", "Blackjack", "Solitaire"],
           uncommon: ["Poker", "Blackjack", "Solitaire", "Go Fish", "Crazy Eights", "War", "Old Maid", "Speed", "Gin Rummy", "Texas Holdem", "Slapjack", "Euchre", "Hearts", "Spades"],
-          common: ["Poker", "Rummy", "BS", "Cheat", "Blackjack", "Solitaire", "Go Fish", "War", "Gin Rummy", "Hearts", "Spades", "Texas Hold 'Em"]
+          common: ["Poker", "Blackjack", "Solitaire", "Go Fish", "War", "Gin Rummy", "Hearts", "Spades", "Texas Hold 'Em"]
         },
         {
           cat: 'popculture',
@@ -1767,15 +1704,6 @@
         },
         {
           cat: 'language',
-          prompt: 'Name an English word starting with "un-" and having 3 or more syllables',
-          gold: ["Uncharacteristically"],
-          epic: ["Unconstitutional", "Uncompromising", "Unpredictable"],
-          rare: ["Unbelievable", "Unforgettable", "Unconditional", "Uncomfortable", "Unfortunate"],
-          uncommon: ["Unreal", "Unfair", "Unusual", "Unlikely", "Uncertain", "Unlimited", "Unnecessary", "Unaware", "Uncertainty", "Unconscious", "Undeniable", "Underestimate", "Understanding", "Underneath", "Undo", "Undoubtedly", "Uneasy", "Unemployed", "Unequal", "Unexpected", "Unfriendly", "Unhappy"],
-          common: ["Unbelievable", "Uncomfortable", "Unfortunate", "Unusual", "Unnecessary", "Unreal", "Unfair", "Uncertain", "Unlimited", "Unaware", "Understanding", "Unexpected", "Uneasy", "Unemployed", "Unequal", "Unhappy", "Unkind"]
-        },
-        {
-          cat: 'language',
           prompt: 'Name an English word ending in "-ment"',
           gold: ["Disillusionment"],
           epic: ["Encroachment", "Embezzlement", "Disenfranchisement"],
@@ -1785,48 +1713,12 @@
         },
         {
           cat: 'language',
-          prompt: 'Name an English word that contains a double "M"',
-          gold: ["Flummoxed"],
-          epic: ["Flammable", "Symmetrical", "Dilemma"],
-          rare: ["Summon", "Hamper", "Immerse", "Smaragdine", "Stammer"],
-          uncommon: ["Summer", "Hammer", "Grammar", "Simmer", "Swimmer", "Dimmer", "Trimmer", "Plummer", "Drummer", "Strummer", "Glimmer", "Shimmer", "Bummer", "Jammer", "Slammer", "Rammer", "Crammer", "Spammer", "Skimmer", "Scammer", "Commute", "Command", "Comment", "Commit", "Communicate"],
-          common: ["Summer", "Hammer", "Grammar", "Simmer", "Swimmer", "Drummer", "Glimmer", "Shimmer", "Comment", "Command", "Commute", "Commit", "Community", "Common", "Commercial", "Summer time", "Hamming"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word that contains a double "P"',
-          gold: ["Whippersnapper"],
-          epic: ["Apparition", "Hippopotamus", "Flappable"],
-          rare: ["Supplicant", "Sapphire", "Clippers", "Stripper"],
-          uncommon: ["Happy", "Puppy", "Apple", "Paper", "Pepper", "Copper", "Supper", "Topper", "Hopper", "Shopper", "Chopper", "Dropper", "Stopper", "Cropper", "Flapper", "Tapper", "Rapper", "Zapper", "Napper", "Clapper", "Slapper", "Trapper", "Wrapper", "Stripper"],
-          common: ["Happy", "Puppy", "Apple", "Pepper", "Copper", "Supper", "Shopper", "Rapper", "Application", "Approval", "Appoint", "Approach", "Appear", "Appealing", "Support", "Oppose", "Opposite", "Apples", "Puppies"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with "re-" and ending in "-ing"',
-          gold: ["Rejuvenating"],
-          epic: ["Reciprocating", "Reverberating", "Rehabilitating"],
-          rare: ["Reconfiguring", "Rebuilding", "Reconsidering", "Reconnecting"],
-          uncommon: ["Reading", "Running", "Resting", "Renting", "Removing", "Replacing", "Repairing", "Returning", "Receiving", "Recording", "Reporting", "Repeating", "Refusing", "Reflecting", "Refreshing", "Regretting", "Releasing", "Relocating", "Remaining", "Remembering", "Reminding", "Reopening"],
-          common: ["Reading", "Running", "Resting", "Removing", "Replacing", "Repairing", "Returning", "Receiving", "Recording", "Reporting", "Repeating", "Refusing", "Reflecting", "Refreshing", "Releasing", "Remaining", "Remembering"]
-        },
-        {
-          cat: 'language',
           prompt: 'Name an English word containing 3 consecutive vowels',
           gold: ["Queueing"],
           epic: ["Bougainvillea", "Onomatopoeia", "Sequenced"],
           rare: ["Aquarium", "Precious", "Behavior", "Beautiful", "Guardian"],
           uncommon: ["Beautiful", "Queen", "Queue", "Audio", "Adieu", "Autumn", "Sauce", "Gauge", "Joyous", "Serious", "Curious", "Furious", "Glorious", "Various", "Previous", "Obvious", "Anxious", "Jealous", "Zealous", "Famous", "Dangerous", "Generous", "Nervous"],
           common: ["Beautiful", "Queen", "Audio", "Autumn", "Sauce", "Joyous", "Serious", "Curious", "Previous", "Obvious", "Anxious", "Jealous", "Famous", "Dangerous", "Generous", "Nervous"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name a color starting with a consonant that has 6 or more letters',
-          gold: ["Chartreuse"],
-          epic: ["Cerulean", "Burgundy", "Vermilion"],
-          rare: ["Fuchsia", "Crimson", "Magenta", "Lavender", "Turquoise"],
-          uncommon: ["Magenta", "Lavender", "Crimson", "Fuchsia", "Turquoise", "Emerald", "Sapphire", "Scarlet", "Maroon", "Bronze", "Copper", "Silver", "Golden", "Mustard", "Charcoal", "Indigo", "Violet", "Salmon", "Coral", "Yellow"],
-          common: ["Yellow", "Purple", "Orange", "Silver", "Golden", "Maroon", "Bronze", "Copper", "Violet", "Indigo", "Scarlet", "Magenta", "Lavender"]
         },
         {
           cat: 'language',
@@ -1848,39 +1740,12 @@
         },
         {
           cat: 'language',
-          prompt: 'Name an English word starting with the prefix "ex-"',
-          gold: ["Exsanguinate"],
-          epic: ["Excoriate", "Exculpate", "Exemplar"],
-          rare: ["Exuberant", "Exasperate", "Exoskeleton", "Excavation", "Exemplary"],
-          uncommon: ["Example", "Exercise", "Exchange", "Exciting", "Exception", "Excellent", "Executive", "Exist", "Existence", "Expand", "Expect", "Expense", "Expensive", "Experience", "Experiment", "Expert", "Explain", "Explore", "Export", "Expose", "Express", "Extend", "Extent", "Extra", "Extract", "Extreme"],
-          common: ["Example", "Exercise", "Exchange", "Exciting", "Exception", "Excellent", "Exist", "Expand", "Expect", "Expensive", "Experience", "Expert", "Explain", "Explore", "Express", "Extra", "Extreme"]
-        },
-        {
-          cat: 'language',
           prompt: 'Name an English word containing "ph"',
           gold: ["Phantasmagoria"],
           epic: ["Phaeton", "Phronesis", "Phylactery"],
           rare: ["Phantom", "Phosphorus", "Phenomenon", "Pharaoh", "Philanthropy"],
           uncommon: ["Phone", "Telephone", "Smartphone", "Photo", "Photograph", "Photographer", "Photography", "Phrase", "Physical", "Physics", "Physician", "Phantom", "Phase", "Pharmacy", "Pharmacist", "Philosophy", "Philosopher", "Phobia", "Phoenix", "Phonics", "Alphabet", "Dolphin", "Elephant", "Graph", "Paragraph", "Sphere", "Trophy"],
           common: ["Phone", "Photo", "Photograph", "Alphabet", "Dolphin", "Elephant", "Graph", "Paragraph", "Sphere", "Trophy", "Physics", "Pharmacy", "Phoenix", "Phrase"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English adverb ending in "-ly" with 4 or more syllables',
-          gold: ["Unquestionably"],
-          epic: ["Extraordinarily", "Catastrophically", "Incomprehensibly"],
-          rare: ["Automatically", "Enthusiastically", "Simultaneously", "Unbelievably", "Significantly"],
-          uncommon: ["Definitely", "Especially", "Immediately", "Eventually", "Completely", "Absolutely", "Originality", "Originally", "Usually", "Generally", "Specifically", "Particularly", "Naturally", "Seriously", "Obviously", "Probably", "Certainly", "Frequently", "Regularly", "Constantly", "Continually"],
-          common: ["Definitely", "Especially", "Immediately", "Eventually", "Completely", "Absolutely", "Originally", "Usually", "Generally", "Specifically", "Particularly", "Naturally", "Seriously", "Obviously", "Probably", "Certainly"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with "micro-"',
-          gold: ["Microphotography"],
-          epic: ["Microcosm", "Microchip", "Microclimate"],
-          rare: ["Microorganism", "Microbiologist", "Microprocessor", "Microclimate", "Microfiber"],
-          uncommon: ["Microscope", "Microscopic", "Microphone", "Microwave", "Microchip", "Microbe", "Microbiology", "Microcomputer", "Microfilm", "Microfinance", "Micron", "Microsecond", "Microstructure"],
-          common: ["Microscope", "Microphone", "Microwave", "Microchip", "Microbe", "Microscopic", "Microscopes", "Microphones", "Microwaves", "Microchips"]
         },
 
         // --- CULINARY & FOOD (15 QUESTIONS) ---
@@ -2068,15 +1933,6 @@
         },
         {
           cat: 'geography',
-          prompt: 'Name a country starting with the letter "B"',
-          gold: ["Burkina Faso"],
-          epic: ["Belize", "Benin", "Brunei", "Burundi"],
-          rare: ["Brazil", "Belgium", "Bulgaria", "Bolivia", "Bahrain", "Barbados", "Botswana"],
-          uncommon: ["Brazil", "Belgium", "Bangladesh", "Bahamas", "Bolivia", "Bulgaria", "Belarus", "Bosnia", "Bosnia and Herzegovina", "Botswana", "Bahrain", "Barbados", "Belize", "Benin", "Bhutan", "Brunei"],
-          common: ["Brazil", "Belgium", "Bahamas", "Bangladesh", "Bolivia", "Bulgaria", "Belarus", "Bosnia"]
-        },
-        {
-          cat: 'geography',
           prompt: 'Name an active or famous volcano',
           gold: ["Eyjafjallajökull"],
           epic: ["Cotopaxi", "Popocatepetl", "Krakatoa", "Mount Pinatubo"],
@@ -2128,15 +1984,6 @@
           rare: ["France", "United Kingdom", "United States", "Australia", "New Zealand", "Greece", "Argentina", "Sweden", "Finland", "Brazil"],
           uncommon: ["United States", "United Kingdom", "France", "Australia", "New Zealand", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Norway", "Netherlands", "Russia", "Chile", "Colombia", "Ukraine", "Israel", "Japan", "South Korea"],
           common: ["United States", "United Kingdom", "France", "Australia", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Ukraine", "Israel"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a US state capital starting with the letter "C"',
-          gold: ["Concord"],
-          epic: ["Carson City", "Charleston", "Cheyenne"],
-          rare: ["Columbus", "Columbia", "Denver"],
-          uncommon: ["Columbus", "Columbia", "Concord", "Carson City", "Charleston", "Cheyenne"],
-          common: ["Columbus", "Columbia", "Concord", "Carson City", "Charleston", "Cheyenne"]
         },
         {
           cat: 'geography',
@@ -2327,9 +2174,9 @@
           prompt: 'Name an item found on an office desk',
           gold: ["Paper Fastener"],
           epic: ["Letter Opener", "Desk Pad", "Tape Dispenser", "Stamp Pad"],
-          rare: ["Computer", "Hole Puncher", "Laptop", "Keyboard", "Mouse", "Monitor", "Stapler", "Paperclips", "Pen Holder"],
+          rare: ["Computer", "Laptop", "Keyboard", "Mouse", "Monitor", "Stapler", "Paperclips", "Pen Holder"],
           uncommon: ["Computer", "Laptop", "Monitor", "Keyboard", "Mouse", "Mousepad", "Stapler", "Paperclips", "Pens", "Pencils", "Notepad", "Sticky Notes", "Post It Notes", "Desk Lamp", "Coffee Mug", "Water Bottle", "Phone", "Calculator", "Scissors", "Folder", "Notebook"],
-          common: ["Computer", "Coffee Cup", "Cup", "Laptop", "Keyboard", "Mouse", "Stapler", "Pen", "Paper", "Notepad", "Coffee Mug", "Monitor", "Scissors"]
+          common: ["Computer", "Laptop", "Keyboard", "Mouse", "Stapler", "Pen", "Paper", "Notepad", "Coffee Mug", "Monitor", "Scissors"]
         },
         {
           cat: 'everyday',
@@ -2448,7 +2295,7 @@
           epic: ["Borzoi", "Komondor", "Basenji", "Tibetan Mastiff"],
           rare: ["German Shepherd", "Golden Retriever", "Labrador Retriever", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Siberian Husky"],
           uncommon: ["Labrador Retriever", "Golden Retriever", "German Shepherd", "French Bulldog", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "German Shorthaired Pointer", "Boxer", "Siberian Husky", "Great Dane", "Doberman Pinscher", "Australian Shepherd", "Corgi", "Pembroke Welsh Corgi", "Pug", "Chihuahua", "Shih Tzu", "Boston Terrier", "Pomeranian", "Havanese", "Shetland Sheepdog", "Bernese Mountain Dog"],
-          common: ["Labrador", "Lab", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Husky", "Corgi", "Pug", "Chihuahua", "Great Dane"]
+          common: ["Labrador", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle", "Beagle", "Rottweiler", "Dachshund", "Boxer", "Husky", "Corgi", "Pug", "Chihuahua", "Great Dane"]
         },
         {
           cat: 'popculture',
@@ -2466,7 +2313,7 @@
           epic: ["Paso Doble", "Bachata", "Capoeira", "Quickstep"],
           rare: ["Ballet", "Tap Dance", "Hip Hop", "Salsa", "Tango", "Waltz", "Breakdancing", "Jazz Dance", "Contemporary"],
           uncommon: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Foxtrot", "Cha Cha", "Rumba", "Samba", "Jazz Dance", "Modern Dance", "Contemporary", "Swing", "Belly Dance", "Line Dancing", "Square Dancing", "Folk Dance", "Ballroom"],
-          common: ["Ballet", "Tap Dance", "Slow Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Jazz Dance", "Line Dancing", "Belly Dance"]
+          common: ["Ballet", "Tap Dance", "Hip Hop", "Breakdancing", "Salsa", "Tango", "Waltz", "Jazz Dance", "Line Dancing", "Belly Dance"]
         },
         {
           cat: 'popculture',
@@ -2665,15 +2512,6 @@
         },
         {
           cat: 'culinary',
-          prompt: 'Name a fruit starting with the letter "P"',
-          gold: ["Persimmon"],
-          epic: ["Passion Fruit", "Papaya", "Pomegranate", "Plumcot"],
-          rare: ["Peach", "Plum", "Pineapple", "Pear", "Papaya", "Plantain"],
-          uncommon: ["Pineapple", "Peach", "Pear", "Plum", "Papaya", "Pomegranate", "Passion Fruit", "Prune", "Persimmon", "Plantain", "Pawpaw", "Prickly Pear"],
-          common: ["Pineapple", "Peach", "Pear", "Plum", "Papaya", "Pomegranate", "Passion Fruit", "Prune"]
-        },
-        {
-          cat: 'culinary',
           prompt: 'Name a style of cooking steak',
           gold: ["Sous Vide Steak"],
           epic: ["Pan Seared Steak", "Reverse Sear Steak", "Broiled Steak"],
@@ -2811,42 +2649,6 @@
         },
         {
           cat: 'geography',
-          prompt: 'Name a country that starts with the letter "A"',
-          gold: ["Azerbaijan"],
-          epic: ["Armenia", "Algeria", "Angola", "Andorra"],
-          rare: ["Argentina", "Australia", "Austria", "Afghanistan", "Albania"],
-          uncommon: ["Australia", "Argentina", "Austria", "Afghanistan", "Albania", "Algeria", "Angola", "Armenia", "Azerbaijan", "Andorra", "Antigua and Barbuda"],
-          common: ["Australia", "Argentina", "Austria", "Afghanistan", "Albania", "Algeria", "Angola"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a country that starts with the letter "C"',
-          gold: ["Central African Republic"],
-          epic: ["Cameroon", "Chad", "Comoros", "Cape Verde"],
-          rare: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic"],
-          uncommon: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic", "Czechia", "Cambodia", "Cameroon", "Chad", "Congo", "Cyprus", "Ivory Coast"],
-          common: ["Canada", "China", "Colombia", "Chile", "Costa Rica", "Croatia", "Cuba", "Czech Republic", "Cyprus"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a country that starts with the letter "I"',
-          gold: ["Ivory Coast"],
-          epic: ["Iceland", "Iran", "Iraq", "Indonesia"],
-          rare: ["India", "Italy", "Ireland", "Israel"],
-          uncommon: ["India", "Italy", "Ireland", "Israel", "Iceland", "Indonesia", "Iran", "Iraq", "Ivory Coast"],
-          common: ["India", "Italy", "Ireland", "Israel", "Iceland", "Indonesia", "Iran", "Iraq"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a country that starts with the letter "S"',
-          gold: ["Suriname"],
-          epic: ["Slovakia", "Slovenia", "Senegal", "Somalia"],
-          rare: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland"],
-          uncommon: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland", "Serbia", "Slovakia", "Slovenia", "Senegal", "Somalia", "Sudan", "South Sudan", "Sri Lanka", "Syria"],
-          common: ["Spain", "South Korea", "Sweden", "Switzerland", "South Africa", "Saudi Arabia", "Singapore", "Scotland", "Serbia"]
-        },
-        {
-          cat: 'geography',
           prompt: 'Name a major European river',
           gold: ["Dnieper River"],
           epic: ["Elbe River", "Oder River", "Tagus River", "Main River"],
@@ -2912,16 +2714,7 @@
         },
         {
           cat: 'science',
-          prompt: 'Name a planet in our Solar System starting with a consonant',
-          gold: ["Neptune"],
-          epic: ["Mercury", "Venus", "Saturn"],
-          rare: ["Mars", "Jupiter", "Neptune", "Saturn"],
-          uncommon: ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Neptune"],
-          common: ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Neptune"]
-        },
-        {
-          cat: 'science',
-          prompt: 'Name a layer of Earths atmosphere',
+          prompt: 'Name a layer of Earth atmosphere',
           gold: ["Exosphere"],
           epic: ["Thermosphere", "Mesosphere", "Stratosphere", "Troposphere"],
           rare: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Ionosphere", "Ozone Layer"],
@@ -3071,8 +2864,8 @@
           gold: ["Correction Tape"],
           epic: ["Paper Fastener", "Binder Clip", "Label Maker", "Stamp Pad"],
           rare: ["Stapler", "Paperclip", "Tape Dispenser", "Highlighter", "Sticky Notes", "Scissors"],
-          uncommon: ["Stapler", "Staples", "Paperclip", "Paperclips", "Tape", "Scotch Tape", "Tape Dispenser", "Hole Puncher", "Highlighter", "Sticky Notes", "Post It Notes", "Scissors", "Pen", "Pencils", "Eraser", "Ruler", "Folder", "File Folder", "Binder", "Envelope", "Notepad", "Paper"],
-          common: ["Stapler", "Paperclip", "Tape", "Highlighter", "Cup", "Coffee", "Sticky Notes", "Scissors", "Pen", "Pencil", "Ruler", "Folder", "Binder", "Paper"]
+          uncommon: ["Stapler", "Staples", "Paperclip", "Paperclips", "Tape", "Scotch Tape", "Tape Dispenser", "Highlighter", "Sticky Notes", "Post It Notes", "Scissors", "Pen", "Pencils", "Eraser", "Ruler", "Folder", "File Folder", "Binder", "Envelope", "Notepad", "Paper"],
+          common: ["Stapler", "Paperclip", "Tape", "Highlighter", "Sticky Notes", "Scissors", "Pen", "Pencil", "Ruler", "Folder", "Binder", "Paper"]
         },
         {
           cat: 'everyday',
@@ -3088,8 +2881,8 @@
           prompt: 'Name an electronic device with a screen',
           gold: ["Oscilloscope"],
           epic: ["Smart Watch", "E-reader", "GPS Navigator", "Handheld Console"],
-          rare: ["Smartphone", "Television", "Laptop", "Monitor", "Tablet", "iPad"],
-          uncommon: ["Smartphone", "Phone", "Cell Phone", "Mobile Phone", "Television", "TV", "Laptop", "Computer Monitor", "Monitor", "Tablet", "iPad", "Smartwatch", "Smart Watch", "Kindle", "E Reader", "Nintendo Switch", "Game Boy", "Camera", "Digital Camera", "ATM Machine"],
+          rare: ["Smartphone", "Television", "Laptop", "Computer Monitor", "Tablet", "iPad"],
+          uncommon: ["Smartphone", "Cell Phone", "Mobile Phone", "Television", "TV", "Laptop", "Computer Monitor", "Monitor", "Tablet", "iPad", "Smartwatch", "Smart Watch", "Kindle", "E Reader", "Nintendo Switch", "Game Boy", "Camera", "Digital Camera", "ATM Machine"],
           common: ["Smartphone", "Cell Phone", "Television", "TV", "Laptop", "Tablet", "iPad", "Monitor", "Computer", "Smartwatch"]
         },
         {
@@ -3127,62 +2920,6 @@
       // 105 NEW QUESTIONS (EXACTLY 1 PIK PER QUESTION + MASSIVE LOWER RARITY ANSWERS)
       // ----------------------------------------------------
       const century100NewQuestionSet = [
-        // --- LANGUAGE & WORDPLAY ---
-        {
-          cat: 'language',
-          prompt: 'Name an English word with a silent "U"',
-          gold: ["Guardhouse"],
-          epic: ["Guaranty", "Guileless", "Guillotine"],
-          rare: ["Guile", "Guitarist", "Guise", "Disguise", "Guiltless"],
-          uncommon: ["Guard", "Guarded", "Guardian", "Guardianship", "Guess", "Guessed", "Guessing", "Guest", "Guests", "Guestbook", "Guidance", "Guide", "Guided", "Guideline", "Guidelines", "Guile", "Guilt", "Guilty", "Guiltiness", "Guitar", "Guitars", "Disguise", "Disguised", "Disguising", "Beguile", "Beguiled", "Biscuit", "Biscuits", "Building", "Builder", "Builders", "Built", "Builds", "Circuit", "Circuits", "Disguises"],
-          common: ["Guard", "Guess", "Guest", "Guide", "Guilt", "Guilty", "Guitar", "Build", "Building", "Built", "Biscuit", "Disguise", "Guards", "Guesses", "Guests", "Guides", "Guitars", "Biscuits", "Buildings"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with the letter "X"',
-          gold: ["Xenolith"],
-          epic: ["Xanthic", "Xylography", "Xenon gas"],
-          rare: ["Xenon", "Xerox", "Xylophone", "Xenophobia"],
-          uncommon: ["Xylophone", "Xylophones", "Xenon", "Xerox", "Xeroxing", "Xeroxed", "Xeroxes", "Xenophobia", "Xenophobic", "Xenotransplant", "Xerography", "Xeriscape", "Xeric", "Xerox machine", "Xylophonist"],
-          common: ["Xylophone", "Xenon", "Xerox", "Xenophobia", "Xylophones", "Xeroxes", "Xerox machine"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word starting with the letter "Y"',
-          gold: ["Yttrium"],
-          epic: ["Yataghan", "Yule", "Yesteryear"],
-          rare: ["Yield", "Yacht", "Yearling", "Yodel"],
-          uncommon: ["Yard", "Yards", "Yardstick", "Yardarm", "Yardwork", "Yarn", "Yarns", "Yawn", "Yawning", "Yawned", "Year", "Years", "Yearly", "Yearbook", "Yearlong", "Yearning", "Yeast", "Yeasty", "Yell", "Yelling", "Yelled", "Yellow", "Yellowish", "Yelping", "Yelp", "Yesterdays", "Yesterday", "Yoghurt", "Yogurt", "Yolk", "Yolks", "Young", "Younger", "Youngest", "Youth", "Youthful", "Youths", "Yuletide", "Yummy"],
-          common: ["Yard", "Yarn", "Yawn", "Year", "Yeast", "Yell", "Yellow", "Yesterday", "Yogurt", "Yolk", "Young", "Youth", "Yummy", "Years", "Yards", "Yells", "Yawns"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word containing double "S"',
-          gold: ["Possessiveness"],
-          epic: ["Assessable", "Assassination", "Confession"],
-          rare: ["Blessing", "Passage", "Possession", "Sassafras", "Compress"],
-          uncommon: ["Address", "Assert", "Assist", "Assistant", "Assume", "Assumption", "Assure", "Bypass", "Class", "Classic", "Classroom", "Compass", "Compress", "Confess", "Cross", "Crossing", "Discuss", "Discussion", "Dismiss", "Dismissal", "Dress", "Dressing", "Embarrass", "Express", "Expression", "Fossil", "Glass", "Glasses", "Grass", "Grassy", "Gross", "Guess", "Harass", "Impression", "Lesson", "Loss", "Losses", "Mass", "Massive", "Message", "Messy", "Mission", "Pass", "Passage", "Passcode", "Passenger", "Passion", "Passive", "Passport", "Password", "Posse", "Possess", "Possession", "Possible", "Possibility", "Process", "Processor", "Profession", "Professional", "Professor", "Progress", "Progression", "Promise", "Success", "Successful", "Toss", "Tossing"],
-          common: ["Class", "Dress", "Glass", "Grass", "Guess", "Lesson", "Message", "Mess", "Pass", "Password", "Process", "Success", "Boss", "Cross", "Loss", "Mass", "Press", "Kiss", "Miss", "Classes", "Glasses", "Passes", "Presses"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word ending in "-ness" with 3 syllables',
-          gold: ["Fastidiousness"],
-          epic: ["Brightness", "Forgiveness", "Carelessness"],
-          rare: ["Darkness", "Kindness", "Happiness", "Softness", "Softness"],
-          uncommon: ["Quietness", "Politeness", "Boldness", "Blindness", "Coldness", "Deafness", "Fairness", "Fitness", "Fondness", "Goodness", "Greatness", "Hardness", "Highness", "Illness", "Loudness", "Madness", "Meanness", "Neatness", "Newness", "Plainness", "Sadness", "Sickliness", "Sickness", "Smallness", "Sweetness", "Tallness", "Thickness", "Thinness", "Weakness", "Wildness"],
-          common: ["Happiness", "Kindness", "Darkness", "Sadness", "Goodness", "Greatness", "Fitness", "Illness", "Sickness", "Weakness", "Hardness", "Softness", "Fairness", "Coldness", "Madness"]
-        },
-        {
-          cat: 'language',
-          prompt: 'Name an English word containing "ck" in the middle',
-          gold: ["Cockatoo"],
-          epic: ["Pickpocket", "Locksmith", "Nackered"],
-          rare: ["Ticket", "Rocket", "Pocket", "Bucket", "Backpack"],
-          uncommon: ["Checkbook", "Checkmate", "Checkpoint", "Cricket", "Jackass", "Jacket", "Jacketed", "Jackpot", "Locksmith", "Machinery", "Packaging", "Packet", "Packets", "Pancake", "Pickax", "Picket", "Pickle", "Pickled", "Pickles", "Pocketbook", "Racket", "Rockets", "Sackcloth", "Snicker", "Snickering", "Socket", "Sockets", "Stockade", "Stockholder", "Stocking", "Stockings", "Stockpile", "Stockroom", "Stockyard", "Thickness", "Tickets", "Unpack", "Unpacked", "Unpacking"],
-          common: ["Backpack", "Bucket", "Jacket", "Packet", "Pickle", "Pocket", "Rocket", "Ticket", "Cricket", "Socket", "Stocking", "Jackpot", "Pickles", "Packets", "Buckets", "Jackets", "Rockets", "Tickets"]
-        },
-
         // --- CULINARY & FOOD ---
         {
           cat: 'culinary',
@@ -3239,15 +2976,6 @@
           rare: ["Salt Lake City", "Oklahoma City"],
           uncommon: ["Oklahoma City", "Salt Lake City", "Carson City", "Jefferson City"],
           common: ["Oklahoma City", "Salt Lake City", "Carson City", "Jefferson City"]
-        },
-        {
-          cat: 'geography',
-          prompt: 'Name a European country starting with the letter "S"',
-          gold: ["San Marino"],
-          epic: ["Slovakia", "Slovenia"],
-          rare: ["Spain", "Sweden", "Switzerland", "Serbia"],
-          uncommon: ["Spain", "Sweden", "Switzerland", "Serbia", "Slovakia", "Slovenia", "San Marino", "Scotland"],
-          common: ["Spain", "Sweden", "Switzerland", "Serbia", "Scotland", "Slovakia", "Slovenia"]
         },
 
         // --- SCIENCE & SPACE ---
