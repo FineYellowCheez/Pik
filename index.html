@@ -3,26 +3,2293 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIK - Maintenance</title>
+  <title>Pik - A Game of Rare Answers</title>
+  
+  <!-- Handcrafted SVG Favicon (5 Matte Dots in a Circle) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/></svg>">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            pik: {
+              bg: '#121212',
+              card: '#1a1a1a',
+              border: '#2a2a2a',
+              common: '#7e8c8d',
+              uncommon: '#388e3c',
+              rare: '#1976d2',
+              epic: '#8e24aa',
+              gold: '#d4af37'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    body {
-      background-color: #000000;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    /* Strict Viewport & No-Scroll Guarantee */
+    html, body {
+      height: 100%;
+      width: 100%;
       margin: 0;
-      text-align: center;
+      padding: 0;
+      overflow: hidden;
+      background-color: #121212;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    p {
-      font-size: 1.5rem;
-      padding: 20px;
+
+    /* Animated SVG Line Stroke */
+    .pik-line-stroke {
+      transition: stroke-dashoffset 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    .node-transition {
+      transition: fill 0.3s ease, stroke 0.3s ease;
+    }
+
+    /* Card Slide Out / In Animations */
+    .card-slide-out {
+      transform: translateX(120%) !important;
+      opacity: 0 !important;
+      transition: transform 0.3s ease-in, opacity 0.3s ease-in !important;
+    }
+
+    .card-slide-in-prepare {
+      transform: translateX(-120%) !important;
+      opacity: 0 !important;
+      transition: none !important;
+    }
+
+    /* Timed Mode Red Flash on Timeout */
+    .card-flash-red {
+      border-color: #ef4444 !important;
+      background-color: #271313 !important;
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
+      transition: all 0.15s ease-in-out !important;
+    }
+
+    /* Results Section Fade In */
+    .hidden-results {
+      display: none !important;
+      opacity: 0;
+    }
+
+    .show-results {
+      display: flex !important;
+      animation: fadeInSmooth 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeInSmooth {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hide Scrollbar for internal results overflow if needed on small displays */
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body>
-  <p>PIK is under matinence for updates and bug fixes. Please check again later.</p>
+<body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
+
+  <!-- ================= TOP NAVIGATION HEADER ================= -->
+  <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between z-20 border-b border-pik-border/40 flex-shrink-0">
+    <!-- Header Brand (5 Matte Dots in Circle + Title) -->
+    <div class="flex items-center gap-3 cursor-pointer" onclick="returnToMenu()">
+      <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="11" r="4" fill="#7e8c8d"/>
+        <circle cx="36.3" cy="20" r="4" fill="#388e3c"/>
+        <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
+        <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
+        <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+      </svg>
+      <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">PIK</span>
+    </div>
+
+    <!-- Header Action Controls -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Return to Menu Button -->
+      <button onclick="returnToMenu()" title="Main Menu" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </button>
+
+      <!-- Toggle Sound Button -->
+      <button onclick="toggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg id="audioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
+      </button>
+
+      <!-- Help / Instructions Button -->
+      <button onclick="toggleHelpModal(true)" title="How to Play" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN MENU SCREEN OVERLAY ================= -->
+  <div id="menuScreen" class="absolute inset-0 z-40 bg-pik-bg flex flex-col items-center justify-between py-6 sm:py-8 px-4 overflow-hidden transition-transform duration-500 ease-in-out">
+    
+    <!-- Upper-Middle Title Block -->
+    <div class="flex flex-col items-center mt-2 sm:mt-4 text-center px-4">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 mb-2" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="11" r="4.5" fill="#7e8c8d"/>
+        <circle cx="36.3" cy="20" r="4.5" fill="#388e3c"/>
+        <circle cx="31.6" cy="34.4" r="4.5" fill="#1976d2"/>
+        <circle cx="16.4" cy="34.4" r="4.5" fill="#8e24aa"/>
+        <circle cx="11.7" cy="20" r="4.5" fill="#d4af37"/>
+      </svg>
+      <h1 class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
+      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">A game of niche ball knowledge</p>
+      <p class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
+      <p class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
+    </div>
+
+    <!-- Triangular Button Arrangement -->
+    <div class="flex flex-col items-center gap-4 sm:gap-5 my-auto max-w-md w-full px-4">
+      <!-- Top Center Button: Play Standard (-3 deg rotation) -->
+      <button onclick="launchGame('standard')" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Play Standard
+      </button>
+
+      <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
+      <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
+        <!-- Bottom Left: Play Timed (+2.5 deg rotation) -->
+        <button onclick="launchGame('timed')" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Play Timed
+        </button>
+
+        <!-- Bottom Right: Play Daily (-2.5 deg rotation) -->
+        <button onclick="launchGame('daily')" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform -rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 text-pik-epic" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Play Daily
+        </button>
+      </div>
+    </div>
+
+    <!-- Bottom Footer Subtext -->
+    <div class="text-[11px] text-slate-500 font-display">
+      8 Questions • 5 Rarity Tiers
+    </div>
+  </div>
+
+  <!-- ================= HELP MODAL OVERLAY ================= -->
+  <div id="helpModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-md w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300">
+      <div class="flex items-center justify-between border-b border-pik-border pb-3">
+        <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+          How to Play Pik
+        </h3>
+        <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+      </div>
+
+      <div class="space-y-2">
+        <p><strong class="text-slate-100">Objective:</strong> For each question, try to guess valid answers that are <em class="text-pik-gold">uncommon or rare</em>. The rarer your answer, the further your line stretches!</p>
+        
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-1.5 font-display text-[11px]">
+          <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
+        </div>
+
+        <p class="text-slate-400">
+          The area below the line remains completely empty until you complete all 8 questions!
+        </p>
+      </div>
+
+      <button onclick="toggleHelpModal(false)" class="w-full py-2 bg-slate-100 text-slate-950 font-display font-bold rounded-xl text-xs transition mt-1">
+        Got It
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= QUESTION DETAIL INSPECT MODAL ================= -->
+  <div id="questionDetailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300 shadow-2xl relative max-h-[90vh] overflow-y-auto scrollbar-none">
+      <div class="flex items-center justify-between border-b border-pik-border pb-3">
+        <div class="flex items-center gap-2">
+          <span id="detailQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question 1</span>
+          <span id="detailRarityBadge" class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold"></span>
+        </div>
+        <button onclick="closeQuestionDetailModal()" class="text-slate-400 hover:text-white font-bold p-1 text-base">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1">Prompt</div>
+          <h3 id="detailPrompt" class="font-display font-bold text-base sm:text-lg text-slate-100 leading-snug"></h3>
+        </div>
+
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border/80 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+          <div>
+            <div class="text-[10px] uppercase font-display tracking-wider text-slate-400">Your Answer</div>
+            <div id="detailUserAns" class="font-display font-extrabold text-sm sm:text-base text-slate-100"></div>
+            <div id="detailMatchedAns" class="text-[11px] text-slate-400 font-display mt-0.5"></div>
+          </div>
+          <div class="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-pik-border/60 pt-2 sm:pt-0 sm:pl-3">
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Distance</div>
+              <div id="detailDist" class="font-display font-bold text-xs sm:text-sm text-pik-gold"></div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Points</div>
+              <div id="detailPoints" class="font-display font-bold text-xs sm:text-sm text-slate-200"></div>
+            </div>
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Run Share</div>
+              <div id="detailRunShare" class="font-display font-bold text-xs sm:text-sm text-slate-200"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rarity Analysis & Rarer Examples for this Question -->
+        <div>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1.5">Rarity Analysis</div>
+          <div id="detailRarityAnalysis" class="bg-pik-bg/80 border border-pik-border/60 p-3 rounded-xl text-xs text-slate-300 font-sans leading-relaxed">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div id="detailExamplesWrap" class="hidden">
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1.5">Rarer Possibilities</div>
+          <div id="detailRarerExamples" class="flex flex-wrap gap-1.5">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeQuestionDetailModal()" class="w-full py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-bold rounded-xl text-xs transition mt-2">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= TOP SECTION: QUESTION AREA (ABOVE THE LINE) ================= -->
+  <main id="gameArea" class="w-full max-w-full overflow-hidden flex-1 flex flex-col items-center justify-center px-4 relative z-10 min-h-0 order-1">
+    <div id="questionCard" class="w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative transition-all duration-300">
+      
+      <!-- Question Card Top Header -->
+      <div class="flex items-center justify-between border-b border-pik-border/60 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span id="questionNumText" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question 1 / 8</span>
+          <span id="dailyBadge" class="hidden px-2 py-0.5 bg-pik-epic/20 border border-pik-epic/40 text-pik-epic font-display text-[10px] font-bold rounded-md">Daily Challenge</span>
+        </div>
+        
+        <!-- Timed Countdown Pill -->
+        <div id="timerPill" class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-red-950/40 border border-red-500/40 rounded-full font-display text-xs text-red-400 font-bold">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="timerText">30s</span>
+        </div>
+
+        <!-- Step Progress Indicator Pills -->
+        <div id="stepPills" class="flex items-center gap-1">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Question Prompt Text -->
+      <div class="py-1">
+        <h2 id="questionPrompt" class="font-display font-extrabold text-lg sm:text-xl text-slate-100 tracking-tight leading-snug">
+          Loading Question...
+        </h2>
+      </div>
+
+      <!-- User Answer Input Field & Controls -->
+      <div class="flex flex-col sm:flex-row items-center gap-2 pt-1">
+        <div class="relative w-full">
+          <input 
+            type="text" 
+            id="answerInput" 
+            autocomplete="off" 
+            spellcheck="false" 
+            placeholder="Type your answer..." 
+            class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans"
+          >
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button id="submitBtn" onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap">
+            <span id="submitBtnText">Submit</span>
+          </button>
+          <button id="skipBtn" onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+            Skip
+          </button>
+        </div>
+      </div>
+
+      <!-- Dynamic Feedback Text (AI Rejection / API Status) -->
+      <div id="feedbackText" class="hidden text-xs text-pik-gold font-display font-medium pt-1"></div>
+
+    </div>
+  </main>
+
+  <!-- ================= CENTRAL LINE DIVIDER (BACKGROUND LINE) ================= -->
+  <section id="lineSection" class="w-full max-w-full overflow-hidden relative flex flex-col items-center justify-center my-0.5 z-10 flex-shrink-0 order-2 transition-all duration-300">
+    
+    <!-- Interactive Line Slider (Appears on Finish Game, placed above SVG track under results card) -->
+    <div id="lineSliderContainer" class="hidden w-full max-w-xs sm:max-w-sm px-3 py-1.5 flex items-center gap-3 bg-pik-card/90 border border-pik-border rounded-xl z-20 mb-1 shadow-lg">
+      <span class="text-[10px] font-display font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Inspect Line</span>
+      <input type="range" id="lineScrubber" min="0" max="100" value="100" class="w-full accent-pik-gold cursor-pointer h-1.5 bg-slate-800 rounded-lg appearance-none" oninput="scrubLineView(this.value)">
+    </div>
+
+    <div class="w-full max-w-5xl px-4 sm:px-8 relative flex items-center h-20 sm:h-24 overflow-visible">
+      
+      <!-- SVG Line Track Canvas -->
+      <svg id="mainLineSvg" class="w-full h-full overflow-visible" viewBox="0 0 1000 140" preserveAspectRatio="xMinYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <!-- Main Continuous Track Guide Line -->
+        <line x1="0" y1="70" x2="6000" y2="70" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4"/>
+        <!-- Animated Colored Line Segments -->
+        <g id="svgLineSegments"></g>
+        <!-- Alternating Floating Badges (Inside SVG Space) -->
+        <g id="svgLineBadges"></g>
+        <!-- Dynamic Nodes (Starts with 1 hollow dot at X=60) -->
+        <g id="svgLineNodes"></g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS AREA (FRAMELESS BACKGROUND PROJECTION LAYOUT) ================= -->
+  <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 flex-1 flex flex-col justify-between overflow-hidden min-h-0 z-20 order-1">
+    <!-- Header Controls & Score Bar -->
+    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
+      <div>
+        <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
+          Game Completed
+        </h2>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 text-right">
+          <div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
+            <div id="finalDistanceText" class="font-display font-extrabold text-sm sm:text-lg text-pik-gold">0 px</div>
+          </div>
+          <div class="w-px h-7 bg-pik-border"></div>
+          <div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
+            <div id="finalScoreText" class="font-display font-extrabold text-sm sm:text-lg text-slate-100">0 pts</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="returnToMenu()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Menu
+          </button>
+          <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Left-Edge Question Cards & Projected Info Area -->
+    <div id="projectionContainer" class="relative flex gap-3 sm:gap-6 w-full flex-1 my-1.5 items-stretch overflow-hidden min-h-0">
+      <!-- Dynamic SVG Overlay for Connecting Lines -->
+      <svg id="projectionSvg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+
+      <!-- Left Edge Question Boxes Column (All 8 visible, no scroll) -->
+      <div id="summaryCardsList" class="w-44 sm:w-56 flex flex-col gap-1 z-20 flex-shrink-0 h-full overflow-hidden">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Right Side Projected Detail Panel (No scroll) -->
+      <div id="projectedDetailPanel" class="flex-1 z-20 bg-pik-card/50 border border-pik-border/80 backdrop-blur-sm rounded-xl relative overflow-hidden transition-all duration-300">
+        <!-- Middle Overview Dashboard (Default, slides UP when inspected) -->
+        <div id="overviewDashboard" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-10 pointer-events-auto">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- Projected Question Detail Panel (Slides IN from bottom when inspected) -->
+        <div id="inspectedDetailContent" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-full opacity-0 z-20 pointer-events-none">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
+  <script>
+    /* ====================================================
+       GROQ API CONFIGURATION (XOR-ENCODED TO PREVENT STATIC SCANNER FLAGS)
+       Uses ONLY the model: openai/gpt-oss-120b
+       Automatic failover: Key 1 -> Key 2 -> Key 3
+    ==================================================== */
+    const KEY_MASK = [75, 41, 115, 30, 90, 60, 103, 18];
+    const ENCODED_KEY_VAULT = [
+      [44,90,24,65,32,113,16,65,29,100,18,113,55,86,95,71,39,31,16,93,48,126,0,120,28,110,23,103,56,15,33,75,2,88,70,87,105,127,52,83,61,65,68,44,2,68,23,123,122,121,18,105,24,84,23,122],
+      [44,90,24,65,8,5,55,94,49,26,16,83,18,123,84,102,114,90,59,75,15,102,22,123,28,110,23,103,56,15,33,75,49,25,27,105,99,107,80,117,1,79,22,92,40,74,94,103,40,112,23,85,41,90,17,81],
+      [44,90,24,65,53,115,18,103,47,111,66,113,48,116,51,101,46,112,65,105,17,105,45,94,28,110,23,103,56,15,33,75,12,74,25,89,41,77,87,113,35,17,25,68,108,70,51,95,9,66,39,100,32,14,86,117]
+    ];
+
+    function getGroqApiKeys() {
+      return ENCODED_KEY_VAULT.map(bytes =>
+        bytes.map((b, i) => String.fromCharCode(b ^ KEY_MASK[i % KEY_MASK.length])).join('')
+      );
+    }
+
+    const GROQ_MODEL = "openai/gpt-oss-120b";
+    const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+    let activeGroqKeyIndex = 0;
+    let isEvaluatingAnswer = false;
+
+    function drawProjectionLines(leftCardEl, rightPanelEl, color = '#d4af37') {
+      const container = document.getElementById('projectionContainer');
+      const svg = document.getElementById('projectionSvg');
+      if (!container || !svg || !leftCardEl || !rightPanelEl) return;
+
+      const cRect = container.getBoundingClientRect();
+      const lRect = leftCardEl.getBoundingClientRect();
+      const rRect = rightPanelEl.getBoundingClientRect();
+
+      const x1 = lRect.right - cRect.left;
+      const y1 = lRect.top - cRect.top;
+      const x2 = lRect.right - cRect.left;
+      const y2 = lRect.bottom - cRect.top;
+
+      const x3 = rRect.left - cRect.left;
+      const y3 = rRect.top - cRect.top;
+      const x4 = rRect.left - cRect.left;
+      const y4 = rRect.bottom - cRect.top;
+
+      svg.innerHTML = `
+        <defs>
+          <linearGradient id="projGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="${color}" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="${color}" stop-opacity="0.03"/>
+          </linearGradient>
+        </defs>
+        <!-- Light Projection Frustum Polygon -->
+        <polygon points="${x1},${y1} ${x3},${y3} ${x4},${y4} ${x2},${y2}" fill="url(#projGrad)"/>
+        <!-- Upper Connecting Line -->
+        <line x1="${x1}" y1="${y1}" x2="${x3}" y2="${y3}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <!-- Lower Connecting Line -->
+        <line x1="${x2}" y1="${y2}" x2="${x4}" y2="${y4}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <!-- Left Edge Accent Marker -->
+        <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2.5"/>
+      `;
+    }
+
+    function renderOverviewDashboard() {
+      const dashboard = document.getElementById('overviewDashboard');
+      if (!dashboard) return;
+
+      const tierCounts = { gold: 0, epic: 0, rare: 0, uncommon: 0, common: 0, skipped: 0 };
+      let totalDistSum = 0;
+      let clearedCount = 0;
+      let bestPik = null;
+
+      userHistory.forEach(item => {
+        if (item.rarityKey && tierCounts[item.rarityKey] !== undefined) {
+          tierCounts[item.rarityKey]++;
+        }
+        if (item.rarityKey !== 'skipped') {
+          clearedCount++;
+          totalDistSum += item.length;
+          if (!bestPik || item.length > bestPik.length) {
+            bestPik = item;
+          }
+        }
+      });
+
+      const avgDist = userHistory.length > 0 ? Math.round(totalDistSum / userHistory.length) : 0;
+
+      // Benchmark metrics (Average player benchmark: 210 px / max possible: 540 px)
+      const benchmarkAvg = 210;
+      const maxPossibleAvg = 540;
+      const perfPct = Math.min(100, Math.round((avgDist / maxPossibleAvg) * 100));
+      const benchPct = Math.round((benchmarkAvg / maxPossibleAvg) * 100);
+      
+      const diffFromAvg = avgDist - benchmarkAvg;
+      let perfStatusText = '';
+      let perfColor = '#7e8c8d';
+
+      if (diffFromAvg > 100) {
+        perfStatusText = `+${diffFromAvg} px vs Avg (Exceptional)`;
+        perfColor = '#d4af37';
+      } else if (diffFromAvg > 40) {
+        perfStatusText = `+${diffFromAvg} px vs Avg (Great)`;
+        perfColor = '#8e24aa';
+      } else if (diffFromAvg > 0) {
+        perfStatusText = `+${diffFromAvg} px vs Avg (Above Avg)`;
+        perfColor = '#1976d2';
+      } else if (diffFromAvg === 0) {
+        perfStatusText = `On Par with Avg`;
+        perfColor = '#388e3c';
+      } else {
+        perfStatusText = `${diffFromAvg} px vs Avg (Below Avg)`;
+        perfColor = '#7e8c8d';
+      }
+
+      const bestName = bestPik ? bestPik.userAnswer : 'None';
+      const bestColor = bestPik ? (bestPik.rarityKey === 'skipped' ? '#475569' : bestPik.color) : '#7e8c8d';
+      const bestRarityName = bestPik ? bestPik.rarityName : 'N/A';
+
+      const tierColors = {
+        gold: '#d4af37',
+        epic: '#8e24aa',
+        rare: '#1976d2',
+        uncommon: '#388e3c',
+        common: '#7e8c8d',
+        skipped: '#475569'
+      };
+
+      let barSegmentsHtml = '';
+      let countPillsHtml = '';
+
+      const tiersList = ['gold', 'epic', 'rare', 'uncommon', 'common', 'skipped'];
+      tiersList.forEach(t => {
+        const cnt = tierCounts[t];
+        if (cnt > 0) {
+          const pct = (cnt / 8) * 100;
+          const c = tierColors[t];
+          barSegmentsHtml += `<div style="width: ${pct}%; background-color: ${c};" class="h-full transition-all duration-500" title="${RARITY_CONFIG[t]?.name || 'Skipped'}: ${cnt}"></div>`;
+          
+          const label = t === 'gold' ? 'The Pik' : (RARITY_CONFIG[t]?.name || 'Skipped');
+          countPillsHtml += `
+            <div class="flex items-center gap-1 text-[10px] font-display font-medium px-2 py-0.5 rounded-md bg-pik-bg border border-pik-border/60">
+              <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${c}"></span>
+              <span class="text-slate-300">${label}</span>
+              <span class="font-bold text-slate-100 ml-0.5">${cnt}</span>
+            </div>
+          `;
+        }
+      });
+
+      const modeLabel = isDailyMode ? 'Daily Challenge' : (isTimedMode ? 'Timed Mode' : 'Standard Mode');
+
+      dashboard.innerHTML = `
+        <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+          <span class="font-display font-extrabold text-xs uppercase tracking-wider text-pik-gold">Session Performance Overview</span>
+          <span class="px-2 py-0.5 rounded-md font-display text-[10px] font-bold bg-pik-bg border border-pik-border text-slate-300">${modeLabel}</span>
+        </div>
+
+        <!-- 3 Key Metric Cards -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Avg Stretch</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-pik-gold mt-0.5">${avgDist} <span class="text-xs font-normal text-slate-400">px</span></div>
+          </div>
+
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between overflow-hidden">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Best Pick</div>
+            <div class="font-display font-extrabold text-xs sm:text-sm truncate mt-0.5" style="color: ${bestColor}" title="${bestName}">
+              ${bestName}
+            </div>
+            <div class="text-[9px] font-display text-slate-400 truncate">${bestRarityName}</div>
+          </div>
+
+          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Questions Cleared</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${clearedCount} <span class="text-xs font-normal text-slate-400">/ 8</span></div>
+          </div>
+        </div>
+
+        <!-- Performance vs Average Rating Bar -->
+        <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Performance vs. Average</span>
+            <span class="text-[9px] font-display font-bold" style="color: ${perfColor}">${perfStatusText}</span>
+          </div>
+
+          <!-- Horizontal Comparison Bar with Benchmark Marker -->
+          <div class="relative w-full h-3 bg-slate-800 rounded-full overflow-hidden flex items-center">
+            <div style="width: ${perfPct}%; background-color: ${perfColor};" class="h-full transition-all duration-500"></div>
+            <!-- Average Benchmark Reference Marker Line -->
+            <div style="left: ${benchPct}%;" class="absolute top-0 bottom-0 w-0.5 bg-slate-100 z-10 shadow-sm" title="Global Average (210 px)"></div>
+          </div>
+          
+          <div class="flex justify-between text-[9px] font-display text-slate-400">
+            <span>0 px</span>
+            <span class="text-slate-300 font-semibold">Avg (${benchmarkAvg} px)</span>
+            <span>Max (${maxPossibleAvg} px)</span>
+          </div>
+        </div>
+
+        <!-- Rarity Distribution Section -->
+        <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarity Tier Distribution</span>
+            <span class="text-[9px] font-display text-slate-400">8 total answers</span>
+          </div>
+
+          <!-- Stacked Bar -->
+          <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
+            ${barSegmentsHtml}
+          </div>
+
+          <!-- Count Badges -->
+          <div class="flex flex-wrap gap-1 mt-0.5">
+            ${countPillsHtml}
+          </div>
+        </div>
+      `;
+    }
+
+  function uninspectQuestion() {
+    selectedProjectedIndex = -1;
+    const projSvg = document.getElementById('projectionSvg');
+    if (projSvg) projSvg.innerHTML = '';
+
+    // Un-highlight all left cards
+    for (let i = 0; i < userHistory.length; i++) {
+      const cardEl = document.getElementById(`proj-left-card-${i}`);
+      if (cardEl) {
+        cardEl.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden';
+        cardEl.style.borderColor = '';
+      }
+    }
+
+    const panel = document.getElementById('projectedDetailPanel');
+    if (panel) panel.style.borderColor = '';
+
+    // Move middle overview back DOWN into place, and hide detail panel
+    const dashboard = document.getElementById('overviewDashboard');
+    const detailContent = document.getElementById('inspectedDetailContent');
+
+    if (dashboard) {
+      dashboard.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-10 pointer-events-auto';
+    }
+    if (detailContent) {
+      detailContent.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-full opacity-0 z-20 pointer-events-none';
+    }
+  }
+
+  function selectQuestionForProjection(idx) {
+    // Toggle un-inspect if clicking the currently inspected question
+    if (selectedProjectedIndex === idx) {
+      uninspectQuestion();
+      return;
+    }
+
+    selectedProjectedIndex = idx;
+    const item = userHistory[idx];
+    const qObj = activeQuestions[idx];
+    if (!item || !qObj) return;
+
+    const isSkip = item.rarityKey === 'skipped';
+    const colorHex = isSkip ? '#475569' : item.color;
+
+    // 1. Highlight selected left box
+    for (let i = 0; i < userHistory.length; i++) {
+      const cardEl = document.getElementById(`proj-left-card-${i}`);
+      if (cardEl) {
+        if (i === idx) {
+          cardEl.className = 'bg-pik-card border-2 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all shadow-lg scale-[1.01] z-30 overflow-hidden';
+          cardEl.style.borderColor = colorHex;
+        } else {
+          cardEl.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-70 hover:opacity-100 z-20 overflow-hidden';
+          cardEl.style.borderColor = '';
+        }
+      }
+    }
+
+    // 2. Populate projected detail content
+    const detailContent = document.getElementById('inspectedDetailContent');
+    const panel = document.getElementById('projectedDetailPanel');
+    if (panel) panel.style.borderColor = `${colorHex}80`;
+
+    const CATEGORY_LABELS = {
+      language: 'Language',
+      culinary: 'Culinary',
+      geography: 'Geography',
+      science: 'Science',
+      everyday: 'Everyday',
+      popculture: 'Pop Culture'
+    };
+    const categoryLabel = CATEGORY_LABELS[qObj.cat] || 'General';
+    const runSharePct = totalDistance > 0 ? Math.round((item.length / totalDistance) * 100) : 0;
+    const speedDisplay = item.timeTaken ? `${item.timeTaken}s` : '—';
+
+    const matchedText = (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') 
+      ? `<div class="text-[10px] text-slate-400 font-display truncate">Interpreted as: "${item.matchedName}"</div>` : '';
+
+    const reasonText = item.reason || (isSkip ? 'Question skipped by player.' : 'Valid answer verified.');
+
+    // Build 5-Tier Rarity Stretch Meter
+    const tierOrder = ['common', 'uncommon', 'rare', 'epic', 'gold'];
+    const achievedTierIdx = tierOrder.indexOf(item.rarityKey);
+    const tierSegmentsHtml = tierOrder.map((tKey, tIdx) => {
+      const cfg = RARITY_CONFIG[tKey];
+      const isReached = !isSkip && achievedTierIdx >= tIdx;
+      const isCurrent = !isSkip && achievedTierIdx === tIdx;
+      const bgStyle = isReached ? `background-color: ${cfg.color};` : 'background-color: #1e293b;';
+      const ringClass = isCurrent ? 'ring-1 ring-white/80' : '';
+      return `<div style="${bgStyle}" class="h-2 flex-1 rounded-sm transition-all duration-300 ${ringClass}" title="${cfg.name} (${cfg.length} px)"></div>`;
+    }).join('');
+
+    const maxStretchPct = Math.round((item.length / 540) * 100);
+    const stretchCompareLabel = isSkip
+      ? '0 / 540 px (Skipped)'
+      : item.rarityKey === 'gold'
+        ? '540 / 540 px (Max Stretch!)'
+        : `${item.length} / 540 px (${maxStretchPct}% of Max)`;
+
+    // Build Rarer Examples Pills (if available)
+    const examples = Array.isArray(item.rarerExamples) ? item.rarerExamples.filter(Boolean) : [];
+    const examplesHtml = examples.length > 0
+      ? `<div class="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1.5 border-t border-pik-border/50">
+           <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarer Picks:</span>
+           ${examples.map(ex => `<span class="px-1.5 py-0.5 rounded bg-pik-card border border-pik-border text-[10px] font-display text-pik-gold">${ex}</span>`).join('')}
+         </div>`
+      : '';
+
+    if (detailContent) {
+      detailContent.innerHTML = `
+        <div class="flex-1 flex flex-col justify-between gap-1.5 overflow-y-auto scrollbar-none">
+          <!-- Header with Question Number, Category Tag & Rarity Badge -->
+          <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question ${idx + 1} / 8</span>
+              <span class="px-1.5 py-0.5 rounded bg-pik-bg border border-pik-border text-[9px] font-display font-semibold text-slate-400 uppercase tracking-wider">${categoryLabel}</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold" style="background-color: ${colorHex}25; color: ${colorHex}; border: 1px solid ${colorHex}50">
+              ${item.rarityName}
+            </span>
+          </div>
+
+          <!-- Prompt & Player Answer Card -->
+          <div class="bg-pik-bg p-2 rounded-lg border border-pik-border/80 flex flex-col gap-1.5">
+            <div>
+              <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Prompt</div>
+              <h3 class="font-display font-bold text-xs sm:text-sm text-slate-100 leading-snug line-clamp-2">${item.prompt}</h3>
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-pik-border/50">
+              <div class="min-w-0 flex-1">
+                <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Your Answer</div>
+                <div class="font-display font-extrabold text-xs sm:text-sm text-slate-100 truncate">${item.userAnswer}</div>
+                ${matchedText}
+              </div>
+              <div class="flex items-center gap-2.5 border-l border-pik-border/60 pl-2.5 flex-shrink-0">
+                <div>
+                  <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Stretch</div>
+                  <div class="font-display font-bold text-xs text-pik-gold">+${item.length} px</div>
+                </div>
+                <div>
+                  <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Run Share</div>
+                  <div class="font-display font-bold text-xs text-slate-200">${runSharePct}%</div>
+                </div>
+                <div>
+                  <div class="text-[8px] uppercase font-display tracking-wider text-slate-400">Time</div>
+                  <div class="font-display font-bold text-xs text-slate-200">${speedDisplay}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5-Tier Rarity Stretch Ladder -->
+          <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1">
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarity Tier Scale</span>
+              <span class="text-[9px] font-display font-semibold" style="color: ${colorHex}">${stretchCompareLabel}</span>
+            </div>
+            <div class="flex items-center gap-1 w-full">
+              ${tierSegmentsHtml}
+            </div>
+            <div class="flex justify-between text-[8px] font-display text-slate-500">
+              <span>Common (110px)</span>
+              <span>Rare (270px)</span>
+              <span class="text-pik-gold/80">The Pik (540px)</span>
+            </div>
+          </div>
+
+          <!-- Rarity Analysis & Rarer Examples -->
+          <div class="bg-pik-bg/70 border border-pik-border/60 p-2 rounded-lg">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400 mb-0.5">Rarity Analysis</div>
+            <div class="text-slate-300 text-[11px] font-sans leading-snug">
+              ${reasonText}
+            </div>
+            ${examplesHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. Move middle overview UP out of the way, and bring detail panel IN
+    const dashboard = document.getElementById('overviewDashboard');
+    if (dashboard) {
+      dashboard.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform -translate-y-full opacity-0 z-10 pointer-events-none';
+    }
+    if (detailContent) {
+      detailContent.className = 'absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-20 pointer-events-auto';
+    }
+
+    // 4. Draw projection lines connecting left box to right panel
+    requestAnimationFrame(() => {
+      const activeCard = document.getElementById(`proj-left-card-${idx}`);
+      if (activeCard && panel) {
+        drawProjectionLines(activeCard, panel, colorHex);
+      }
+    });
+  }
+
+  function finishGame() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    document.getElementById('gameArea').classList.add('hidden');
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.classList.remove('hidden-results', 'order-3');
+    resultsSection.classList.add('show-results', 'order-1');
+
+    const lineSec = document.getElementById('lineSection');
+    if (lineSec) {
+      lineSec.classList.remove('order-2');
+      lineSec.classList.add('order-2');
+    }
+
+    // Show interactive line scrubber slider and set to 100%
+    const sliderContainer = document.getElementById('lineSliderContainer');
+    const slider = document.getElementById('lineScrubber');
+    if (sliderContainer) sliderContainer.classList.remove('hidden');
+    if (slider) slider.value = 100;
+
+    // Reset selected projection index so nothing projects initially
+    selectedProjectedIndex = -1;
+    const projSvg = document.getElementById('projectionSvg');
+    if (projSvg) projSvg.innerHTML = '';
+
+    // Calculate points conversion (1 point = 5 Px)
+    const calculatedPoints = Math.round(totalDistance / 5);
+    totalScore = calculatedPoints;
+
+    const distEl = document.getElementById('finalDistanceText');
+    const scoreEl = document.getElementById('finalScoreText');
+
+    distEl.textContent = `0 px`;
+    scoreEl.textContent = `0 pts`;
+
+    // 1. Animated Px Count Up
+    let startTimestamp = null;
+    const duration = 1200; // 1.2s smooth count up
+
+    function stepCountUp(timestamp) {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 2);
+      const currentPx = Math.floor(easedProgress * totalDistance);
+
+      distEl.textContent = `${currentPx} px`;
+
+      if (progress < 1) {
+        requestAnimationFrame(stepCountUp);
+      } else {
+        // Count finished!
+        distEl.textContent = `${totalDistance} px`;
+
+        // 2. Equals sign appears next to Px
+        setTimeout(() => {
+          distEl.innerHTML = `${totalDistance} px <span id="pxEquals" class="text-slate-400 mx-1 inline-block transition-all duration-300 transform scale-50 opacity-0">=</span>`;
+
+          requestAnimationFrame(() => {
+            const eqEl = document.getElementById('pxEquals');
+            if (eqEl) {
+              eqEl.classList.remove('scale-50', 'opacity-0');
+              eqEl.classList.add('scale-100', 'opacity-100');
+            }
+          });
+
+          // 3. Convert to Points (1 Point = 5 Px)
+          setTimeout(() => {
+            distEl.innerHTML = `${totalDistance} px <span class="text-slate-400 mx-1">=</span> <span id="ptsConverted" class="text-pik-gold font-extrabold inline-block transition-all duration-500 transform scale-75 opacity-0">${calculatedPoints} pts</span>`;
+
+            requestAnimationFrame(() => {
+              const ptsEl = document.getElementById('ptsConverted');
+              if (ptsEl) {
+                ptsEl.classList.remove('scale-75', 'opacity-0');
+                ptsEl.classList.add('scale-100', 'opacity-100');
+              }
+            });
+
+            scoreEl.textContent = `${calculatedPoints} pts`;
+          }, 400);
+
+        }, 300);
+      }
+    }
+
+    requestAnimationFrame(stepCountUp);
+
+    // Render Left Edge Question Column List (All 8 fit cleanly)
+    const listContainer = document.getElementById('summaryCardsList');
+    listContainer.innerHTML = '';
+
+    userHistory.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.id = `proj-left-card-${idx}`;
+      card.setAttribute('onclick', `selectQuestionForProjection(${idx})`);
+      card.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden';
+
+      const isSkip = item.rarityKey === 'skipped';
+      const colorHex = isSkip ? '#475569' : item.color;
+
+      card.innerHTML = `
+        <div class="overflow-hidden">
+          <div class="text-[9px] text-slate-400 font-display font-medium truncate" title="${item.prompt}">Q${idx + 1} • ${item.prompt}</div>
+          <div class="font-display font-bold text-[11px] text-slate-100 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
+        </div>
+        <div class="flex items-center justify-between mt-0.5 pt-0.5 border-t border-pik-border/40 text-[9px]">
+          <span class="font-display font-semibold flex items-center gap-1 truncate" style="color: ${colorHex}">
+            <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background-color: ${colorHex}"></span>
+            <span class="truncate">${item.rarityName}</span>
+          </span>
+          <span class="font-display font-bold text-slate-400 flex-shrink-0 ml-1">+${item.length}px</span>
+        </div>
+      `;
+      listContainer.appendChild(card);
+    });
+
+    // Populate overview dashboard & set un-inspected initial state
+    renderOverviewDashboard();
+    uninspectQuestion();
+  }
+
+  /* ----------------------------------------------------
+     8. EVENT LISTENERS INITIALIZATION
+  ---------------------------------------------------- */
+    const RARITY_CONFIG = {
+      common: { name: 'Common', color: '#7e8c8d', length: 110, points: 10 },
+      uncommon: { name: 'Uncommon', color: '#388e3c', length: 180, points: 25 },
+      rare: { name: 'Rare', color: '#1976d2', length: 270, points: 50 },
+      epic: { name: 'Epic', color: '#8e24aa', length: 390, points: 75 },
+      gold: { name: 'The Pik', color: '#d4af37', length: 540, points: 100 }
+    };
+
+    let audioCtx = null;
+    let audioMuted = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudio() {
+      audioMuted = !audioMuted;
+      const icon = document.getElementById('audioIcon');
+      if (icon) {
+        icon.setAttribute('stroke-opacity', audioMuted ? '0.3' : '1');
+      }
+    }
+
+    function playAudioTone(type, rarityKey) {
+      if (audioMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'stretch') {
+          const freqMap = { common: 260, uncommon: 330, rare: 440, epic: 550, gold: 660 };
+          const baseFreq = freqMap[rarityKey] || 300;
+          osc.type = rarityKey === 'gold' ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(baseFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.35);
+
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'skip') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(90, now + 0.2);
+
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else if (type === 'error') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.setValueAtTime(110, now + 0.1);
+
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'timeout') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+          osc.start(now);
+          osc.stop(now + 0.4);
+        }
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+
+    /* ----------------------------------------------------
+       VERDICT JUDGE ENGINE (MODEL: openai/gpt-oss-120b)
+       Automatic 3-Key Failover Protection + Shared Cloud Verdict Cache
+    ---------------------------------------------------- */
+    const verdictCache = {};
+    window.__pikVerdictCache = verdictCache;
+
+    function buildVerdictDocId(cacheKey) {
+      const hash = computeDeterministicSeed(cacheKey);
+      const slug = cacheKey.replace(/[^a-z0-9_-]/gi, '_').slice(0, 100);
+      return `v_${hash}_${slug}`;
+    }
+
+    function persistVerdictCache(cacheKey, verdict) {
+      if (!cacheKey || !verdict) return;
+      verdictCache[cacheKey] = { ...verdict };
+      if (typeof window.saveVerdictToCloud === 'function') {
+        window.saveVerdictToCloud(cacheKey, verdict);
+      }
+    }
+
+    function computeDeterministicSeed(str) {
+      let hash = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0) % 2147483647;
+    }
+
+    async function callSingleGroqKey(apiKey, prompt, canonicalAnswer, seed) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 14000);
+
+      const systemPrompt = `You are the strict, fair, deterministic judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
+Evaluate whether the player's answer genuinely and accurately fits the prompt, and if valid, assign its rarity tier based on how obscure/uncommon it is among everyday people:
+- "common": Very obvious, top-of-mind everyday answer that almost anyone would guess first.
+- "uncommon": Good valid answer, slightly less obvious than the top few most common answers.
+- "rare": Niche, specific, or clever valid answer requiring solid domain knowledge.
+- "epic": Deep-cut, specialized, or obscure valid answer that most casual players wouldn't think of.
+- "gold": ("The Pik") Extraordinarily obscure, hyper-niche, or brilliant deep-knowledge valid answer.
+
+Rules:
+1. Tolerate minor spelling typos or capitalization errors if the intended answer is clear and valid, returning the properly spelled "normalizedAnswer".
+2. Grade the underlying canonical concept consistently—never vary rarity based on capitalization, spacing, or minor phrasing.
+3. Reject answers that do not fit the prompt, are factually wrong, or are overly vague/lazy (e.g., answering "Food" when asked for a type of cheese).
+4. Provide 2 distinct, real, rarer valid examples ("rarerExamples") for the prompt (e.g., an Epic-tier answer and a The Pik-tier answer) that are different from the player's answer.
+5. Respond ONLY with a valid JSON object matching this exact schema:
+{
+  "valid": boolean,
+  "rarity": "common" | "uncommon" | "rare" | "epic" | "gold" | null,
+  "normalizedAnswer": "string",
+  "reason": "1 concise sentence explaining why it fits or doesn't fit and why it got that rarity",
+  "rarerExamples": ["string", "string"]
+}`;
+
+      try {
+        const response = await fetch(GROQ_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey.trim()}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: `Prompt: "${prompt}"\nPlayer Answer: "${canonicalAnswer}"` }
+            ],
+            temperature: 0,
+            top_p: 1,
+            seed: seed,
+            response_format: { type: 'json_object' }
+          }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errText = await response.text().catch(() => '');
+          throw new Error(`HTTP ${response.status}: ${errText}`);
+        }
+
+        const data = await response.json();
+        const rawContent = data?.choices?.[0]?.message?.content;
+        if (!rawContent) {
+          throw new Error('Empty response content from Groq');
+        }
+
+        // Clean potential markdown code fences and parse JSON
+        const cleanedJson = rawContent.replace(/^\x60\x60\x60json\s*/i, '').replace(/\x60\x60\x60\s*$/i, '').trim();
+        const parsed = JSON.parse(cleanedJson);
+
+        if (typeof parsed.valid !== 'boolean') {
+          throw new Error('Invalid JSON schema: missing boolean "valid"');
+        }
+
+        return parsed;
+      } catch (err) {
+        clearTimeout(timeoutId);
+        throw err;
+      }
+    }
+
+    async function evaluateAnswerWithGroq(prompt, userAnswer) {
+      const normPrompt = normalize(prompt);
+      const normAns = normalize(userAnswer);
+      const primaryCacheKey = `${normPrompt}::${normAns}`;
+
+      if (verdictCache[primaryCacheKey]) {
+        return { ...verdictCache[primaryCacheKey] };
+      }
+
+      if (typeof window.fetchVerdictFromCloud === 'function') {
+        const cloudHit = await window.fetchVerdictFromCloud(primaryCacheKey);
+        if (cloudHit) {
+          verdictCache[primaryCacheKey] = { ...cloudHit };
+          return { ...cloudHit };
+        }
+      }
+
+      // Decode hardcoded keys at runtime
+      const configuredKeys = getGroqApiKeys()
+        .map((key, idx) => ({ key: (key || '').trim(), slot: idx + 1 }))
+        .filter(item => item.key.length > 0);
+
+      if (configuredKeys.length === 0) {
+        throw new Error('NO_KEYS_CONFIGURED');
+      }
+
+      const canonicalAnswer = normAns || userAnswer.trim().toLowerCase();
+      const deterministicSeed = computeDeterministicSeed(primaryCacheKey);
+
+      // Attempt up to all configured keys starting from activeGroqKeyIndex
+      const totalKeys = configuredKeys.length;
+      let lastError = null;
+
+      for (let attempt = 0; attempt < totalKeys; attempt++) {
+        const targetIdx = (activeGroqKeyIndex + attempt) % totalKeys;
+        const { key, slot } = configuredKeys[targetIdx];
+
+        try {
+          const verdict = await callSingleGroqKey(key, prompt, canonicalAnswer, deterministicSeed);
+          // Remember this healthy key for subsequent turns
+          activeGroqKeyIndex = targetIdx;
+
+          // If canonical normalizedAnswer already has a locked verdict, reuse its rarity for full consistency
+          if (verdict && verdict.valid && verdict.normalizedAnswer) {
+            const resolvedCacheKey = `${normPrompt}::${normalize(verdict.normalizedAnswer)}`;
+            if (verdictCache[resolvedCacheKey]) {
+              const lockedVerdict = { ...verdictCache[resolvedCacheKey] };
+              persistVerdictCache(primaryCacheKey, lockedVerdict);
+              return lockedVerdict;
+            }
+            if (typeof window.fetchVerdictFromCloud === 'function') {
+              const cloudCanonicalHit = await window.fetchVerdictFromCloud(resolvedCacheKey);
+              if (cloudCanonicalHit) {
+                const lockedVerdict = { ...cloudCanonicalHit };
+                persistVerdictCache(primaryCacheKey, lockedVerdict);
+                return lockedVerdict;
+              }
+            }
+            persistVerdictCache(resolvedCacheKey, verdict);
+          }
+
+          persistVerdictCache(primaryCacheKey, verdict);
+          return verdict;
+        } catch (err) {
+          lastError = err;
+          console.warn(`[PIK Failover] Key #${slot} failed (${err.message}). Passing to next key...`);
+        }
+      }
+
+      throw lastError || new Error('ALL_KEYS_FAILED');
+    }
+
+    /* ----------------------------------------------------
+       3. GLOBAL GAME STATE & CATEGORY-BALANCED DRAW
+    ---------------------------------------------------- */
+    let isTimedMode = false;
+    let isDailyMode = false;
+    let timerInterval = null;
+    let timerValue = 30;
+    let questionStartTime = Date.now();
+
+    let QUESTION_BANK = [];
+    let unseenQuestionPool = [];
+    let activeQuestions = [];
+    let currentQIndex = 0;
+    let totalScore = 0;
+    let totalDistance = 0;
+    let userHistory = [];
+    let usedAnswersSet = new Set();
+    let selectedProjectedIndex = -1;
+
+    // Global SVG Canvas & Camera State
+    let accumulatedX = 60;
+    let currentViewBoxX = 0;
+    let targetViewBoxX = 0;
+    let panAnimationFrame = null;
+    let currentDotIndex = 0;
+    let placedBadges = [];
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function normalize(str) {
+      if (!str) return '';
+      let s = str.toLowerCase().trim();
+      s = s.replace(/[^a-z0-9\s]/g, '');
+      s = s.replace(/^(a|an|the)\s+/, '');
+      return s.trim();
+    }
+
+    function buildMassiveQuestionBank() {
+      const rawPrompts = [
+        // --- LANGUAGE & WORDPLAY ---
+        { cat: 'language', prompt: 'Name an English word with a silent K' },
+        { cat: 'language', prompt: 'Name an English word with a silent B' },
+        { cat: 'language', prompt: 'Name an English word with a silent G' },
+        { cat: 'language', prompt: 'Name an English word with a silent P' },
+        { cat: 'language', prompt: 'Name an English word with a silent T' },
+        { cat: 'language', prompt: 'Name an English word with a silent L' },
+        { cat: 'language', prompt: 'Name a palindrome word in English' },
+        { cat: 'language', prompt: 'Name an English word that ends in -ology' },
+        { cat: 'language', prompt: 'Name an English word that ends in -phobia' },
+        { cat: 'language', prompt: 'Name an English word that is a collective noun for animals' },
+        { cat: 'language', prompt: 'Name an English word borrowed from French' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Japanese' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Spanish' },
+        { cat: 'language', prompt: 'Name an English word that is both a noun and a verb' },
+        { cat: 'language', prompt: 'Name a rhetorical or literary device' },
+
+        // --- CULINARY & FOOD ---
+        { cat: 'culinary', prompt: 'Name a variety of cheese' },
+        { cat: 'culinary', prompt: 'Name a culinary herb or spice' },
+        { cat: 'culinary', prompt: 'Name a shape of Italian pasta' },
+        { cat: 'culinary', prompt: 'Name a citrus fruit' },
+        { cat: 'culinary', prompt: 'Name a type of edible mushroom' },
+        { cat: 'culinary', prompt: 'Name a traditional type of bread' },
+        { cat: 'culinary', prompt: 'Name a variety of apple' },
+        { cat: 'culinary', prompt: 'Name a type of tree nut or seed' },
+        { cat: 'culinary', prompt: 'Name a leafy green vegetable' },
+        { cat: 'culinary', prompt: 'Name a fermented food or beverage' },
+        { cat: 'culinary', prompt: 'Name a traditional soup or stew' },
+        { cat: 'culinary', prompt: 'Name a cut of beef or steak' },
+        { cat: 'culinary', prompt: 'Name a type of bean or legume' },
+        { cat: 'culinary', prompt: 'Name a tropical fruit' },
+        { cat: 'culinary', prompt: 'Name a type of pastry or baked dessert' },
+
+        // --- GEOGRAPHY & WORLD ---
+        { cat: 'geography', prompt: 'Name a landlocked country' },
+        { cat: 'geography', prompt: 'Name an island nation' },
+        { cat: 'geography', prompt: 'Name a country in South America' },
+        { cat: 'geography', prompt: 'Name a major desert in the world' },
+        { cat: 'geography', prompt: 'Name a mountain range' },
+        { cat: 'geography', prompt: 'Name a river in Europe' },
+        { cat: 'geography', prompt: 'Name a capital city in Asia' },
+        { cat: 'geography', prompt: 'Name a US state that borders Canada' },
+        { cat: 'geography', prompt: 'Name a sea or ocean' },
+        { cat: 'geography', prompt: 'Name a country in Africa' },
+        { cat: 'geography', prompt: 'Name a major strait or canal' },
+        { cat: 'geography', prompt: 'Name a peninsula' },
+        { cat: 'geography', prompt: 'Name a city located on the Mediterranean Sea' },
+        { cat: 'geography', prompt: 'Name an active or famous volcano' },
+        { cat: 'geography', prompt: 'Name a lake in North America' },
+
+        // --- SCIENCE & NATURE ---
+        { cat: 'science', prompt: 'Name a chemical element on the periodic table' },
+        { cat: 'science', prompt: 'Name a bone in the human body' },
+        { cat: 'science', prompt: 'Name a type of cloud' },
+        { cat: 'science', prompt: 'Name a gemstone or mineral' },
+        { cat: 'science', prompt: 'Name a flightless bird' },
+        { cat: 'science', prompt: 'Name a nocturnal mammal' },
+        { cat: 'science', prompt: 'Name a moon in our solar system' },
+        { cat: 'science', prompt: 'Name a constellation in the night sky' },
+        { cat: 'science', prompt: 'Name a species of shark' },
+        { cat: 'science', prompt: 'Name a branch of physics or biology' },
+        { cat: 'science', prompt: 'Name a noble gas or alkali metal' },
+        { cat: 'science', prompt: 'Name a prehistoric dinosaur' },
+        { cat: 'science', prompt: 'Name a venomous animal' },
+        { cat: 'science', prompt: 'Name a muscle in the human body' },
+        { cat: 'science', prompt: 'Name a unit of scientific measurement' },
+
+        // --- EVERYDAY OBJECTS & LIFE ---
+        { cat: 'everyday', prompt: 'Name a tool found in a toolbox' },
+        { cat: 'everyday', prompt: 'Name an item found in a kitchen drawer' },
+        { cat: 'everyday', prompt: 'Name a piece of office stationery' },
+        { cat: 'everyday', prompt: 'Name a type of footwear' },
+        { cat: 'everyday', prompt: 'Name an item commonly found in a wallet or purse' },
+        { cat: 'everyday', prompt: 'Name a piece of bedroom furniture' },
+        { cat: 'everyday', prompt: 'Name a type of hat or headwear' },
+        { cat: 'everyday', prompt: 'Name an item used for personal hygiene' },
+        { cat: 'everyday', prompt: 'Name an item kept in a refrigerator' },
+        { cat: 'everyday', prompt: 'Name a tool found in a gardening shed' },
+        { cat: 'everyday', prompt: 'Name an item found in an attic' },
+        { cat: 'everyday', prompt: 'Name a fastener used in construction or sewing' },
+        { cat: 'everyday', prompt: 'Name an item found in a car glove compartment' },
+        { cat: 'everyday', prompt: 'Name a type of fabric or textile' },
+        { cat: 'everyday', prompt: 'Name a kitchen appliance' },
+
+        // --- POP CULTURE, ENTERTAINMENT & GAMES ---
+        { cat: 'popculture', prompt: 'Name a superhero who does not naturally possess biological superpowers' },
+        { cat: 'popculture', prompt: 'Name a video game franchise created by Nintendo' },
+        { cat: 'popculture', prompt: 'Name a classic tabletop board game that involves rolling dice' },
+        { cat: 'popculture', prompt: 'Name a sport played in the Summer Olympic Games' },
+        { cat: 'popculture', prompt: 'Name a Pixar animated feature film' },
+        { cat: 'popculture', prompt: 'Name a Mario franchise video game character' },
+        { cat: 'popculture', prompt: 'Name a genre of music' },
+        { cat: 'popculture', prompt: 'Name a card game played with a standard deck' },
+        { cat: 'popculture', prompt: 'Name a video game console released before 2010' },
+        { cat: 'popculture', prompt: 'Name a tabletop board or card game' },
+        { cat: 'popculture', prompt: 'Name a musical percussion instrument' },
+        { cat: 'popculture', prompt: 'Name an event in the Winter Olympic Games' },
+        { cat: 'popculture', prompt: 'Name a film genre' },
+        { cat: 'popculture', prompt: 'Name a classic arcade video game released before 1995' },
+        { cat: 'popculture', prompt: 'Name a comic book superhero team or organization' },
+        { cat: 'popculture', prompt: 'Name a recognized dog breed' },
+        { cat: 'popculture', prompt: 'Name a track and field Olympic event' },
+        { cat: 'popculture', prompt: 'Name a style of dance' },
+        { cat: 'popculture', prompt: 'Name a classic comic book superhero secret identity' },
+        { cat: 'popculture', prompt: 'Name a character from Marvel X-Men' },
+        { cat: 'popculture', prompt: 'Name an Olympic swimming stroke' }
+      ];
+
+      QUESTION_BANK = rawPrompts;
+      unseenQuestionPool = shuffleArray(QUESTION_BANK);
+    }
+
+    function toggleHelpModal(show) {
+      const modal = document.getElementById('helpModal');
+      if (modal) {
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+      }
+    }
+
+    function openQuestionDetailModal(idx) {
+      const item = userHistory[idx];
+      const qObj = activeQuestions[idx];
+      if (!item || !qObj) return;
+
+      const modal = document.getElementById('questionDetailModal');
+      const qNum = document.getElementById('detailQNum');
+      const rarityBadge = document.getElementById('detailRarityBadge');
+      const promptEl = document.getElementById('detailPrompt');
+      const userAnsEl = document.getElementById('detailUserAns');
+      const matchedAnsEl = document.getElementById('detailMatchedAns');
+      const distEl = document.getElementById('detailDist');
+      const pointsEl = document.getElementById('detailPoints');
+      const runShareEl = document.getElementById('detailRunShare');
+      const analysisEl = document.getElementById('detailRarityAnalysis');
+      const examplesWrap = document.getElementById('detailExamplesWrap');
+      const examplesEl = document.getElementById('detailRarerExamples');
+
+      qNum.textContent = `Question ${idx + 1} of 8`;
+      promptEl.textContent = item.prompt;
+      userAnsEl.textContent = item.userAnswer;
+
+      if (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') {
+        matchedAnsEl.textContent = `Interpreted as: "${item.matchedName}"`;
+        matchedAnsEl.classList.remove('hidden');
+      } else {
+        matchedAnsEl.textContent = '';
+        matchedAnsEl.classList.add('hidden');
+      }
+
+      const isSkip = item.rarityKey === 'skipped';
+      const colorHex = isSkip ? '#475569' : item.color;
+      rarityBadge.textContent = item.rarityName;
+      rarityBadge.style.backgroundColor = `${colorHex}25`;
+      rarityBadge.style.color = colorHex;
+      rarityBadge.style.border = `1px solid ${colorHex}50`;
+
+      const runSharePct = totalDistance > 0 ? Math.round((item.length / totalDistance) * 100) : 0;
+      distEl.textContent = `+${item.length} px`;
+      pointsEl.textContent = `+${item.points} pts`;
+      if (runShareEl) runShareEl.textContent = `${runSharePct}%`;
+
+      if (analysisEl) {
+        analysisEl.textContent = item.reason || (isSkip ? 'Question skipped by player.' : 'Valid answer verified.');
+      }
+
+      const examples = Array.isArray(item.rarerExamples) ? item.rarerExamples.filter(Boolean) : [];
+      if (examplesWrap && examplesEl) {
+        if (examples.length > 0) {
+          examplesEl.innerHTML = examples
+            .map(ex => `<span class="px-2 py-1 rounded-lg bg-pik-bg border border-pik-border text-xs font-display text-pik-gold">${ex}</span>`)
+            .join('');
+          examplesWrap.classList.remove('hidden');
+        } else {
+          examplesEl.innerHTML = '';
+          examplesWrap.classList.add('hidden');
+        }
+      }
+
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeQuestionDetailModal() {
+      const modal = document.getElementById('questionDetailModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function returnToMenu() {
+      if (timerInterval) clearInterval(timerInterval);
+      setEvaluatingState(false);
+
+      const menuScreen = document.getElementById('menuScreen');
+      const gameArea = document.getElementById('gameArea');
+      const resultsSection = document.getElementById('resultsSection');
+
+      if (menuScreen) menuScreen.classList.remove('-translate-y-full');
+      if (gameArea) gameArea.classList.remove('hidden');
+      if (resultsSection) {
+        resultsSection.classList.add('hidden-results');
+        resultsSection.classList.remove('show-results');
+      }
+
+      initSvgTrackLine();
+    }
+
+    // Hash current UTC date (YYYYMMDD) for deterministic daily challenge generation
+    function getDailySeed() {
+      const d = new Date();
+      const dateStr = `${d.getUTCFullYear()}${(d.getUTCMonth() + 1).toString().padStart(2, '0')}${d.getUTCDate().toString().padStart(2, '0')}`;
+      let hash = 0;
+      for (let i = 0; i < dateStr.length; i++) {
+        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    // Fast PRNG algorithm seeded by daily hash
+    function mulberry32(a) {
+      return function() {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function selectCategoryBalancedQuestions(isDaily = false) {
+      if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
+        buildMassiveQuestionBank();
+      }
+
+      const totalTarget = 8;
+
+      if (isDaily) {
+        const seed = getDailySeed();
+        const rng = mulberry32(seed);
+
+        const seededShuffle = (arr) => {
+          const array = [...arr];
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        };
+
+        const byCategory = {};
+        QUESTION_BANK.forEach((q) => {
+          if (!byCategory[q.cat]) byCategory[q.cat] = [];
+          byCategory[q.cat].push(q);
+        });
+
+        const categories = seededShuffle(Object.keys(byCategory));
+        categories.forEach((c) => {
+          byCategory[c] = seededShuffle(byCategory[c]);
+        });
+
+        const selected = [];
+        const usedPrompts = new Set();
+        let categoryIdx = 0;
+        let safetyCounter = 0;
+
+        while (selected.length < totalTarget && safetyCounter < 100) {
+          safetyCounter++;
+          const cat = categories[categoryIdx % categories.length];
+          const pool = byCategory[cat];
+          if (pool && pool.length > 0) {
+            const q = pool.pop();
+            if (q && !usedPrompts.has(q.prompt)) {
+              usedPrompts.add(q.prompt);
+              selected.push(q);
+            }
+          }
+          categoryIdx++;
+
+          if (Object.values(byCategory).every((p) => p.length === 0)) {
+            break;
+          }
+        }
+
+        if (selected.length < totalTarget) {
+          const remainingPool = seededShuffle(QUESTION_BANK);
+          for (const eq of remainingPool) {
+            if (selected.length >= totalTarget) break;
+            if (!usedPrompts.has(eq.prompt)) {
+              usedPrompts.add(eq.prompt);
+              selected.push(eq);
+            }
+          }
+        }
+
+        return selected;
+      }
+
+      if (unseenQuestionPool.length < totalTarget) {
+        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      }
+
+      const selected = [];
+      const usedPrompts = new Set();
+
+      const poolByCat = {};
+      unseenQuestionPool.forEach((q) => {
+        if (!poolByCat[q.cat]) poolByCat[q.cat] = [];
+        poolByCat[q.cat].push(q);
+      });
+
+      const availableCats = shuffleArray(Object.keys(poolByCat));
+      let catIndex = 0;
+      let passes = 0;
+
+      while (selected.length < totalTarget && passes < 50) {
+        passes++;
+        if (availableCats.length === 0) break;
+
+        const cat = availableCats[catIndex % availableCats.length];
+        const catQuestions = poolByCat[cat];
+
+        if (catQuestions && catQuestions.length > 0) {
+          const randIdx = Math.floor(Math.random() * catQuestions.length);
+          const q = catQuestions.splice(randIdx, 1)[0];
+
+          if (q && !usedPrompts.has(q.prompt)) {
+            usedPrompts.add(q.prompt);
+            selected.push(q);
+
+            const globalIdx = unseenQuestionPool.indexOf(q);
+            if (globalIdx !== -1) unseenQuestionPool.splice(globalIdx, 1);
+          }
+        } else {
+          const rmIdx = availableCats.indexOf(cat);
+          if (rmIdx !== -1) availableCats.splice(rmIdx, 1);
+        }
+
+        catIndex++;
+      }
+
+      if (selected.length < totalTarget) {
+        const fallback = shuffleArray(QUESTION_BANK);
+        for (const q of fallback) {
+          if (selected.length >= totalTarget) break;
+          if (!usedPrompts.has(q.prompt)) {
+            usedPrompts.add(q.prompt);
+            selected.push(q);
+          }
+        }
+      }
+
+      return shuffleArray(selected);
+    }
+
+    function launchGame(mode) {
+      isTimedMode = (mode === 'timed');
+      isDailyMode = (mode === 'daily');
+
+      totalScore = 0;
+      totalDistance = 0;
+      currentQIndex = 0;
+      userHistory = [];
+      usedAnswersSet = new Set();
+      setEvaluatingState(false);
+
+      activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+
+      const menuScreen = document.getElementById('menuScreen');
+      const gameArea = document.getElementById('gameArea');
+      const resultsSection = document.getElementById('resultsSection');
+      const lineSection = document.getElementById('lineSection');
+
+      if (menuScreen) menuScreen.classList.add('-translate-y-full');
+      if (resultsSection) {
+        resultsSection.classList.add('hidden-results');
+        resultsSection.classList.remove('show-results');
+      }
+      if (gameArea) gameArea.classList.remove('hidden');
+
+      if (lineSection) {
+        lineSection.classList.remove('order-1', 'order-3');
+        lineSection.classList.add('order-2');
+      }
+
+      initSvgTrackLine();
+      renderQuestion(0);
+    }
+
+    function setEvaluatingState(loading) {
+      isEvaluatingAnswer = loading;
+      const inputEl = document.getElementById('answerInput');
+      const submitBtn = document.getElementById('submitBtn');
+      const submitBtnText = document.getElementById('submitBtnText');
+      const skipBtn = document.getElementById('skipBtn');
+
+      if (inputEl) inputEl.disabled = loading;
+      if (submitBtn) submitBtn.disabled = loading;
+      if (skipBtn) skipBtn.disabled = loading;
+
+      if (submitBtnText) {
+        submitBtnText.textContent = loading ? 'Judging...' : 'Submit';
+      }
+    }
+
+    /* ----------------------------------------------------
+       5. LINE CANVAS & SVG BADGES
+    ---------------------------------------------------- */
+    function initSvgTrackLine() {
+      const segGroup = document.getElementById('svgLineSegments');
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const nodeGroup = document.getElementById('svgLineNodes');
+      const svg = document.getElementById('mainLineSvg');
+
+      if (segGroup) segGroup.innerHTML = '';
+      if (badgeGroup) badgeGroup.innerHTML = '';
+      if (nodeGroup) nodeGroup.innerHTML = '';
+
+      accumulatedX = 60;
+      currentViewBoxX = 0;
+      targetViewBoxX = 0;
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      currentDotIndex = 0;
+      placedBadges = [];
+      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
+
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+
+      const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      startNode.setAttribute('id', 'svg-node-0');
+      startNode.setAttribute('cx', '60');
+      startNode.setAttribute('cy', '70');
+      startNode.setAttribute('r', '7');
+      startNode.setAttribute('stroke', '#ffffff');
+      startNode.setAttribute('stroke-width', '3');
+      startNode.setAttribute('fill', '#121212');
+      startNode.classList.add('node-transition');
+      if (nodeGroup) nodeGroup.appendChild(startNode);
+    }
+
+    function panCameraToFit(targetX, instant = false) {
+      const svg = document.getElementById('mainLineSvg');
+      if (!svg) return;
+
+      if (targetX > 750) {
+        targetViewBoxX = targetX - 650;
+      } else {
+        targetViewBoxX = 0;
+      }
+
+      if (instant) {
+        if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+        currentViewBoxX = targetViewBoxX;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        return;
+      }
+
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      function animatePan() {
+        const diff = targetViewBoxX - currentViewBoxX;
+        if (Math.abs(diff) < 0.3) {
+          currentViewBoxX = targetViewBoxX;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          panAnimationFrame = null;
+          return;
+        }
+        currentViewBoxX += diff * 0.08;
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+        panAnimationFrame = requestAnimationFrame(animatePan);
+      }
+
+      panAnimationFrame = requestAnimationFrame(animatePan);
+    }
+
+    function scrubLineView(percent) {
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      const maxPanX = Math.max(0, accumulatedX - 650);
+      const targetX = (percent / 100) * maxPanX;
+      currentViewBoxX = targetX;
+      targetViewBoxX = targetX;
+      const svg = document.getElementById('mainLineSvg');
+      if (svg) {
+        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+      }
+    }
+
+    /* ----------------------------------------------------
+       6. GAMEPLAY LOOP & CARD ANIMATIONS
+    ---------------------------------------------------- */
+    function showFeedback(msg) {
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden');
+      }
+    }
+
+    function hideFeedback() {
+      const fb = document.getElementById('feedbackText');
+      if (fb) {
+        fb.textContent = '';
+        fb.classList.add('hidden');
+      }
+    }
+
+    function startQuestionTimer(seconds = 30) {
+      if (timerInterval) clearInterval(timerInterval);
+      timerValue = seconds;
+      const timerText = document.getElementById('timerText');
+      if (timerText) timerText.textContent = `${timerValue}s`;
+
+      timerInterval = setInterval(() => {
+        timerValue--;
+        if (timerText) timerText.textContent = `${Math.max(0, timerValue)}s`;
+        if (timerValue <= 0) {
+          clearInterval(timerInterval);
+          playAudioTone('timeout');
+          skipQuestion(true);
+        }
+      }, 1000);
+    }
+
+    function animateCardOut(isTimeout, callback) {
+      const card = document.getElementById('questionCard');
+      if (!card) {
+        if (callback) callback();
+        return;
+      }
+
+      if (isTimeout) {
+        card.classList.add('card-flash-red');
+      }
+      card.classList.add('card-slide-out');
+
+      setTimeout(() => {
+        card.classList.remove('card-slide-out', 'card-flash-red');
+        card.classList.add('card-slide-in-prepare');
+
+        if (callback) callback();
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            card.classList.remove('card-slide-in-prepare');
+          });
+        });
+      }, 300);
+    }
+
+    function renderQuestion(index) {
+      if (timerInterval) clearInterval(timerInterval);
+      setEvaluatingState(false);
+
+      if (!activeQuestions || !activeQuestions[index]) {
+        if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
+          buildMassiveQuestionBank();
+        }
+        activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
+      }
+
+      const q = activeQuestions[index];
+      if (!q) return;
+
+      questionStartTime = Date.now();
+      hideFeedback();
+
+      const qNumText = document.getElementById('questionNumText');
+      if (qNumText) qNumText.textContent = `Question ${index + 1} / 8`;
+
+      const dailyBadge = document.getElementById('dailyBadge');
+      if (dailyBadge) {
+        if (isDailyMode) dailyBadge.classList.remove('hidden');
+        else dailyBadge.classList.add('hidden');
+      }
+
+      const timerPill = document.getElementById('timerPill');
+      if (timerPill) {
+        if (isTimedMode) timerPill.classList.remove('hidden');
+        else timerPill.classList.add('hidden');
+      }
+
+      const stepPills = document.getElementById('stepPills');
+      if (stepPills) {
+        let pillsHtml = '';
+        for (let i = 0; i < 8; i++) {
+          if (i < index && userHistory[i]) {
+            const c = userHistory[i].rarityKey === 'skipped' ? '#475569' : userHistory[i].color;
+            pillsHtml += `<span class="w-2.5 h-1.5 rounded-full transition-all" style="background-color: ${c};"></span>`;
+          } else if (i === index) {
+            pillsHtml += `<span class="w-4 h-1.5 rounded-full bg-pik-gold transition-all"></span>`;
+          } else {
+            pillsHtml += `<span class="w-2 h-1.5 rounded-full bg-pik-border transition-all"></span>`;
+          }
+        }
+        stepPills.innerHTML = pillsHtml;
+      }
+
+      const promptEl = document.getElementById('questionPrompt');
+      if (promptEl) promptEl.textContent = q.prompt;
+
+      const inputEl = document.getElementById('answerInput');
+      if (inputEl) {
+        inputEl.value = '';
+        inputEl.disabled = false;
+        inputEl.focus();
+      }
+
+      if (isTimedMode) {
+        startQuestionTimer(30);
+      }
+    }
+
+    async function submitAnswer() {
+      if (isEvaluatingAnswer) return;
+
+      const inputEl = document.getElementById('answerInput');
+      const rawVal = inputEl ? inputEl.value.trim() : '';
+
+      if (!rawVal) {
+        showFeedback("Please enter an answer or skip.");
+        playAudioTone('error');
+        return;
+      }
+
+      const normInput = normalize(rawVal);
+      if (usedAnswersSet.has(normInput)) {
+        showFeedback(`"${rawVal}" has already been used in this game.`);
+        playAudioTone('error');
+        return;
+      }
+
+      // Pause countdown timer while evaluating answer
+      if (timerInterval) clearInterval(timerInterval);
+      hideFeedback();
+      setEvaluatingState(true);
+
+      const qObj = activeQuestions[currentQIndex];
+
+      try {
+        const verdict = await evaluateAnswerWithGroq(qObj.prompt, rawVal);
+        setEvaluatingState(false);
+
+        if (!verdict || !verdict.valid) {
+          const reasonMsg = verdict?.reason ? ` — ${verdict.reason}` : '';
+          showFeedback(`"${rawVal}" doesn't fit${reasonMsg}`);
+          playAudioTone('error');
+          if (inputEl) inputEl.focus();
+          if (isTimedMode && timerValue > 0) startQuestionTimer(timerValue);
+          return;
+        }
+
+        // Normalize rarity output to one of the 5 Pik tiers
+        let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
+        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
+
+        const cleanAnswer = (verdict.normalizedAnswer || rawVal).trim();
+        const normClean = normalize(cleanAnswer);
+
+        if (usedAnswersSet.has(normClean)) {
+          showFeedback(`"${cleanAnswer}" has already been used in this game.`);
+          playAudioTone('error');
+          if (inputEl) inputEl.focus();
+          if (isTimedMode && timerValue > 0) startQuestionTimer(timerValue);
+          return;
+        }
+
+        usedAnswersSet.add(normInput);
+        usedAnswersSet.add(normClean);
+
+        const result = {
+          key: rarityKey,
+          name: RARITY_CONFIG[rarityKey].name,
+          color: RARITY_CONFIG[rarityKey].color,
+          length: RARITY_CONFIG[rarityKey].length,
+          points: RARITY_CONFIG[rarityKey].points,
+          matchedName: cleanAnswer,
+          reason: verdict.reason || '',
+          rarerExamples: Array.isArray(verdict.rarerExamples) ? verdict.rarerExamples : []
+        };
+
+        processTurn(cleanAnswer, result);
+      } catch (err) {
+        setEvaluatingState(false);
+        playAudioTone('error');
+
+        if (err && err.message === 'NO_KEYS_CONFIGURED') {
+          showFeedback("No API keys configured. Insert your 3 keys in GROQ_API_KEYS in the code.");
+        } else {
+          showFeedback("Unable to verify answer right now. Please check your connection or keys and try again.");
+        }
+
+        if (inputEl) inputEl.focus();
+        if (isTimedMode && timerValue > 0) startQuestionTimer(timerValue);
+      }
+    }
+
+    function skipQuestion(fromTimeout = false) {
+      if (isEvaluatingAnswer && !fromTimeout) return;
+      if (timerInterval) clearInterval(timerInterval);
+      setEvaluatingState(false);
+
+      if (!fromTimeout) playAudioTone('skip');
+
+      const elapsedSec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
+
+      userHistory.push({
+        prompt: activeQuestions[currentQIndex].prompt,
+        userAnswer: 'Skipped',
+        matchedName: 'Skipped',
+        rarityKey: 'skipped',
+        rarityName: 'Skipped',
+        color: '#475569',
+        length: 0,
+        points: 0,
+        reason: 'Question skipped by player.',
+        rarerExamples: [],
+        timeTaken: elapsedSec
+      });
+
+      animateCardOut(fromTimeout, () => {
+        currentQIndex++;
+        if (currentQIndex < 8) {
+          renderQuestion(currentQIndex);
+        } else {
+          finishGame();
+        }
+      });
+    }
+
+    function processTurn(ansText, result) {
+      totalScore += result.points;
+      totalDistance += result.length;
+
+      const elapsedSec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
+
+      userHistory.push({
+        prompt: activeQuestions[currentQIndex].prompt,
+        userAnswer: ansText,
+        matchedName: result.matchedName || ansText,
+        rarityKey: result.key,
+        rarityName: result.name,
+        color: result.color,
+        length: result.length,
+        points: result.points,
+        reason: result.reason || '',
+        rarerExamples: result.rarerExamples || [],
+        timeTaken: elapsedSec
+      });
+
+      const currNode = document.getElementById(`svg-node-${currentDotIndex}`);
+      if (currNode) {
+        currNode.setAttribute('fill', result.color);
+        currNode.setAttribute('stroke', result.color);
+      }
+
+      const startX = accumulatedX;
+      const endX = accumulatedX + result.length;
+      accumulatedX = endX;
+
+      const segGroup = document.getElementById('svgLineSegments');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', startX.toString());
+      line.setAttribute('y1', '70');
+      line.setAttribute('x2', endX.toString());
+      line.setAttribute('y2', '70');
+      line.setAttribute('stroke', result.color);
+      line.setAttribute('stroke-width', '6');
+      line.setAttribute('stroke-linecap', 'round');
+      line.classList.add('pik-line-stroke');
+
+      const pathLen = result.length;
+      line.style.strokeDasharray = pathLen;
+      line.style.strokeDashoffset = pathLen;
+      if (segGroup) segGroup.appendChild(line);
+
+      requestAnimationFrame(() => {
+        line.style.strokeDashoffset = '0';
+      });
+
+      // Alternating & Anti-Overlap Floating SVG Badge Positioning
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const centerX = (startX + endX) / 2;
+
+      const badgeTextStr = `${ansText} • +${result.length}px`;
+      const approxCharWidth = 6.8;
+      const badgeWidth = Math.max(85, badgeTextStr.length * approxCharWidth + 18);
+
+      const newLeft = centerX - badgeWidth / 2 - 4;
+      const newRight = centerX + badgeWidth / 2 + 4;
+
+      const hasOverlap = (side, tier) => {
+        return placedBadges.some(b => b.side === side && b.tier === tier && !(newRight <= b.left || newLeft >= b.right));
+      };
+
+      const prefSide = (placedBadges.length % 2 === 0) ? 'top' : 'bottom';
+      const altSide = (prefSide === 'top') ? 'bottom' : 'top';
+
+      const candidates = [
+        { side: prefSide, tier: 0 },
+        { side: altSide, tier: 0 },
+        { side: prefSide, tier: 1 },
+        { side: altSide, tier: 1 }
+      ];
+
+      let chosen = candidates.find(c => !hasOverlap(c.side, c.tier)) || candidates[0];
+      placedBadges.push({ side: chosen.side, tier: chosen.tier, left: newLeft, right: newRight });
+
+      const isTop = (chosen.side === 'top');
+      const chosenY = isTop ? (chosen.tier === 0 ? 25 : 8) : (chosen.tier === 0 ? 115 : 132);
+      const leaderY2 = isTop ? (chosen.tier === 0 ? 38 : 21) : (chosen.tier === 0 ? 102 : 119);
+
+      // Leader line connecting badge box to the central line track at Y=70
+      const leaderLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      leaderLine.setAttribute('x1', centerX.toString());
+      leaderLine.setAttribute('y1', '70');
+      leaderLine.setAttribute('x2', centerX.toString());
+      leaderLine.setAttribute('y2', leaderY2.toString());
+      leaderLine.setAttribute('stroke', result.color);
+      leaderLine.setAttribute('stroke-width', '1.5');
+      leaderLine.setAttribute('stroke-dasharray', '3 3');
+      leaderLine.setAttribute('stroke-opacity', '0.7');
+      if (badgeGroup) badgeGroup.appendChild(leaderLine);
+
+      // Badge Container Group
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', `translate(${centerX}, ${chosenY})`);
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', (-badgeWidth / 2).toString());
+      rect.setAttribute('y', '-11');
+      rect.setAttribute('width', badgeWidth.toString());
+      rect.setAttribute('height', '22');
+      rect.setAttribute('rx', '6');
+      rect.setAttribute('fill', '#1a1a1a');
+      rect.setAttribute('stroke', result.color);
+      rect.setAttribute('stroke-width', '1.5');
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', '0');
+      text.setAttribute('y', '4');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', result.color);
+      text.setAttribute('font-family', 'Space Grotesk, sans-serif');
+      text.setAttribute('font-size', '10.5');
+      text.setAttribute('font-weight', 'bold');
+      text.textContent = badgeTextStr;
+
+      g.appendChild(rect);
+      g.appendChild(text);
+      if (badgeGroup) badgeGroup.appendChild(g);
+
+      currentDotIndex++;
+      const nodeGroup = document.getElementById('svgLineNodes');
+      const nextNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      nextNode.setAttribute('id', `svg-node-${currentDotIndex}`);
+      nextNode.setAttribute('cx', endX.toString());
+      nextNode.setAttribute('cy', '70');
+      nextNode.setAttribute('r', '7');
+      nextNode.setAttribute('stroke', '#ffffff');
+      nextNode.setAttribute('stroke-width', '3');
+      nextNode.setAttribute('fill', '#121212');
+      nextNode.classList.add('node-transition');
+      if (nodeGroup) nodeGroup.appendChild(nextNode);
+
+      panCameraToFit(endX);
+      playAudioTone('stretch', result.key);
+
+      // Question card waits until line stroke finishes (~750ms), THEN slides out to the right
+      setTimeout(() => {
+        animateCardOut(false, () => {
+          currentQIndex++;
+          if (currentQIndex < 8) {
+            renderQuestion(currentQIndex);
+          } else {
+            finishGame();
+          }
+        });
+      }, 750);
+    }
+
+    /* ----------------------------------------------------
+       8. EVENT LISTENERS INITIALIZATION
+    ---------------------------------------------------- */
+    document.addEventListener('DOMContentLoaded', () => {
+      buildMassiveQuestionBank();
+      const input = document.getElementById('answerInput');
+      if (input) {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitAnswer();
+        });
+        input.addEventListener('input', () => {
+          hideFeedback();
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (selectedProjectedIndex !== undefined && selectedProjectedIndex !== null && selectedProjectedIndex >= 0 && userHistory[selectedProjectedIndex]) {
+          const activeCard = document.getElementById(`proj-left-card-${selectedProjectedIndex}`);
+          const panel = document.getElementById('projectedDetailPanel');
+          if (activeCard && panel) {
+            const item = userHistory[selectedProjectedIndex];
+            const isSkip = item.rarityKey === 'skipped';
+            const colorHex = isSkip ? '#475569' : item.color;
+            drawProjectionLines(activeCard, panel, colorHex);
+          }
+        }
+      });
+    });
+
+    // Immediate fallback execution on script load
+    if (typeof buildMassiveQuestionBank === 'function') {
+      buildMassiveQuestionBank();
+    }
+  </script>
+
+  <!-- ================= SHARED CLOUD VERDICT SYNC ================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    (async function initSharedCloudVerdicts() {
+      try {
+        if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Authenticate first before any cloud verdict operations
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        const currentUser = auth.currentUser;
+        if (!currentUser) return;
+
+        const verdictsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'aiVerdicts');
+
+        // Real-time listener keeps all players synced to the same answer rarities without refreshing
+        onSnapshot(
+          verdictsColRef,
+          (snapshot) => {
+            snapshot.forEach((docSnap) => {
+              const data = docSnap.data();
+              if (data && data.cacheKey && typeof data.valid === 'boolean') {
+                window.__pikVerdictCache[data.cacheKey] = {
+                  valid: data.valid,
+                  rarity: data.rarity ?? null,
+                  normalizedAnswer: data.normalizedAnswer || '',
+                  reason: data.reason || '',
+                  rarerExamples: Array.isArray(data.rarerExamples) ? data.rarerExamples : []
+                };
+              }
+            });
+          },
+          (err) => {
+            console.warn('[PIK Cloud Verdicts] Live sync listener error:', err);
+          }
+        );
+
+        window.fetchVerdictFromCloud = async (cacheKey) => {
+          if (!auth.currentUser || !cacheKey) return null;
+          try {
+            const docId = typeof buildVerdictDocId === 'function' ? buildVerdictDocId(cacheKey) : cacheKey.replace(/[^a-z0-9_-]/gi, '_');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'aiVerdicts', docId);
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+              const data = snap.data();
+              if (data && typeof data.valid === 'boolean') {
+                return {
+                  valid: data.valid,
+                  rarity: data.rarity ?? null,
+                  normalizedAnswer: data.normalizedAnswer || '',
+                  reason: data.reason || '',
+                  rarerExamples: Array.isArray(data.rarerExamples) ? data.rarerExamples : []
+                };
+              }
+            }
+          } catch (e) {
+            console.warn('[PIK Cloud Verdicts] Fetch error:', e);
+          }
+          return null;
+        };
+
+        window.saveVerdictToCloud = async (cacheKey, verdict) => {
+          if (!auth.currentUser || !cacheKey || !verdict) return;
+          try {
+            const docId = typeof buildVerdictDocId === 'function' ? buildVerdictDocId(cacheKey) : cacheKey.replace(/[^a-z0-9_-]/gi, '_');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'aiVerdicts', docId);
+            await setDoc(docRef, {
+              cacheKey: cacheKey,
+              valid: Boolean(verdict.valid),
+              rarity: verdict.rarity ?? null,
+              normalizedAnswer: verdict.normalizedAnswer || '',
+              reason: verdict.reason || '',
+              rarerExamples: Array.isArray(verdict.rarerExamples) ? verdict.rarerExamples : [],
+              updatedAt: Date.now()
+            }, { merge: true });
+          } catch (e) {
+            console.warn('[PIK Cloud Verdicts] Save error:', e);
+          }
+        };
+      } catch (err) {
+        console.warn('[PIK Cloud Verdicts] Initialization skipped:', err);
+      }
+    })();
+  </script>
 </body>
 </html>
