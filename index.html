@@ -6,7 +6,7 @@
   <title>Pik - A Game of Rare Answers</title>
   
   <!-- Handcrafted SVG Favicon (5 Matte Dots in a Circle) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/><circle cx='24' cy='24' r='4' fill='%23fb8c00'/></svg>">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,6 +31,7 @@
               border: '#2a2a2a',
               common: '#7e8c8d',
               uncommon: '#388e3c',
+              sarcastic: '#fb8c00',
               rare: '#1976d2',
               epic: '#8e24aa',
               gold: '#d4af37'
@@ -117,6 +118,7 @@
         <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
         <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
         <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+        <circle cx="24" cy="24" r="4" fill="#fb8c00"/>
       </svg>
       <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">PIK</span>
     </div>
@@ -151,6 +153,7 @@
         <circle cx="31.6" cy="34.4" r="4.5" fill="#1976d2"/>
         <circle cx="16.4" cy="34.4" r="4.5" fill="#8e24aa"/>
         <circle cx="11.7" cy="20" r="4.5" fill="#d4af37"/>
+        <circle cx="24" cy="24" r="4.5" fill="#fb8c00"/>
       </svg>
       <h1 class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
       <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">A game of niche ball knowledge</p>
@@ -205,6 +208,7 @@
           <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
           <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
           <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
+          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#fb8c00]"></span>Sarcastic</span><span>225px (+35 pts)</span></div>
           <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
           <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
           <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
@@ -375,40 +379,6 @@
 
   <!-- ================= RESULTS AREA (FRAMELESS BACKGROUND PROJECTION LAYOUT) ================= -->
   <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 flex-1 flex flex-col justify-between overflow-hidden min-h-0 z-20 order-1">
-    <!-- Header Controls & Score Bar -->
-    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
-      <div>
-        <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
-          Game Completed
-        </h2>
-      </div>
-
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3 text-right">
-          <div>
-            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
-            <div id="finalDistanceText" class="font-display font-extrabold text-sm sm:text-lg text-pik-gold">0 px</div>
-          </div>
-          <div class="w-px h-7 bg-pik-border"></div>
-          <div>
-            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
-            <div id="finalScoreText" class="font-display font-extrabold text-sm sm:text-lg text-slate-100">0 pts</div>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button onclick="returnToMenu()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            Menu
-          </button>
-          <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            Play Again
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Interactive Left-Edge Question Cards & Projected Info Area -->
     <div id="projectionContainer" class="relative flex gap-3 sm:gap-6 w-full flex-1 my-1.5 items-stretch overflow-hidden min-h-0">
       <!-- Dynamic SVG Overlay for Connecting Lines -->
@@ -423,7 +393,38 @@
       <div id="projectedDetailPanel" class="flex-1 z-20 bg-pik-card/50 border border-pik-border/80 backdrop-blur-sm rounded-xl relative overflow-hidden transition-all duration-300">
         <!-- Middle Overview Dashboard (Default, slides UP when inspected) -->
         <div id="overviewDashboard" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-0 opacity-100 z-10 pointer-events-auto">
-          <!-- Injected via JS -->
+          <!-- Game Completed header: total distance & final score -->
+          <div id="overviewHeader" class="flex items-center justify-between gap-2 border-b border-pik-border/60 pb-1.5 flex-shrink-0">
+            <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
+          Game Completed
+        </h2>
+            <div class="flex items-center gap-3 text-right">
+          <div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Total Distance</div>
+            <div id="finalDistanceText" class="font-display font-extrabold text-sm sm:text-lg text-pik-gold">0 px</div>
+          </div>
+          <div class="w-px h-7 bg-pik-border"></div>
+          <div>
+            <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-display">Final Score</div>
+            <div id="finalScoreText" class="font-display font-extrabold text-sm sm:text-lg text-slate-100">0 pts</div>
+          </div>
+        </div>
+          </div>
+          <!-- Dynamic overview content (injected via JS) -->
+          <div id="overviewDynamic" class="flex-1 min-h-0 flex flex-col justify-between gap-1.5 py-1.5 overflow-y-auto"></div>
+          <!-- Menu & Play Again -->
+          <div class="flex items-center justify-end gap-2 pt-1.5 border-t border-pik-border/60 flex-shrink-0">
+            <div class="flex items-center gap-2">
+          <button onclick="returnToMenu()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-display font-bold text-xs rounded-xl transition border border-pik-border flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Menu
+          </button>
+          <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Play Again
+          </button>
+        </div>
+          </div>
         </div>
 
         <!-- Projected Question Detail Panel (Slides IN from bottom when inspected) -->
@@ -519,10 +520,10 @@
     }
 
     function renderOverviewDashboard() {
-      const dashboard = document.getElementById('overviewDashboard');
+      const dashboard = document.getElementById('overviewDynamic');
       if (!dashboard) return;
 
-      const tierCounts = { gold: 0, epic: 0, rare: 0, uncommon: 0, common: 0, skipped: 0 };
+      const tierCounts = { gold: 0, epic: 0, rare: 0, sarcastic: 0, uncommon: 0, common: 0, skipped: 0 };
       let totalDistSum = 0;
       let clearedCount = 0;
       let bestPik = null;
@@ -549,6 +550,7 @@
         gold: '#d4af37',
         epic: '#8e24aa',
         rare: '#1976d2',
+        sarcastic: '#fb8c00',
         uncommon: '#388e3c',
         common: '#7e8c8d',
         skipped: '#475569'
@@ -557,7 +559,7 @@
       let barSegmentsHtml = '';
       let countPillsHtml = '';
 
-      const tiersList = ['gold', 'epic', 'rare', 'uncommon', 'common', 'skipped'];
+      const tiersList = ['gold', 'epic', 'rare', 'sarcastic', 'uncommon', 'common', 'skipped'];
       tiersList.forEach(t => {
         const cnt = tierCounts[t];
         if (cnt > 0) {
@@ -731,6 +733,7 @@
       { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
       { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
       { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+      { key: 'sarcastic', name: 'Sarcastic (35pts)', color: '#fb8c00' },
       { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
       { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
     ];
@@ -944,6 +947,7 @@
     const RARITY_CONFIG = {
       common: { name: 'Common', color: '#7e8c8d', length: 110, points: 10 },
       uncommon: { name: 'Uncommon', color: '#388e3c', length: 180, points: 25 },
+      sarcastic: { name: 'Sarcastic', color: '#fb8c00', length: 225, points: 35 },
       rare: { name: 'Rare', color: '#1976d2', length: 270, points: 50 },
       epic: { name: 'Epic', color: '#8e24aa', length: 390, points: 75 },
       gold: { name: 'The Pik', color: '#d4af37', length: 540, points: 100 }
@@ -984,7 +988,7 @@
         const now = audioCtx.currentTime;
 
         if (type === 'stretch') {
-          const freqMap = { common: 260, uncommon: 330, rare: 440, epic: 550, gold: 660 };
+          const freqMap = { common: 260, uncommon: 330, sarcastic: 390, rare: 440, epic: 550, gold: 660 };
           const baseFreq = freqMap[rarityKey] || 300;
           osc.type = rarityKey === 'gold' ? 'triangle' : 'sine';
           osc.frequency.setValueAtTime(baseFreq, now);
@@ -1051,10 +1055,10 @@
       const q = [];
 
       // Helper to add questions; enforces that every question must have multiple answers
-      const addQ = (cat, prompt, gold, epic, rare, uncommon, common) => {
+      const addQ = (cat, prompt, gold, epic, rare, uncommon, common, sarcastic = []) => {
         const uniqueAnswers = new Set([...gold, ...epic, ...rare, ...uncommon, ...common].map(a => a.toLowerCase().trim()));
         if (uniqueAnswers.size > 1) {
-          q.push({ cat, prompt, gold, epic, rare, uncommon, common });
+          q.push({ cat, prompt, gold, epic, rare, uncommon, common, sarcastic });
         }
       };
 
@@ -1065,6 +1069,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "K"',
+          sarcastic: ["Knight Rider", "Knock-Knock Joke"],
           gold: ["Knickerbocker"],
           epic: ["Knave", "Knoll", "Knell", "Kith"],
           rare: ["Knapsack", "Knead", "Knelt", "Kneel", "Knurled", "Knockout", "Knothole", "Knighthood", "Kneepad", "Knickknack", "Knucklehead", "Knockdown", "Knockabout", "Knockwurst", "Kneecapping", "Knobkerrie", "Knobstick", "Knuckleduster", "Knurling", "Knackery", "Kneehole", "Knifepoint", "Knickerless"
@@ -1101,6 +1106,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "B"',
+          sarcastic: ["Dumb Question", "Crumb Cake"],
           gold: ["Bdellium"],
           epic: ["Aplomb", "Redoubt", "Coxcomb", "Catacomb"],
           rare: ["Succumb", "Jamb", "Iamb", "Benumb", "Coulomb", "Subtlety", "Dumbwaiter", "Honeycomb", "Plumbline", "Climbing", "Bombardment", "Redoubtable", "Subtlenesses", "Succumbing", "Benumbed", "Dumbfound", "Dumbfounded", "Iambic", "Cockscomb", "Catacombs", "Coxcombs", "Plumbum", "Lambent", "Lambency"
@@ -1141,6 +1147,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of cheese',
+          sarcastic: ["Say Cheese", "Cheese Cheese"],
           gold: ["Majorero"],
           epic: ["Taleggio", "Cotija", "Raclette", "Cambozola", "Tetilla", "Sapsago"
           ],
@@ -1179,6 +1186,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a pizza topping',
+          sarcastic: ["Pineapple Controversy", "Regret"],
           gold: ["Capers"],
           epic: ["Prosciutto", "Truffle Oil", "Hot Honey", "Gorgonzola"],
           rare: ["Ricotta", "Arugula", "Sun Dried Tomatoes", "Banana Peppers", "Goat Cheese", "Anchovies", "Pine Nuts", "Fresh Basil", "Artichoke Hearts", "Caramelized Onions", "Provolone", "Salami", "Coppa", "Soppressata", "Pesto", "Nduja", "Guanciale", "Bresaola", "Giardiniera", "Burrata", "Radicchio", "Mascarpone", "Fontina", "Calabrese Salami", "Fig Jam"
@@ -1218,6 +1226,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item typically found in a bathroom medicine cabinet',
+          sarcastic: ["Expired Pills", "Bathroom Mirror"],
           gold: ["Styptic Pencil"],
           epic: ["Witch Hazel", "Saline Solution", "Calamine Lotion", "Petroleum Jelly"],
           rare: ["Epsom Salt", "Hydrogen Peroxide", "Antihistamine", "Antiseptic Cream", "Rubbing Alcohol", "Eye Drops", "Nasal Spray", "Cold Sore Cream", "Medicated Ointment", "Burn Gel", "Ear Wax Removal Kit", "Medicated Powder", "Anti Fungal Cream", "Iodine Solution", "Sterile Gauze", "Hemorrhoid Cream", "Moleskin", "Wart Remover", "Corn Pads", "Oral Rehydration Salts", "Denture Cream", "Tongue Scraper", "Canker Sore Gel", "Glucose Tablets"
@@ -1257,33 +1266,49 @@
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "T"',
+          sarcastic: ["Listen Up", "Whistle While You Work"],
           gold: ["Tsunami"],
-          epic: ["Gourmet", "Beret", "Ballet", "Buffet", "Depot"],
-          rare: ["Castle", "Listen", "Hustle", "Rustle", "Whistle", "Thistle", "Mortgage", "Softener", "Fastener", "Moisten", "Glisten", "Bristle", "Nestle", "Witchcraft", "Apostle"],
-          uncommon: ["Chesterfield", "Bustle", "Chateau", "Valet", "Cabaret", "Rapport", "Croquet", "Parfait", "Ricochet", "Chalut", "Asthma", "Christmas", "Fasten", "Soften", "Listen", "Glitch", "Match", "Catch", "Patch", "Watch", "Latch", "Fetch", "Sketch", "Ditch", "Pitch", "Switch", "Witch", "Hitch", "Snatch", "Batch"],
-          common: ["Watch", "Listen", "Castle", "Witch", "Match", "Catch", "Patch", "Pitch", "Switch", "Fetch", "Sketch", "Ditch", "Hitch", "Latch", "Batch", "Snatch", "Scratch", "Crutch", "Kitchen", "Butcher", "Hatch", "Thatch", "Snatch", "Dispatch", "Mismatched", "Crosshatch"]
+          epic: ["Gourmet", "Beret", "Ballet", "Buffet", "Depot", "Sachets", "Chevrolets", "Tourniquets"
+          ],
+          rare: ["Castle", "Listen", "Hustle", "Rustle", "Whistle", "Thistle", "Mortgage", "Softener", "Fastener", "Moisten", "Glisten", "Bristle", "Nestle", "Witchcraft", "Apostle", "Maisonette", "Kitchenette", "Gilet", "Billet", "Filet", "Fillet", "Crochets", "Chalets"
+          ],
+          uncommon: ["Chesterfield", "Bustle", "Chateau", "Valet", "Cabaret", "Rapport", "Croquet", "Parfait", "Ricochet", "Chalut", "Asthma", "Christmas", "Fasten", "Soften", "Listen", "Glitch", "Match", "Catch", "Patch", "Watch", "Latch", "Fetch", "Sketch", "Ditch", "Pitch", "Switch", "Witch", "Hitch", "Snatch", "Batch", "Chestnut", "Gristle", "Trestle", "Whistler", "Mistletoe", "Listener", "Castling", "Chestnuts", "Hustler", "Bustling", "Rustling", "Wrestler", "Wrestling", "Bouquets", "Debuts", "Bidets", "Duvets", "Sorbets", "Cabriolet", "Roulette"
+          ],
+          common: ["Watch", "Listen", "Castle", "Witch", "Match", "Catch", "Patch", "Pitch", "Switch", "Fetch", "Sketch", "Ditch", "Hitch", "Latch", "Batch", "Snatch", "Scratch", "Crutch", "Kitchen", "Butcher", "Hatch", "Thatch", "Snatch", "Dispatch", "Mismatched", "Crosshatch", "Often", "Debut", "Bouquet", "Chalet", "Crochet", "Sachet", "Bidet", "Duvet", "Parquet", "Merlot", "Cabernet", "Sorbet", "Ragout", "Cachet", "Tourniquet", "Wrestle", "Jostle", "Pestle", "Epistle", "Hasten", "Chasten", "Christen"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "G"',
+          sarcastic: ["Gnome Sweet Gnome", "Midnight Snack"],
           gold: ["Phlegm"],
-          epic: ["Gnome", "Gnat", "Gnaw", "Align", "Feign"],
-          rare: ["Campaign", "Design", "Resign", "Signpost", "Foreigner", "Sovereign", "Consign", "Benign", "Malign", "Diaphragm", "Paradigm", "Apohthegm", "Gnu", "Gnash", "Gnarled"],
-          uncommon: ["Design", "Signed", "Signing", "Designer", "Designs", "Signature", "Signage", "Signal", "Signer", "Assignment", "Reassign", "Resigned", "Resigning", "Campaigner", "Campaigning", "Foreign", "Sovereignty", "Designated", "Designation", "Aligning", "Alignment", "Realign", "Realignment"],
-          common: ["Sign", "Signal", "Signed", "Signing", "Signs", "Designer", "Designing", "Designated", "Designation", "Assign", "Assignment", "Assigned", "Resign", "Resignation", "Campaign", "Campaigns", "Foreign", "Foreigner", "Sovereign", "Align", "Alignment", "Benign", "Malign"]
+          epic: ["Gnome", "Gnat", "Gnaw", "Align", "Feign", "Freighter", "Sleighbells", "Doughnut", "Ploughman", "Plough", "Furlough"
+          ],
+          rare: ["Campaign", "Design", "Resign", "Signpost", "Foreigner", "Sovereign", "Consign", "Benign", "Malign", "Diaphragm", "Paradigm", "Apohthegm", "Gnu", "Gnash", "Gnarled", "Insight", "Oversight", "Foresight", "Hindsight", "Eyesight", "Outright", "Playwright", "Wheelwright", "Shipwright", "Straighten", "Straightforward", "Neighborhood", "Neighbour", "Weighty", "Weights"
+          ],
+          uncommon: ["Design", "Signed", "Signing", "Designer", "Designs", "Signature", "Signage", "Signal", "Signer", "Assignment", "Reassign", "Resigned", "Resigning", "Campaigner", "Campaigning", "Foreign", "Sovereignty", "Designated", "Designation", "Aligning", "Alignment", "Realign", "Realignment", "Caught", "Taught", "Sought", "Ought", "Borough", "Thorough", "Although", "Highway", "Lighthouse", "Midnight", "Delight", "Tonight", "Sunlight", "Moonlight", "Daylight", "Flashlight", "Spotlight", "Reigns", "Ensign", "Impugn", "Oppugn", "Poignant", "Gnawing", "Gnashing", "Gnarly", "Gnomish", "Gnomic", "Heighten", "Brighten", "Frighten", "Tighten", "Lighten", "Lightning", "Knighthood", "Nightmare", "Nightfall", "Overnight", "Fortnight", "Upright", "Copyright"
+          ],
+          common: ["Sign", "Signal", "Signed", "Signing", "Signs", "Designer", "Designing", "Designated", "Designation", "Assign", "Assignment", "Assigned", "Resign", "Resignation", "Campaign", "Campaigns", "Foreign", "Foreigner", "Sovereign", "Align", "Alignment", "Benign", "Malign", "Gnarl", "Gnocchi", "Reign", "Champagne", "Deign", "Cologne", "Lasagne", "Gnostic", "Gneiss", "Light", "Night", "Right", "Fight", "Might", "Sight", "Tight", "Bright", "Fright", "Flight", "Slight", "Plight", "Knight", "Height", "Weight", "Eight", "Freight", "Neighbor", "Though", "Through", "Thought", "Bought", "Brought", "Fought", "Daughter", "High", "Thigh", "Sigh", "Sleigh", "Straight", "Weigh", "Dough", "Bough", "Naughty"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "P"',
+          sarcastic: ["Psychic Hotline", "Cupboard Love"],
           gold: ["Pneumonoultramicroscopicsilicovolcanoconiosis"],
-          epic: ["Ptarmigan", "Psalmistry", "Pseudonymity", "Psychosomatic"],
-          rare: ["Pseudonym", "Psychiatry", "Psychology", "Psychic", "Pneumatic", "Pneumonia", "Receipt", "Cupboard", "Raspberry", "Psalms", "Psoriasis", "Pterodactyl", "Psychopath", "Ptosis"],
-          uncommon: ["Psychic", "Psychology", "Psychiatrist", "Psyche", "Psycho", "Psychological", "Pneumonia", "Receipts", "Cupboards", "Raspberries", "Pseudonyms", "Psalm", "Psoriasis", "Pterodactyls", "Psychos", "Psyching"],
-          common: ["Receipt", "Cupboard", "Raspberry", "Psychic", "Psychology", "Psycho", "Psalm", "Psalms", "Pneumonia", "Pterodactyl", "Cupboards", "Receipts", "Raspberries"]
+          epic: ["Ptarmigan", "Psalmistry", "Pseudonymity", "Psychosomatic", "Psychrometer", "Psyllium", "Pterosaurs"
+          ],
+          rare: ["Pseudonym", "Psychiatry", "Psychology", "Psychic", "Pneumatic", "Pneumonia", "Receipt", "Cupboard", "Raspberry", "Psalms", "Psoriasis", "Pterodactyl", "Psychopath", "Ptosis", "Pneumograph", "Pneumonitis", "Pneumectomy", "Psilocybin", "Psittacine", "Psittacosis", "Psephology", "Psoas"
+          ],
+          uncommon: ["Psychic", "Psychology", "Psychiatrist", "Psyche", "Psycho", "Psychological", "Pneumonia", "Receipts", "Cupboards", "Raspberries", "Pseudonyms", "Psalm", "Psoriasis", "Pterodactyls", "Psychos", "Psyching", "Psychopathic", "Psychosocial", "Psychotropic", "Psychogenic", "Psychoactive", "Psychodrama", "Psychophysics", "Psychometrics", "Psychedelics", "Psychographic", "Psychopathology", "Psychoneurosis", "Psychotherapist", "Psychoanalyst", "Pseudopod", "Pseudoscience", "Pseudocode", "Pteridophyte", "Pterygium", "Ptyalin", "Pneumogastric"
+          ],
+          common: ["Receipt", "Cupboard", "Raspberry", "Psychic", "Psychology", "Psycho", "Psalm", "Psalms", "Pneumonia", "Pterodactyl", "Cupboards", "Receipts", "Raspberries", "Corps", "Coup", "Pseudo", "Pshaw", "Psychedelic", "Psychosis", "Psychotherapy", "Psychoanalysis", "Psychologist", "Pterosaur", "Ptomaine", "Pneumothorax", "Pneumococcus", "Psalter", "Psalmist", "Psychometric", "Psychobabble", "Psychotic", "Psychokinesis", "Coups", "Psychologists", "Pneumonic"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that ends with "-ology"',
+          sarcastic: ["Procrastinology", "Whateverology"],
           gold: ["Serendipitology"],
           epic: ["Cryptozoology", "Speleology", "Oenology", "Kinesiology", "Cytology", "Phraseology", "Symbology"
           ],
@@ -1297,6 +1322,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of pasta',
+          sarcastic: ["Noodle Doodle", "Penne For Your Thoughts"],
           gold: ["Campanelle"],
           epic: ["Orecchiette", "Bucatini", "Pappardelle", "Cavatappi", "Gemelli"],
           rare: ["Rigatoni", "Farfalle", "Tagliatelle", "Orzo", "Tortellini", "Cannelloni", "Manicotti", "Ziti", "Rotini", "Fettuccine", "Ditalini", "Gnocchi", "Radiatori", "Conchiglie", "Agnesi", "Strozzapreti", "Trofie", "Casarecce", "Fregola", "Malloreddus", "Pici", "Bigoli", "Scialatielli", "Orecchiette Rigate", "Trenette", "Tripoline", "Anelli", "Lumache", "Creste di Gallo", "Calamarata"
@@ -1309,6 +1335,7 @@
         {
           cat: 'culinary',
           prompt: 'Name an espresso-based coffee drink',
+          sarcastic: ["Liquid Motivation", "Triple Shot Regret"],
           gold: ["Cortado"],
           epic: ["Affogato", "Flat White", "Red Eye", "Espresso Romano", "Corretto", "Ristretto Bianco", "Magic", "Gibraltar Cortado"
           ],
@@ -1322,18 +1349,21 @@
         {
           cat: 'culinary',
           prompt: 'Name a spice commonly used in curry powder',
+          sarcastic: ["Whatever's Left", "Pinch of Love"],
           gold: ["Asafoetida"],
-          epic: ["Fenugreek", "Nigella Seed", "Amchoor", "Star Anise", "Star Aniseed"
+          epic: ["Fenugreek", "Nigella Seed", "Amchoor", "Star Anise", "Star Aniseed", "Lemongrass", "Kaffir Lime Leaves", "Shrimp Paste", "Thai Basil", "Holy Basil"
           ],
-          rare: ["Turmeric", "Cardamom", "Coriander", "Cumin", "Mustard Seed", "Fennel Seed", "Cloves", "Cinnamon", "Nutmeg", "Mace", "Curry Leaf", "Garam Masala"],
-          uncommon: ["Cumin", "Coriander", "Turmeric", "Cardamom", "Ginger", "Garlic Powder", "Black Pepper", "Chili Powder", "Cayenne Pepper", "Paprika", "Mustard", "Fennel", "Cinnamon", "Cloves", "Allspice", "Stick Cinnamon", "Powdered Ginger"
+          rare: ["Turmeric", "Cardamom", "Coriander", "Cumin", "Mustard Seed", "Fennel Seed", "Cloves", "Cinnamon", "Nutmeg", "Mace", "Curry Leaf", "Garam Masala", "Tikka Masala", "Biryani Masala", "Pav Bhaji Masala", "Kitchen King", "Goda Masala", "Chana Masala", "Rajma Masala", "Meat Masala", "Fish Masala", "Coconut", "Dried Coconut", "Galangal"
           ],
-          common: ["Turmeric", "Cumin", "Coriander", "Ginger", "Garlic", "Chili Powder", "Black Pepper", "Paprika", "Cinnamon", "Red Pepper", "Curry Powder", "Spice", "Five Spice Powder", "Seed", "Leaf"
+          uncommon: ["Cumin", "Coriander", "Turmeric", "Cardamom", "Ginger", "Garlic Powder", "Black Pepper", "Chili Powder", "Cayenne Pepper", "Paprika", "Mustard", "Fennel", "Cinnamon", "Cloves", "Allspice", "Stick Cinnamon", "Powdered Ginger", "Green Chili", "Dried Chili", "Anise", "Caraway", "Celery Seed", "Carom Seeds", "Black Mustard", "Yellow Mustard", "Brown Mustard", "Methi", "Jeera", "Dhania", "Haldi", "Elaichi", "Laung", "Dalchini", "Hing", "Kesar", "Rai", "Saunf", "Tej Patta", "Mirchi", "Lal Mirch", "Hari Mirch", "Adrak", "Lehsun", "Chaat Masala", "Sambar Powder", "Rasam Powder", "Madras Curry Powder", "Vindaloo Paste", "Tandoori Masala", "Paste", "Basil", "Chili", "Bark", "Flakes"
+          ],
+          common: ["Turmeric", "Cumin", "Coriander", "Ginger", "Garlic", "Chili Powder", "Black Pepper", "Paprika", "Cinnamon", "Red Pepper", "Curry Powder", "Spice", "Five Spice Powder", "Seed", "Leaf", "Cayenne", "Bay Leaf", "Curry Leaves", "Saffron", "Kashmiri Chili", "Black Cardamom", "Green Cardamom", "Cassia", "Ajwain", "Amchur", "Panch Phoron", "Tamarind", "Sumac", "Anardana", "Kalonji", "Black Salt", "Kasuri Methi", "Fenugreek Leaves", "Dried Mango Powder", "White Pepper", "Long Pepper", "Mustard Powder", "Onion Powder", "Dried Ginger", "Poppy Seeds", "Sesame Seeds", "Cassia Bark", "Chili Flakes", "Cinnamon Stick", "Whole Cloves", "Peppercorns", "Coriander Seeds", "Cumin Seeds", "Red Chili", "Leaves", "King", "Stick"
           ]
         },
         {
           cat: 'geography',
           prompt: 'Name a landlocked country in Europe or Asia',
+          sarcastic: ["Anywhere Dry", "Land Lover Land"],
           gold: ["Liechtenstein"],
           epic: ["Kyrgyzstan", "Laos", "San Marino", "Andorra", "Moldova"],
           rare: ["Mongolia", "Nepal", "Bhutan", "Armenia", "Azerbaijan", "Kazakhstan", "Uzbekistan", "Turkmenistan", "Tajikistan", "Afghanistan", "Luxembourg", "Belarus", "Serbia", "North Macedonia", "Slovakia"],
@@ -1343,6 +1373,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country that borders Germany',
+          sarcastic: ["Neighbor Country", "Beer Border"],
           gold: ["Luxembourg"],
           epic: ["Liechtenstein", "Czechia"],
           rare: ["Czech Republic", "Denmark", "Belgium", "Switzerland", "Austria", "Poland", "Netherlands"],
@@ -1352,6 +1383,7 @@
         {
           cat: 'science',
           prompt: 'Name a planet or major moon in our Solar System',
+          sarcastic: ["Moon Moon", "Planet Not Pluto"],
           gold: ["Enceladus"],
           epic: ["Europa", "Ganymede", "Titan", "Callisto", "Triton", "Fornjot", "Kari", "Pallene", "Methone", "Anthe", "Aegaeon"
           ],
@@ -1365,6 +1397,7 @@
         {
           cat: 'science',
           prompt: 'Name a chemical element in Group 1 or Group 2 of the Periodic Table',
+          sarcastic: ["Salty Element", "Banana Potassium"],
           gold: ["Francium"],
           epic: ["Radium", "Barium", "Caesium", "Strontium"],
           rare: ["Rubidium", "Beryllium", "Lithium", "Magnesium", "Calcium", "Potassium", "Sodium"],
@@ -1374,6 +1407,7 @@
         {
           cat: 'science',
           prompt: 'Name a mammal that lays eggs or is a marsupial',
+          sarcastic: ["Platypus Surprise", "Pocket Pal"],
           gold: ["Echidna"],
           epic: ["Platypus", "Numbat", "Quoll", "Bandicoot", "Tasmanian Devil", "Dasyurid", "Phalanger", "Brush-tailed Phalanger"
           ],
@@ -1387,6 +1421,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a superhero who does not naturally possess biological superpowers',
+          sarcastic: ["Billionaire Playboy", "Guy With Gadgets"],
           gold: ["Hawkeye"],
           epic: ["Moon Knight", "Green Arrow", "Punisher", "Batgirl", "Nightwing", "Misty Knight", "Colleen Wing"
           ],
@@ -1400,6 +1435,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a video game franchise created by Nintendo',
+          sarcastic: ["Mario Obviously", "Plumber Franchise"],
           gold: ["Golden Sun"],
           epic: ["Chibi Robo", "F Zero", "Star Fox", "Pikmin", "Punch Out"],
           rare: ["Xenoblade Chronicles", "Fire Emblem", "Metroid", "Kirby", "Donkey Kong", "EarthBound", "Kid Icarus", "Splatoon", "Animal Crossing", "WarioWare", "Paper Mario", "Luigi Mansion", "Ice Climber", "Balloon Fight", "Excitebike", "Wave Race", "1080 Snowboarding", "Mach Rider", "Custom Robo", "Pilotwings", "Mother", "Wrecking Crew", "Famicom Detective Club", "Tomodachi Life", "Brain Age", "Wii Sports", "Nintendogs", "Arms", "Ring Fit Adventure"
@@ -1412,6 +1448,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a classic tabletop board game that involves rolling dice',
+          sarcastic: ["Snake Eyes", "Monopoly Rage Quit"],
           gold: ["Trivial Pursuit"],
           epic: ["Backgammon", "Catan", "Yahtzee", "Risk", "Craps", "Arkham Horror", "Quarriors", "Zombicide"
           ],
@@ -1425,6 +1462,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a tool typically contained in a mechanic or carpenter toolbox',
+          sarcastic: ["Hammer Time", "Percussive Maintenance"],
           gold: ["Torque Wrench"],
           epic: ["Feeler Gauge", "Caliper", "Chisel", "Allen Wrench", "Socket Wrench", "Latchstring", "Bullnosed Plane", "Pitsaw", "Bradawl", "Percussor", "Backsaw", "Ravehook", "Marlinespike", "Nailfile", "Plasterer's Float"
           ],
@@ -1438,6 +1476,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item typically found inside a car glove compartment',
+          sarcastic: ["Old Napkins", "Manual Nobody Reads"],
           gold: ["Tire Pressure Gauge"],
           epic: ["Owner Manual", "Registration Document", "Insurance Card", "Flashlight"],
           rare: ["Napkins", "Sunglasses", "Hand Sanitizer", "First Aid Kit", "Ice Scraper", "Pen", "Notepad", "Spare Fuses", "Charging Cable", "Tissues", "Jumper Cables Manual", "Vehicle Title", "Tire Tread Gauge", "Emergency Contact Card", "Spare Key", "Roadside Assistance Card", "Maintenance Log", "Fuse Puller", "Window Breaker", "Seatbelt Cutter"
@@ -1450,6 +1489,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a musical instrument played with a bow or by plucking strings',
+          sarcastic: ["Air Violin", "Fiddle Faddle"],
           gold: ["Hurdy Gurdy"],
           epic: ["Double Bass", "Cello", "Viola", "Ukulele", "Mandolin", "Citole", "Cithern", "Cither"
           ],
@@ -1470,15 +1510,21 @@
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "N"',
+          sarcastic: ["Solemn Hymn", "Autumn Column"],
           gold: ["Solemnness"],
-          epic: ["Damnation", "Limner", "Columnist", "Condemnation"],
-          rare: ["Solemnity", "Hymnal", "Hymnbook", "Damnable", "Columnar"],
-          uncommon: ["Autumntime", "Autumnal", "Solemnly", "Damned", "Damning", "Condemned", "Condemning", "Columned", "Hymns", "Singing hymns", "Church hymn"],
-          common: ["Autumn", "Column", "Hymn", "Solemn", "Damn", "Condemn", "Autumns", "Columns", "Hymns", "Solemnity", "Damned"]
+          epic: ["Damnation", "Limner", "Columnist", "Condemnation", "Kilned"
+          ],
+          rare: ["Solemnity", "Hymnal", "Hymnbook", "Damnable", "Columnar", "Solemnization", "Condemnatory", "Limning"
+          ],
+          uncommon: ["Autumntime", "Autumnal", "Solemnly", "Damned", "Damning", "Condemned", "Condemning", "Columned", "Hymns", "Singing hymns", "Church hymn", "Mnemonics", "Mnemonist", "Mnemonically", "Hymnology", "Hymnodist", "Damnably", "Solemnize"
+          ],
+          common: ["Autumn", "Column", "Hymn", "Solemn", "Damn", "Condemn", "Autumns", "Columns", "Hymns", "Solemnity", "Damned", "Limn", "Kiln", "Mnemonic", "Kilns", "Hymnody", "Hymnary", "Contemn"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word ending in "-tion"',
+          sarcastic: ["Participation Trophy", "Inflation Station"],
           gold: ["Antidisestablishmentarianism"],
           epic: ["Juxtaposition", "Circumnavigation", "Reconfiguration", "Substantiation", "Harmonisation", "Truncation", "Immobilization", "Flagellation", "Concatenation", "Elocution", "Stigmatization", "Abrogation", "Fumigation", "Disambiguation", "Vilification", "Miniaturization", "Exacerbation", "Collectivization", "Regularization", "Categorisation", "Vocalization", "Vaporization", "Impregnation", "Acetylation", "Indexation", "Democratisation", "Pagination", "Sorption", "Reciprocation", "Recirculation", "Denigration", "Demonization", "Scintillation", "Ruination", "Pulsation", "Socialisation", "Popularization", "Invalidation", "Hospitalisation", "Homogenization", "Recapitulation", "Reorientation", "Centrifugation", "Beatification", "Desiccation", "Depolarization", "Victimisation", "Mummification", "Intimation", "Recrimination", "Libation", "Disjunction", "Abnegation", "Underestimation", "Apportion", "Republication"
           ],
@@ -1494,32 +1540,35 @@
         {
           cat: 'culinary',
           prompt: 'Name a vegetable that grows underground',
+          sarcastic: ["Couch Potato", "Spud Muffin"],
           gold: ["Sunchoke"],
-          epic: ["Celeriac", "Salsify", "Jicama", "Daikon", "Cocoyam", "Scorzonera"
+          epic: ["Celeriac", "Salsify", "Jicama", "Daikon", "Cocoyam", "Scorzonera", "Cherry Belle Radish", "Hakurei Turnip", "Purple Top Turnip"
           ],
-          rare: ["Horseradish", "Rutabaga", "Turnip", "Parsnip", "Shallot", "Cassava", "Taro", "Tater", "Edda", "Black Salsify", "Mangel-wurzel", "Dasheen"
+          rare: ["Horseradish", "Rutabaga", "Turnip", "Parsnip", "Shallot", "Cassava", "Taro", "Tater", "Edda", "Black Salsify", "Mangel-wurzel", "Dasheen", "Pearl Onion", "Cipollini", "Ramp", "Wild Garlic", "Elephant Garlic", "Black Garlic", "Winter Radish", "Easter Egg Radish", "French Breakfast Radish"
           ],
-          uncommon: ["Radish", "Radishes", "Garlic", "Garlic Clove", "Sweet Potato", "Yam", "Beet", "Beetroot", "Turnips", "Parsnips", "Shallots", "Onion", "Red Onion", "White Onion", "Yellow Onion", "Spring Onion", "Ginger", "Ginger Root", "Turmeric Root", "Leek", "Oyster Plant", "Vegetable Oyster", "Mashed Potato", "Celery Root", "Swede", "Sugar Beet", "Taro Root", "White Turnip", "Yellow Turnip", "Swedish Turnip", "Spud", "Oyster"
+          uncommon: ["Radish", "Radishes", "Garlic", "Garlic Clove", "Sweet Potato", "Yam", "Beet", "Beetroot", "Turnips", "Parsnips", "Shallots", "Onion", "Red Onion", "White Onion", "Yellow Onion", "Spring Onion", "Ginger", "Ginger Root", "Turmeric Root", "Leek", "Oyster Plant", "Vegetable Oyster", "Mashed Potato", "Celery Root", "Swede", "Sugar Beet", "Taro Root", "White Turnip", "Yellow Turnip", "Swedish Turnip", "Spud", "Oyster", "Yukon Gold", "Fingerling Potato", "Purple Potato", "Ube", "Purple Yam", "Japanese Sweet Potato", "Garnet Yam", "Chicory Root", "Neep", "Mooli", "Malanga", "Elephant Foot Yam", "Konjac", "Arrowroot", "Ginseng", "Chinese Artichoke", "Crosne", "Yacon", "Tigernut", "Water Chestnut", "Fennel Bulb", "Sweet Onion", "Vidalia Onion", "Chestnut", "Bulb"
           ],
-          common: ["Potato", "Potatoes", "Carrot", "Carrots", "Onion", "Onions", "Garlic", "Sweet Potato", "Sweet Potatoes", "Radish", "Beet", "Beets", "Yam", "Yams", "Ginger", "Chips", "Murphy", "White Potato", "Irish Potato", "Jacket Potato", "Fries", "Home Fries", "Root Vegetable", "French Fries", "Home-fried Potatoes", "French-fried Potatoes", "Baked Potato", "Uruguay Potato", "Root"
+          common: ["Potato", "Potatoes", "Carrot", "Carrots", "Onion", "Onions", "Garlic", "Sweet Potato", "Sweet Potatoes", "Radish", "Beet", "Beets", "Yam", "Yams", "Ginger", "Chips", "Murphy", "White Potato", "Irish Potato", "Jacket Potato", "Fries", "Home Fries", "Root Vegetable", "French Fries", "Home-fried Potatoes", "French-fried Potatoes", "Baked Potato", "Uruguay Potato", "Root", "Burdock", "Jerusalem Artichoke", "Kohlrabi", "Yuca", "Manioc", "Eddo", "Lotus Root", "Turmeric", "Galangal", "Wasabi", "Maca", "Oca", "Ulluco", "Mashua", "Arracacha", "Skirret", "Parsley Root", "Black Radish", "Watermelon Radish", "Red Beet", "Golden Beet", "Rainbow Carrot", "Baby Carrots", "Red Potato", "Russet Potato", "Gold"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a citrus fruit',
+          sarcastic: ["Lemon Drop", "Orange You Glad"],
           gold: ["Buddha's Hand"],
-          epic: ["Yuzu", "Kumquat", "Ugli Fruit", "Calamansi", "Citrous Fruit"
+          epic: ["Yuzu", "Kumquat", "Ugli Fruit", "Calamansi", "Citrous Fruit", "Desert Lime", "Philippine Lime", "Kalamansi"
           ],
-          rare: ["Meyer Lemon", "Blood Orange", "Pomelo", "Key Lime", "Satsuma", "Tangelo", "Shaddock", "Citrange"
+          rare: ["Meyer Lemon", "Blood Orange", "Pomelo", "Key Lime", "Satsuma", "Tangelo", "Shaddock", "Citrange", "Pineapple Orange", "Moro Orange", "Tarocco", "Sanguinello", "Bearss Lime", "Mexican Lime", "West Indian Lime", "Australian Finger Lime", "Round Lime"
           ],
-          uncommon: ["Mandarin", "Mandarin Orange", "Clementine", "Tangerine", "Grapefruit", "Lime", "Lemon", "Pink Grapefruit", "Ruby Red Grapefruit", "Bitter Orange", "Sweet Lime", "Citron", "Kaffir Lime", "Persian Lime", "Citrus Fruit", "Seville Orange", "Jaffa Orange", "Navel Orange"
+          uncommon: ["Mandarin", "Mandarin Orange", "Clementine", "Tangerine", "Grapefruit", "Lime", "Lemon", "Pink Grapefruit", "Ruby Red Grapefruit", "Bitter Orange", "Sweet Lime", "Citron", "Kaffir Lime", "Persian Lime", "Citrus Fruit", "Seville Orange", "Jaffa Orange", "Navel Orange", "Murcott", "Ortanique", "Pixie Tangerine", "Page Mandarin", "Fairchild Tangerine", "Dancy Tangerine", "Honey Tangerine", "Owari Satsuma", "Chinotto", "Etrog", "Yuzu Lemon", "Pummelo", "Sweetie", "Oroblanco", "Melogold", "Star Ruby", "Rio Red", "Marsh Grapefruit", "Navelina", "Washington Navel", "Lane Late", "Hamlin Orange", "Ruby"
           ],
-          common: ["Orange", "Lemon", "Lime", "Grapefruit", "Tangerine", "Clementine", "Oranges", "Lemons", "Limes", "Grapefruits", "Tangerines", "Clementines", "Mandarin", "Sweet Orange", "Temple Orange", "Sour Orange", "Valencia Orange", "Citrus"
+          common: ["Orange", "Lemon", "Lime", "Grapefruit", "Tangerine", "Clementine", "Oranges", "Lemons", "Limes", "Grapefruits", "Tangerines", "Clementines", "Mandarin", "Sweet Orange", "Temple Orange", "Sour Orange", "Valencia Orange", "Citrus", "Bergamot", "Calamondin", "Makrut Lime", "Finger Lime", "Sudachi", "Kabosu", "Dekopon", "Cara Cara Orange", "Minneola", "Honeybell", "Rangpur", "Tahiti Lime", "Eureka Lemon", "Lisbon Lemon", "Mikan", "Tangor", "Shamouti", "Hassaku", "Iyokan", "Ponkan", "Sumo Citrus", "Limequat", "Orangequat", "Red", "Late"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a classic flavor of ice cream',
+          sarcastic: ["Vanilla Obviously", "Whatever Is Melting"],
           gold: ["Ube"],
           epic: ["Rum Raisin", "Butter Pecan", "Pistachio", "Cotton Candy", "Horchata", "Sweet Cream", "Salted Peanut", "Mint Oreo"
           ],
@@ -1533,6 +1582,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of bread',
+          sarcastic: ["Best Thing Since Sliced", "Burnt Toast"],
           gold: ["Pain de Campagne"],
           epic: ["Injera", "Challah", "Brioche", "Ciabatta", "Flatbrod", "Johnnycake", "Hoecake", "Hallah", "Bialystoker", "Breadstuff", "Ashcake", "Schnecken"
           ],
@@ -1546,6 +1596,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a fruit used to make jam or jelly',
+          sarcastic: ["Jelly Belly", "PB and J Partner"],
           gold: ["Boysenberry"],
           epic: ["Quince", "Gooseberry", "Marionberry", "Damson", "Lowbush Cranberry", "Ceriman", "Pulassan", "Teaberry", "Quandang", "Cantaloup", "Lansat", "Boxberry", "Sweetsop", "Capulin", "Cherimolla", "Cowberry", "Ketembilla", "Jaboticaba"
           ],
@@ -1559,38 +1610,43 @@
         {
           cat: 'culinary',
           prompt: 'Name an herb used in cooking',
+          sarcastic: ["Basil Fawlty", "Scarborough Fair"],
           gold: ["Chervil"],
-          epic: ["Tarragon", "Marjoram", "Savory", "Lovage", "Costmary", "Congou", "Congou Tea"
+          epic: ["Tarragon", "Marjoram", "Savory", "Lovage", "Costmary", "Congou", "Congou Tea", "Kinome", "Zhe Er Gen", "Chinese Chives"
           ],
-          rare: ["Sage", "Thyme", "Dill", "Rosemary", "Chives", "Lemongrass", "Pekoe", "Orange Pekoe", "Souchong", "Hyson", "Soochong", "Waldmeister"
+          rare: ["Sage", "Thyme", "Dill", "Rosemary", "Chives", "Lemongrass", "Pekoe", "Orange Pekoe", "Souchong", "Hyson", "Soochong", "Waldmeister", "Pennyroyal", "Salad Burnet", "Bay Laurel", "Makrut Leaf", "Pandan", "Betel Leaf", "Mitsuba", "Myoga", "Sansho"
           ],
-          uncommon: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Spearmint", "Peppermint", "Bay Leaf", "Bay Leaves", "Fresh Basil", "Fresh Parsley", "Italian Parsley", "Flat Leaf Parsley", "Curly Parsley", "Fennel", "Coriander", "Sweet Woodruff", "Winter Savoury", "Savoury", "Summer Savoury", "Clary Sage", "Darjeeling", "Sweet Cicely", "Caraway", "Oolong", "Borage", "Hyssop", "Comfrey", "Estragon", "Fines Herbes", "Balm"
+          uncommon: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Spearmint", "Peppermint", "Bay Leaf", "Bay Leaves", "Fresh Basil", "Fresh Parsley", "Italian Parsley", "Flat Leaf Parsley", "Curly Parsley", "Fennel", "Coriander", "Sweet Woodruff", "Winter Savoury", "Savoury", "Summer Savoury", "Clary Sage", "Darjeeling", "Sweet Cicely", "Caraway", "Oolong", "Borage", "Hyssop", "Comfrey", "Estragon", "Fines Herbes", "Balm", "Vietnamese Coriander", "Rau Ram", "Fenugreek", "Genovese Basil", "Lemon Basil", "Purple Basil", "Cinnamon Basil", "Spicy Globe Basil", "Common Thyme", "English Thyme", "French Thyme", "Creeping Thyme", "Common Sage", "Tricolor Sage", "Garden Sage", "Lamb's Ear", "Bee Balm", "Monarda", "Anise Hyssop", "Lemon Mint", "Chocolate Mint", "Apple Mint", "Laurel"
           ],
-          common: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Thyme", "Rosemary", "Sage", "Dill", "Chives", "Tea", "Black Tea", "Green Tea", "Tea Bag", "English Breakfast Tea", "Tea Leaf", "Herb", "Congo", "Healing Herb", "Sweet Basil", "Rue", "Chinese Parsley", "Lemon Balm", "Angelica", "Dill Weed", "Summer Savory", "Winter Savory", "Common Fennel", "Leaf", "Leaves", "Bag", "Weed"
+          common: ["Basil", "Oregano", "Parsley", "Cilantro", "Mint", "Thyme", "Rosemary", "Sage", "Dill", "Chives", "Tea", "Black Tea", "Green Tea", "Tea Bag", "English Breakfast Tea", "Tea Leaf", "Herb", "Congo", "Healing Herb", "Sweet Basil", "Rue", "Chinese Parsley", "Lemon Balm", "Angelica", "Dill Weed", "Summer Savory", "Winter Savory", "Common Fennel", "Leaf", "Leaves", "Bag", "Weed", "Lavender", "Sorrel", "Fennel Fronds", "Lemon Verbena", "Thai Basil", "Holy Basil", "Curry Leaf", "Epazote", "Shiso", "Perilla", "Culantro", "Catnip", "Chamomile", "Stevia", "Greek Oregano", "Mexican Oregano", "Lemon Thyme", "Pineapple Sage", "Garlic Chives", "Cress", "Watercress", "Nasturtium", "Mugwort", "Gen", "Ram", "Ear"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a soup or broth dish',
+          sarcastic: ["Chicken Soup for the Soul", "Soup of the Day"],
           gold: ["Mulligatawny"],
-          epic: ["Vichyssoise", "Gazpacho", "Bouillabaisse", "Tom Yum", "Borsht", "Borshch", "Madrilene"
+          epic: ["Vichyssoise", "Gazpacho", "Bouillabaisse", "Tom Yum", "Borsht", "Borshch", "Madrilene", "Soupe a l'Oignon", "Soupe au Pistou", "Veloute", "Cawl", "Brown Windsor", "Mulligatawny Soup"
           ],
-          rare: ["Borscht", "Minestrone", "Pho", "Ramen", "Clam Chowder", "French Onion Soup", "Potage St. Germain", "Cock-a-leekie", "Bortsch", "Pot Likker", "Cocky-leeky", "Eggdrop Soup", "Borsh"
+          rare: ["Borscht", "Minestrone", "Pho", "Ramen", "Clam Chowder", "French Onion Soup", "Potage St. Germain", "Cock-a-leekie", "Bortsch", "Pot Likker", "Cocky-leeky", "Eggdrop Soup", "Borsh", "Fufu Soup", "Ogbono", "Efo Riro", "Red Lentil Soup", "Tarator", "Ezogelin", "Yayla", "Tripe Soup", "Menudo Rojo", "Caldo Verde", "Sopa de Lima", "Sopa Azteca", "Chupe", "Locro", "Cazuela", "Pot au Feu", "Garbure"
           ],
-          uncommon: ["Chicken Noodle", "Chicken Noodle Soup", "Tomato Soup", "Vegetable Soup", "Beef Stew", "Lentil Soup", "Split Pea Soup", "Potato Soup", "Miso Soup", "Wonton Soup", "Egg Drop Soup", "Lobster Bisque", "Corn Chowder", "Beef Broth", "Scotch Broth", "Soup Du Jour", "Fish Chowder", "Gumbo", "New England Clam Chowder", "Manhattan Clam Chowder", "Bouillon", "Marmite", "Petite Marmite", "Bisque", "Julienne", "Wonton", "Oxtail Soup", "Pottage", "Borsch", "Consomme", "Potage", "Yum", "Germain", "Noodle", "Cube"
+          uncommon: ["Chicken Noodle", "Chicken Noodle Soup", "Tomato Soup", "Vegetable Soup", "Beef Stew", "Lentil Soup", "Split Pea Soup", "Potato Soup", "Miso Soup", "Wonton Soup", "Egg Drop Soup", "Lobster Bisque", "Corn Chowder", "Beef Broth", "Scotch Broth", "Soup Du Jour", "Fish Chowder", "Gumbo", "New England Clam Chowder", "Manhattan Clam Chowder", "Bouillon", "Marmite", "Petite Marmite", "Bisque", "Julienne", "Wonton", "Oxtail Soup", "Pottage", "Borsch", "Consomme", "Potage", "Yum", "Germain", "Noodle", "Cube", "Dal", "Sancocho", "Ajiaco", "Callaloo", "Okroshka", "Shchi", "Solyanka", "Zuppa Toscana", "Beef Barley", "Turkey Noodle", "Sweet Potato", "Leek and Potato", "Asparagus", "Watercress", "Kimchi Jjigae", "Sundubu", "Seolleongtang", "Samgyetang", "Udon", "Shio Ramen", "Tonkotsu", "Bone Broth", "Vegetable Broth", "Shark Fin Soup", "Bird's Nest Soup", "Fish Soup", "Corn Soup", "Squash Soup", "Zucchini Soup", "Spinach Soup", "Beet Soup", "Cucumber Soup", "Cold Soup", "Fruit Soup", "Cherry Soup", "Chestnut Soup", "Peanut Soup", "Groundnut Soup", "Egusi", "Pepper Soup", "Light Soup", "Palm Nut Soup", "Windsor", "Verde", "Barley", "Onion", "Cheddar", "Pea", "Squash", "Ginger"
           ],
-          common: ["Chicken Soup", "Tomato Soup", "Vegetable Soup", "Chicken Noodle", "Beef Soup", "Potato Soup", "Chowder", "Stew", "Ramen", "Pho", "Miso Soup", "Stock", "Chicken Stock", "Won Ton", "Beef Stock", "Soup", "Liquor", "Pepper Pot", "Pot Liquor", "Philadelphia Pepper Pot", "Stock Cube", "Turtle Soup", "Green Turtle Soup", "Alphabet Soup", "Barley Water", "Mock Turtle Soup", "Green Pea Soup", "Pea Soup", "Broth", "Chicken Broth", "Ton", "Pot"
+          common: ["Chicken Soup", "Tomato Soup", "Vegetable Soup", "Chicken Noodle", "Beef Soup", "Potato Soup", "Chowder", "Stew", "Ramen", "Pho", "Miso Soup", "Stock", "Chicken Stock", "Won Ton", "Beef Stock", "Soup", "Liquor", "Pepper Pot", "Pot Liquor", "Philadelphia Pepper Pot", "Stock Cube", "Turtle Soup", "Green Turtle Soup", "Alphabet Soup", "Barley Water", "Mock Turtle Soup", "Green Pea Soup", "Pea Soup", "Broth", "Chicken Broth", "Ton", "Pot", "Tomato", "French Onion", "Broccoli Cheddar", "Vegetable", "Lentil", "Split Pea", "Black Bean", "Chili", "Miso", "Tom Kha", "Egg Drop", "Hot and Sour", "Mushroom", "Cream of Mushroom", "Cream of Chicken", "Butternut Squash", "Pumpkin", "Carrot Ginger", "Cauliflower", "Seafood Chowder", "Jambalaya", "Pozole", "Menudo", "Tortilla Soup", "Albondigas", "Caldo de Pollo", "Goulash", "Matzo Ball", "Avgolemono", "Harira", "Ribollita", "Pasta e Fagioli", "Stracciatella", "Cullen Skink", "Cabbage Soup", "Bean Soup", "Ham and Bean", "Navy Bean", "Cream of Tomato", "Cream of Celery", "Cream of Broccoli", "Chicken and Rice", "Chicken and Dumplings", "Wedding Soup", "Cioppino", "Laksa", "Congee", "Potato", "Drop", "Ball"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a style or shape of doughnut',
+          sarcastic: ["Homer's Dream", "Hole In One"],
           gold: ["Cruller"],
-          epic: ["Long John", "Apple Fritter", "Beignet", "Paczek"],
-          rare: ["Boston Cream", "Jelly Doughnut", "Bear Claw", "Glazed Twist", "Old Fashioned"],
-          uncommon: ["Glazed Doughnut", "Chocolate Glazed", "Powdered Doughnut", "Sugar Doughnut", "Doughnut Hole", "Cinnamon Twist", "Maple Bar", "Cream Filled", "Strawberry Glazed", "Cake Doughnut", "Claw", "Fashioned", "Donut"
+          epic: ["Long John", "Apple Fritter", "Beignet", "Paczek", "Bismarck", "Berlin Ball", "Pączki", "Loukoumades", "Churro Donut"
           ],
-          common: ["Glazed", "Chocolate", "Jelly", "Powdered", "Donut Hole", "Glazed Donut", "Chocolate Donut", "Powdered Donut", "Boston Cream", "Frosted Donut", "John", "Twist", "Hole", "Bar", "Filled"
+          rare: ["Boston Cream", "Jelly Doughnut", "Bear Claw", "Glazed Twist", "Old Fashioned", "Tiramisu", "Cannoli", "Key Lime", "Dulce de Leche", "Mocha", "Coffee", "Matcha", "Ube", "Taro", "Mochi Donut", "Pon de Ring", "Cake Ring", "Yeast Ring", "Dough Twist", "Fried Dough"
+          ],
+          uncommon: ["Glazed Doughnut", "Chocolate Glazed", "Powdered Doughnut", "Sugar Doughnut", "Doughnut Hole", "Cinnamon Twist", "Maple Bar", "Cream Filled", "Strawberry Glazed", "Cake Doughnut", "Claw", "Fashioned", "Donut", "Custard Filled", "Cream Cheese Filled", "Maple Glazed", "Vanilla Glazed", "Strawberry Frosted", "Vanilla Frosted", "Sprinkled", "Rainbow Sprinkle", "Coconut", "Peanut", "Crumb", "Cinnamon Roll", "Sour Cream", "Buttermilk", "Apple Cider", "Pumpkin Spice", "Gingerbread", "Eggnog", "Chocolate Old Fashioned", "Blueberry Old Fashioned", "Glazed Old Fashioned", "Cookie Dough", "Oreo", "Reese's", "Peanut Butter", "Nutella", "Cookies and Cream", "Birthday Cake", "Cotton Candy", "Bubblegum", "Maple Bacon", "Bacon", "Blueberry", "Lemon", "Orange", "Banana", "Pistachio", "Lime", "Dough", "Cider", "Spice", "Dipped", "Velvet"
+          ],
+          common: ["Glazed", "Chocolate", "Jelly", "Powdered", "Donut Hole", "Glazed Donut", "Chocolate Donut", "Powdered Donut", "Boston Cream", "Frosted Donut", "John", "Twist", "Hole", "Bar", "Filled", "Chocolate Frosted", "Jelly Filled", "Cake Donut", "Powdered Sugar", "Cinnamon Sugar", "Sprinkle", "Bavarian Cream", "Honey Dipped", "Yeast Donut", "French Cruller", "Munchkins", "Fritter", "Sufganiyah", "Malasada", "Churro", "Bomboloni", "Paczki", "Krapfen", "Berliner", "Fastnacht", "Oliebol", "Vada", "Gulab Jamun", "Zeppole", "Dutchie", "Blueberry Cake", "Chocolate Cake", "Pumpkin", "Red Velvet", "Funfetti", "Vegan", "Gluten Free", "Ring", "Raised", "Cronut", "Plain", "Sugar", "Lemon Filled", "Raspberry Filled", "Strawberry Filled", "Ball", "Roll", "Butter", "Candy", "Free"
           ]
         },
 
@@ -1598,6 +1654,7 @@
         {
           cat: 'geography',
           prompt: 'Name an island nation',
+          sarcastic: ["Wherever Tourists Go", "Sand Country"],
           gold: ["Nauru"],
           epic: ["Kiribati", "Tuvalu", "Palau", "Vanuatu"],
           rare: ["Comoros", "Seychelles", "Sao Tome and Principe", "Cape Verde", "Maldives", "Mauritius"],
@@ -1607,6 +1664,7 @@
         {
           cat: 'geography',
           prompt: 'Name a capital city in South America',
+          sarcastic: ["Lima Bean", "La Paz Please"],
           gold: ["Paramaribo"],
           epic: ["Georgetown", "Cayenne", "Sucre", "Asuncion", "Stanley"
           ],
@@ -1617,6 +1675,7 @@
         {
           cat: 'geography',
           prompt: 'Name a capital city in Europe',
+          sarcastic: ["Parisian Cafe", "London Calling"],
           gold: ["Ljubljana"],
           epic: ["Valletta", "Podgorica", "Chisinau", "Tallinn", "Vatican City"
           ],
@@ -1630,6 +1689,7 @@
         {
           cat: 'geography',
           prompt: 'Name a famous desert in the world',
+          sarcastic: ["Desert Dessert", "Giant Sandbox"],
           gold: ["Taklamakan Desert"],
           epic: ["Atacama Desert", "Kalahari Desert", "Gobi Desert", "Namib Desert", "Taklimakan Desert", "Qizil Qum", "An Nefud"
           ],
@@ -1643,6 +1703,7 @@
         {
           cat: 'geography',
           prompt: 'Name a major river in the world',
+          sarcastic: ["De Nile", "Amazon Prime"],
           gold: ["Lena River"],
           epic: ["Yenisey River", "Ob River", "Mekong River", "Volga River", "Tevere", "Volkhov River", "Volkhov", "Seyhan", "Seyhan River", "Argun River", "Argun", "Vetluga River", "Araguaya River", "Parnahiba", "Parnaiba", "Araguaya", "Heilong", "Indigirka River", "Irtish", "Indigirka", "Irtish River", "Heilong Jiang", "Vetluga"
           ],
@@ -1658,6 +1719,7 @@
         {
           cat: 'science',
           prompt: 'Name a noble gas from the Periodic Table',
+          sarcastic: ["Lazy Gas", "Stuck-Up Gases"],
           gold: ["Oganesson"],
           epic: ["Tennessine", "Xenon", "Krypton", "Radon"],
           rare: ["Argon", "Neon", "Helium"],
@@ -1668,6 +1730,7 @@
         {
           cat: 'science',
           prompt: 'Name a constellation in the night sky',
+          sarcastic: ["Cosmic Dipper", "Sky Dot-to-Dot"],
           gold: ["Ophiuchus"],
           epic: ["Cassiopeia", "Andromeda", "Centaurus", "Boötes", "Unitisation"
           ],
@@ -1681,25 +1744,35 @@
         {
           cat: 'science',
           prompt: 'Name a bone in the human body',
+          sarcastic: ["Dem Bones", "Wishbone Wish"],
           gold: ["Hyoid"],
-          epic: ["Stapes", "Incus", "Malleus", "Pisiform"],
-          rare: ["Fibula", "Tibia", "Scapula", "Clavicle", "Radius", "Ulna", "Sternum", "Femur"],
-          uncommon: ["Skull", "Rib", "Ribs", "Spine", "Backbone", "Pelvis", "Hip Bone", "Kneecap", "Patella", "Jawbone", "Collarbone", "Shoulder Blade", "Tailbone", "Coccyx", "Finger Bones", "Toe Bones"],
-          common: ["Femur", "Skull", "Rib", "Spine", "Kneecap", "Jawbone", "Collarbone", "Shin Bone", "Arm Bone", "Leg Bone", "Blade", "Bones"
+          epic: ["Stapes", "Incus", "Malleus", "Pisiform", "Lateral Cuneiform", "Sesamoid", "Vertebrae", "Calvaria"
+          ],
+          rare: ["Fibula", "Tibia", "Scapula", "Clavicle", "Radius", "Ulna", "Sternum", "Femur", "Xiphoid Process", "Manubrium", "Thoracic Vertebra", "Lumbar Vertebra", "Cervical Vertebra", "Innominate", "Os Coxa", "Medial Cuneiform", "Intermediate Cuneiform"
+          ],
+          uncommon: ["Skull", "Rib", "Ribs", "Spine", "Backbone", "Pelvis", "Hip Bone", "Kneecap", "Patella", "Jawbone", "Collarbone", "Shoulder Blade", "Tailbone", "Coccyx", "Finger Bones", "Toe Bones", "Cuboid", "Cuneiform", "Sphenoid", "Ethmoid", "Temporal", "Parietal", "Frontal", "Occipital", "Zygomatic", "Nasal", "Lacrimal", "Vomer", "Palatine", "Breastbone", "Thighbone", "Shinbone", "Funny Bone", "Heel Bone", "Ankle Bone", "Wrist Bone", "Cheekbone", "Ossicles", "Floating Rib"
+          ],
+          common: ["Femur", "Skull", "Rib", "Spine", "Kneecap", "Jawbone", "Collarbone", "Shin Bone", "Arm Bone", "Leg Bone", "Blade", "Bones", "Humerus", "Vertebra", "Sacrum", "Mandible", "Maxilla", "Cranium", "Carpals", "Metacarpals", "Phalanges", "Tarsals", "Metatarsals", "Talus", "Calcaneus", "Ilium", "Ischium", "Pubis", "Atlas", "Axis", "Scaphoid", "Lunate", "Triquetrum", "Trapezium", "Trapezoid", "Capitate", "Hamate", "Navicular", "Process"
           ]
         },
         {
           cat: 'science',
           prompt: 'Name an organ in the human body',
+          sarcastic: ["Heart of Stone", "Spare Kidney"],
           gold: ["Interstitium"],
-          epic: ["Thymus", "Pancreas", "Spleen", "Gallbladder"],
-          rare: ["Thyroid", "Adrenal Gland", "Bladder", "Kidney", "Liver", "Intestines", "Stomach"],
-          uncommon: ["Brain", "Heart", "Lungs", "Skin", "Liver", "Kidneys", "Stomach", "Large Intestine", "Small Intestine", "Eyes", "Ears", "Tongue", "Esophagus", "Trachea"],
-          common: ["Heart", "Brain", "Lungs", "Stomach", "Liver", "Kidneys", "Skin", "Eyes", "Ears"]
+          epic: ["Thymus", "Pancreas", "Spleen", "Gallbladder", "Vas Deferens", "Seminal Vesicles"
+          ],
+          rare: ["Thyroid", "Adrenal Gland", "Bladder", "Kidney", "Liver", "Intestines", "Stomach", "Adenoids", "Vagina", "Cervix", "Penis", "Scrotum", "Epididymis"
+          ],
+          uncommon: ["Brain", "Heart", "Lungs", "Skin", "Liver", "Kidneys", "Stomach", "Large Intestine", "Small Intestine", "Eyes", "Ears", "Tongue", "Esophagus", "Trachea", "Fallopian Tubes", "Bronchi", "Lymph Nodes", "Cerebellum", "Jejunum", "Ileum", "Cecum", "Nose", "Placenta", "Bile Duct", "Salivary Glands", "Parathyroid", "Tonsil", "Tubes", "Nodes", "Duct", "Glands"
+          ],
+          common: ["Heart", "Brain", "Lungs", "Stomach", "Liver", "Kidneys", "Skin", "Eyes", "Ears", "Colon", "Appendix", "Uterus", "Ovaries", "Testes", "Prostate", "Larynx", "Pharynx", "Duodenum", "Rectum", "Diaphragm", "Pituitary Gland", "Tonsils", "Ureter", "Urethra"
+          ]
         },
         {
           cat: 'science',
           prompt: 'Name a dinosaur species',
+          sarcastic: ["Barney", "Chicken's Ancestor"],
           gold: ["Microraptor"],
           epic: ["Deinonychus", "Parasaurolophus", "Ankylosaurus", "Spinosaurus", "Ornithopod Dinosaur", "Hadrosaurus", "Apatosaur", "Pachycephalosaur"
           ],
@@ -1713,6 +1786,7 @@
         {
           cat: 'science',
           prompt: 'Name a bird of prey',
+          sarcastic: ["Hawkeye", "Hunting Chicken"],
           gold: ["Harpy Eagle"],
           epic: ["Secretarybird", "Osprey", "Kestrel", "Caracara", "Eyas", "Roughleg", "Lammergeyer", "Buteonine", "Gerfalcon"
           ],
@@ -1728,6 +1802,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item inside a school backpack',
+          sarcastic: ["Last Night's Homework", "Crushed Granola Bar"],
           gold: ["Protractor"],
           epic: ["Graphing Calculator", "Index Cards", "Correction Tape", "Divider", "Swimsuit", "Towel", "Deodorant", "Comb", "Brush"
           ],
@@ -1741,6 +1816,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item in a kitchen drawer',
+          sarcastic: ["Junk Drawer Junk", "Takeout Menus"],
           gold: ["Melon Baller"],
           epic: ["Microplane", "Pastry Cutter", "Apple Corer", "Wine Stopper", "Stewpan", "Saucepot", "Eggwhisk", "Liquidiser", "Liquidizer"
           ],
@@ -1754,19 +1830,21 @@
         {
           cat: 'everyday',
           prompt: 'Name a style of shoe or footwear',
+          sarcastic: ["Glass Slipper", "Left Shoe"],
           gold: ["Espadrille"],
-          epic: ["Monk Strap", "Oxford", "Derby", "Moccasin", "Tabis", "Bobbysock"
+          epic: ["Monk Strap", "Oxford", "Derby", "Moccasin", "Tabis", "Bobbysock", "Moon Boots", "Apres Ski Boots", "Mukluks", "Pac Boots", "Sorels", "Snowshoes"
           ],
-          rare: ["Loafer", "Clog", "Stiletto", "Chelsea Boot", "Ankle Boot", "Sandal", "Anklets", "Maillot", "Rayons", "Boothose", "Bobbysocks"
+          rare: ["Loafer", "Clog", "Stiletto", "Chelsea Boot", "Ankle Boot", "Sandal", "Anklets", "Maillot", "Rayons", "Boothose", "Bobbysocks", "Engineer Boots", "Harness Boots", "Biker Boots", "Western Boots", "Roper Boots", "Duck Boots", "Bean Boots", "Muck Boots", "Steel Toe Boots", "Logger Boots", "Jackboots", "Hobnail Boots", "Desert Combat Boots", "Jungle Boots", "Slipper Socks"
           ],
-          uncommon: ["Sneakers", "Running Shoes", "Tennis Shoes", "Boots", "High Heels", "Flats", "Sandals", "Flip Flops", "Slippers", "Loafers", "Cleats", "Hiking Boots", "Work Boots", "Dress Shoes", "Tights", "Nylon Stocking", "Argyle", "Argyll", "Rayon Stocking", "Pantyhose", "Hosiery", "Nylons", "Tabi", "Anklet", "Leotards", "Strap", "Flops"
+          uncommon: ["Sneakers", "Running Shoes", "Tennis Shoes", "Boots", "High Heels", "Flats", "Sandals", "Flip Flops", "Slippers", "Loafers", "Cleats", "Hiking Boots", "Work Boots", "Dress Shoes", "Tights", "Nylon Stocking", "Argyle", "Argyll", "Rayon Stocking", "Pantyhose", "Hosiery", "Nylons", "Tabi", "Anklet", "Leotards", "Strap", "Flops", "Pointe Shoes", "Jazz Shoes", "Platform Sandals", "Thong Sandals", "Geta", "Zori", "Birkenstocks", "Tevas", "Keds", "Sperrys", "Doc Martens", "Timberlands", "Trainers", "Plimsolls", "Pumps Shoes", "Court Shoes", "Stack Heels", "Block Heels", "Cone Heels", "Spool Heels", "Cuban Heels", "Ankle Strap Heels", "T-Strap Shoes", "Saddle Shoes", "Spectators", "Wingtips", "Cap Toe Shoes", "Penny Loafers", "Tassel Loafers", "Horsebit Loafers", "Driving Moccasins", "Slip-Ons", "Skate Shoes", "Hightops", "Lowtops", "Knee High Boots", "Thigh High Boots", "Over the Knee Boots", "Riding Boots", "Skates", "Toes"
           ],
-          common: ["Sneakers", "Boots", "Sandals", "Flip Flops", "High Heels", "Shoes", "Slippers", "Running Shoes", "Loafers", "Tennis Shoes", "Knee-high", "Knee-hi", "Hose", "Support Hose", "Sock", "Sweat Sock", "Stocking", "Athletic Sock", "Support Stocking", "Christmas Stocking", "Footwear", "Silk Stocking", "Varsity Sock", "Heels"
+          common: ["Sneakers", "Boots", "Sandals", "Flip Flops", "High Heels", "Shoes", "Slippers", "Running Shoes", "Loafers", "Tennis Shoes", "Knee-high", "Knee-hi", "Hose", "Support Hose", "Sock", "Sweat Sock", "Stocking", "Athletic Sock", "Support Stocking", "Christmas Stocking", "Footwear", "Silk Stocking", "Varsity Sock", "Heels", "Wedges", "Platforms", "Pumps", "Mules", "Slides", "Brogues", "High Tops", "Ballet Flats", "Mary Janes", "Combat Boots", "Cowboy Boots", "Rain Boots", "Uggs", "Crocs", "Converse", "Vans", "Boat Shoes", "Deck Shoes", "Tap Shoes", "Roller Skates", "Ice Skates", "Ski Boots", "Snow Boots", "Wellingtons", "Galoshes", "Gladiators", "Huaraches", "Jelly Shoes", "Kitten Heels", "Slingbacks", "Peep Toes", "Chukkas", "Desert Boots", "Waders", "Water Shoes", "Aqua Socks", "Basketball Shoes", "Golf Shoes", "Bowling Shoes", "Cycling Shoes", "Climbing Shoes", "Dance Shoes", "Ballet Slippers", "Tops"
           ]
         },
         {
           cat: 'everyday',
           prompt: 'Name an item taken on a beach trip',
+          sarcastic: ["Sand in Everything", "Sunburn"],
           gold: ["Boogie Board"],
           epic: ["Snorkel", "Sun Hat", "Beach Umbrella", "Beach Mat", "Life Jacket", "Float", "Tube", "Raft", "Lilo"
           ],
@@ -1780,6 +1858,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a winter clothing item',
+          sarcastic: ["Ugly Sweater", "Borrowed Hoodie"],
           gold: ["Balaclava"],
           epic: ["Earmuffs", "Gaiter", "Thermal Underwear", "Parka", "Blanket Scarf", "Shawl", "Capelet", "Cape"
           ],
@@ -1795,6 +1874,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a sport played in the Summer Olympic Games',
+          sarcastic: ["Ping Pong", "Beach Volleyball Watching"],
           gold: ["Modern Pentathlon"],
           epic: ["Equestrian", "Badminton", "Taekwondo", "Fencing", "Cricket", "Lacrosse"
           ],
@@ -1808,6 +1888,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a Pixar animated feature film',
+          sarcastic: ["Fish Movie", "Talking Toys"],
           gold: ["Elemental"],
           epic: ["Onward", "Luca", "Soul", "Turning Red", "Incredibles"
           ],
@@ -1821,6 +1902,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a Mario franchise video game character',
+          sarcastic: ["Mamma Mia Guy", "Mustache Man"],
           gold: ["Wart"],
           epic: ["Waluigi", "Rosalina", "Kamek", "Shy Guy", "Banzai Bill", "Rocky Wrench", "Sledge Bro", "Boomerang Bro"
           ],
@@ -1834,6 +1916,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a genre of music',
+          sarcastic: ["Elevator Music", "Dad Rock"],
           gold: ["Shoegaze"],
           epic: ["Math Rock", "Bossa Nova", "Dubstep", "Synthwave", "Danceroom Music", "Enigmatical Canon", "Partsong", "Barcarole", "Reharmonisation", "Callathump", "Prolegomenon", "Popularism", "Sextette", "Chivaree", "Octette", "Kwela", "Cradlesong", "Scolion", "Prothalamium", "Mezuza", "Excerption", "Monophony", "Polytonalism", "Reharmonization", "Septette", "Prothalamion", "Callithump", "Prosodion"
           ],
@@ -1847,6 +1930,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a card game played with a standard deck',
+          sarcastic: ["Solitaire Alone", "War But Boring"],
           gold: ["Cribbage"],
           epic: ["Canasta", "Bridge", "Euchre", "Pinochle", "Penuchle", "Pinocle", "Pisha Paysha", "Crapette"
           ],
@@ -1860,6 +1944,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a video game console released before 2010',
+          sarcastic: ["Dad's Old Console", "Brick Console"],
           gold: ["Atari 5200"],
           epic: ["Sega Dreamcast", "Sega Saturn", "Neo Geo", "TurboGrafx-16", "Tapwave Zodiac", "PlayStation Portable", "Wii U"
           ],
@@ -1880,24 +1965,35 @@
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "H"',
+          sarcastic: ["Herb Garden", "Honest Politician"],
           gold: ["Rhinoceros"],
-          epic: ["Gherkin", "Ghetto", "Ghostwriter"],
-          rare: ["Honest", "Honor", "Hour", "Heir", "Echo", "Rhythm", "Scheme", "Vehicle"],
-          uncommon: ["Exhaust", "Exhibit", "Exhilarate", "Honesty", "Honorable", "Hourly", "Heirloom", "Rhythmic", "Scheming", "Anchor", "Architect", "Chaos", "Character", "Chemistry", "Choreography", "Chorus", "Christian", "Ghostly", "Ghosting"],
-          common: ["Ghost", "Hour", "Honest", "Honor", "Heir", "Echo", "School", "Anchor", "Chaos", "Chorus", "Chemical", "Character", "Cheetah", "Rhino", "Rhythm", "Hours", "Ghosts", "Honesty"]
+          epic: ["Gherkin", "Ghetto", "Ghostwriter", "Buddhism", "Buddhist", "Gharial", "Ghat", "Ghazal", "Ghibli"
+          ],
+          rare: ["Honest", "Honor", "Hour", "Heir", "Echo", "Rhythm", "Scheme", "Vehicle", "Rheology", "Rhenium", "Rhumba", "Rhyolite", "Rhodesia", "Honorific", "Honoree", "Honoring", "Dishonorable", "Dishonesty", "Shepherds", "Shepherdess", "Khakis", "Khans", "Ghastly", "Ghoulish"
+          ],
+          uncommon: ["Exhaust", "Exhibit", "Exhilarate", "Honesty", "Honorable", "Hourly", "Heirloom", "Rhythmic", "Scheming", "Anchor", "Architect", "Chaos", "Character", "Chemistry", "Choreography", "Chorus", "Christian", "Ghostly", "Ghosting", "Exhaustion", "Exhort", "Exhume", "Honestly", "Herbs", "Rhymes", "Exhibition", "Exhibitor", "Exhaustive", "Whales", "Wheels", "Whips", "Whispers", "Whistles", "Whiskers", "Whimsy", "Whirlwind", "Whirl", "Whisk", "Whiff", "Whet", "Whelp", "Wharf", "Whack", "Whine", "Whither", "Whereas", "Whenever", "Wherever", "Whatever", "Whichever", "Whoever", "Whoa", "Rhymed", "Rhyming", "Rhinitis", "Rhizome", "Rhapsodic", "Rhetorical", "Rheostat"
+          ],
+          common: ["Ghost", "Hour", "Honest", "Honor", "Heir", "Echo", "School", "Anchor", "Chaos", "Chorus", "Chemical", "Character", "Cheetah", "Rhino", "Rhythm", "Hours", "Ghosts", "Honesty", "Herb", "Rhyme", "Rhubarb", "Whale", "What", "When", "Where", "Which", "Why", "While", "White", "Whisper", "Whistle", "Wheel", "Wheat", "Whip", "Whiskey", "Whim", "Honour", "Heiress", "Shepherd", "Thyme", "Khaki", "Khan", "Ah", "Oh", "Rhetoric", "Rhapsody", "Rhinestone", "Rheumatism", "Rhesus", "Rhombus", "Rhododendron", "Rhodium", "Rhea", "Ghoul", "Aghast", "Ghee", "Buddha", "Hourglass", "Honorary", "Dishonest", "Dishonor", "Exhausted"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word that contains a silent "L"',
+          sarcastic: ["Walkie Talkie", "Calm Palm"],
           gold: ["Halfpenny"],
-          epic: ["Calmness", "Balked", "Yolks"],
-          rare: ["Salmon", "Almond", "Palms", "Falcon", "Calfskin"],
-          uncommon: ["Palm", "Calm", "Half", "Calf", "Talk", "Walk", "Chalk", "Stalk", "Folk", "Yolk", "Could", "Would", "Should", "Alms", "Balm", "Balmy", "Calmly", "Calming", "Halfway", "Halves", "Walked", "Walking", "Walker", "Talked", "Talking", "Talker", "Chalkboard", "Stalking"],
-          common: ["Walk", "Talk", "Half", "Calf", "Palm", "Calm", "Could", "Would", "Should", "Folk", "Yolk", "Salmon", "Almond", "Chalk", "Walked", "Walking", "Talked", "Talking", "Almonds", "Salmons"]
+          epic: ["Calmness", "Balked", "Yolks", "Folkloric", "Folklorist", "Salmonberry"
+          ],
+          rare: ["Salmon", "Almond", "Palms", "Falcon", "Calfskin", "Palmtop", "Palmate", "Embalming", "Embalmer", "Napalmed", "Balmoral", "Almsgiving", "Almsman"
+          ],
+          uncommon: ["Palm", "Calm", "Half", "Calf", "Talk", "Walk", "Chalk", "Stalk", "Folk", "Yolk", "Could", "Would", "Should", "Alms", "Balm", "Balmy", "Calmly", "Calming", "Halfway", "Halves", "Walked", "Walking", "Walker", "Talked", "Talking", "Talker", "Chalkboard", "Stalking", "Halftime", "Folksong", "Folktale", "Folkways", "Yolky", "Shoulda", "Coulda", "Woulda", "Talkative", "Talkie", "Walkout", "Walkabout", "Walkover", "Walkman", "Chalkpit", "Stalked", "Calmer", "Calmest", "Calmed", "Palmist", "Palmer"
+          ],
+          common: ["Walk", "Talk", "Half", "Calf", "Palm", "Calm", "Could", "Would", "Should", "Folk", "Yolk", "Salmon", "Almond", "Chalk", "Walked", "Walking", "Talked", "Talking", "Almonds", "Salmons", "Psalm", "Colonel", "Palmistry", "Qualm", "Embalm", "Napalm", "Behalf", "Calves", "Folklore", "Stalker", "Chalky", "Walkway", "Sidewalk", "Boardwalk", "Jaywalk", "Catwalk", "Crosswalk", "Moonwalk", "Folksy", "Salve", "Calve", "Psalms"
+          ]
         },
         {
           cat: 'language',
           prompt: 'Name an English word ending in "-ment"',
+          sarcastic: ["Bamboozlement", "Presentiment"],
           gold: ["Disillusionment"],
           epic: ["Encroachment", "Embezzlement", "Disenfranchisement", "Impingement", "Rearmament", "Impoverishment", "Readjustment", "Curtailment", "Underdevelopment", "Impoundment", "Transshipment", "Garnishment", "Escapement", "Chastisement"
           ],
@@ -1911,6 +2007,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word containing 3 consecutive vowels',
+          sarcastic: ["Miaow", "Aqueous Humor"],
           gold: ["Queueing"],
           epic: ["Bougainvillea", "Onomatopoeia", "Sequenced", "Luxuriously", "Bivouac", "Irreligious", "Viciousness", "Squeaker", "Propitious", "Fatuous", "Graciousness", "Chapeau", "Repetitious", "Bodacious", "Unrighteousness", "Felonious", "Misbehaviour", "Radioisotope", "Capacious", "Squeegee", "Unrighteous"
           ],
@@ -1924,6 +2021,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word ending in "-ous"',
+          sarcastic: ["Ginormous", "Obstreperous"],
           gold: ["Pusillanimous"],
           epic: ["Magnanimous", "Gratuitous", "Treacherous", "Scurrilous", "Sonorous", "Mutinous", "Irreligious", "Glutinous", "Propitious", "Fatuous", "Homonymous", "Repetitious", "Gluttonous", "Bodacious", "Erogenous", "Felonious", "Capacious", "Unrighteous"
           ],
@@ -1937,6 +2035,7 @@
         {
           cat: 'language',
           prompt: 'Name a compound English word containing "water"',
+          sarcastic: ["Water Under the Bridge", "Waterfall Flop"],
           gold: ["Waterlogged"],
           epic: ["Watercourse", "Watershed", "Watercraft", "Waterborne", "Meltwater"
           ],
@@ -1950,6 +2049,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word containing "ph"',
+          sarcastic: ["Phony Phone", "Photobomb"],
           gold: ["Phantasmagoria"],
           epic: ["Phaeton", "Phronesis", "Phylactery", "Neurophysiology", "Indecipherable", "Metaphoric", "Pharmacologic", "Philander", "Morphogenesis", "Ultrasonography", "Choreographic", "Nympho", "Phraseology", "Methylphenidate", "Phosphorescent", "Amphora", "Tocopherol", "Metamorphism", "Photochemical", "Telephonic", "Necrophilia", "Gryphon", "Shepherdess", "Sycophant"
           ],
@@ -1965,67 +2065,77 @@
         {
           cat: 'culinary',
           prompt: 'Name an edible mushroom species',
+          sarcastic: ["Fungus Among Us", "Shroom Room"],
           gold: ["Matsutake"],
-          epic: ["Lion's Mane", "Morel", "Chanterelle", "Enoki"],
-          rare: ["Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Porcini", "Maitake", "Wood Ear"],
-          uncommon: ["White Button", "Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Enoki", "Morel", "Chanterelle", "Porcini", "Chestnut Mushroom", "King Oyster", "Paddy Straw", "Truffle", "Black Truffle", "White Truffle", "Mane", "Oyster", "Straw"
+          epic: ["Lion's Mane", "Morel", "Chanterelle", "Enoki", "Shimeji White", "Nameko Mushroom", "Enokitake", "Eryngii"
           ],
-          common: ["Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "White Mushroom", "Truffle", "Mushrooms", "Wild Mushrooms", "Dried Mushrooms", "Ear", "Button"
+          rare: ["Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Porcini", "Maitake", "Wood Ear", "Stinkhorn", "Termite Mushroom", "Termitomyces", "Kikurage", "Summer Truffle", "Burgundy Truffle", "Perigord Truffle", "Alba Truffle", "Oregon Truffle", "Maitake Frondosa", "Shimeji Brown"
+          ],
+          uncommon: ["White Button", "Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "Enoki", "Morel", "Chanterelle", "Porcini", "Chestnut Mushroom", "King Oyster", "Paddy Straw", "Truffle", "Black Truffle", "White Truffle", "Mane", "Oyster", "Straw", "Birch Bolete", "Chaga", "Champignon", "Cep", "Penny Bun", "Bay Bolete", "Girolle", "Pied de Mouton", "Trompette de la Mort", "Horn of Plenty", "Fairy Ring Champignon", "St George's Mushroom", "Meadow Mushroom", "Giant Puffball", "Beefsteak Fungus", "Ink Cap", "Wood Blewit", "Amethyst Deceiver", "Honey Mushroom", "Sheathed Woodtuft", "Velvet Shank", "Jelly Ear", "Black Fungus", "Snow Fungus", "Tremella", "Silver Ear", "Bamboo Fungus", "Dictyophora", "Bun", "Fungus", "Trumpet", "Bella"
+          ],
+          common: ["Button Mushroom", "Portobello", "Shiitake", "Cremini", "Oyster Mushroom", "White Mushroom", "Truffle", "Mushrooms", "Wild Mushrooms", "Dried Mushrooms", "Ear", "Button", "Hen of the Woods", "Chicken of the Woods", "Puffball", "Straw Mushroom", "Cloud Ear", "Beech Mushroom", "Shimeji", "Nameko", "Black Trumpet", "Hedgehog Mushroom", "Candy Cap", "Blewit", "Cauliflower Mushroom", "Reishi", "Cordyceps", "Turkey Tail", "Field Mushroom", "Horse Mushroom", "Parasol", "Shaggy Mane", "Brown Mushroom", "Baby Bella", "Baby Portobello", "Pioppino", "Royal Trumpet", "Pearl Oyster", "Pink Oyster", "Blue Oyster", "Golden Oyster", "Yellowfoot", "Saffron Milk Cap", "White", "Brown", "Cap", "Tail"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a type of nut or edible seed',
+          sarcastic: ["Squirrel Snack", "Nutty Professor"],
           gold: ["Macadamia"],
-          epic: ["Pilu", "Baru Nut", "Pine Nut", "Brazil Nut", "Pignolia", "Chincapin"
+          epic: ["Pilu", "Baru Nut", "Pine Nut", "Brazil Nut", "Pignolia", "Chincapin", "Lotus Nut", "Foxnut", "Makhana"
           ],
-          rare: ["Pecan", "Pistachio", "Hazelnut", "Chestnut", "Cashew", "Walnut", "Grugru Nut", "Souari Nut", "Cobnut", "Quandong Nut", "Chinkapin", "Earthnut"
+          rare: ["Pecan", "Pistachio", "Hazelnut", "Chestnut", "Cashew", "Walnut", "Grugru Nut", "Souari Nut", "Cobnut", "Quandong Nut", "Chinkapin", "Earthnut", "Siberian Pine Nuts", "Korean Pine Nuts", "Stone Pine Nuts", "Watermelon Seeds", "Melon Seeds", "Squash Seeds"
           ],
-          uncommon: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Brazil Nut", "Pine Nut", "Macadamia", "Sunflower Seed", "Pumpkin Seed", "Chia Seed", "Flaxseed", "Sesame Seed", "Hemp Seed", "Poppy Seed", "Cashew Nut", "Butternut", "Kola Nut", "Macadamia Nut", "Goober", "Goober Pea", "Groundnut", "Filbert", "Cocoanut", "Pinon Nut", "Pyrene", "Chinquapin", "Beechnut", "Bunya Bunya", "Cembra Nut", "Nutlet", "Pea", "Kernel"
+          uncommon: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Brazil Nut", "Pine Nut", "Macadamia", "Sunflower Seed", "Pumpkin Seed", "Chia Seed", "Flaxseed", "Sesame Seed", "Hemp Seed", "Poppy Seed", "Cashew Nut", "Butternut", "Kola Nut", "Macadamia Nut", "Goober", "Goober Pea", "Groundnut", "Filbert", "Cocoanut", "Pinon Nut", "Pyrene", "Chinquapin", "Beechnut", "Bunya Bunya", "Cembra Nut", "Nutlet", "Pea", "Kernel", "Soy Nut", "Cacao Nut", "Mixed Nuts", "Trail Mix", "Persian Walnut", "Heartnut", "Japanese Walnut", "Carpathian Walnut", "Paper Shell Pecan", "Slivered Almonds", "Spanish Peanuts", "Virginia Peanuts", "Runner Peanuts", "Valencia Peanuts", "Piñon", "Pinyon Nuts"
           ],
-          common: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Sunflower Seeds", "Pumpkin Seeds", "Sesame Seeds", "Almonds", "Peanuts", "Cashews", "Brazil", "Nut", "Coconut", "Palm Nut", "Monkey Nut", "Cedar Nut", "Cola Nut", "Black Walnut", "English Walnut", "Mast", "Jordan Almond", "Edible Nut", "Palm Kernel", "Hickory Nut", "Cob", "Pistachio Nut", "Seed"
+          common: ["Almond", "Peanut", "Cashew", "Walnut", "Pecan", "Pistachio", "Hazelnut", "Sunflower Seeds", "Pumpkin Seeds", "Sesame Seeds", "Almonds", "Peanuts", "Cashews", "Brazil", "Nut", "Coconut", "Palm Nut", "Monkey Nut", "Cedar Nut", "Cola Nut", "Black Walnut", "English Walnut", "Mast", "Jordan Almond", "Edible Nut", "Palm Kernel", "Hickory Nut", "Cob", "Pistachio Nut", "Seed", "Acorn", "Flax Seed", "Tiger Nut", "Ginkgo Nut", "Lotus Seed", "Water Chestnut", "Candlenut", "Pili Nut", "Marcona Almond", "Betel Nut", "Areca Nut", "Gingko", "Shea Nut", "Mongongo", "Sacha Inchi", "Pepita", "Pignoli", "Mix"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a classic salad dish',
+          sarcastic: ["Rabbit Food", "Lettuce Alone"],
           gold: ["Salade Niçoise"],
-          epic: ["Waldorf Salad", "Caprese Salad", "Cobb Salad", "Larb", "Tabooli"
+          epic: ["Waldorf Salad", "Caprese Salad", "Cobb Salad", "Larb", "Tabooli", "Tortellini Salad", "Caprese Pasta Salad", "Italian Pasta Salad", "Greek Pasta Salad", "Ranch Pasta Salad", "Bacon Ranch Pasta Salad"
           ],
-          rare: ["Caesar Salad", "Greek Salad", "Tabbouleh", "Coleslaw", "Potato Salad", "Macaroni Salad", "Salmagundi", "Salad Nicoise"
+          rare: ["Caesar Salad", "Greek Salad", "Tabbouleh", "Coleslaw", "Potato Salad", "Macaroni Salad", "Salmagundi", "Salad Nicoise", "Frisee Salad", "Mesclun Salad", "Watercress Salad", "Cress Salad", "Tomato Salad", "Tomato Cucumber Salad", "Onion Salad", "Avocado Salad", "Mango Salad", "Papaya Salad", "Green Papaya Salad", "Citrus Salad", "Orange Salad", "Grapefruit Salad", "Cantaloupe Salad", "Melon Salad", "Berry Salad", "Pasta Primavera Salad"
           ],
-          uncommon: ["Caesar Salad", "Greek Salad", "Garden Salad", "House Salad", "Cobb Salad", "Caprese Salad", "Waldorf Salad", "Fruit Salad", "Pasta Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Spinach Salad", "Kale Salad", "Wedge Salad", "Herring Salad", "Molded Salad", "Chef's Salad", "Slaw"
+          uncommon: ["Caesar Salad", "Greek Salad", "Garden Salad", "House Salad", "Cobb Salad", "Caprese Salad", "Waldorf Salad", "Fruit Salad", "Pasta Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Spinach Salad", "Kale Salad", "Wedge Salad", "Herring Salad", "Molded Salad", "Chef's Salad", "Slaw", "Nicoise Salad", "Tabouli", "Tabouleh", "Hummus Salad", "Couscous Salad", "Orzo Salad", "Rice Salad", "Farro Salad", "Barley Salad", "Bulgur Salad", "Salmon Salad", "Shrimp Salad", "Crab Salad", "Lobster Salad", "Seafood Salad", "Ham Salad", "Turkey Salad", "Steak Salad", "Bacon Salad", "Chicken Caesar", "Grilled Chicken Salad", "Buffalo Chicken Salad", "Asian Chicken Salad", "Chinese Chicken Salad", "Thai Beef Salad", "Japanese Salad", "Seaweed Salad", "Wakame Salad", "Kani Salad", "Goma Ae", "Potato Egg Salad", "German Potato Salad", "Pickled Beet Salad", "Greek Village Salad", "Pear and Gorgonzola Salad", "Pecan Salad", "Candied Pecan Salad", "Mandarin Orange Salad", "Spring Mix Salad", "Baby Greens", "Iceberg Wedge", "Romaine Salad", "Butter Lettuce Salad", "Endive Salad", "Radicchio Salad", "Greens", "Tam"
           ],
-          common: ["Caesar Salad", "Greek Salad", "Garden Salad", "Fruit Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Side Salad", "Green Salad", "Salad", "Combination Salad", "Crab Louis", "Tossed Salad", "Tuna Fish Salad", "Louis"
+          common: ["Caesar Salad", "Greek Salad", "Garden Salad", "Fruit Salad", "Potato Salad", "Coleslaw", "Tuna Salad", "Chicken Salad", "Egg Salad", "Side Salad", "Green Salad", "Salad", "Combination Salad", "Crab Louis", "Tossed Salad", "Tuna Fish Salad", "Louis", "Caesar", "Greek", "Cobb", "Garden", "Chef", "Waldorf", "Caprese", "Nicoise", "Taco Salad", "Panzanella", "Fattoush", "Cucumber Salad", "Three Bean Salad", "Ambrosia", "Jell-O Salad", "Seven Layer Salad", "Chopped Salad", "Antipasto Salad", "Arugula Salad", "Beet Salad", "Quinoa Salad", "Italian Salad", "Mixed Greens", "Southwest Salad", "BLT Salad", "Som Tam", "Olivier Salad", "Russian Salad", "Shopska", "Horiatiki", "Insalata Mista", "Salade Lyonnaise", "Kachumber", "Cacik", "Israeli Salad", "Chickpea Salad", "Lentil Salad", "Broccoli Salad", "Pea Salad", "Corn Salad", "Ramen Salad", "Strawberry Spinach Salad", "Watermelon Feta Salad", "Cranberry Salad", "Apple Salad", "Carrot Salad", "Dandelion Salad", "Chef Salad", "Wedge"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a type of tea',
+          sarcastic: ["Spill the Tea", "Boston Tea Party"],
           gold: ["Lapsang Souchong"],
-          epic: ["Genmaicha", "Pu-erh", "Assam", "Darjeeling", "Cambric Tea"
+          epic: ["Genmaicha", "Pu-erh", "Assam", "Darjeeling", "Cambric Tea", "Karak Chai", "Rooibos Chai", "Honeybush", "Guayusa", "Mate", "Hojicha Latte"
           ],
-          rare: ["Earl Grey", "Matcha", "Oolong", "Chai", "Rooibos", "English Breakfast", "Sencha", "Cupper"
+          rare: ["Earl Grey", "Matcha", "Oolong", "Chai", "Rooibos", "English Breakfast", "Sencha", "Cupper", "Chai Latte", "Dirty Chai", "Teh Tarik", "Hong Kong Milk Tea", "Taiwanese Milk Tea", "Pearl Milk Tea", "Boba Tea", "Thai Iced Tea", "Vietnamese Tea", "Turkish Tea", "Cay", "Persian Tea", "Afghan Tea", "Samovar Tea", "Moroccan Tea", "Mint Tea"
           ],
-          uncommon: ["Green Tea", "Black Tea", "White Tea", "Oolong Tea", "Herbal Tea", "Chai Tea", "Matcha Tea", "Earl Grey Tea", "Chamomile Tea", "Peppermint Tea", "Jasmine Tea", "Lemon Tea", "Ginger Tea", "Hibiscus Tea", "Spearmint Tea", "Herbal", "Cuppa", "Camomile Tea", "Tisane"
+          uncommon: ["Green Tea", "Black Tea", "White Tea", "Oolong Tea", "Herbal Tea", "Chai Tea", "Matcha Tea", "Earl Grey Tea", "Chamomile Tea", "Peppermint Tea", "Jasmine Tea", "Lemon Tea", "Ginger Tea", "Hibiscus Tea", "Spearmint Tea", "Herbal", "Cuppa", "Camomile Tea", "Tisane", "Cold Brew Tea", "London Fog", "Peach Tea", "Raspberry Tea", "Cranberry Tea", "Apple Tea", "Cinnamon Tea", "Spiced Tea", "Orange Spice", "Cinnamon Apple", "Berry Hibiscus", "Passionfruit Tea", "Mango Tea", "Strawberry Tea", "Blueberry Tea", "Vanilla Tea", "Caramel Tea", "Chocolate Tea", "Coconut Tea", "Pineapple Tea", "Lychee Tea", "Osmanthus Tea", "Chrysanthemum Tea", "Lotus Tea", "Goji Tea", "Ginseng Tea", "Honey Tea", "Citron Tea", "Yuja Tea", "Omija Tea", "Corn Tea", "Buckwheat Tea", "Soba Cha", "Kukicha", "Bancha", "Shincha", "Kabusecha", "Tamaryokucha", "Konacha", "Funmatsucha", "Houjicha", "Matcha Latte", "Latte", "Fog", "Spice", "Cha", "Needle", "Balm", "Mint", "Caravan"
           ],
-          common: ["Green Tea", "Black Tea", "Iced Tea", "Sweet Tea", "Chai", "Matcha", "Earl Grey", "Chamomile", "Peppermint", "Herbal Tea", "Hot Tea", "Tea", "Ice Tea", "Sun Tea", "Herb Tea", "Grey", "Breakfast"
+          common: ["Green Tea", "Black Tea", "Iced Tea", "Sweet Tea", "Chai", "Matcha", "Earl Grey", "Chamomile", "Peppermint", "Herbal Tea", "Hot Tea", "Tea", "Ice Tea", "Sun Tea", "Herb Tea", "Grey", "Breakfast", "Green", "Black", "White", "Jasmine", "Ceylon", "Hibiscus", "Lemon Ginger", "Bubble Tea", "Gunpowder", "Hojicha", "Gyokuro", "Yerba Mate", "Lady Grey", "Irish Breakfast", "Orange Pekoe", "Keemun", "Yunnan", "Dragon Well", "Longjing", "Tieguanyin", "Silver Needle", "White Peony", "Tulsi", "Lemon Balm", "Nettle", "Rose", "Lavender", "Ginger", "Turmeric", "Fennel", "Licorice", "Rosehip", "Elderflower", "Dandelion", "Moroccan Mint", "Thai Tea", "Milk Tea", "Masala Chai", "Barley Tea", "Mugicha", "Butter Tea", "Kashmiri Chai", "Russian Caravan", "Nilgiri", "Kenyan", "Apple", "Well"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a style of egg preparation',
+          sarcastic: ["Egg-cellent Eggs", "Hard Boiled Detective"],
           gold: ["Eggs Royale"],
-          epic: ["Shirred Eggs", "Eggs Florentine", "Eggs In Purgatory", "Tamagoyaki"],
-          rare: ["Eggs Benedict", "Poached Egg", "Soft Boiled", "Hard Boiled", "Sunny Side Up", "Over Easy"],
-          uncommon: ["Scrambled Eggs", "Fried Egg", "Hard Boiled Egg", "Soft Boiled Egg", "Poached Egg", "Sunny Side Up", "Over Easy", "Over Medium", "Over Hard", "Omelet", "Frittata", "Deviled Eggs", "Egg Salad", "Quiche", "Benedict", "Boiled"
+          epic: ["Shirred Eggs", "Eggs Florentine", "Eggs In Purgatory", "Tamagoyaki", "Mushroom Omelette", "Spanish Egg", "Egg Fried Rice", "Egg Drop Soup"
           ],
-          common: ["Scrambled Eggs", "Fried Egg", "Boiled Egg", "Omelet", "Sunny Side Up", "Over Easy", "Poached Egg", "Hard Boiled", "Deviled Eggs", "Eggs", "Easy", "Medium", "Hard"
+          rare: ["Eggs Benedict", "Poached Egg", "Soft Boiled", "Hard Boiled", "Sunny Side Up", "Over Easy", "Huevos Tirados", "Chilaquiles with Egg", "Migas", "Tortilla Espanola", "Tortilla de Patatas", "Spanish Omelette", "French Omelette", "Western Omelette", "Denver Omelette", "Cheese Omelette"
+          ],
+          uncommon: ["Scrambled Eggs", "Fried Egg", "Hard Boiled Egg", "Soft Boiled Egg", "Poached Egg", "Sunny Side Up", "Over Easy", "Over Medium", "Over Hard", "Omelet", "Frittata", "Deviled Eggs", "Egg Salad", "Quiche", "Benedict", "Boiled", "Curried Eggs", "Stuffed Eggs", "Marbled Eggs", "Ramen Egg", "Ajitsuke Tamago", "Onsen Egg", "Raw", "Medium Boiled", "Six Minute Egg", "Jammy Egg", "Dippy Egg", "Soldier Eggs", "Egg and Soldiers", "Eggs Over Easy", "Eggs Sunny Side Up", "Sous Vide Egg", "Sous Vide Eggs", "Slow Cooked Egg", "63 Degree Egg", "Hollandaise Eggs", "Eggs Hemingway", "Eggs Benedict Arnold", "Egg Florentine", "Eggs in Hell", "Huevos Divorciados", "Huevos Motuleños", "Huevos a la Mexicana", "Hemingway", "Curry"
+          ],
+          common: ["Scrambled Eggs", "Fried Egg", "Boiled Egg", "Omelet", "Sunny Side Up", "Over Easy", "Poached Egg", "Hard Boiled", "Deviled Eggs", "Eggs", "Easy", "Medium", "Hard", "Scrambled", "Fried", "Poached", "Deviled", "Baked", "Shirred", "Coddled", "Pickled", "Scotch Egg", "Egg in a Basket", "Egg Drop", "Steamed Egg", "Chawanmushi", "Century Egg", "Tea Egg", "Huevos Rancheros", "Shakshuka", "Souffle", "Egg Sandwich", "Basted", "Over Well", "Turned Over", "Egg White Omelet", "Egg Foo Young", "Egg Curry", "Egg Bhurji", "Menemen", "Eggs Sardou", "Rice", "Arnold", "Drop", "Sandwich", "Well", "Over", "Young"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a kitchen tool or utensil used in preparation',
+          sarcastic: ["Mystery Gadget", "Spatula Envy"],
           gold: ["Mandoline"],
           epic: ["Microplane", "Spider Skimmer", "Potato Ricer", "Pastry Wheel", "Stewpan", "Saucepot", "Eggwhisk", "Liquidiser", "Liquidizer"
           ],
@@ -2039,6 +2149,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a seafood or fish species eaten as food',
+          sarcastic: ["Something Fishy", "Fish Stick Fish"],
           gold: ["Escolar"],
           epic: ["Barramundi", "Turbot", "Monkfish", "Arctic Char", "Blackmouth Bass", "Quinnat Salmon", "Hogchoker", "Allice Shad", "Belted Sandfish"
           ],
@@ -2052,6 +2163,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a fresh or dried chili pepper',
+          sarcastic: ["Ouch Pepper", "Mouth Fire"],
           gold: ["Carolina Reaper"],
           epic: ["Scotch Bonnet", "Trinidad Scorpion", "Pequin", "Pasilla", "Hungarian Hot Wax", "Italian Long Hot", "Cherry Hots", "Cajun Belle", "Sweet Heat"
           ],
@@ -2065,19 +2177,21 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of pie',
+          sarcastic: ["Humble Pie", "Pi Day Pie"],
           gold: ["Chess Pie"],
-          epic: ["Shoofly Pie", "Key Lime Pie", "Bumbleberry Pie", "Mince Pie", "Tourtiere"
+          epic: ["Shoofly Pie", "Key Lime Pie", "Bumbleberry Pie", "Mince Pie", "Tourtiere", "Eggnog Pie", "Maple Cream Pie", "Maple Pie", "Honey Pie", "Molasses Pie"
           ],
-          rare: ["Pecan Pie", "Pumpkin Pie", "Apple Pie", "Cherry Pie", "Peach Pie", "Rhubarb Pie", "Shepherd's Pie", "Quiche", "Quiche Lorraine", "Tartlet"
+          rare: ["Pecan Pie", "Pumpkin Pie", "Apple Pie", "Cherry Pie", "Peach Pie", "Rhubarb Pie", "Shepherd's Pie", "Quiche", "Quiche Lorraine", "Tartlet", "Lattice Pie", "Crumb Pie", "Double Crust Pie", "Open Face Pie", "Icebox Pie", "Frozen Pie", "Cream Cheese Pie", "Pudding Pie", "Jello Pie", "Ice Cream Pie", "Chiffon Pie", "Pumpkin Chiffon", "Lemon Chiffon"
           ],
-          uncommon: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Peach Pie", "Blueberry Pie", "Key Lime Pie", "Lemon Meringue", "Chocolate Pie", "Coconut Cream", "Banana Cream", "Pot Pie", "Chicken Pot Pie", "Shepherd Pie", "Meat Pie", "Tart", "Apple Tart", "Lobster Tart", "Pasty", "Cobbler", "Lemon Meringue Pie", "Lorraine"
+          uncommon: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Peach Pie", "Blueberry Pie", "Key Lime Pie", "Lemon Meringue", "Chocolate Pie", "Coconut Cream", "Banana Cream", "Pot Pie", "Chicken Pot Pie", "Shepherd Pie", "Meat Pie", "Tart", "Apple Tart", "Lobster Tart", "Pasty", "Cobbler", "Lemon Meringue Pie", "Lorraine", "Plum", "Gooseberry", "Mississippi Mud Pie", "Sugar Cream Pie", "Derby Pie", "Cheese Pie", "Fruit Pie", "Lemon Pie", "Banana Cream Pie", "Coconut Cream Pie", "Chocolate Cream Pie", "Strawberry Pie", "Strawberry Rhubarb Pie", "Blackberry Pie", "Raspberry Pie", "Cranberry Pie", "Mincemeat Pie", "Sweet Potato Pie", "Butterscotch Pie", "Peanut Butter Pie", "Pineapple Pie", "Mango Pie", "Apricot Pie", "Plum Pie", "Pear Pie", "Fig Pie", "Date Pie", "Raisin Pie", "Mock Apple Pie", "Ritz Cracker Pie", "Vinegar Pie", "Transparent Pie", "Lime"
           ],
-          common: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Blueberry Pie", "Key Lime Pie", "Pot Pie", "Chicken Pot Pie", "Meat Pie", "Pies", "Deep-dish Pie", "Pork Pie", "Kidney Pie", "Steak And Kidney Pie", "Patty", "Squash Pie"
+          common: ["Apple Pie", "Pumpkin Pie", "Pecan Pie", "Cherry Pie", "Blueberry Pie", "Key Lime Pie", "Pot Pie", "Chicken Pot Pie", "Meat Pie", "Pies", "Deep-dish Pie", "Pork Pie", "Kidney Pie", "Steak And Kidney Pie", "Patty", "Squash Pie", "Apple", "Pumpkin", "Cherry", "Pecan", "Blueberry", "Peach", "Key Lime", "Banoffee", "Chocolate Cream", "Sweet Potato", "Mud Pie", "Cottage Pie", "Steak and Kidney", "Rhubarb", "Strawberry Rhubarb", "Blackberry", "Raspberry", "Custard", "Cream Pie", "Boston Cream", "Black Bottom", "Buttermilk Pie", "Whoopie Pie", "Moon Pie", "Pizza Pie", "Fish Pie", "Stargazy Pie", "Cornish Pasty", "Spanakopita", "Walnut Pie", "Hand Pie", "Apple Crumb", "Dutch Apple", "French Silk", "Grasshopper", "Pear", "Potato", "Bottom", "Silk"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a type of food condiment or sauce',
+          sarcastic: ["Secret Sauce", "Mystery Sauce"],
           gold: ["Gremolata"],
           epic: ["Chimichurri", "Tzatziki", "Harissa", "Ponzu", "Sauce Chausseur", "Poulette", "Ravigote", "Demiglace", "Ravigotte"
           ],
@@ -2091,6 +2205,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a grain or cereal crop',
+          sarcastic: ["Amber Waves", "Cereal Killer"],
           gold: ["Freekeh"],
           epic: ["Fonio", "Amaranth", "Teff", "Farro", "Kurakkan", "Sorgho", "Coracan", "Yardgrass", "Dourah", "Silkgrass"
           ],
@@ -2104,6 +2219,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a popular breakfast dish or item',
+          sarcastic: ["Cold Pizza", "Coffee Only"],
           gold: ["Shakshuka"],
           epic: ["Huevos Rancheros", "Eggs Benedict", "Dutch Baby", "Congee", "Upma", "Chia Pudding", "Protein Shake", "Breakfast Sausage"
           ],
@@ -2117,37 +2233,43 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of vinegar',
+          sarcastic: ["Sour Grapes", "Pickle Juice"],
           gold: ["Sherry Vinegar"],
-          epic: ["Champagne Vinegar", "Black Vinegar", "Cider Vinegar", "Malt Vinegar", "Acetum"
+          epic: ["Champagne Vinegar", "Black Vinegar", "Cider Vinegar", "Malt Vinegar", "Acetum", "Marsala Vinegar", "Vinho Verde Vinegar", "Cava Vinegar", "Rioja Vinegar"
           ],
-          rare: ["Balsamic Vinegar", "Apple Cider Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar"],
-          uncommon: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar", "Malt Vinegar", "Cider Vinegar", "Distilled Vinegar", "Tarragon Vinegar", "Chili Vinegar"
+          rare: ["Balsamic Vinegar", "Apple Cider Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar", "Verjuice", "Cabernet Vinegar", "Merlot Vinegar", "Chardonnay Vinegar", "Sauvignon Blanc Vinegar", "Pinot Noir Vinegar", "Prosecco Vinegar", "Moscato Vinegar", "Tokaji Vinegar", "Madeira Vinegar", "Port Vinegar"
           ],
-          common: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "Rice Vinegar", "Vinegar", "White Vinegar", "Wine Vinegar"
+          uncommon: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "White Wine Vinegar", "Rice Vinegar", "Malt Vinegar", "Cider Vinegar", "Distilled Vinegar", "Tarragon Vinegar", "Chili Vinegar", "Banyuls", "Aceto Balsamico", "Lambic", "Sour Beer Vinegar", "Rice Wine Vinegar", "Red Rice Vinegar", "White Rice Vinegar", "Black Rice Vinegar", "Brown Rice Vinegar", "Sorghum Vinegar", "Kaoliang Vinegar", "Zhenjiang Vinegar", "Shanxi Aged Vinegar", "Cane Vinegar", "Sugar Cane Vinegar", "Nipa Palm Vinegar", "Spiced Vinegar", "Pickling Vinegar", "Cider Vinegar Raw", "Unfiltered Apple Cider Vinegar", "Ume Plum Vinegar", "Plum Vinegar", "Cherry Vinegar", "Blueberry Vinegar", "Strawberry Vinegar", "Mango Vinegar", "Pear Vinegar", "Quince Vinegar", "Grape Vinegar", "Cider"
+          ],
+          common: ["Balsamic Vinegar", "Apple Cider Vinegar", "White Vinegar", "Red Wine Vinegar", "Rice Vinegar", "Vinegar", "White Vinegar", "Wine Vinegar", "White", "Apple Cider", "Balsamic", "Red Wine", "White Wine", "Rice", "Malt", "Champagne", "Sherry", "Distilled White", "Raspberry", "Coconut", "Cane", "Chinkiang", "Umeboshi Vinegar", "Sushi Vinegar", "Seasoned Rice Vinegar", "White Balsamic", "Date Vinegar", "Fig Vinegar", "Herb Vinegar", "Fruit Vinegar", "Honey Vinegar", "Palm Vinegar", "Jerez", "Moscatel", "Kombucha Vinegar", "Spirit Vinegar", "Pomegranate Vinegar", "Persimmon Vinegar", "Black Garlic Vinegar", "Raw", "Wine"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a style or roast of coffee bean',
+          sarcastic: ["Burnt Roast", "Gas Station Brew"],
           gold: ["Ristretto Shot"],
-          epic: ["Vienna Roast", "Italian Roast", "French Roast", "City Roast"],
-          rare: ["Espresso Roast", "Dark Roast", "Medium Roast", "Light Roast", "Blond Roast", "Decaf"],
-          uncommon: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso Roast", "French Roast", "Italian Roast", "Blonde Roast", "Decaf Coffee", "Arabica", "Robusta", "Single Origin", "House Blend", "Roast", "Blend"
+          epic: ["Vienna Roast", "Italian Roast", "French Roast", "City Roast", "Panama", "Mexican Chiapas", "Peruvian", "Bolivian", "Ecuadorian", "Hawaiian"
           ],
-          common: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso", "Decaf", "Arabica", "Coffee Beans", "Ground Coffee", "Origin"
+          rare: ["Espresso Roast", "Dark Roast", "Medium Roast", "Light Roast", "Blond Roast", "Decaf", "Rwanda", "Burundi", "Uganda", "Malawi", "Zambia", "Zimbabwe", "Yemen Mocha", "Harrar", "Sidamo", "Guji", "Limu", "Jimma", "Nicaraguan", "Honduran", "El Salvador"
+          ],
+          uncommon: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso Roast", "French Roast", "Italian Roast", "Blonde Roast", "Decaf Coffee", "Arabica", "Robusta", "Single Origin", "House Blend", "Roast", "Blend", "Cinnamon", "Blonde", "French", "Italian", "Filter Roast", "Omni Roast", "Nordic Roast", "Scandinavian Roast", "Third Wave Roast", "Washed Process", "Natural Process", "Honey Process", "Wet Process", "Dry Process", "Pulped Natural", "Semi Washed", "Anaerobic", "Carbonic Maceration", "Heirloom", "Geisha", "Gesha", "Bourbon", "Typica", "Caturra", "Catuai", "SL28", "SL34", "Pacamara", "Maragogype", "Java Estate", "Mandheling", "Lintong", "Gayo", "Toraja", "Sulawesi", "Bali Blue Moon", "Papua New Guinea", "Tanzania Peaberry", "Salvador", "Brew", "Rican"
+          ],
+          common: ["Dark Roast", "Medium Roast", "Light Roast", "Espresso", "Decaf", "Arabica", "Coffee Beans", "Ground Coffee", "Origin", "Full City", "Cinnamon Roast", "New England Roast", "Breakfast Blend", "Liberica", "Excelsa", "Cold Brew", "Colombian", "Ethiopian", "Sumatra", "Kona", "Jamaican Blue Mountain", "Kenyan", "Costa Rican", "Guatemalan", "Java", "Mocha Java", "Yirgacheffe", "Brazilian", "Vietnamese", "Peaberry", "Monsooned Malabar", "Turkish", "Greek", "Instant", "Half Caff", "Swiss Water", "Dark", "Medium", "Light", "Bold", "Mild", "Medium Dark Roast", "Medium Light Roast", "Half City", "Light City", "American Roast", "Continental Roast", "Spanish Roast", "Turkish Roast", "Neapolitan Roast", "Viennese Roast", "Process", "Natural", "Washed", "Estate", "Moon", "Guinea", "City", "Mountain"
           ]
         },
         {
           cat: 'culinary',
           prompt: 'Name a type of edible berry',
+          sarcastic: ["Berry Berry", "Berry Blue"],
           gold: ["Boysenberry"],
-          epic: ["Gooseberry", "Cloudberry", "Lingonberry", "Elderberry", "Juneberry", "Lowbush Cranberry"
+          epic: ["Gooseberry", "Cloudberry", "Lingonberry", "Elderberry", "Juneberry", "Lowbush Cranberry", "Salal", "Oregon Grape", "Manzanita", "Kinnikinnick", "Cranberries"
           ],
-          rare: ["Blackberry", "Raspberry", "Blueberry", "Cranberry", "Acai", "Mulberry", "Spiceberry", "Shadberry", "Whortleberry", "Cowberry"
+          rare: ["Blackberry", "Raspberry", "Blueberry", "Cranberry", "Acai", "Mulberry", "Spiceberry", "Shadberry", "Whortleberry", "Cowberry", "Baneberry", "Pokeberry", "Strawberry Tree", "Arbutus Berry", "Madrono", "Silverberry", "Autumn Olive", "Goumi", "Russian Olive", "Buffalo Berry", "Soapberry", "Elderberries", "Dewberries"
           ],
-          uncommon: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Gooseberry", "Elderberry", "Acai Berry", "Goji Berry", "Marionberry", "Boysenberry", "Mulberry", "Huckleberry", "Surinam Cherry", "Dewberry", "Hackberry", "Bilberry", "Loganberry", "Acerola", "Serviceberry", "Sugarberry", "Teaberry", "Checkerberry", "Boxberry"
+          uncommon: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Gooseberry", "Elderberry", "Acai Berry", "Goji Berry", "Marionberry", "Boysenberry", "Mulberry", "Huckleberry", "Surinam Cherry", "Dewberry", "Hackberry", "Bilberry", "Loganberry", "Acerola", "Serviceberry", "Sugarberry", "Teaberry", "Checkerberry", "Boxberry", "Rabbiteye Blueberry", "Black Raspberry", "Red Raspberry", "Golden Raspberry", "Yellow Raspberry", "Purple Raspberry", "Blackcap", "Black Mulberry", "White Mulberry", "Red Mulberry", "Foxberry", "Partridgeberry", "Bog Cranberry", "Wild Cranberry", "Hawthorn Berry", "Haw", "Rosehip", "Rose Hip", "Juniper Berry", "Bayberry", "Wax Myrtle", "Chilean Guava", "Ugni", "Murta", "Calafate", "Magellan Barberry", "Ligonberry", "Kiwiberry", "Hardy Kiwi", "Arctic Kiwi", "Lingon", "Tundra Berry", "Arctic Bramble", "Nagoonberry", "Cloudberries", "Grape", "Myrtle", "Kiwi", "Bois"
           ],
-          common: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Strawberries", "Blueberries", "Raspberries", "Blackberries", "West Indian Cherry", "Berry", "Barbados Cherry", "European Blueberry", "Mountain Cranberry", "Saskatoon", "Persimmon", "Black Currant", "Red Currant", "Currant", "Wintergreen", "Cherry"
+          common: ["Strawberry", "Blueberry", "Raspberry", "Blackberry", "Cranberry", "Strawberries", "Blueberries", "Raspberries", "Blackberries", "West Indian Cherry", "Berry", "Barbados Cherry", "European Blueberry", "Mountain Cranberry", "Saskatoon", "Persimmon", "Black Currant", "Red Currant", "Currant", "Wintergreen", "Cherry", "Salmonberry", "Tayberry", "Barberry", "Chokeberry", "Aronia", "Sea Buckthorn", "Honeyberry", "Haskap", "Wineberry", "Thimbleberry", "Bearberry", "Crowberry", "Snowberry", "Jostaberry", "Olallieberry", "Youngberry", "Blackcurrant", "Redcurrant", "Muscadine", "Rowan", "Wolfberry", "Camu Camu", "Maqui", "Schisandra", "Buffaloberry", "Cape Gooseberry", "Ground Cherry", "Golden Berry", "Goldenberry", "Physalis", "Inca Berry", "Wild Strawberry", "Alpine Strawberry", "Fraise des Bois", "Wild Blueberry", "Lowbush Blueberry", "Highbush Blueberry", "Olive", "Hip"
           ]
         },
 
@@ -2155,6 +2277,7 @@
         {
           cat: 'geography',
           prompt: 'Name a national capital city in Africa',
+          sarcastic: ["Cairo Roll", "Where's Timbuktu"],
           gold: ["Ouagadougou"],
           epic: ["Antananarivo", "Yamoussoukro", "Dodoma", "Asmara", "Victoria", "Jamestown"
           ],
@@ -2168,6 +2291,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in Asia',
+          sarcastic: ["Far East", "Siam"],
           gold: ["Tajikistan"],
           epic: ["Kyrgyzstan", "Timor-Leste", "Brunei", "Maldives", "British Indian Ocean Territory", "Cocos Islands"
           ],
@@ -2181,6 +2305,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US State that borders an ocean',
+          sarcastic: ["Soggy State", "Beach State"],
           gold: ["Rhode Island"],
           epic: ["Delaware", "New Hampshire", "Maine", "Alaska"],
           rare: ["California", "Florida", "New York", "Hawaii", "Texas", "Washington", "Oregon", "Georgia"],
@@ -2190,6 +2315,7 @@
         {
           cat: 'geography',
           prompt: 'Name an island in the Caribbean Sea',
+          sarcastic: ["Rum Island", "Pirate Paradise"],
           gold: ["Saba"],
           epic: ["Montserrat", "Bonaire", "Anguilla", "Saint Lucia"],
           rare: ["Jamaica", "Puerto Rico", "Cuba", "Aruba", "Curacao", "Barbados", "Trinidad", "Grand Cayman"],
@@ -2199,6 +2325,7 @@
         {
           cat: 'geography',
           prompt: 'Name a major mountain range in the world',
+          sarcastic: ["Big Pointy Rocks", "Rocky Range"],
           gold: ["Tian Shan"],
           epic: ["Drakensberg", "Altai Mountains", "Carpathian Mountains", "Atlas Mountains", "Nyamuragira", "Fujinoyama", "Huainaputina"
           ],
@@ -2212,15 +2339,21 @@
         {
           cat: 'geography',
           prompt: 'Name an active or famous volcano',
+          sarcastic: ["Mount Doom", "Lava Maker"],
           gold: ["Eyjafjallajökull"],
-          epic: ["Cotopaxi", "Popocatepetl", "Krakatoa", "Mount Pinatubo"],
-          rare: ["Mount Vesuvius", "Mount Fuji", "Kilauea", "Mauna Loa", "Mount St Helens", "Mount Etna", "Mount Rainier"],
-          uncommon: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Mauna Loa", "Krakatoa", "Mount Rainier", "Yellowstone Caldera", "Mount Stromboli", "Mount Erebus"],
-          common: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Krakatoa", "Volcano"]
+          epic: ["Cotopaxi", "Popocatepetl", "Krakatoa", "Mount Pinatubo", "Lipari", "Mount Soufriere", "La Soufriere", "Soufriere Hills", "Montserrat Volcano", "Mount Pelee Martinique", "Mount Scenery"
+          ],
+          rare: ["Mount Vesuvius", "Mount Fuji", "Kilauea", "Mauna Loa", "Mount St Helens", "Mount Etna", "Mount Rainier", "Puracé", "Sangay", "Reventador", "Ubinas", "Misti", "El Misti", "Sabancaya", "Ollague", "Llullaillaco", "Ojos del Salado", "Lascar", "Villarrica Volcano", "Calbuco", "Chaiten", "Hudson", "Mount Hudson", "Mount Lonquimay", "Mount Etna Italy", "Campi Flegrei", "Ischia", "Vulcano"
+          ],
+          uncommon: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Mauna Loa", "Krakatoa", "Mount Rainier", "Yellowstone Caldera", "Mount Stromboli", "Mount Erebus", "Taal", "Mount Kanlaon", "Mount Bulusan", "Klyuchevskaya Sopka", "Bezymianny", "Shiveluch", "Mount Elbrus", "Mount Ararat", "Mount Damavand", "Ol Doinyo Lengai", "Mount Cameroon", "Piton de la Fournaise", "Mount Nyamuragira", "Mount Erta Ale", "Mount Paektu", "Mount Halla", "Mount Baekdu", "Mount Usu", "Mount Mihara", "Mount Asama", "Fuji", "Etna Sicily", "Pinatubo", "Rainier", "Shasta", "Hood", "Lassen", "Baker", "Adams", "Mount Adams", "Mount Jefferson", "Mount Washington Oregon", "Three Sisters", "Newberry", "Medicine Lake", "Mono Craters", "Mount Tabor", "Paricutin", "Colima", "Volcan de Fuego", "Santa Maria", "Santiaguito", "Masaya", "Cerro Negro", "Concepcion", "Momotombo", "San Cristobal", "Telica", "Turrialba", "Rincon de la Vieja", "Barva", "Nevado del Huila"
+          ],
+          common: ["Mount Fuji", "Mount Vesuvius", "Mount St Helens", "Mount Etna", "Kilauea", "Krakatoa", "Volcano", "Vesuvius", "Etna", "Mount Hood", "Mount Shasta", "Mount Tambora", "Eyjafjallajokull", "Stromboli", "Mount Pelee", "Mount Cotopaxi", "Mount Merapi", "Mount Bromo", "Mount Agung", "Mount Mayon", "Mount Unzen", "Mount Aso", "Sakurajima", "Mount Ontake", "Mount Nyiragongo", "Mount Kilimanjaro", "Mount Teide", "Santorini", "Mount Hekla", "Katla", "Grimsvotn", "Krafla", "Mount Katmai", "Novarupta", "Mount Redoubt", "Mount Spurr", "Mount Augustine", "Mount Baker", "Mount Lassen", "Mount Mazama", "Crater Lake", "Yellowstone", "Long Valley Caldera", "Mount Ruapehu", "Mount Taranaki", "Mount Tongariro", "White Island", "Mount Ngauruhoe", "Mount Fuego", "Mount Pacaya", "Mount Arenal", "Mount Poas", "Mount Irazu", "Mount Villarrica", "Mount Osorno", "Mount Chimborazo", "Mount Tungurahua", "Nevado del Ruiz", "Mount Galeras", "Mount Sinabung", "Mount Semeru", "Mount Rinjani", "Mount Kelud", "Mount Toba"
+          ]
         },
         {
           cat: 'geography',
           prompt: 'Name a river in North America',
+          sarcastic: ["Big Muddy", "Old Man River"],
           gold: ["Mackenzie River"],
           epic: ["Snake River", "Willamette River", "Yukon River", "Platte River"],
           rare: ["Mississippi River", "Missouri River", "Colorado River", "Rio Grande", "Hudson River", "St Lawrence River"],
@@ -2230,6 +2363,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in Central America',
+          sarcastic: ["Costa Rica Rica", "Panama Hat"],
           gold: ["Belize"],
           epic: ["Nicaragua", "Honduras", "El Salvador"],
           rare: ["Costa Rica", "Panama", "Guatemala"],
@@ -2239,6 +2373,7 @@
         {
           cat: 'geography',
           prompt: 'Name a city in Japan',
+          sarcastic: ["Tokyo Drift", "Sushi City"],
           gold: ["Kanazawa"],
           epic: ["Sapporo", "Fukuoka", "Kobe", "Sendai", "Hitoto", "Sekimachi-minami", "Toyota", "Aki", "Yabase", "Matsushima", "Ryotsu-minato", "Shuzenji", "Ishinari", "Okubo", "Shizukuishi", "Kushimoto", "Nagasu", "Kamiya", "Kasumi", "Matsuzaki", "Hakuromachi", "Nakaiburi", "Oyamazaki", "Koge", "Nakanobu", "Sayo", "Inokashira", "Yakumo", "Yoga", "Kutchan", "Minamiminowa", "Oarai", "Kamiigusa", "Wakuya", "Daigo", "Eifuku", "Kano", "Ushitsu", "Sashiki", "Toyoyama", "Shimoochiai", "Kanegasaki", "Nakanojo", "Tachiarai", "Miyota", "Higashigotanda", "Toneri", "Kamigori", "Kawaminami", "Mikuriya", "Fukawa", "Uchiko", "Moritake", "Sayama", "Asso", "Ogawa", "Yamada", "Minami-aoyama", "Kozan", "Toyoda", "Ebisu", "Ono", "Inokura", "Bange", "Tamaru", "Sakaki"
           ],
@@ -2252,6 +2387,7 @@
         {
           cat: 'geography',
           prompt: 'Name a sea or gulf in the world',
+          sarcastic: ["Big Puddle", "Wet Place"],
           gold: ["Sargasso Sea"],
           epic: ["Adriatic Sea", "Aegean Sea", "Barents Sea", "Persian Gulf", "Laptev Sea", "Euxine Sea", "Gulf Of Martaban", "Marmara Denizi"
           ],
@@ -2265,15 +2401,21 @@
         {
           cat: 'geography',
           prompt: 'Name a country with blue on its national flag',
+          sarcastic: ["Pretty Blue Flag", "Sea Flag"],
           gold: ["Tuvalu"],
-          epic: ["Nauru", "Palau", "Micronesia", "Estonia"],
-          rare: ["France", "United Kingdom", "United States", "Australia", "New Zealand", "Greece", "Argentina", "Sweden", "Finland", "Brazil"],
-          uncommon: ["United States", "United Kingdom", "France", "Australia", "New Zealand", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Norway", "Netherlands", "Russia", "Chile", "Colombia", "Ukraine", "Israel", "Japan", "South Korea"],
-          common: ["United States", "United Kingdom", "France", "Australia", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Ukraine", "Israel"]
+          epic: ["Nauru", "Palau", "Micronesia", "Estonia", "UK", "America", "Britain", "Holland"
+          ],
+          rare: ["France", "United Kingdom", "United States", "Australia", "New Zealand", "Greece", "Argentina", "Sweden", "Finland", "Brazil", "Ecuador", "Paraguay", "Saint Lucia", "Antigua and Barbuda", "Barbados", "Saint Vincent and the Grenadines", "Azerbaijan", "Armenia", "USA"
+          ],
+          uncommon: ["United States", "United Kingdom", "France", "Australia", "New Zealand", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Norway", "Netherlands", "Russia", "Chile", "Colombia", "Ukraine", "Israel", "Japan", "South Korea", "Uzbekistan", "Mongolia", "Cambodia", "Thailand", "Laos", "Nepal", "Philippines", "Malaysia", "Taiwan", "Bosnia and Herzegovina", "Croatia", "Serbia", "Slovakia", "Slovenia", "Czech Republic", "Czechia", "Luxembourg", "Moldova", "Romania", "Andorra", "Liechtenstein", "San Marino", "Guatemala", "Belize", "Venezuela"
+          ],
+          common: ["United States", "United Kingdom", "France", "Australia", "Greece", "Argentina", "Brazil", "Sweden", "Finland", "Iceland", "Ukraine", "Israel", "Uruguay", "Panama", "Honduras", "Nicaragua", "El Salvador", "Costa Rica", "Cuba", "Puerto Rico", "Dominican Republic", "Haiti", "Bahamas", "Samoa", "Fiji", "Marshall Islands", "Kiribati", "Somalia", "Botswana", "Gambia", "Namibia", "South Africa", "Seychelles", "Cape Verde", "Eritrea", "Djibouti", "Rwanda", "Liberia", "Kazakhstan"
+          ]
         },
         {
           cat: 'geography',
           prompt: 'Name a European country with a population under 5 million',
+          sarcastic: ["Tiny Country", "Wee Nation"],
           gold: ["Andorra"],
           epic: ["San Marino", "Liechtenstein", "Monaco", "Montenegro"],
           rare: ["Iceland", "Malta", "Luxembourg", "Cyprus", "Estonia", "Latvia", "Lithuania", "Slovenia"],
@@ -2283,6 +2425,7 @@
         {
           cat: 'geography',
           prompt: 'Name an African nation bordering the Atlantic Ocean',
+          sarcastic: ["Beach Nation", "Wet Side Africa"],
           gold: ["São Tomé and Príncipe"],
           epic: ["Equatorial Guinea", "Mauritania", "Gabon", "The Gambia"],
           rare: ["South Africa", "Morocco", "Nigeria", "Senegal", "Angola", "Ghana", "Namibia", "Ivory Coast"],
@@ -2294,6 +2437,7 @@
         {
           cat: 'science',
           prompt: 'Name a chemical element ending in "-ium"',
+          sarcastic: ["Premium", "Stadium"],
           gold: ["Mendelevium"],
           epic: ["Technetium", "Promethium", "Curium", "Oganesson", "Glucinium", "Ununhexium", "Ununtrium", "Darmstadtium"
           ],
@@ -2307,6 +2451,7 @@
         {
           cat: 'science',
           prompt: 'Name an internal gland or organ in the human body',
+          sarcastic: ["Gut Feeling", "Gland Canyon"],
           gold: ["Adrenal Gland"],
           epic: ["Pituitary Gland", "Pineal Gland", "Parathyroid Gland", "Glandulae Sebaceae", "Bulbourethral Gland", "Pars Distilis", "Adenohypophysis", "Sudoriferous Gland"
           ],
@@ -2320,6 +2465,7 @@
         {
           cat: 'science',
           prompt: 'Name a dwarf planet or major moon in our Solar System',
+          sarcastic: ["Pluto Pluto", "Not A Planet"],
           gold: ["Makemake"],
           epic: ["Haumea", "Eris", "Sedna", "Dysnomia"],
           rare: ["Pluto", "Ceres", "Charon", "Titan", "Europa", "Ganymede", "Callisto", "Enceladus", "Triton"],
@@ -2329,6 +2475,7 @@
         {
           cat: 'science',
           prompt: 'Name a scientific field or discipline ending in "-ics"',
+          sarcastic: ["Bionics", "Cymatics"],
           gold: ["Cybernetics"],
           epic: ["Kinematics", "Geophysics", "Optoelectronics", "Pragmatics", "Microeconomics", "Animatronics", "Hydrodynamics"
           ],
@@ -2342,6 +2489,7 @@
         {
           cat: 'science',
           prompt: 'Name a state or phase of matter',
+          sarcastic: ["Slushy", "Jello"],
           gold: ["Bose-Einstein Condensate"],
           epic: ["Quark-Gluon Plasma", "Degenerate Matter", "Superfluid"],
           rare: ["Plasma", "Gas", "Liquid", "Solid", "Supercritical Fluid"],
@@ -2352,6 +2500,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of cloud formation',
+          sarcastic: ["Cloud Nine", "Cotton Candy Sky"],
           gold: ["Mammatus"],
           epic: ["Lenticular Cloud", "Kelvin-Helmholtz", "Anvil Cloud", "Cirrocumulus Cloud"
           ],
@@ -2365,6 +2514,7 @@
         {
           cat: 'science',
           prompt: 'Name a unit of scientific measurement',
+          sarcastic: ["Smoot", "Football Field"],
           gold: ["Picofarad"],
           epic: ["Becquerel", "Siemens", "Henrys", "Lux", "Fluidounce", "Epha", "Decilitre", "Yobibit", "Microgauss", "Exbibit", "Doppelzentner", "Zettabit", "Obolus", "Fistmele", "Micromillimetre", "Picometer", "Millimicron", "Zebibit", "Abamp", "Decameter", "Yobibyte", "Decagram", "Tebibyte", "Abcoulomb", "Handsbreadth", "Hectometre", "Gibibyte", "Microbar", "Dessiatine"
           ],
@@ -2378,6 +2528,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of rock or mineral',
+          sarcastic: ["Dwayne Johnson", "Rock Bottom"],
           gold: ["Obsidian"],
           epic: ["Pumice", "Basalt", "Quartzite", "Gneiss", "Ytterbite", "Nephelite", "Argyrodite", "Schorl", "Strontianite", "Andradite", "Hausmannite", "Outthrust", "Olivenite", "Carnotite", "Vesuvianite", "Chalybite", "Hessonite", "Cyanite", "Xenolith", "Bastnaesite", "Thorite", "Iridosmine"
           ],
@@ -2391,6 +2542,7 @@
         {
           cat: 'science',
           prompt: 'Name an insect or bug group',
+          sarcastic: ["Buzz Off", "Picnic Crasher"],
           gold: ["Damselfly"],
           epic: ["Mayfly", "Lacewing", "Scorpionfly", "Silverfish", "Ephemerid", "Jassid", "Sphecoid", "Tumblebug", "Lasiocampid Moth", "Calosoma", "Lygaeid Bug", "Hippoboscid", "Neuropteron", "Splitworm", "Conenose Bug", "Orthopteron", "Homopteran", "Hymenopter", "Blackbeetle", "Bombycid Moth", "Collembolan", "Tineid Moth", "Meloid", "Ephemeropteran", "Shadfly", "Trichopteran", "Scarabaeid Beetle", "Mantispid", "Dayfly", "Crotonbug", "Lepidopterous Insect", "Neuropterous Insect", "Coreid Bug", "Ladybeetle", "Telsontail", "Nymphalid Butterfly", "Tineoid"
           ],
@@ -2404,6 +2556,7 @@
         {
           cat: 'science',
           prompt: 'Name a species or type of tree',
+          sarcastic: ["Family Tree", "Money Tree"],
           gold: ["Bristlecone Pine"],
           epic: ["Ginkgo Biloba", "Baobab", "Sequoia", "Douglas Fir", "Jupati Palm", "Silvertop Palmetto", "Marblewood", "Tangor", "Bigarade", "Kurchi", "Jumby Bead", "Kaury", "Opepe", "Dundathu Pine", "Currajong", "Gomuti", "Kalumpang", "Kurchee", "Gallberry", "Granadillo", "Tarwood", "Chaulmoogra Tree", "Ginep", "Lemonwood Tree", "Piassava Palm", "Idesia", "Obeche", "Keteleeria", "Dhava", "Margosa", "Bitterwood Tree", "Lanseh Tree", "Juneberry Holly", "Flindosy", "Angiospermous Yellowwood", "Amarelle", "Albizzia", "Angelim", "Caranday", "Corozo Palm", "Papaia", "Golden Chinkapin", "Lemanderin", "Calabura", "Capulin", "Big Shellbark", "Caviuna Wood", "Jumby Tree", "Soapberry Tree", "Yellow Mombin", "Knobcone Pine", "Langset", "Nagami Kumquat", "Plumcot", "Shittah", "Grugru Palm", "Quira", "Pedwood", "Flindosa", "Bahia Coquilla", "Mockernut", "Kowhai", "Icaco", "Latanier Palm", "Breakaxe", "Gebang Palm", "Maple-leaved Bayur", "Silverbell Tree", "Pulasan", "Jocote", "Ilama", "Kiaat", "Cohune", "Trumpetwood", "Clusia", "Dammar Pine", "Jupaty", "Nakedwood", "Pipul"
           ],
@@ -2417,6 +2570,7 @@
         {
           cat: 'science',
           prompt: 'Name a deep sea animal or marine creature',
+          sarcastic: ["Weird Fish", "Sea Monster"],
           gold: ["Vampire Squid"],
           epic: ["Anglerfish", "Gulper Eel", "Blobfish", "Giant Isopod"],
           rare: ["Giant Squid", "Goblin Shark", "Chimaera", "Nautilus", "Oarfish", "Lanternfish"],
@@ -2428,6 +2582,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of electromagnetic radiation',
+          sarcastic: ["Wifi", "Toaster Radiation"],
           gold: ["Gamma Rays"],
           epic: ["X-Rays", "Ultraviolet", "Infrared", "Microwaves", "Autofluorescence", "Ignis Fatuus", "Counterglow", "Gegenschein", "Nonparticulate Radiation"
           ],
@@ -2441,6 +2596,7 @@
         {
           cat: 'science',
           prompt: 'Name a part of a flower or plant',
+          sarcastic: ["Bee Landing Pad", "Smelly Part"],
           gold: ["Pistil"],
           epic: ["Stigma", "Anther", "Sepal", "Receptacle", "Panduriform Leaf", "Ensiform Leaf", "Acervulus", "Rootstalk", "Whortleberry", "Petiolule", "Algarroba Bean", "Genipap Fruit", "Funicle", "Fruitlet", "Syncarp", "Senega", "Bonduc Nut", "Pulasan", "Leechee", "Horsebean", "Acerate Leaf", "Scorpioid Cyme", "Phylloclade", "Sagittiform Leaf", "Sapota", "Strobilus", "Aeciospore", "Ilama", "Pneumatophore", "Gametangium", "Lowbush Cranberry", "Ceriman", "Cladophyll", "Macrospore", "Hagberry", "Quandong Nut", "Chinkapin", "Pyxidium", "Chlamydospore", "Sporophyll", "Cataphyll", "Coquilla Nut", "Cherimolla", "Cowberry", "Megasporophyll"
           ],
@@ -2454,6 +2610,7 @@
         {
           cat: 'science',
           prompt: 'Name a subatomic particle',
+          sarcastic: ["Tiny Thing", "Smaller Than Small"],
           gold: ["Tau Neutrino"],
           epic: ["Higgs Boson", "Top Quark", "Charm Quark", "Muon", "Antilepton", "Tauon", "Mesotron", "Antielectron"
           ],
@@ -2467,6 +2624,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of infectious agent or microbe',
+          sarcastic: ["Group Chat Drama", "Common Cold"],
           gold: ["Bacteriophage"],
           epic: ["Prion", "Viroid", "Archaeon", "Amoeba", "Thiobacteria", "Acidophile", "Nummulite", "Vibrion", "Arenavirus", "Zoomastigote", "Zooflagellate", "Polymastigote", "Sarcodinian", "Haemosporidian", "Sporozoite", "Rhabdovirus", "Foraminifer"
           ],
@@ -2482,6 +2640,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item typically placed in a living room',
+          sarcastic: ["Remote Control", "Dust Bunny"],
           gold: ["Credenza"],
           epic: ["Ottoman", "Chaise Longue", "Mantelpiece", "Etagere", "Escritoire", "Tuffet", "Hallstand", "Campstool", "Carrycot", "Gueridon", "Clothespress", "Taboret", "Chiffonier", "Musnud", "Cellaret", "Gateleg Table", "Tabouret"
           ],
@@ -2495,6 +2654,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a power tool found in a garage or workshop',
+          sarcastic: ["Neighbor Annoyer", "Loud Thing"],
           gold: ["Angle Grinder"],
           epic: ["Biscuit Joiner", "Impact Driver", "Band Saw", "Scroll Saw", "Triphammer", "Fretsaw"
           ],
@@ -2508,6 +2668,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item carried inside a handbag or purse',
+          sarcastic: ["Kitchen Sink", "Lost Receipts"],
           gold: ["Compact Mirror"],
           epic: ["Pill Organizer", "Nail File", "Safety Pin", "Pocket Knife", "Foldable Bag", "Reusable Bag", "Small Notebook", "Mini Stapler", "Mini Scissors"
           ],
@@ -2521,6 +2682,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found on an office desk',
+          sarcastic: ["Cold Coffee", "Procrastination Pile"],
           gold: ["Paper Fastener"],
           epic: ["Letter Opener", "Desk Pad", "Tape Dispenser", "Stamp Pad", "Correction Fluid", "Tape", "Packing Tape", "Scotch Tape", "Masking Tape"
           ],
@@ -2534,6 +2696,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a clothing accessory worn on the body',
+          sarcastic: ["Bling", "Lucky Hat"],
           gold: ["Cufflinks"],
           epic: ["Tie Clip", "Pocket Square", "Ascot", "Suspenders", "Tassel", "Fan", "Parasol", "Cane", "Walking Stick", "Gloves Leather"
           ],
@@ -2547,6 +2710,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a cleaning tool or supply',
+          sarcastic: ["Elbow Grease", "Mom"],
           gold: ["Pumice Stone"],
           epic: ["Squeegee", "Microfiber Cloth", "Feather Duster", "Steel Wool", "Dustmop"
           ],
@@ -2560,6 +2724,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found in a laundry room',
+          sarcastic: ["Lost Sock", "Sock Monster"],
           gold: ["Lint Roller"],
           epic: ["Drying Rack", "Fabric Softener", "Stain Remover Pen", "Laundry Hamper"],
           rare: ["Washing Machine", "Dryer", "Iron", "Ironing Board", "Laundry Detergent", "Bleach"],
@@ -2571,6 +2736,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a tool used in sewing or tailoring',
+          sarcastic: ["Needle Prick", "Thread Fiasco"],
           gold: ["Seam Ripper"],
           epic: ["Pinking Shears", "Thimble", "Tailor's Chalk", "Bodkin"],
           rare: ["Needle", "Thread", "Fabric Scissors", "Measuring Tape", "Pin Cushion", "Safety Pins"],
@@ -2582,6 +2748,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found in a hotel room',
+          sarcastic: ["Tiny Soap", "Tiny Shampoo"],
           gold: ["Shoe Horn"],
           epic: ["Ironing Board", "Mini Bar", "Luggage Rack", "Sewing Kit", "Wallpaper", "Art", "Plant", "Flowers", "Fruit Basket"
           ],
@@ -2595,6 +2762,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an outdoor camping gear item',
+          sarcastic: ["Bear Snack", "Smores Stick"],
           gold: ["Flint Striker"],
           epic: ["Headlamp", "Camp Stove", "Water Purifier", "Bivy Sack", "Radio", "Hand Warmers", "Insect Net", "Mosquito Net", "Citronella Candle"
           ],
@@ -2610,6 +2778,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a tabletop board or card game',
+          sarcastic: ["Friendship Ender", "Monopoly Rage"],
           gold: ["Twilight Imperium"],
           epic: ["Gloomhaven", "Wingspan", "Terraforming Mars", "Ticket to Ride", "Penuchle", "Ticktacktoo", "Parchisi", "Pinocle", "Pisha Paysha", "Crapette"
           ],
@@ -2623,6 +2792,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a musical percussion instrument',
+          sarcastic: ["More Cowbell", "Noisy Thing"],
           gold: ["Marimba"],
           epic: ["Vibraphone", "Timpani", "Glockenspiel", "Castanets", "Membranophone", "Tympan", "Vibraharp"
           ],
@@ -2636,6 +2806,7 @@
         {
           cat: 'popculture',
           prompt: 'Name an event in the Winter Olympic Games',
+          sarcastic: ["Ice Chess", "Broom Hockey"],
           gold: ["Skeleton"],
           epic: ["Nordic Combined", "Luge", "Curling", "Bobsleigh"],
           rare: ["Figure Skating", "Alpine Skiing", "Snowboarding", "Ice Hockey", "Speed Skating", "Ski Jumping", "Biathlon"],
@@ -2645,6 +2816,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a film genre',
+          sarcastic: ["Chick Flick", "Popcorn Movie"],
           gold: ["Neo-Noir"],
           epic: ["Film Noir", "Spaghetti Western", "Mockumentary", "Cyberpunk"],
           rare: ["Horror", "Action", "Comedy", "Drama", "Science Fiction", "Romance", "Thriller", "Western", "Documentary"],
@@ -2654,6 +2826,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a classic arcade video game released before 1995',
+          sarcastic: ["Quarter Eater", "Mom's Quarters"],
           gold: ["Q*bert"],
           epic: ["Joust", "Galaga", "Dig Dug", "Centipede", "Lunar Lander", "Sprint 2", "Night Driver", "Gran Trak 10", "Computer Space"
           ],
@@ -2667,6 +2840,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a comic book superhero team or organization',
+          sarcastic: ["Cape Crew", "Spandex Squad"],
           gold: ["Doom Patrol"],
           epic: ["Runaways", "Alpha Flight", "Defenders", "Suicide Squad"],
           rare: ["Avengers", "X-Men", "Justice League", "Fantastic Four", "Teen Titans", "Guardians of the Galaxy", "Watchmen"],
@@ -2676,6 +2850,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a recognized dog breed',
+          sarcastic: ["Good Boy", "Fluffy Butt"],
           gold: ["Saluki"],
           epic: ["Borzoi", "Komondor", "Basenji", "Tibetan Mastiff", "Otterhound", "Sealyham", "Kuvasz", "Coondog", "Schipperke", "Dachsie", "Staghound", "Bouviers Des Flandres", "Groenendael", "Boarhound", "Samoyede", "Wirehair"
           ],
@@ -2689,6 +2864,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a track and field Olympic event',
+          sarcastic: ["Run Forrest Run", "Fast Feet"],
           gold: ["Hammer Throw"],
           epic: ["Triple Jump", "Discus Throw", "Race Walking", "Steeplechase", "Standing Long Jump", "Standing High Jump"
           ],
@@ -2702,6 +2878,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a style of dance',
+          sarcastic: ["Chicken Dance", "Dad Dance"],
           gold: ["Flamenco"],
           epic: ["Paso Doble", "Bachata", "Capoeira", "Quickstep", "Choreography"
           ],
@@ -2714,6 +2891,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a classic comic book superhero secret identity',
+          sarcastic: ["Mild Mannered Reporter", "Billionaire Playboy Alter Ego"],
           gold: ["Clark Kent"],
           epic: ["Hal Jordan", "Arthur Curry", "Barry Allen", "Diana Prince", "Jonathan Crane", "Floyd Lawton", "Waylon Jones", "Basil Karlo"
           ],
@@ -2731,6 +2909,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "un-" and ending in "-able"',
+          sarcastic: ["Unflappable", "Unputdownable"],
           gold: ["Uncharacterisable"],
           epic: ["Unconscionable", "Unfathomable", "Unprecedentedly", "Unenviable", "Ungovernable", "Unlikable"
           ],
@@ -2744,6 +2923,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word containing a triple letter pattern like "eee" or "lll"',
+          sarcastic: ["Aaarrrgh", "Whoooosh"],
           gold: ["Goddessship"],
           epic: ["Headmistressship", "Wallless", "Ballless"],
           rare: ["Postmistressship", "Hostessship", "Countessship"],
@@ -2753,6 +2933,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word with 5 or more syllables',
+          sarcastic: ["Hippopotomonstrosesquippedaliophobia", "Pneumonoultramicroscopicsilicovolcanoconiosis"],
           gold: ["Floccinaucinihilipilification"],
           epic: ["Pneumonoultramicroscopic", "Honorificabilitudinity", "Sesquipedalianism", "Editorially", "Ambassadorial", "Episcopacy", "Undiminished", "Authoritatively", "Habitability", "Recirculation", "Determinedly", "Intermolecular", "Imperceptibly", "Demonization", "Astronomically", "Contralateral", "Erythromycin", "Instrumentality", "Synthetically", "Indecipherable", "Politicize", "Extraterritorial", "Ultrasonography", "Electromagnet", "Pharmacologic", "Omnidirectional", "Overexposure", "Popularization", "Invalidation", "Anticlimactic", "Hypoglycemic", "Incomparably", "Amalgamate", "Morphogenesis", "Inordinately", "Judicature", "Counteroffensive", "Unfavourably", "Electrochemistry", "Methylphenidate", "Centrifugation", "Microscopically", "Magnanimity", "Homogenization", "Debilitated", "Recapitulation", "Legislatively", "Gastroenterologist", "Immunofluorescence", "Hydrodynamics", "Informality", "Mummification", "Telomerase", "Deregulate", "Aldosterone", "Photochemical", "Beatification", "Depolarization", "Metabolically", "Indescribably", "Gynaecological", "Periodontitis", "Victimisation", "Compulsorily", "Incarcerate", "Impracticable", "Insubordinate", "Indubitably", "Chemotherapeutic", "Invalidity", "Recrimination", "Inaccessibility", "Dehumanized", "Eviscerate", "Illegitimacy", "Intemperate", "Demoralize", "Unjustifiably"
           ],
@@ -2766,6 +2947,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "kn-" that does not refer to a knife or knot',
+          sarcastic: ["Knick Knack", "Knuckle Sandwich"],
           gold: ["Knickerbocker"],
           epic: ["Knapsack", "Knell", "Knoll", "Knave", "Knowable"
           ],
@@ -2779,6 +2961,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with the letter "J"',
+          sarcastic: ["Just Kidding", "Jolly Jumper"],
           gold: ["Juxtaposition"],
           epic: ["Juggernaut", "Jeopardize", "Jubilation", "Jettison", "Jackrabbit", "Jingling", "Jaundiced", "Jujitsu", "Judgeship", "Judicature", "Jostle", "Julep", "Jocular", "Jackfruit"
           ],
@@ -2792,6 +2975,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that ends in "-ment" and has 2 syllables',
+          sarcastic: ["Content", "Dement"],
           gold: ["Pigment"],
           epic: ["Filament", "Segment", "Garment", "Torment", "Foment"
           ],
@@ -2805,6 +2989,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word containing a double "T"',
+          sarcastic: ["Butter Butter", "Better Letter"],
           gold: ["Lattermost"],
           epic: ["Scuttlebutt", "Rattlesnake", "Bottleneck", "Brittle", "Dilettante", "Outtake", "Sett", "Fattened", "Unsettle", "Parttime", "Fritter", "Kitchenette", "Spittle", "Attractor", "Battler", "Smutty", "Bellybutton", "Sagittal", "Attar", "Unremitting", "Gluttonous", "Frittata", "Sputter", "Uncluttered"
           ],
@@ -2818,6 +3003,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "sub-"',
+          sarcastic: ["Subpar", "Submarine Sandwich"],
           gold: ["Subterranean"],
           epic: ["Subservient", "Substantiate", "Subjugate", "Subconscious", "Subsoil", "Sublingual", "Substratum", "Subaltern", "Subscript"
           ],
@@ -2831,6 +3017,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "inter-"',
+          sarcastic: ["Interrupting Cow", "Intermission Snacks"],
           gold: ["Interstellar"],
           epic: ["Interlocking", "Intermediary", "Intergovernmental", "Interchangeable", "Internecine", "Interbreeding", "Intermolecular", "Interregnum", "Interspecies"
           ],
@@ -2844,6 +3031,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word containing "light"',
+          sarcastic: ["Lightning Bug", "Light Switch"],
           gold: ["Lightheadedness"],
           epic: ["Candlelight", "Searchlight", "Moonlight", "Starlight", "Lightheaded", "Taillight"
           ],
@@ -2857,6 +3045,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that ends in "-fold"',
+          sarcastic: ["Thousandfold", "Fiftyfold"],
           gold: ["Hundredfold"],
           epic: ["Sevenfold", "Eightfold", "Tenfold", "Manifold", "Unfold"
           ],
@@ -2868,6 +3057,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that ends in "-less"',
+          sarcastic: ["Gormless", "Shiftless"],
           gold: ["Pricelessness"],
           epic: ["Relentless", "Remorseless", "Priceless", "Peerless", "Wingless", "Tactless", "Shoeless", "Humorless", "Deathless", "Fingerless"
           ],
@@ -2881,6 +3071,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word that starts with "micro-" or "macro-"',
+          sarcastic: ["Micromanager", "Macro Mess"],
           gold: ["Macromolecule"],
           epic: ["Microclimate", "Microcosm", "Macroeconomics", "Microbiome", "Microscopically"
           ],
@@ -2894,6 +3085,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "trans-"',
+          sarcastic: ["Transylvania", "Transatlantic Flight"],
           gold: ["Transcendence"],
           epic: ["Transgression", "Translucent", "Transient", "Transcontinental", "Transversal", "Transdermal", "Transshipment"
           ],
@@ -2907,6 +3099,7 @@
         {
           cat: 'language',
           prompt: 'Name an English word starting with "tele-"',
+          sarcastic: ["Telemarketer", "Television Remote"],
           gold: ["Telekinesis"],
           epic: ["Telepathy", "Telephoto", "Telegraphy", "Telematics", "Telecommuting"
           ],
@@ -2922,6 +3115,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of bean or legume',
+          sarcastic: ["Magical Fruit", "Musical Fruit"],
           gold: ["Adzuki Bean"],
           epic: ["Mung Bean", "Navy Bean", "Fava Bean", "Cranberry Bean", "Tepary Bean", "Purple Locoweed", "Locoweed", "Crazyweed", "Snailflower"
           ],
@@ -2935,6 +3129,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a condiment served with sushi',
+          sarcastic: ["Wasabi Overdose", "Soy Dunk"],
           gold: ["Ponzu"],
           epic: ["Tobiko", "Gari", "Unagi Sauce", "Yuzu Kosho"],
           rare: ["Wasabi", "Pickled Ginger", "Soy Sauce", "Spicy Mayo", "Sesame Oil", "Teriyaki Sauce"],
@@ -2946,6 +3141,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a vegetable that is botanically a fruit',
+          sarcastic: ["Fruit Salad Lie", "Veggie Imposter"],
           gold: ["Tomatillo"],
           epic: ["Chayote", "Bitter Melon", "Kabocha", "Okra"],
           rare: ["Eggplant", "Zucchini", "Avocado", "Pumpkin", "Squash", "Cucumber"],
@@ -2956,6 +3152,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a classic Italian dish',
+          sarcastic: ["Nonna's Cooking", "Pasta Night"],
           gold: ["Osso Buco"],
           epic: ["Cacio e Pepe", "Saltimbocca", "Arancini", "Carbonara", "Cotoletta alla Milanese", "Orecchiette", "Gnocchi alla Romana", "Spaghetti alle Vongole"
           ],
@@ -2969,6 +3166,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of cooking oil',
+          sarcastic: ["Slippery Stuff", "Grease Lightning"],
           gold: ["Camelina Oil"],
           epic: ["Grapeseed Oil", "Avocado Oil", "Walnut Oil", "Sesame Oil", "Cooking Oil"
           ],
@@ -2979,6 +3177,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a style of cooking steak',
+          sarcastic: ["Well Done Ruined", "Hockey Puck"],
           gold: ["Sous Vide Steak"],
           epic: ["Pan Seared Steak", "Reverse Sear Steak", "Broiled Steak"],
           rare: ["Rare Steak", "Medium Rare Steak", "Medium Steak", "Medium Well Steak", "Well Done Steak", "Grilled Steak"],
@@ -2990,6 +3189,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of sausage',
+          sarcastic: ["Mystery Meat", "Hot Dog Link"],
           gold: ["Andouille"],
           epic: ["Chorizo", "Bratwurst", "Kielbasa", "Merguez", "Wienerwurst", "Knockwurst"
           ],
@@ -3003,6 +3203,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a popular sandwich',
+          sarcastic: ["Dagwood Tower", "Fluffernutter"],
           gold: ["Muffuletta"],
           epic: ["Monte Cristo", "Cuban Sandwich", "Po' Boy", "Reuben", "Beefburger", "Tunaburger"
           ],
@@ -3016,6 +3217,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a food cooked in deep oil or fat',
+          sarcastic: ["State Fair Special", "Deep Fried Anything"],
           gold: ["Churros"],
           epic: ["Beignet", "Falafel", "Empanada", "Tempura", "Sopapillas", "Fried Tilapia", "Fried Smelt", "Fried Whitebait"
           ],
@@ -3029,6 +3231,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a dessert made with chocolate',
+          sarcastic: ["Death by Chocolate", "Chocolate Therapy"],
           gold: ["Chocolate Soufflé"],
           epic: ["Chocolate Truffle", "Chocolate Fondue", "Molten Lava Cake", "Chocolate Mousse", "Chocolate Syrup Sundae", "Texas Sheet Cake", "Boston Cream Pie", "Chocolate Banoffee"
           ],
@@ -3042,6 +3245,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a cocktail drink containing rum',
+          sarcastic: ["Pirate Juice", "Yo Ho Ho"],
           gold: ["Zombie Cocktail"],
           epic: ["Dark 'n' Stormy", "Mai Tai", "Hurricane", "Pina Colada"],
           rare: ["Mojito", "Daiquiri", "Rum and Coke", "Cuba Libre", "Hot Toddy", "Planter's Punch"],
@@ -3053,6 +3257,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a dairy product other than milk or cheese',
+          sarcastic: ["Cream of the Crop", "Moo Goo"],
           gold: ["Clotted Cream"],
           epic: ["Ghee", "Quark", "Kefir", "Crème Fraîche", "Chevre", "Yak's Milk", "Clabber", "Sapsago", "Yoghourt"
           ],
@@ -3066,6 +3271,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a hot breakfast drink',
+          sarcastic: ["Liquid Courage", "Morning Fuel"],
           gold: ["Matcha Latte"],
           epic: ["Chai Latte", "Hot Apple Cider", "Turkish Coffee", "Golden Milk"],
           rare: ["Black Coffee", "Espresso", "Cappuccino", "Green Tea", "Hot Chocolate", "Earl Grey Tea"],
@@ -3079,6 +3285,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US state starting with the letter "N"',
+          sarcastic: ["Nevada Naps", "Nebraska Nebraska"],
           gold: ["New Mexico"],
           epic: ["North Dakota", "Nebraska", "Nevada"],
           rare: ["New York", "New Jersey", "North Carolina", "New Hampshire"],
@@ -3088,6 +3295,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US state starting with the letter "A"',
+          sarcastic: ["Alabama Slammer", "Alaska Baked"],
           gold: ["Arkansas"],
           epic: ["Alaska", "Alabama"],
           rare: ["Arizona", "Arkansas"],
@@ -3097,6 +3305,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in South America',
+          sarcastic: ["Llama Land", "Soccer Country"],
           gold: ["Suriname"],
           epic: ["Guyana", "French Guiana", "Paraguay", "Uruguay", "Falkland Islands"
           ],
@@ -3107,6 +3316,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in North America',
+          sarcastic: ["Maple Land", "Land of the Free"],
           gold: ["Saint Kitts and Nevis"],
           epic: ["Belize", "El Salvador", "Honduras", "Nicaragua", "Saint Barthelemy", "Saint Pierre And Miquelon"
           ],
@@ -3120,6 +3330,7 @@
         {
           cat: 'geography',
           prompt: 'Name a major ocean of the world',
+          sarcastic: ["Big Wet", "Giant Puddle"],
           gold: ["Southern Ocean"],
           epic: ["Antarctic Ocean", "Arctic Ocean"],
           rare: ["Pacific Ocean", "Atlantic Ocean", "Indian Ocean"],
@@ -3129,6 +3340,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US state that borders Canada',
+          sarcastic: ["Cold State", "Moose State"],
           gold: ["Idaho"],
           epic: ["North Dakota", "Montana", "Vermont", "New Hampshire"],
           rare: ["Washington", "New York", "Maine", "Michigan", "Minnesota", "Alaska", "Pennsylvania", "Ohio"],
@@ -3138,6 +3350,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US state that borders Mexico',
+          sarcastic: ["Taco Border", "Hot Border State"],
           gold: ["New Mexico"],
           epic: ["Arizona"],
           rare: ["Texas", "California"],
@@ -3147,6 +3360,7 @@
         {
           cat: 'geography',
           prompt: 'Name a major European river',
+          sarcastic: ["Blue Danube", "Seine Seine"],
           gold: ["Dnieper River"],
           epic: ["Elbe River", "Oder River", "Tagus River", "Main River"],
           rare: ["Danube River", "Rhine River", "Seine River", "Thames River", "Volga River", "Po River"],
@@ -3156,6 +3370,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in the Middle East',
+          sarcastic: ["Oil Country", "Sandy Place"],
           gold: ["Oman"],
           epic: ["Bahrain", "Yemen", "Kuwait", "Qatar"],
           rare: ["Israel", "Saudi Arabia", "Iran", "Iraq", "Jordan", "Lebanon", "United Arab Emirates", "Turkey"],
@@ -3165,6 +3380,7 @@
         {
           cat: 'geography',
           prompt: 'Name a city in Australia',
+          sarcastic: ["Kangaroo Town", "Down Under City"],
           gold: ["Hobart"],
           epic: ["Darwin", "Canberra", "Cairns", "Gold Coast", "Rockingham", "Port Hedland", "Corio", "Palm Beach", "Ascot Vale", "Taylors Lakes", "Elwood", "Burwood", "Miranda", "Springfield Lakes", "Keilor East", "Rochedale South", "Echuca", "Kensington", "Wallan"
           ],
@@ -3178,6 +3394,7 @@
         {
           cat: 'geography',
           prompt: 'Name a famous US landmark',
+          sarcastic: ["Big Statue", "Mount Rushmore Cousins"],
           gold: ["Devil's Tower"],
           epic: ["Gateway Arch", "Space Needle", "Alcatraz", "Mount Rushmore"],
           rare: ["Statue of Liberty", "Empire State Building", "Golden Gate Bridge", "Grand Canyon", "White House", "Hollywood Sign"],
@@ -3189,6 +3406,7 @@
         {
           cat: 'science',
           prompt: 'Name a unit of time',
+          sarcastic: ["Coffee Break", "Jiffy"],
           gold: ["Picosecond"],
           epic: ["Nanosecond", "Microsecond", "Millisecond", "Epoch", "Attosecond", "Lunation", "Anomalistic Month"
           ],
@@ -3202,6 +3420,7 @@
         {
           cat: 'science',
           prompt: 'Name a warm-blooded animal',
+          sarcastic: ["Furry Friend", "Hot Blooded"],
           gold: ["Star-nosed Mole"],
           epic: ["Capybara", "Pangolin", "Narwhal", "Aye-aye", "Mapinguari", "Uintathere", "Urial", "Bladdernose", "Chetah", "Kuvasz", "Gnawer", "Genus Sinanthropus", "Bullterrier", "Tamanoir", "Springbuck", "Spearnose Bat", "Zoril", "Genus Javanthropus", "Dziggetai", "Brush-tailed Phalanger", "Tayra", "Angwantibo", "Dasyurid Marsupial", "Cattalo", "Rockchuck", "Cabassous", "Unau", "Pricket", "Leoncita", "Mylodontid", "Mountain Viscacha", "Suricate", "Ursine Dasyure", "Serotine", "Unguiculate Mammal", "Lerot", "Dinoceras", "Perissodactyl Mammal", "Mylodon", "Pademelon", "Chinchillon", "Jaguarundi", "Wisent", "Dasyurid", "Edentate", "Dinocerate", "Longwool", "Orangutang", "Fissiped", "Leafnose Bat", "Eastern Dasyure", "Jaguarundi Cat", "Sambur", "Gomphothere", "Starnose Mole", "Capibara", "Microbat", "Proboscidian", "Leopardess", "Uakari", "Abrocome", "Baranduki", "Koodoo", "Steenbok", "Prosimian", "Vespertilian Bat", "Bushytail Woodrat", "Megatheriid", "Fissiped Mammal", "Chiropteran", "Caffer Cat", "Megabat", "Warragal", "Coondog", "Nylghai", "Foumart", "Staghound", "Lionet", "Dasyure"
           ],
@@ -3215,6 +3434,7 @@
         {
           cat: 'science',
           prompt: 'Name a cold-blooded animal',
+          sarcastic: ["Cold Hearted Lizard", "Reptile Dysfunction"],
           gold: ["Axolotl"],
           epic: ["Komodo Dragon", "Tuatara", "Gila Monster", "Chameleon", "Barosaur", "Crapaud", "Batrachian", "Pisanosaur", "Corythosaur", "Carangid Fish", "Walleyed Pike", "Protomammal", "Psittacosaurus", "Palometa", "Mojarra", "Smalleye Hammerhead", "Flamefish", "Characin Fish", "Lacertid Lizard", "Lumpsucker", "Carangid", "Trachodon", "Crampfish", "Leptodactylid Frog", "Sharptail Mola", "Serranid", "Argentinosaur", "Painted Greenling", "Gadoid Fish", "Anapsid", "Wrymouth", "Siluriform Fish", "Lumpfish", "Poeciliid", "Boarfish", "Plectognath", "Banded Rudderfish", "Soupfin", "Bonnethead", "Largemouthed Bass", "Porkfish", "Chamaeleon", "Pisanosaurus", "Alligatorfish", "Hadrosaurus", "Saurischian", "Dolphinfish", "Horsefish", "Serranid Fish", "Driftfish", "Shovelnose Catfish", "Ornithopod", "Guitarfish", "Saurischian Dinosaur", "Swordtail", "Archosaurian Reptile", "Agamid Lizard", "Compsognathus", "Coachwhip", "Crossopterygian", "Massasauga Rattler", "Doctorfish", "Bluehead", "Porcupinefish", "Eoraptor", "Cownose Ray", "Chondrichthian", "Snakefish", "Rudderfish", "Dicamptodontid", "Teiid", "Blanquillo", "Stumpknocker"
           ],
@@ -3228,6 +3448,7 @@
         {
           cat: 'science',
           prompt: 'Name a layer of Earth atmosphere',
+          sarcastic: ["Ozone Hole", "Sky Layer"],
           gold: ["Exosphere"],
           epic: ["Thermosphere", "Mesosphere", "Stratosphere", "Troposphere"],
           rare: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Ionosphere", "Ozone Layer"],
@@ -3238,6 +3459,7 @@
         {
           cat: 'science',
           prompt: 'Name a physical state of water',
+          sarcastic: ["Ice Cube", "Cloud Cry"],
           gold: ["Superheated Steam"],
           epic: ["Supercooled Water", "Water Vapor", "Plasma Water"],
           rare: ["Ice", "Liquid Water", "Steam", "Water Vapor", "Frost", "Snow", "Sleet", "Hail"],
@@ -3248,6 +3470,7 @@
         {
           cat: 'science',
           prompt: 'Name a sense in the human body',
+          sarcastic: ["Common Sense", "Sixth Sense"],
           gold: ["Proprioception"],
           epic: ["Thermoception", "Equilibrioception", "Nociception"],
           rare: ["Sight", "Hearing", "Touch", "Taste", "Smell", "Balance"],
@@ -3258,6 +3481,7 @@
         {
           cat: 'science',
           prompt: 'Name a renewable energy source',
+          sarcastic: ["Wind Farm Breeze", "Free Sunshine"],
           gold: ["Wave Energy"],
           epic: ["Geothermal Energy", "Tidal Energy", "Biomass Energy", "Hydroelectric Energy"],
           rare: ["Solar Power", "Wind Power", "Hydroelectric Power", "Geothermal Power", "Biomass"],
@@ -3269,6 +3493,7 @@
         {
           cat: 'science',
           prompt: 'Name a non-renewable energy source',
+          sarcastic: ["Dino Juice", "Black Gold"],
           gold: ["Oil Shale"],
           epic: ["Tar Sands", "Uranium Ore", "Lignite Coal", "Bituminous Coal"],
           rare: ["Coal", "Crude Oil", "Natural Gas", "Uranium", "Petroleum", "Propane"],
@@ -3280,6 +3505,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of cloud',
+          sarcastic: ["Fluffy Sky Stuff", "Rain Maker"],
           gold: ["Fractocumulus"],
           epic: ["Cirrostratus", "Altostratus", "Nimbostratus", "Cumulonimbus", "Cirrocumulus Cloud"
           ],
@@ -3293,6 +3519,7 @@
         {
           cat: 'science',
           prompt: 'Name a carnivorous mammal',
+          sarcastic: ["Tiger Mom", "Lion Lunch"],
           gold: ["Fossa"],
           epic: ["Wolverine", "Ocelot", "Serval", "Kinkajou", "Chetah", "Hognosed Skunk", "Musteline", "Kuvasz", "Viverrine Mammal", "Muishond", "Coydog", "Groenendael", "Boarhound", "Bullterrier", "Zoril", "Fissiped Mammal", "Caffer Cat", "Warragal", "Tayra", "Foulmart", "Coondog", "Grison", "Foumart", "Staghound", "Lionet", "Manul", "Genus Cryptoprocta", "Wirehair"
           ],
@@ -3306,6 +3533,7 @@
         {
           cat: 'science',
           prompt: 'Name an herbivorous mammal',
+          sarcastic: ["Bambi", "Lawn Mower Cow"],
           gold: ["Okapi"],
           epic: ["Tapir", "Manatee", "Capybara", "Chinchilla", "Herbivore"
           ],
@@ -3316,6 +3544,7 @@
         {
           cat: 'science',
           prompt: 'Name a gas found in Earth atmosphere',
+          sarcastic: ["Smog", "Fresh Air"],
           gold: ["Xenon Gas"],
           epic: ["Neon Gas", "Helium Gas", "Krypton Gas", "Methane Gas", "Radiochlorine", "Argonon", "Hydrochlorofluorocarbon", "Hydrofluorocarbon", "Chokedamp", "Lachrymator"
           ],
@@ -3329,6 +3558,7 @@
         {
           cat: 'science',
           prompt: 'Name a famous constellation',
+          sarcastic: ["Big Dipper Spoon", "Orion's Buckle"],
           gold: ["Cassiopeia"],
           epic: ["Andromeda", "Centaurus", "Pegasus", "Bootes", "Unitisation"
           ],
@@ -3342,6 +3572,7 @@
         {
           cat: 'science',
           prompt: 'Name a type of tree with needle leaves',
+          sarcastic: ["Charlie Brown Tree", "Prickly Tree"],
           gold: ["Larch"],
           epic: ["Yew", "Hemlock Tree", "Douglas Fir", "Cypress", "Arolla Pine", "Tanekaha", "Whitebarked Pine", "Kawaka", "Kaury", "Kahikatea", "Imou Pine", "Dundathu Pine", "Keteleeria", "Dammar Pine", "Pahautea", "Mugho Pine"
           ],
@@ -3357,6 +3588,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an object found in a bedroom',
+          sarcastic: ["Under Bed Monster", "Dust Bunny Farm"],
           gold: ["Valet Stand"],
           epic: ["Nightstand Lamp", "Dressing Table", "Vanity Mirror", "Bedframe", "Futon", "Waterbed", "Murphy Bed", "Trundle Bed", "Four Poster Bed", "Sleigh Bed"
           ],
@@ -3370,6 +3602,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found in a bathroom',
+          sarcastic: ["Rubber Ducky", "Toilet Humor"],
           gold: ["Bidet"],
           epic: ["Loofah", "Plunger", "Bath Mat", "Shower Curtain", "Toilet Cleaner", "Disinfectant Wipes", "Toilet Bowl Cleaner", "Scrub Brush", "Tile Cleaner"
           ],
@@ -3383,6 +3616,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found in a garage',
+          sarcastic: ["Dad's Junk", "Forgotten Project"],
           gold: ["Creeper Mat"],
           epic: ["Car Jack", "Workbench", "Air Compressor", "Lawnmower", "Water Heater", "Furnace", "Breaker Box", "Washer", "Dryer", "Spare Refrigerator", "Chest Freezer"
           ],
@@ -3396,6 +3630,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found on a dining table',
+          sarcastic: ["Elbows", "Passive Aggressive Salt"],
           gold: ["Trivet"],
           epic: ["Cruet Set", "Gravy Boat", "Placemat", "Charger Plate"],
           rare: ["Plate", "Fork", "Knife", "Spoon", "Napkin", "Glass", "Salt Shaker", "Pepper Shaker"],
@@ -3407,6 +3642,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a cleaning tool or appliance',
+          sarcastic: ["Mom's Job", "Cat Hair Collector"],
           gold: ["Steam Mop"],
           epic: ["Pressure Washer", "Squeegee", "Robot Vacuum", "Carpet Cleaner", "Dustmop"
           ],
@@ -3420,6 +3656,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a stationery item found in an office',
+          sarcastic: ["Red Stapler", "Stolen Pen"],
           gold: ["Correction Tape"],
           epic: ["Paper Fastener", "Binder Clip", "Label Maker", "Stamp Pad", "Letterhead"
           ],
@@ -3432,6 +3669,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a device used for measuring something',
+          sarcastic: ["Eyeball", "Rule of Thumb"],
           gold: ["Seismometer"],
           epic: ["Barometer", "Manometer", "Hygrometer", "Anemometer", "Mileometer", "Milometer", "Craniometer", "Dasymeter", "Synchroscope", "Hodometer", "Declinometer", "Pluviometer", "Hygrodeik", "Milliammeter", "Planimeter", "Tensiometer", "Transit Declinometer", "Hypsometer"
           ],
@@ -3445,6 +3683,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an electronic device with a screen',
+          sarcastic: ["Doomscroll Machine", "Brain Drain Box"],
           gold: ["Oscilloscope"],
           epic: ["Smart Watch", "E-reader", "GPS Navigator", "Handheld Console", "Goniometer", "Reproducer", "Radiophone", "Quadraphony", "Quadriphonic System", "Superhet", "Stereophony", "Bubblejet"
           ],
@@ -3458,6 +3697,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item used for personal hygiene',
+          sarcastic: ["Stink Stopper", "Soap Opera"],
           gold: ["Tongue Scraper"],
           epic: ["Pumice Stone", "Floss Pick", "Cuticle Nipper", "Nail Buffer"],
           rare: ["Toothbrush", "Dental Floss", "Soap", "Shampoo", "Deodorant", "Nail Clippers", "Comb"],
@@ -3469,6 +3709,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item kept in a refrigerator',
+          sarcastic: ["Mystery Tupperware", "Science Experiment"],
           gold: ["Anchovy Paste"],
           epic: ["Horseradish", "Capers", "Maple Syrup", "Miso Paste", "Provolone", "Feta", "Goat Cheese", "Ricotta", "Pesto", "Marinara", "Alfredo Sauce"
           ],
@@ -3484,6 +3725,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a classic comic book superhero secret identity',
+          sarcastic: ["Spandex Secret", "Day Job"],
           gold: ["Clark Kent"],
           epic: ["Hal Jordan", "Arthur Curry", "Barry Allen", "Diana Prince"],
           rare: ["Bruce Wayne", "Tony Stark", "Peter Parker", "Steve Rogers", "Logan", "Matt Murdock"],
@@ -3500,6 +3742,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a citrus fruit hybrid or variety',
+          sarcastic: ["Frankenfruit", "Citrus Mutt"],
           gold: ["Yuzu"],
           epic: ["Tangelo", "Pomelo", "Ugli Fruit", "Citrous Fruit"
           ],
@@ -3513,6 +3756,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a type of pasta sauce',
+          sarcastic: ["Sunday Gravy", "Grandma's Gravy"],
           gold: ["Puttanesca"],
           epic: ["Arrabbiata", "Amatriciana", "Vodka Sauce", "Sauce Chausseur", "Poulette", "Ravigote", "Demiglace", "Ravigotte"
           ],
@@ -3526,6 +3770,7 @@
         {
           cat: 'culinary',
           prompt: 'Name an edible crustacean',
+          sarcastic: ["Cockroach of the Sea", "Bottom Feeder"],
           gold: ["Langoustine"],
           epic: ["Crawfish", "Prawn", "Squilla", "Branchiopodan", "Stomatopod Crustacean", "Cirriped", "Sandhopper", "Stomatopod"
           ],
@@ -3539,6 +3784,7 @@
         {
           cat: 'culinary',
           prompt: 'Name a green leafy vegetable',
+          sarcastic: ["Kale Yeah", "Rabbit Chow"],
           gold: ["Tatsoi"],
           epic: ["Maché", "Mizuna", "Radicchio"],
           rare: ["Arugula", "Kale", "Swiss Chard", "Bok Choy", "Watercress"],
@@ -3551,6 +3797,7 @@
         {
           cat: 'geography',
           prompt: 'Name a country in Oceania',
+          sarcastic: ["Down Under", "Kiwi Land"],
           gold: ["Nauru"],
           epic: ["Tuvalu", "Kiribati", "Palau", "Vanuatu", "United States Minor Outlying Islands"
           ],
@@ -3564,6 +3811,7 @@
         {
           cat: 'geography',
           prompt: 'Name a US state capital ending in "City"',
+          sarcastic: ["Gotham City", "Emerald City"],
           gold: ["Carson City"],
           epic: ["Jefferson City"],
           rare: ["Salt Lake City", "Oklahoma City"],
@@ -3575,6 +3823,7 @@
         {
           cat: 'science',
           prompt: 'Name a feline or cat species',
+          sarcastic: ["Garfield", "Grumpy Cat"],
           gold: ["Margay"],
           epic: ["Serval", "Caracal", "Ocelot", "Jaguarundi", "Lionet", "Manul", "Tiglon", "Tigon"
           ],
@@ -3588,6 +3837,7 @@
         {
           cat: 'science',
           prompt: 'Name a flightless bird species',
+          sarcastic: ["Grounded Bird", "Flightless Fowl"],
           gold: ["Kakapo"],
           epic: ["Cassowary", "Kagu", "Takahe", "Aepyornis"
           ],
@@ -3603,6 +3853,7 @@
         {
           cat: 'everyday',
           prompt: 'Name a tool found in a gardening shed',
+          sarcastic: ["Hoe Hoe Hoe", "Garden Gnome"],
           gold: ["Mattock"],
           epic: ["Dibber", "Loppers", "Edger", "Riding Mower"
           ],
@@ -3616,6 +3867,7 @@
         {
           cat: 'everyday',
           prompt: 'Name an item found in an attic',
+          sarcastic: ["Dusty Memories", "Spooky Box"],
           gold: ["Phonograph"],
           epic: ["Taxidermy", "Trunk", "Gramophone"],
           rare: ["Suitcase", "Boxes", "Old Clothes", "Furniture", "Christmas Decorations", "Photo Album"],
@@ -3628,6 +3880,7 @@
         {
           cat: 'popculture',
           prompt: 'Name a character from Marvel X-Men',
+          sarcastic: ["Bald Professor", "Weather Witch"],
           gold: ["Nightcrawler"],
           epic: ["Gambit", "Colossus", "Psylocke", "Jubilee", "Bastion", "Nimrod", "Cassandra Nova", "Emma"
           ],
@@ -3641,6 +3894,7 @@
         {
           cat: 'popculture',
           prompt: 'Name an Olympic swimming stroke',
+          sarcastic: ["Doggy Paddle", "Belly Flop"],
           gold: ["200m Butterfly"],
           epic: ["400m Individual Medley", "100m Backstroke"],
           rare: ["Freestyle", "Breaststroke", "Butterfly", "Backstroke", "Medley Relay"],
@@ -3659,7 +3913,8 @@
           item.epic,
           item.rare,
           item.uncommon,
-          item.common
+          item.common,
+          item.sarcastic || []
         );
       });
 
@@ -3740,7 +3995,7 @@
 
       q.forEach((item) => {
         const existingSet = new Set();
-        const allTiers = [item.gold, item.epic, item.rare, item.uncommon, item.common];
+        const allTiers = [item.gold, item.epic, item.rare, item.uncommon, item.common, item.sarcastic];
         
         allTiers.forEach(arr => {
           if (Array.isArray(arr)) {
@@ -3924,28 +4179,49 @@
       if (!normInput) return null;
 
       const inputVariants = getVariants(normInput);
-      const keys = ['gold', 'epic', 'rare', 'uncommon', 'common'];
+      const keys = ['gold', 'epic', 'rare', 'sarcastic', 'uncommon', 'common'];
 
-      // 1. Direct exact normalized & variant match check
+      // 1a. Exact normalized match first (so padded plural entries never override the real answer)
+      for (const key of keys) {
+        const answers = qObj[key] || [];
+        for (const ans of answers) {
+          if (normalize(ans) === normInput) {
+            return {
+              key: key,
+              name: RARITY_CONFIG[key].name,
+              color: RARITY_CONFIG[key].color,
+              length: RARITY_CONFIG[key].length,
+              points: RARITY_CONFIG[key].points,
+              matchedName: ans,
+              autoCorrected: false
+            };
+          }
+        }
+      }
+
+      // 1b. Singular/plural variant match: pick the closest-spelled entry (highest tier wins ties)
+      let bestVariant = null;
       for (const key of keys) {
         const answers = qObj[key] || [];
         for (const ans of answers) {
           const normAns = normalize(ans);
           const ansVariants = getVariants(normAns);
-          for (const iv of inputVariants) {
-            if (ansVariants.includes(iv) || normAns === iv) {
-              return {
-                key: key,
-                name: RARITY_CONFIG[key].name,
-                color: RARITY_CONFIG[key].color,
-                length: RARITY_CONFIG[key].length,
-                points: RARITY_CONFIG[key].points,
-                matchedName: ans,
-                autoCorrected: false
-              };
-            }
+          if (inputVariants.some(iv => ansVariants.includes(iv))) {
+            const diff = Math.abs(normAns.length - normInput.length);
+            if (!bestVariant || diff < bestVariant.diff) bestVariant = { key, ans, diff };
           }
         }
+      }
+      if (bestVariant) {
+        return {
+          key: bestVariant.key,
+          name: RARITY_CONFIG[bestVariant.key].name,
+          color: RARITY_CONFIG[bestVariant.key].color,
+          length: RARITY_CONFIG[bestVariant.key].length,
+          points: RARITY_CONFIG[bestVariant.key].points,
+          matchedName: bestVariant.ans,
+          autoCorrected: false
+        };
       }
 
       // 2. Algorithmic Wordplay Verification Fallback
@@ -4108,6 +4384,7 @@
         { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
         { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
         { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+        { key: 'sarcastic', name: 'Sarcastic (35pts)', color: '#fb8c00' },
         { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
         { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
       ];
@@ -4176,6 +4453,7 @@
       { key: 'gold', name: 'The Pik (100pts)', color: '#d4af37' },
       { key: 'epic', name: 'Epic (75pts)', color: '#8e24aa' },
       { key: 'rare', name: 'Rare (50pts)', color: '#1976d2' },
+      { key: 'sarcastic', name: 'Sarcastic (35pts)', color: '#fb8c00' },
       { key: 'uncommon', name: 'Uncommon (25pts)', color: '#388e3c' },
       { key: 'common', name: 'Common (10pts)', color: '#7e8c8d' }
     ];
@@ -4546,7 +4824,7 @@
       if (nodeGroup) nodeGroup.appendChild(startNode);
     }
 
-    function panCameraToFit(targetX, instant = false) {
+    function panCameraToFit(targetX, instant = false, slowMs = 0) {
       const svg = document.getElementById('mainLineSvg');
       if (!svg) return;
 
@@ -4564,6 +4842,27 @@
       }
 
       if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      // Slow, time-based camera glide (used for Sarcastic answers) that travels with the stretching line
+      if (slowMs > 0) {
+        const fromX = currentViewBoxX;
+        const toX = targetViewBoxX;
+        const t0 = performance.now();
+        const slowPan = (now) => {
+          const t = Math.min(1, (now - t0) / slowMs);
+          const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+          currentViewBoxX = fromX + (toX - fromX) * eased;
+          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          if (t < 1) {
+            panAnimationFrame = requestAnimationFrame(slowPan);
+          } else {
+            currentViewBoxX = toX;
+            panAnimationFrame = null;
+          }
+        };
+        panAnimationFrame = requestAnimationFrame(slowPan);
+        return;
+      }
 
       function animatePan() {
         const diff = targetViewBoxX - currentViewBoxX;
@@ -4863,9 +5162,17 @@
       line.style.strokeDashoffset = pathLen;
       if (segGroup) segGroup.appendChild(line);
 
+      const isSarcastic = result.key === 'sarcastic';
+      const SARCASTIC_MS = 3600;
+      if (isSarcastic) {
+        // Slow, dramatic stretch for Sarcastic answers
+        line.style.transition = `stroke-dashoffset ${SARCASTIC_MS}ms cubic-bezier(0.45, 0, 0.55, 1)`;
+      }
+
       requestAnimationFrame(() => {
         line.style.strokeDashoffset = '0';
       });
+
 
       // Alternating & Anti-Overlap Floating SVG Badge Positioning
       const badgeGroup = document.getElementById('svgLineBadges');
@@ -4952,7 +5259,7 @@
       nextNode.classList.add('node-transition');
       if (nodeGroup) nodeGroup.appendChild(nextNode);
 
-      panCameraToFit(endX);
+      panCameraToFit(endX, false, isSarcastic ? SARCASTIC_MS : 0);
       playAudioTone('stretch', result.key);
 
       // Question card waits until line stroke finishes (~750ms), THEN slides out to the right
@@ -4965,7 +5272,7 @@
             finishGame();
           }
         });
-      }, 750);
+      }, isSarcastic ? SARCASTIC_MS + 300 : 750);
     }
 
     /* ----------------------------------------------------
