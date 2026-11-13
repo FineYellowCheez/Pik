@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pik - A Game of Rare Answers</title>
   
-  <!-- Handcrafted SVG Favicon (5 Matte Dots in a Circle) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/></svg>">
+  <!-- Handcrafted SVG Favicon (5 Matte Dots in a Circle + Center Orange Dot) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/><circle cx='24' cy='24' r='4' fill='%23f97316'/></svg>">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,6 +31,7 @@
               border: '#2a2a2a',
               common: '#7e8c8d',
               uncommon: '#388e3c',
+              sarcastic: '#f97316',
               rare: '#1976d2',
               epic: '#8e24aa',
               gold: '#d4af37'
@@ -59,21 +60,143 @@
       transition: stroke-dashoffset 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    .pik-line-stroke-slow {
+      transition: stroke-dashoffset 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
     .node-transition {
-      transition: fill 0.3s ease, stroke 0.3s ease;
+      transition: fill 0.3s ease, stroke 0.3s ease, r 0.3s ease;
+    }
+
+    /* Active Target Node Radar Halo */
+    .target-node-halo {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: targetHaloPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes targetHaloPulse {
+      0%, 100% { transform: scale(1); opacity: 0.55; }
+      50% { transform: scale(1.85); opacity: 0.08; }
+    }
+
+    /* Landing Shockwave Ripple on SVG Track */
+    .node-shockwave {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: shockwaveExpand 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .node-shockwave-delayed {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: shockwaveExpand 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.14s forwards;
+    }
+
+    @keyframes shockwaveExpand {
+      0% { transform: scale(0.6); opacity: 0.9; stroke-width: 3; }
+      100% { transform: scale(3.4); opacity: 0; stroke-width: 0.5; }
+    }
+
+    /* SVG Answer Badge Spring Pop-In */
+    .badge-pop-in {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: badgeSpringIn 0.45s cubic-bezier(0.22, 1.35, 0.36, 1) 0.22s both;
+    }
+
+    @keyframes badgeSpringIn {
+      0% { transform: scale(0.45) translateY(6px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Leader Line Draw-In */
+    .leader-draw-in {
+      animation: fadeOnlyIn 0.35s ease-out 0.18s both;
+    }
+
+    @keyframes fadeOnlyIn {
+      from { opacity: 0; }
+      to { opacity: 0.7; }
     }
 
     /* Card Slide Out / In Animations */
     .card-slide-out {
-      transform: translateX(120%) !important;
+      transform: translateX(120%) rotate(2deg) !important;
       opacity: 0 !important;
-      transition: transform 0.3s ease-in, opacity 0.3s ease-in !important;
+      transition: transform 0.32s cubic-bezier(0.4, 0, 1, 1), opacity 0.28s ease-in !important;
     }
 
     .card-slide-in-prepare {
-      transform: translateX(-120%) !important;
+      transform: translateX(-120%) rotate(-2deg) !important;
       opacity: 0 !important;
       transition: none !important;
+    }
+
+    .card-rise-in-prepare {
+      transform: translateY(44px) scale(0.94) !important;
+      opacity: 0 !important;
+      transition: none !important;
+    }
+
+    .card-rise-in-spring {
+      transition: transform 0.44s cubic-bezier(0.22, 1.28, 0.36, 1), opacity 0.3s ease-out !important;
+    }
+
+    /* Active Judging Card Pulse */
+    .card-evaluating {
+      border-color: rgba(212, 175, 55, 0.65) !important;
+      box-shadow: 0 0 28px rgba(212, 175, 55, 0.18), 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+      animation: judgingPulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes judgingPulse {
+      0%, 100% { box-shadow: 0 0 18px rgba(212, 175, 55, 0.14), 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+      50% { box-shadow: 0 0 32px rgba(212, 175, 55, 0.32), 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+    }
+
+    /* Prompt & Feedback Entrance Animations */
+    .prompt-reveal {
+      animation: promptSlideUp 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes promptSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-slide-in {
+      animation: feedbackPop 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes feedbackPop {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input Validation Shake */
+    .input-shake {
+      animation: horizontalShake 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      border-color: #ef4444 !important;
+    }
+
+    @keyframes horizontalShake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+
+    /* Timed Mode Urgency Heartbeat */
+    .timer-urgent {
+      animation: urgentHeartbeat 0.85s ease-in-out infinite;
+      background-color: rgba(127, 29, 29, 0.65) !important;
+      border-color: rgba(239, 68, 68, 0.85) !important;
+    }
+
+    @keyframes urgentHeartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
     }
 
     /* Timed Mode Red Flash on Timeout */
@@ -82,6 +205,47 @@
       background-color: #271313 !important;
       box-shadow: 0 0 30px rgba(239, 68, 68, 0.6) !important;
       transition: all 0.15s ease-in-out !important;
+    }
+
+    /* Modal Spring Entrance */
+    .modal-pop-in {
+      animation: modalScaleSpring 0.3s cubic-bezier(0.22, 1.25, 0.36, 1) both;
+    }
+
+    @keyframes modalScaleSpring {
+      from { opacity: 0; transform: scale(0.92) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Results Left Cards Staggered Slide-In */
+    @keyframes staggerCardIn {
+      from { opacity: 0; transform: translateX(-16px); }
+      to { opacity: 0.82; transform: translateX(0); }
+    }
+
+    /* KPI Tile Subtle Lift-In */
+    .kpi-tile-in {
+      animation: kpiRiseIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes kpiRiseIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tier Ladder Segment Sequential Light-Up */
+    @keyframes tierSegmentPop {
+      from { opacity: 0.25; transform: scaleY(0.65); }
+      to { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* Projection Frustum Marching Dashes */
+    .frustum-line-flow {
+      animation: dashMarch 1.4s linear infinite;
+    }
+
+    @keyframes dashMarch {
+      to { stroke-dashoffset: -16; }
     }
 
     /* Results Section Fade In */
@@ -100,6 +264,43 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Results Section Exit & Track Rewind Animations on Play Again */
+    .results-exit-out {
+      opacity: 0 !important;
+      transform: translateY(-16px) scale(0.985) !important;
+      transition: opacity 0.36s cubic-bezier(0.4, 0, 1, 1), transform 0.36s cubic-bezier(0.4, 0, 1, 1) !important;
+      pointer-events: none !important;
+    }
+
+    .results-header-lift {
+      opacity: 0 !important;
+      transform: translateY(-22px) !important;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1), transform 0.32s cubic-bezier(0.4, 0, 1, 1) !important;
+    }
+
+    .results-panel-fold {
+      opacity: 0 !important;
+      transform: translateY(34px) scaleY(0.88) !important;
+      transform-origin: bottom center !important;
+      transition: opacity 0.32s cubic-bezier(0.4, 0, 1, 1), transform 0.34s cubic-bezier(0.4, 0, 1, 1) !important;
+    }
+
+    .svg-badge-pop-out {
+      transform-box: fill-box !important;
+      transform-origin: center !important;
+      transform: scale(0.2) translateY(10px) !important;
+      opacity: 0 !important;
+      transition: transform 0.24s cubic-bezier(0.4, 0, 1, 1), opacity 0.2s ease-out !important;
+    }
+
+    .svg-node-shrink {
+      transform-box: fill-box !important;
+      transform-origin: center !important;
+      transform: scale(0.1) !important;
+      opacity: 0 !important;
+      transition: transform 0.22s ease-in, opacity 0.2s ease-out !important;
+    }
+
     /* Hide Scrollbar for internal results overflow if needed on small displays */
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
@@ -109,7 +310,7 @@
 
   <!-- ================= TOP NAVIGATION HEADER ================= -->
   <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between z-20 border-b border-pik-border/40 flex-shrink-0">
-    <!-- Header Brand (5 Matte Dots in Circle + Title) -->
+    <!-- Header Brand (5 Matte Dots in Circle + Center Orange Dot + Title) -->
     <div class="flex items-center gap-3 cursor-pointer" onclick="returnToMenu()">
       <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none">
         <circle cx="24" cy="11" r="4" fill="#7e8c8d"/>
@@ -117,6 +318,7 @@
         <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
         <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
         <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+        <circle cx="24" cy="24" r="4" fill="#f97316"/>
       </svg>
       <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">PIK</span>
     </div>
@@ -151,9 +353,11 @@
         <circle cx="31.6" cy="34.4" r="4.5" fill="#1976d2"/>
         <circle cx="16.4" cy="34.4" r="4.5" fill="#8e24aa"/>
         <circle cx="11.7" cy="20" r="4.5" fill="#d4af37"/>
+        <circle cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-1">A game of niche ball knowledge</p>
+      <span class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.2.5-beta</span>
+      <p class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
     </div>
@@ -184,38 +388,141 @@
 
     <!-- Bottom Footer Subtext -->
     <div class="text-[11px] text-slate-500 font-display">
-      8 Questions • 5 Rarity Tiers
+      8 Questions • 6 Rarity Tiers
     </div>
   </div>
 
   <!-- ================= HELP MODAL OVERLAY ================= -->
   <div id="helpModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-md w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300">
-      <div class="flex items-center justify-between border-b border-pik-border pb-3">
+    <div id="helpModalDialog" class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full max-h-[88vh] p-5 flex flex-col gap-3.5 text-xs font-sans text-slate-300 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-pik-border pb-3 flex-shrink-0">
         <h3 class="font-display font-bold text-base text-slate-100 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-pik-gold"></span>
           How to Play Pik
         </h3>
-        <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+        <button onclick="toggleHelpModal(false)" class="text-slate-400 hover:text-white font-bold p-1 transition">✕</button>
       </div>
 
-      <div class="space-y-2">
-        <p><strong class="text-slate-100">Objective:</strong> For each question, try to guess valid answers that are <em class="text-pik-gold">uncommon or rare</em>. The rarer your answer, the further your line stretches!</p>
+      <div class="space-y-3.5 overflow-y-auto scrollbar-none pr-0.5 leading-relaxed">
+        <!-- Core Objective -->
+        <div class="space-y-1">
+          <div class="font-display font-bold text-[11px] uppercase tracking-wider text-pik-gold">1. The Objective</div>
+          <p>
+            Each run features <strong class="text-slate-100">8 prompts</strong> across different categories. Type a valid answer that genuinely fits the prompt—instead of guessing the most obvious answer, aim for <em class="text-pik-gold font-medium">niche, obscure, or deep-cut</em> answers. The rarer your pick, the farther your line stretches across the track!
+          </p>
+        </div>
         
-        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-1.5 font-display text-[11px]">
-          <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider mb-1">Rarity Tiers & Distance:</span>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d]"></span>Common</span><span>110px (+10 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#388e3c]"></span>Uncommon</span><span>180px (+25 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#1976d2]"></span>Rare</span><span>270px (+50 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa]"></span>Epic</span><span>390px (+75 pts)</span></div>
-          <div class="flex justify-between items-center"><span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#d4af37]"></span>The Pik</span><span class="text-pik-gold font-bold">540px (+100 pts)</span></div>
+        <!-- Rarity Tiers & Scoring -->
+        <div class="bg-pik-bg p-3 rounded-xl border border-pik-border flex flex-col gap-2 font-display text-[11px]">
+          <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
+            <span class="font-bold text-slate-200 uppercase text-[10px] tracking-wider">2. Rarity Tiers & Stretch</span>
+            <span class="text-[10px] text-slate-400">5 px = 1 pt</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#7e8c8d] flex-shrink-0"></span>
+              <span class="font-bold text-slate-200">Common</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Obvious, everyday first thought</span>
+            </div>
+            <span class="font-bold text-slate-300 flex-shrink-0">110 px</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#388e3c] flex-shrink-0"></span>
+              <span class="font-bold text-[#388e3c]">Uncommon</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Solid pick, slightly off the beaten path</span>
+            </div>
+            <span class="font-bold text-slate-300 flex-shrink-0">180 px</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f97316] flex-shrink-0"></span>
+              <span class="font-bold text-[#f97316]">Sarcastic</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Clever, pedantic, or technically-true loophole</span>
+            </div>
+            <span class="font-bold text-slate-300 flex-shrink-0">225 px</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#1976d2] flex-shrink-0"></span>
+              <span class="font-bold text-[#1976d2]">Rare</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Specific, clever, or specialized pick</span>
+            </div>
+            <span class="font-bold text-slate-300 flex-shrink-0">270 px</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#8e24aa] flex-shrink-0"></span>
+              <span class="font-bold text-[#8e24aa]">Epic</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Deep-cut knowledge most people miss</span>
+            </div>
+            <span class="font-bold text-slate-300 flex-shrink-0">390 px</span>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#d4af37] flex-shrink-0"></span>
+              <span class="font-bold text-pik-gold">The Pik</span>
+              <span class="text-[10px] font-sans text-slate-400 truncate">— Hyper-niche, extraordinary deep pull</span>
+            </div>
+            <span class="text-pik-gold font-extrabold flex-shrink-0">540 px</span>
+          </div>
         </div>
 
-        <p class="text-slate-400">
-          The area below the line remains completely empty until you complete all 8 questions!
-        </p>
+        <!-- Answer Rules -->
+        <div class="space-y-1.5">
+          <div class="font-display font-bold text-[11px] uppercase tracking-wider text-slate-200">3. Answer Rules</div>
+          <ul class="space-y-1.5 text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-pik-gold font-bold">•</span>
+              <span><strong class="text-slate-100">Be Specific & Accurate:</strong> Your answer must genuinely match the prompt. Overly broad or vague guesses will be rejected so you can try again.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-pik-gold font-bold">•</span>
+              <span><strong class="text-slate-100">Spelling Forgiveness:</strong> Minor typos and capitalization differences are automatically recognized without penalizing you.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-pik-gold font-bold">•</span>
+              <span><strong class="text-slate-100">No Duplicate Answers:</strong> Each answer can only be used once per 8-question run.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-pik-gold font-bold">•</span>
+              <span><strong class="text-slate-100">Skipping:</strong> If you're stumped, press <span class="px-1.5 py-0.5 rounded bg-pik-bg border border-pik-border font-display text-[10px] text-slate-200">Skip</span> to advance—it adds <strong class="text-slate-200">0 px</strong> to your line.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Game Modes -->
+        <div class="space-y-1.5">
+          <div class="font-display font-bold text-[11px] uppercase tracking-wider text-slate-200">4. Game Modes</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div class="bg-pik-bg/80 border border-pik-border/80 rounded-xl p-2.5">
+              <div class="font-display font-bold text-[11px] text-slate-100">Standard</div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Untimed 8-question run. Take your time to dig deep.</p>
+            </div>
+            <div class="bg-pik-bg/80 border border-pik-border/80 rounded-xl p-2.5">
+              <div class="font-display font-bold text-[11px] text-pik-gold">Timed</div>
+              <p class="text-[11px] text-slate-400 mt-0.5"><strong class="text-slate-200">30 seconds</strong> per question before it auto-skips.</p>
+            </div>
+            <div class="bg-pik-bg/80 border border-pik-border/80 rounded-xl p-2.5">
+              <div class="font-display font-bold text-[11px] text-pik-epic">Daily</div>
+              <p class="text-[11px] text-slate-400 mt-0.5">One shared 8-question set every day for all players.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post-Game Review -->
+        <div class="bg-pik-bg/60 border border-pik-border/60 rounded-xl p-2.5 text-[11px] text-slate-400">
+          <strong class="text-slate-200 font-display">Post-Game Breakdown:</strong> After completing all 8 questions, use the <strong class="text-slate-200">Inspect Line</strong> slider to pan across your full track and click any question card on the left to view its rarity analysis and rarer examples.
+        </div>
       </div>
 
-      <button onclick="toggleHelpModal(false)" class="w-full py-2 bg-slate-100 text-slate-950 font-display font-bold rounded-xl text-xs transition mt-1">
+      <button onclick="toggleHelpModal(false)" class="w-full py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold rounded-xl text-xs transition flex-shrink-0">
         Got It
       </button>
     </div>
@@ -223,7 +530,7 @@
 
   <!-- ================= QUESTION DETAIL INSPECT MODAL ================= -->
   <div id="questionDetailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300 shadow-2xl relative max-h-[90vh] overflow-y-auto scrollbar-none">
+    <div id="questionDetailDialog" class="bg-pik-card border border-pik-border rounded-2xl max-w-lg w-full p-5 flex flex-col gap-4 text-xs font-sans text-slate-300 shadow-2xl relative max-h-[90vh] overflow-y-auto scrollbar-none">
       <div class="flex items-center justify-between border-b border-pik-border pb-3">
         <div class="flex items-center gap-2">
           <span id="detailQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question 1</span>
@@ -326,10 +633,10 @@
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto">
-          <button id="submitBtn" onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap">
-            <span id="submitBtnText">Submit</span>
+          <button id="submitBtn" onclick="submitAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition-all duration-150 shadow-md flex items-center justify-center gap-1.5 whitespace-nowrap">
+            <span id="submitBtnText" class="flex items-center gap-1.5">Submit</span>
           </button>
-          <button id="skipBtn" onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+          <button id="skipBtn" onclick="skipQuestion()" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition-all duration-150">
             Skip
           </button>
         </div>
@@ -369,7 +676,7 @@
   <!-- ================= RESULTS AREA (FRAMELESS BACKGROUND PROJECTION LAYOUT) ================= -->
   <section id="resultsSection" class="hidden-results w-full max-w-5xl mx-auto px-3 sm:px-6 py-2 flex-1 flex flex-col justify-between overflow-hidden min-h-0 z-20 order-1">
     <!-- Header Controls & Score Bar -->
-    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
+    <div id="resultsHeaderBar" class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
       <div>
         <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
           Game Completed
@@ -394,8 +701,8 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Menu
           </button>
-          <button onclick="launchGame(isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard'))" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <button id="playAgainBtn" onclick="playAgainWithAnimation()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-white active:scale-95 disabled:opacity-70 text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5">
+            <svg id="playAgainIcon" class="w-3.5 h-3.5 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             Play Again
           </button>
         </div>
@@ -452,7 +759,7 @@
 
     let activeGroqKeyIndex = 0;
     let isEvaluatingAnswer = false;
-
+    let groqKeysUnavailable = false;
     function drawProjectionLines(leftCardEl, rightPanelEl, color = '#d4af37') {
       const container = document.getElementById('projectionContainer');
       const svg = document.getElementById('projectionSvg');
@@ -482,9 +789,9 @@
         <!-- Light Projection Frustum Polygon -->
         <polygon points="${x1},${y1} ${x3},${y3} ${x4},${y4} ${x2},${y2}" fill="url(#projGrad)"/>
         <!-- Upper Connecting Line -->
-        <line x1="${x1}" y1="${y1}" x2="${x3}" y2="${y3}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <line x1="${x1}" y1="${y1}" x2="${x3}" y2="${y3}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85" class="frustum-line-flow"/>
         <!-- Lower Connecting Line -->
-        <line x1="${x2}" y1="${y2}" x2="${x4}" y2="${y4}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85"/>
+        <line x1="${x2}" y1="${y2}" x2="${x4}" y2="${y4}" stroke="${color}" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.85" class="frustum-line-flow"/>
         <!-- Left Edge Accent Marker -->
         <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="2.5"/>
       `;
@@ -494,7 +801,7 @@
       const dashboard = document.getElementById('overviewDashboard');
       if (!dashboard) return;
 
-      const tierCounts = { gold: 0, epic: 0, rare: 0, uncommon: 0, common: 0, skipped: 0 };
+      const tierCounts = { gold: 0, epic: 0, rare: 0, sarcastic: 0, uncommon: 0, common: 0, skipped: 0 };
       let totalDistSum = 0;
       let clearedCount = 0;
       let bestPik = null;
@@ -514,127 +821,137 @@
 
       const avgDist = userHistory.length > 0 ? Math.round(totalDistSum / userHistory.length) : 0;
 
-      // Benchmark metrics (Average player benchmark: 210 px / max possible: 540 px)
-      const benchmarkAvg = 210;
-      const maxPossibleAvg = 540;
-      const perfPct = Math.min(100, Math.round((avgDist / maxPossibleAvg) * 100));
-      const benchPct = Math.round((benchmarkAvg / maxPossibleAvg) * 100);
+      // Benchmark metrics (Average session stretch: 1130 px / max possible 8-question stretch: 4320 px)
+      const playerTotalStretch = totalDistSum;
+      const benchmarkAvg = 1130;
+      const maxPossibleTotal = 4320;
+      const perfPct = Math.min(100, Math.round((playerTotalStretch / maxPossibleTotal) * 100));
+      const benchPct = Math.round((benchmarkAvg / maxPossibleTotal) * 100);
       
-      const diffFromAvg = avgDist - benchmarkAvg;
+      const diffFromAvg = playerTotalStretch - benchmarkAvg;
+      const pctFromAvg = Math.round((diffFromAvg / benchmarkAvg) * 100);
       let perfStatusText = '';
       let perfColor = '#7e8c8d';
 
-      if (diffFromAvg > 100) {
-        perfStatusText = `+${diffFromAvg} px vs Avg (Exceptional)`;
+      if (diffFromAvg > 800) {
+        perfStatusText = `+${pctFromAvg}% (+${diffFromAvg} px) \u2022 Exceptional`;
         perfColor = '#d4af37';
-      } else if (diffFromAvg > 40) {
-        perfStatusText = `+${diffFromAvg} px vs Avg (Great)`;
+      } else if (diffFromAvg > 320) {
+        perfStatusText = `+${pctFromAvg}% (+${diffFromAvg} px) \u2022 Great`;
         perfColor = '#8e24aa';
       } else if (diffFromAvg > 0) {
-        perfStatusText = `+${diffFromAvg} px vs Avg (Above Avg)`;
+        perfStatusText = `+${pctFromAvg}% (+${diffFromAvg} px) \u2022 Above Avg`;
         perfColor = '#1976d2';
       } else if (diffFromAvg === 0) {
-        perfStatusText = `On Par with Avg`;
+        perfStatusText = `0% (0 px) \u2022 On Par`;
         perfColor = '#388e3c';
       } else {
-        perfStatusText = `${diffFromAvg} px vs Avg (Below Avg)`;
+        perfStatusText = `${pctFromAvg}% (${diffFromAvg} px) \u2022 Below Avg`;
         perfColor = '#7e8c8d';
       }
 
       const bestName = bestPik ? bestPik.userAnswer : 'None';
-      const bestColor = bestPik ? (bestPik.rarityKey === 'skipped' ? '#475569' : bestPik.color) : '#7e8c8d';
-      const bestRarityName = bestPik ? bestPik.rarityName : 'N/A';
+      const bestTierName = bestPik ? bestPik.rarityName : 'No answers';
+      const bestTierColor = bestPik ? bestPik.color : '#64748b';
 
-      const tierColors = {
-        gold: '#d4af37',
-        epic: '#8e24aa',
-        rare: '#1976d2',
-        uncommon: '#388e3c',
-        common: '#7e8c8d',
-        skipped: '#475569'
-      };
+      const tierMeta = [
+        { key: 'gold', label: 'The Pik', color: '#d4af37' },
+        { key: 'epic', label: 'Epic', color: '#8e24aa' },
+        { key: 'rare', label: 'Rare', color: '#1976d2' },
+        { key: 'sarcastic', label: 'Sarcastic', color: '#f97316' },
+        { key: 'uncommon', label: 'Uncommon', color: '#388e3c' },
+        { key: 'common', label: 'Common', color: '#7e8c8d' },
+        { key: 'skipped', label: 'Skipped', color: '#475569' }
+      ];
 
-      let barSegmentsHtml = '';
-      let countPillsHtml = '';
+      const totalAnswers = Math.max(1, userHistory.length);
+      const barSegmentsHtml = tierMeta
+        .filter(t => tierCounts[t.key] > 0)
+        .map(t => {
+          const widthPct = (tierCounts[t.key] / totalAnswers) * 100;
+          return `<div data-target-width="${widthPct}%" style="width: 0%; background-color: ${t.color};" class="h-full transition-all duration-700 ease-out" title="${t.label}: ${tierCounts[t.key]}"></div>`;
+        })
+        .join('');
 
-      const tiersList = ['gold', 'epic', 'rare', 'uncommon', 'common', 'skipped'];
-      tiersList.forEach(t => {
-        const cnt = tierCounts[t];
-        if (cnt > 0) {
-          const pct = (cnt / 8) * 100;
-          const c = tierColors[t];
-          barSegmentsHtml += `<div style="width: ${pct}%; background-color: ${c};" class="h-full transition-all duration-500" title="${RARITY_CONFIG[t]?.name || 'Skipped'}: ${cnt}"></div>`;
-          
-          const label = t === 'gold' ? 'The Pik' : (RARITY_CONFIG[t]?.name || 'Skipped');
-          countPillsHtml += `
-            <div class="flex items-center gap-1 text-[10px] font-display font-medium px-2 py-0.5 rounded-md bg-pik-bg border border-pik-border/60">
-              <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${c}"></span>
-              <span class="text-slate-300">${label}</span>
-              <span class="font-bold text-slate-100 ml-0.5">${cnt}</span>
-            </div>
-          `;
-        }
-      });
-
-      const modeLabel = isDailyMode ? 'Daily Challenge' : (isTimedMode ? 'Timed Mode' : 'Standard Mode');
+      const countPillsHtml = tierMeta
+        .filter(t => tierCounts[t.key] > 0)
+        .map((t, idx) => `
+          <span style="color: ${t.color}; animation-delay: ${180 + idx * 60}ms;" class="kpi-tile-in px-2 py-0.5 rounded-md text-[10px] font-display font-bold flex items-center gap-1.5 bg-pik-card border border-pik-border/80">
+            <span class="w-2 h-2 rounded-full" style="background-color: ${t.color}"></span>
+            ${t.label}: ${tierCounts[t.key]}
+          </span>
+        `)
+        .join('');
 
       dashboard.innerHTML = `
+        <!-- Overview Header -->
         <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
-          <span class="font-display font-extrabold text-xs uppercase tracking-wider text-pik-gold">Session Performance Overview</span>
-          <span class="px-2 py-0.5 rounded-md font-display text-[10px] font-bold bg-pik-bg border border-pik-border text-slate-300">${modeLabel}</span>
+          <span class="font-display font-bold text-xs uppercase tracking-wider text-slate-200">Session Performance Overview</span>
+          <span class="text-[10px] font-display text-slate-400 hidden sm:inline">Click any question on the left to inspect</span>
         </div>
 
-        <!-- 3 Key Metric Cards -->
+        <!-- Top 3 KPI Summary Cards -->
         <div class="grid grid-cols-3 gap-2">
-          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
-            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Avg Stretch</div>
-            <div class="font-display font-extrabold text-sm sm:text-base text-pik-gold mt-0.5">${avgDist} <span class="text-xs font-normal text-slate-400">px</span></div>
+          <div style="animation-delay: 40ms;" class="kpi-tile-in bg-pik-bg/70 border border-pik-border/60 p-2 rounded-lg">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Average Stretch</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${avgDist} px</div>
+            <div class="text-[9px] font-display text-slate-400">per question</div>
           </div>
 
-          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between overflow-hidden">
-            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Best Pick</div>
-            <div class="font-display font-extrabold text-xs sm:text-sm truncate mt-0.5" style="color: ${bestColor}" title="${bestName}">
-              ${bestName}
-            </div>
-            <div class="text-[9px] font-display text-slate-400 truncate">${bestRarityName}</div>
+          <div style="animation-delay: 110ms;" class="kpi-tile-in bg-pik-bg/70 border border-pik-border/60 p-2 rounded-lg min-w-0">
+            <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Best Pik</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 truncate mt-0.5" title="${bestName}">${bestName}</div>
+            <div class="text-[9px] font-display font-semibold truncate" style="color: ${bestTierColor}">${bestTierName}</div>
           </div>
 
-          <div class="bg-pik-bg/80 border border-pik-border/80 p-2 rounded-lg flex flex-col justify-between">
+          <div style="animation-delay: 180ms;" class="kpi-tile-in bg-pik-bg/70 border border-pik-border/60 p-2 rounded-lg">
             <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Questions Cleared</div>
-            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${clearedCount} <span class="text-xs font-normal text-slate-400">/ 8</span></div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${clearedCount} / 8</div>
+            <div class="text-[9px] font-display text-slate-400">${8 - clearedCount} skipped</div>
           </div>
         </div>
 
-        <!-- Performance vs Average Rating Bar -->
-        <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
-          <div class="flex items-center justify-between">
+        <!-- Performance vs. Average Section -->
+        <div style="animation-delay: 150ms;" class="kpi-tile-in bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
+          <div class="flex items-center justify-between gap-2">
             <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Performance vs. Average</span>
-            <span class="text-[9px] font-display font-bold" style="color: ${perfColor}">${perfStatusText}</span>
+            <span class="px-2 py-0.5 rounded-full text-[9px] font-display font-bold" style="background-color: ${perfColor}20; color: ${perfColor}; border: 1px solid ${perfColor}45">
+              ${perfStatusText}
+            </span>
           </div>
 
-          <!-- Horizontal Comparison Bar with Benchmark Marker -->
-          <div class="relative w-full h-3 bg-slate-800 rounded-full overflow-hidden flex items-center">
-            <div style="width: ${perfPct}%; background-color: ${perfColor};" class="h-full transition-all duration-500"></div>
-            <!-- Average Benchmark Reference Marker Line -->
-            <div style="left: ${benchPct}%;" class="absolute top-0 bottom-0 w-0.5 bg-slate-100 z-10 shadow-sm" title="Global Average (210 px)"></div>
-          </div>
-          
-          <div class="flex justify-between text-[9px] font-display text-slate-400">
-            <span>0 px</span>
-            <span class="text-slate-300 font-semibold">Avg (${benchmarkAvg} px)</span>
-            <span>Max (${maxPossibleAvg} px)</span>
+          <div class="flex flex-col gap-1.5">
+            <!-- Player Stretch Row -->
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 text-[9px] font-display font-bold uppercase tracking-wider text-slate-200 flex-shrink-0">You</span>
+              <div class="relative flex-1 h-2 bg-slate-900 border border-pik-border/80 rounded-full flex items-center">
+                <div id="perfYouBar" data-target-width="${perfPct}%" style="width: 0%; background-color: ${perfColor}; box-shadow: 0 0 8px ${perfColor}70; transition: width 0.85s cubic-bezier(0.22, 1, 0.36, 1);" class="h-full rounded-full"></div>
+                <span id="perfYouNode" data-target-left="clamp(5px, ${perfPct}%, calc(100% - 5px))" style="left: 5px; background-color: ${perfColor}; box-shadow: 0 0 6px ${perfColor}; transition: left 0.85s cubic-bezier(0.22, 1, 0.36, 1);" class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 border-white"></span>
+              </div>
+              <span class="w-14 text-right text-[10px] font-display font-extrabold whitespace-nowrap flex-shrink-0" style="color: ${perfColor}">${playerTotalStretch} px</span>
+            </div>
+
+            <!-- Global Average Stretch Row -->
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 text-[9px] font-display font-semibold uppercase tracking-wider text-slate-500 flex-shrink-0">Avg</span>
+              <div class="relative flex-1 h-2 bg-slate-900 border border-pik-border/80 rounded-full flex items-center">
+                <div id="perfAvgBar" data-target-width="${benchPct}%" style="width: 0%; transition: width 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;" class="h-full rounded-full bg-slate-500/70"></div>
+                <span id="perfAvgNode" data-target-left="${benchPct}%" style="left: 5px; transition: left 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;" class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-pik-bg border-2 border-slate-400"></span>
+              </div>
+              <span class="w-14 text-right text-[10px] font-display font-semibold text-slate-400 whitespace-nowrap flex-shrink-0">${benchmarkAvg} px</span>
+            </div>
           </div>
         </div>
 
         <!-- Rarity Distribution Section -->
-        <div class="bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
+        <div style="animation-delay: 220ms;" class="kpi-tile-in bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarity Tier Distribution</span>
             <span class="text-[9px] font-display text-slate-400">8 total answers</span>
           </div>
 
           <!-- Stacked Bar -->
-          <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
+          <div id="rarityDistBar" class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
             ${barSegmentsHtml}
           </div>
 
@@ -644,6 +961,27 @@
           </div>
         </div>
       `;
+
+      // Smoothly animate comparison bars, PIK node, and distribution segments into place
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const youBar = document.getElementById('perfYouBar');
+          const youNode = document.getElementById('perfYouNode');
+          const avgBar = document.getElementById('perfAvgBar');
+          const avgNode = document.getElementById('perfAvgNode');
+          if (youBar) youBar.style.width = youBar.dataset.targetWidth;
+          if (youNode) youNode.style.left = youNode.dataset.targetLeft;
+          if (avgBar) avgBar.style.width = avgBar.dataset.targetWidth;
+          if (avgNode) avgNode.style.left = avgNode.dataset.targetLeft;
+
+          const distBar = document.getElementById('rarityDistBar');
+          if (distBar) {
+            distBar.querySelectorAll('[data-target-width]').forEach(seg => {
+              seg.style.width = seg.dataset.targetWidth;
+            });
+          }
+        });
+      });
     }
 
   function uninspectQuestion() {
@@ -694,6 +1032,7 @@
     for (let i = 0; i < userHistory.length; i++) {
       const cardEl = document.getElementById(`proj-left-card-${i}`);
       if (cardEl) {
+        cardEl.style.animation = '';
         if (i === idx) {
           cardEl.className = 'bg-pik-card border-2 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all shadow-lg scale-[1.01] z-30 overflow-hidden';
           cardEl.style.borderColor = colorHex;
@@ -715,19 +1054,28 @@
       geography: 'Geography',
       science: 'Science',
       everyday: 'Everyday',
-      popculture: 'Pop Culture'
+      popculture: 'Pop Culture',
+      history: 'History & Myth',
+      sports: 'Sports',
+      music: 'Music & Dance',
+      nature: 'Nature & Wildlife',
+      arts: 'Arts & Literature',
+      tech: 'Tech & Engineering',
+      astronomy: 'Space & Astronomy',
+      fashion: 'Fashion & Textiles',
+      vehicles: 'Vehicles & Transit'
     };
     const categoryLabel = CATEGORY_LABELS[qObj.cat] || 'General';
     const runSharePct = totalDistance > 0 ? Math.round((item.length / totalDistance) * 100) : 0;
-    const speedDisplay = item.timeTaken ? `${item.timeTaken}s` : '—';
+    const speedDisplay = item.timeTaken ? `${item.timeTaken}s` : '\u2014';
 
     const matchedText = (item.matchedName && item.matchedName.toLowerCase() !== item.userAnswer.toLowerCase() && item.matchedName !== 'Skipped') 
       ? `<div class="text-[10px] text-slate-400 font-display truncate">Interpreted as: "${item.matchedName}"</div>` : '';
 
     const reasonText = item.reason || (isSkip ? 'Question skipped by player.' : 'Valid answer verified.');
 
-    // Build 5-Tier Rarity Stretch Meter
-    const tierOrder = ['common', 'uncommon', 'rare', 'epic', 'gold'];
+    // Build 6-Tier Rarity Stretch Meter
+    const tierOrder = ['common', 'uncommon', 'sarcastic', 'rare', 'epic', 'gold'];
     const achievedTierIdx = tierOrder.indexOf(item.rarityKey);
     const tierSegmentsHtml = tierOrder.map((tKey, tIdx) => {
       const cfg = RARITY_CONFIG[tKey];
@@ -735,7 +1083,8 @@
       const isCurrent = !isSkip && achievedTierIdx === tIdx;
       const bgStyle = isReached ? `background-color: ${cfg.color};` : 'background-color: #1e293b;';
       const ringClass = isCurrent ? 'ring-1 ring-white/80' : '';
-      return `<div style="${bgStyle}" class="h-2 flex-1 rounded-sm transition-all duration-300 ${ringClass}" title="${cfg.name} (${cfg.length} px)"></div>`;
+      const animStyle = isReached ? `animation: tierSegmentPop 0.34s cubic-bezier(0.22, 1.3, 0.36, 1) ${tIdx * 65}ms both;` : '';
+      return `<div style="${bgStyle} ${animStyle}" class="h-2 flex-1 rounded-sm transition-all duration-300 ${ringClass}" title="${cfg.name} (${cfg.length} px)"></div>`;
     }).join('');
 
     const maxStretchPct = Math.round((item.length / 540) * 100);
@@ -750,7 +1099,7 @@
     const examplesHtml = examples.length > 0
       ? `<div class="flex items-center gap-1.5 flex-wrap mt-1.5 pt-1.5 border-t border-pik-border/50">
            <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarer Picks:</span>
-           ${examples.map(ex => `<span class="px-1.5 py-0.5 rounded bg-pik-card border border-pik-border text-[10px] font-display text-pik-gold">${ex}</span>`).join('')}
+           ${examples.map((ex, eIdx) => `<span style="animation-delay: ${160 + eIdx * 70}ms;" class="kpi-tile-in px-1.5 py-0.5 rounded bg-pik-card border border-pik-border text-[10px] font-display text-pik-gold">${ex}</span>`).join('')}
          </div>`
       : '';
 
@@ -938,13 +1287,14 @@
       card.id = `proj-left-card-${idx}`;
       card.setAttribute('onclick', `selectQuestionForProjection(${idx})`);
       card.className = 'bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden';
+      card.style.animation = `staggerCardIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 50}ms both`;
 
       const isSkip = item.rarityKey === 'skipped';
       const colorHex = isSkip ? '#475569' : item.color;
 
       card.innerHTML = `
         <div class="overflow-hidden">
-          <div class="text-[9px] text-slate-400 font-display font-medium truncate" title="${item.prompt}">Q${idx + 1} • ${item.prompt}</div>
+          <div class="text-[9px] text-slate-400 font-display font-medium truncate" title="${item.prompt}">Q${idx + 1} \u2022 ${item.prompt}</div>
           <div class="font-display font-bold text-[11px] text-slate-100 truncate" title="${item.userAnswer}">${item.userAnswer}</div>
         </div>
         <div class="flex items-center justify-between mt-0.5 pt-0.5 border-t border-pik-border/40 text-[9px]">
@@ -969,6 +1319,7 @@
     const RARITY_CONFIG = {
       common: { name: 'Common', color: '#7e8c8d', length: 110, points: 10 },
       uncommon: { name: 'Uncommon', color: '#388e3c', length: 180, points: 25 },
+      sarcastic: { name: 'Sarcastic', color: '#f97316', length: 225, points: 35 },
       rare: { name: 'Rare', color: '#1976d2', length: 270, points: 50 },
       epic: { name: 'Epic', color: '#8e24aa', length: 390, points: 75 },
       gold: { name: 'The Pik', color: '#d4af37', length: 540, points: 100 }
@@ -1009,17 +1360,18 @@
         const now = audioCtx.currentTime;
 
         if (type === 'stretch') {
-          const freqMap = { common: 260, uncommon: 330, rare: 440, epic: 550, gold: 660 };
+          const freqMap = { common: 260, uncommon: 330, sarcastic: 385, rare: 440, epic: 550, gold: 660 };
           const baseFreq = freqMap[rarityKey] || 300;
+          const toneDur = rarityKey === 'sarcastic' ? 1.1 : 0.35;
           osc.type = rarityKey === 'gold' ? 'triangle' : 'sine';
           osc.frequency.setValueAtTime(baseFreq, now);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.35);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + toneDur);
 
           gain.gain.setValueAtTime(0.12, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + toneDur);
 
           osc.start(now);
-          osc.stop(now + 0.35);
+          osc.stop(now + toneDur);
         } else if (type === 'skip') {
           osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(180, now);
@@ -1050,6 +1402,17 @@
 
           osc.start(now);
           osc.stop(now + 0.4);
+        } else if (type === 'rewind') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(260, now + 0.26);
+          osc.frequency.exponentialRampToValueAtTime(460, now + 0.44);
+
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
+
+          osc.start(now);
+          osc.stop(now + 0.46);
         }
       } catch (e) {
         console.warn('Audio play error:', e);
@@ -1088,25 +1451,26 @@
 
     async function callSingleGroqKey(apiKey, prompt, canonicalAnswer, seed) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 14000);
+      const timeoutId = setTimeout(() => controller.abort(), 18000);
 
-      const systemPrompt = `You are the strict, fair, deterministic judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
-Evaluate whether the player's answer genuinely and accurately fits the prompt, and if valid, assign its rarity tier based on how obscure/uncommon it is among everyday people:
-- "common": Very obvious, top-of-mind everyday answer that almost anyone would guess first.
-- "uncommon": Good valid answer, slightly less obvious than the top few most common answers.
-- "rare": Niche, specific, or clever valid answer requiring solid domain knowledge.
-- "epic": Deep-cut, specialized, or obscure valid answer that most casual players wouldn't think of.
-- "gold": ("The Pik") Extraordinarily obscure, hyper-niche, or brilliant deep-knowledge valid answer.
+      const systemPrompt = `You are a generous, encouraging, deterministic judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
+Evaluate whether the player's answer reasonably and accurately fits the prompt, and if valid, reward creativity and domain knowledge liberally across the rarity tiers (when an answer sits on the border between two tiers, always round UP to the higher rarity):
+- "common": Reserve strictly for ONLY the #1 or #2 most cliché, knee-jerk household answers that almost everyone says first. If an answer takes even a small amount of thought, bump it up to "uncommon" or higher.
+- "uncommon": Everyday secondary valid answers that are still fairly well known, though not the #1–2 knee-jerk picks.
+- "sarcastic": ("Too Clever" tier — moderately challenging to get) Reserved for witty, cheeky, pedantic, smart-aleck, or technically-true loophole answers that satisfy the literal wording of the prompt in an unexpectedly literal or clever way rather than a straightforward answer. Only assign when the player is genuinely being sarcastic/too clever AND the answer is technically valid.
+- "rare": Any specific, interesting, or moderately niche valid answer that isn't an immediate top-of-mind everyday guess—award "rare" generously.
+- "epic": Specialized, off-the-beaten-path, or clever valid answers showing solid trivia or domain knowledge—award "epic" readily whenever an answer feels genuinely uncommon.
+- "gold": ("The Pik") Standout, obscure, regional, technical, or deep-cut valid answers—reward "gold" generously whenever a player pulls a genuinely niche or impressive answer!
 
 Rules:
-1. Tolerate minor spelling typos or capitalization errors if the intended answer is clear and valid, returning the properly spelled "normalizedAnswer".
+1. Be lenient with minor spelling typos, capitalization, plurals, or well-known regional/colloquial names if the intended answer is clear and valid, returning the properly spelled "normalizedAnswer".
 2. Grade the underlying canonical concept consistently—never vary rarity based on capitalization, spacing, or minor phrasing.
-3. Reject answers that do not fit the prompt, are factually wrong, or are overly vague/lazy (e.g., answering "Food" when asked for a type of cheese).
+3. Accept reasonable interpretations that genuinely fit the prompt; only reject answers that are factually wrong, unrelated, or completely generic/lazy (e.g., answering "Food" when asked for a type of cheese).
 4. Provide 2 distinct, real, rarer valid examples ("rarerExamples") for the prompt (e.g., an Epic-tier answer and a The Pik-tier answer) that are different from the player's answer.
 5. Respond ONLY with a valid JSON object matching this exact schema:
 {
   "valid": boolean,
-  "rarity": "common" | "uncommon" | "rare" | "epic" | "gold" | null,
+  "rarity": "common" | "uncommon" | "sarcastic" | "rare" | "epic" | "gold" | null,
   "normalizedAnswer": "string",
   "reason": "1 concise sentence explaining why it fits or doesn't fit and why it got that rarity",
   "rarerExamples": ["string", "string"]
@@ -1128,6 +1492,7 @@ Rules:
             temperature: 0,
             top_p: 1,
             seed: seed,
+            reasoning_effort: "low",
             response_format: { type: 'json_object' }
           }),
           signal: controller.signal
@@ -1137,7 +1502,9 @@ Rules:
 
         if (!response.ok) {
           const errText = await response.text().catch(() => '');
-          throw new Error(`HTTP ${response.status}: ${errText}`);
+          const err = new Error(`HTTP ${response.status}: ${errText}`);
+          err.status = response.status;
+          throw err;
         }
 
         const data = await response.json();
@@ -1147,7 +1514,11 @@ Rules:
         }
 
         // Clean potential markdown code fences and parse JSON
-        const cleanedJson = rawContent.replace(/^\x60\x60\x60json\s*/i, '').replace(/\x60\x60\x60\s*$/i, '').trim();
+        const fence = String.fromCharCode(96).repeat(3);
+        const cleanedJson = rawContent
+          .replace(new RegExp('^' + fence + 'json\\s*', 'i'), '')
+          .replace(new RegExp(fence + '\\s*$', 'i'), '')
+          .trim();
         const parsed = JSON.parse(cleanedJson);
 
         if (typeof parsed.valid !== 'boolean') {
@@ -1159,6 +1530,725 @@ Rules:
         clearTimeout(timeoutId);
         throw err;
       }
+    }
+
+    function levenshteinDistance(a, b) {
+      if (a === b) return 0;
+      if (!a.length) return b.length;
+      if (!b.length) return a.length;
+      const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
+      for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          const cost = b.charAt(i - 1) === a.charAt(j - 1) ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+      return matrix[b.length][a.length];
+    }
+
+    function isTitleCloseMatch(userNorm, candidateTitle, wasRedirect = false) {
+      if (wasRedirect) return true;
+      const cleanTitle = normalize(candidateTitle.replace(/\s*\([^)]*\)\s*/g, ' '));
+      if (!userNorm || !cleanTitle) return false;
+      if (userNorm === cleanTitle) return true;
+
+      // Allow matching core noun or multi-word sub-phrase (e.g. "cheddar" -> "cheddar cheese", "monarch" -> "monarch butterfly")
+      const titleWords = cleanTitle.split(/\s+/);
+      const userWords = userNorm.split(/\s+/);
+      if (userWords.length === 1 && titleWords[0] === userWords[0]) return true;
+      if (cleanTitle.startsWith(userNorm + ' ') || userNorm.startsWith(cleanTitle + ' ')) return true;
+      if (userNorm.length >= 4 && userWords.every(uw => titleWords.includes(uw))) return true;
+
+      // Forgiving typo tolerance on full title or primary title word
+      const compareTarget = userWords.length === 1 ? titleWords[0] : cleanTitle;
+      const dist = levenshteinDistance(userNorm, compareTarget);
+      const maxAllowed = compareTarget.length <= 4 ? 1 : compareTarget.length <= 8 ? 2 : 3;
+      return dist <= maxAllowed;
+    }
+
+    async function verifyWordInDictionary(word) {
+      const clean = word.toLowerCase().replace(/[^a-z-]/g, '');
+      if (!clean) return null;
+      try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(clean)}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!Array.isArray(data) || !data[0]) return null;
+        const partsOfSpeech = new Set();
+        const defs = [];
+        data.forEach(entry => {
+          (entry.meanings || []).forEach(m => {
+            if (m.partOfSpeech) partsOfSpeech.add(m.partOfSpeech.toLowerCase());
+            (m.definitions || []).forEach(d => {
+              if (d.definition) defs.push(d.definition.toLowerCase());
+            });
+          });
+        });
+        return {
+          word: data[0].word || clean,
+          partsOfSpeech: Array.from(partsOfSpeech),
+          text: defs.join(' ')
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function fetchWikipediaCandidates(query) {
+      const candidates = new Map();
+      const addPages = (pagesObj, wasRedirect = false) => {
+        if (!pagesObj) return;
+        Object.values(pagesObj).forEach(p => {
+          if (!p || p.missing !== undefined || !p.title) return;
+          if (/^(List of|Category:|Template:|Wikipedia:|Portal:)/i.test(p.title)) return;
+          const existing = candidates.get(p.pageid);
+          const cats = Array.isArray(p.categories)
+            ? p.categories.map(c => c.title.replace(/^Category:/i, '').toLowerCase()).join(' | ')
+            : '';
+          const entry = {
+            pageid: p.pageid,
+            title: p.title,
+            description: (p.description || '').toLowerCase(),
+            extract: (p.extract || '').toLowerCase(),
+            categories: cats,
+            length: p.length || 0,
+            wasRedirect: wasRedirect || (existing ? existing.wasRedirect : false),
+            rank: p.index || (existing ? existing.rank : 99)
+          };
+          if (!existing || wasRedirect || entry.rank < existing.rank) {
+            candidates.set(p.pageid, entry);
+          }
+        });
+      };
+
+      const baseParams = 'action=query&prop=extracts%7Cdescription%7Ccategories%7Cinfo&exintro=1&explaintext=1&exsentences=5&cllimit=35&clshow=!hidden&format=json&origin=*';
+      const exactUrl = `https://en.wikipedia.org/w/api.php?${baseParams}&redirects=1&titles=${encodeURIComponent(query)}`;
+      const searchUrl = `https://en.wikipedia.org/w/api.php?${baseParams}&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=8`;
+
+      const [exactRes, searchRes] = await Promise.all([
+        fetch(exactUrl).then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch(searchUrl).then(r => r.ok ? r.json() : null).catch(() => null)
+      ]);
+
+      const hadRedirect = Boolean(exactRes?.query?.redirects && exactRes.query.redirects.length > 0);
+      addPages(exactRes?.query?.pages, hadRedirect);
+      addPages(searchRes?.query?.pages, false);
+
+      return Array.from(candidates.values()).sort((a, b) => a.rank - b.rank);
+    }
+
+    function checkSarcasticLoophole(pLower, norm, raw) {
+      const titleCase = (str) => str.replace(/\b\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+      const loopholes = [
+        { matchPrompt: 'gemstone or mineral', answers: ['ice', 'water ice', 'glacier ice'], reason: 'Ice is technically a naturally occurring crystalline inorganic solid (a mineral), even if nobody puts it on a ring.' },
+        { matchPrompt: 'soup or stew', answers: ['cereal', 'cereal with milk', 'ocean', 'the ocean'], reason: 'Technically broth with suspended solids, though culinary purists will argue.' },
+        { matchPrompt: 'nocturnal mammal', answers: ['human', 'humans', 'college student', 'gamer'], reason: 'Technically Homo sapiens is a mammal, and many individuals operate strictly after midnight.' },
+        { matchPrompt: 'flightless bird', answers: ['fried chicken', 'roast turkey', 'rotisserie chicken', 'penguins'], reason: 'Technically a bird that is no longer flying anywhere.' },
+        { matchPrompt: 'type of rock', answers: ['earth', 'the earth', 'moon', 'the moon', 'dwayne johnson'], reason: 'Technically a giant silicate rock floating in space.' },
+        { matchPrompt: 'dwarf planet', answers: ['pluto'], reason: 'A classic astronomical technicality ever since 2006.' },
+        { matchPrompt: 'superhero who does not naturally possess biological superpowers', answers: ['mumen rider', 'kite man', 'arm fall off boy', 'condiment king', 'dogwelder'], reason: 'Technically a costumed hero relying purely on grit and questionable gimmicks.' },
+        { matchPrompt: 'renewable energy source', answers: ['hamster wheel', 'human labor'], reason: 'Technically mechanical kinetic energy, though not powering the grid anytime soon.' }
+      ];
+
+      for (const item of loopholes) {
+        if (pLower.includes(item.matchPrompt) && item.answers.includes(norm)) {
+          return {
+            valid: true,
+            rarity: 'sarcastic',
+            normalizedAnswer: titleCase(raw),
+            reason: item.reason,
+            rarerExamples: []
+          };
+        }
+      }
+      return null;
+    }
+
+    function getPromptSemanticSpec(pLower) {
+      // Returns { requiredAny: [...], requiredAll?: [...], forbiddenAny?: [...], examples: [...] }
+      const rules = [
+        // Culinary
+        { k: 'variety of cheese', req: ['cheese'], examples: ['Bitto', 'Pule'] },
+        { k: 'culinary herb or spice', req: ['herb', 'spice', 'seasoning', 'condiment', 'culinary'], examples: ['Grains of Paradise', 'Asafoetida'] },
+        { k: 'shape of italian pasta', req: ['pasta', 'noodle', 'italian cuisine'], examples: ['Strozzapreti', 'Trofie'] },
+        { k: 'citrus fruit', req: ['citrus', 'rutaceae'], examples: ['Buddha\'s Hand', 'Sudachi'] },
+        { k: 'edible mushroom', req: ['mushroom', 'fungus', 'fungi', 'edible'], forbid: ['poisonous', 'deadly', 'toxic'], examples: ['Huitlacoche', 'Cauliflower Mushroom'] },
+        { k: 'traditional type of bread', req: ['bread', 'flatbread', 'baked'], examples: ['Injera', 'Lavash'] },
+        { k: 'variety of apple', req: ['apple', 'cultivar', 'malus'], examples: ['Esopus Spitzenburg', 'Arkansas Black'] },
+        { k: 'tree nut or seed', req: ['nut', 'seed', 'drupe', 'kernel'], examples: ['Baru Nut', 'Sacha Inchi'] },
+        { k: 'leafy green vegetable', req: ['leaf vegetable', 'leafy', 'vegetable', 'greens', 'brassica', 'cultivar'], examples: ['Tatsoi', 'Mache'] },
+        { k: 'fermented food or beverage', req: ['ferment'], examples: ['Natto', 'Garum'] },
+        { k: 'traditional soup or stew', req: ['soup', 'stew', 'broth', 'chowder', 'bisque'], examples: ['Cullen Skink', 'Caldo Verde'] },
+        { k: 'cut of beef or steak', req: ['cut of beef', 'steak', 'beef', 'primal cut'], examples: ['Bavette', 'Picanha'] },
+        { k: 'bean or legume', req: ['bean', 'legume', 'fabaceae', 'pulse', 'lentil', 'pea'], examples: ['Tepary Bean', 'Bambara Groundnut'] },
+        { k: 'tropical fruit', req: ['tropical', 'fruit'], examples: ['Jabuticaba', 'Cupuacu'] },
+        { k: 'pastry or baked dessert', req: ['pastry', 'dessert', 'cake', 'tart', 'baked', 'confection'], examples: ['Kouign-Amann', 'Sfogliatella'] },
+        { k: 'chili pepper', req: ['chili pepper', 'capsicum', 'cultivar of capsicum', 'hot pepper'], examples: ['Aji Amarillo', 'Rocoto'] },
+        { k: 'dumpling', req: ['dumpling', 'filled dough'], examples: ['Khinkali', 'Manti'] },
+        { k: 'root vegetable', req: ['root vegetable', 'tuber', 'rhizome', 'taproot'], examples: ['Salsify', 'Arracacha'] },
+        { k: 'french sauce', req: ['sauce', 'french cuisine'], examples: ['Sauce Robert', 'Beurre Blanc'] },
+        { k: 'variety of rice or grain', req: ['rice', 'grain', 'cereal', 'pseudocereal'], examples: ['Fonio', 'Teff'] },
+        { k: 'cured meat or charcuterie', req: ['cured', 'sausage', 'ham', 'salumi', 'charcuterie', 'meat'], examples: ['Bresaola', 'Nduja'] },
+        { k: 'variety of tea', req: ['tea', 'infusion', 'tisane', 'camellia sinensis'], examples: ['Lapsang Souchong', 'Pu-erh'] },
+        { k: 'edible seaweed or shellfish', req: ['seaweed', 'algae', 'kelp', 'shellfish', 'mollusk', 'crustacean', 'bivalve'], examples: ['Geoduck', 'Dulse'] },
+        { k: 'street food', req: ['street food', 'snack', 'dish', 'cuisine'], examples: ['Takoyaki', 'Bunny Chow'] },
+        { k: 'coffee drink', req: ['coffee', 'espresso'], examples: ['Cortado', 'Ristretto'] },
+        { k: 'sushi roll or japanese dish', req: ['sushi', 'japanese cuisine', 'japanese dish'], examples: ['Okonomiyaki', 'Chawanmushi'] },
+        { k: 'indian curry or flatbread', req: ['indian cuisine', 'curry', 'flatbread', 'bread'], examples: ['Appam', 'Vindaloo'] },
+        { k: 'grape used for winemaking', req: ['grape', 'wine', 'vitis'], examples: ['Nebbiolo', 'Gruner Veltliner'] },
+        { k: 'type of sausage', req: ['sausage'], examples: ['Merguez', 'Andouille'] },
+        { k: 'squash, gourd, or melon', req: ['squash', 'gourd', 'melon', 'cucurbit'], examples: ['Chayote', 'Kabocha'] },
+        { k: 'mexican dish or salsa', req: ['mexican cuisine', 'salsa', 'dish'], examples: ['Chiles en Nogada', 'Mole Negro'] },
+        { k: 'cookie or biscuit', req: ['cookie', 'biscuit'], examples: ['Stroopwafel', 'Speculoos'] },
+        { k: 'cooking technique or knife cut', req: ['cooking', 'culinary', 'technique', 'cut'], examples: ['Brunoise', 'Sous Vide'] },
+        { k: 'honey, syrup, or natural sweetener', req: ['honey', 'syrup', 'sweetener', 'sugar'], examples: ['Sorghum Syrup', 'Manuka Honey'] },
+
+        // Geography
+        { k: 'landlocked country', req: ['landlocked country'], examples: ['Liechtenstein', 'Eswatini'] },
+        { k: 'island nation', req: ['island country', 'island nation', 'archipelagic state'], examples: ['Kiribati', 'Nauru'] },
+        { k: 'country in south america', req: ['country in south america'], examples: ['Suriname', 'Guyana'] },
+        { k: 'major desert', req: ['desert'], examples: ['Taklamakan', 'Karakum'] },
+        { k: 'mountain range', req: ['mountain range', 'mountains'], examples: ['Carpathians', 'Drakensberg'] },
+        { k: 'river in europe', req: ['river'], reqAll: ['europe'], examples: ['Dnieper', 'Vistula'] },
+        { k: 'capital city in asia', req: ['capital'], reqAll: ['asia'], examples: ['Bishkek', 'Thimphu'] },
+        { k: 'us state that borders canada', req: ['state of the united states', 'u.s. state'], reqAll: ['canada'], examples: ['North Dakota', 'Vermont'] },
+        { k: 'sea or ocean', req: ['sea', 'ocean'], examples: ['Laptev Sea', 'Sargasso Sea'] },
+        { k: 'country in africa', req: ['country in africa', 'african country'], examples: ['Djibouti', 'Comoros'] },
+        { k: 'strait or canal', req: ['strait', 'canal', 'channel'], examples: ['Bab-el-Mandeb', 'Kiel Canal'] },
+        { k: 'peninsula', req: ['peninsula'], examples: ['Kamchatka', 'Jutland'] },
+        { k: 'mediterranean sea', req: ['mediterranean'], reqAll: ['city', 'port', 'municipality', 'town'], examples: ['Syracuse', 'Dubrovnik'] },
+        { k: 'volcano', req: ['volcano', 'stratovolcano', 'caldera'], examples: ['Mount Erebus', 'Cotopaxi'] },
+        { k: 'lake in north america', req: ['lake'], reqAll: ['north america', 'united states', 'canada', 'mexico'], examples: ['Great Bear Lake', 'Lake Winnipeg'] },
+        { k: 'equator passes', req: ['equator'], reqAll: ['country', 'republic'], examples: ['Sao Tome and Principe', 'Gabon'] },
+        { k: 'waterfall', req: ['waterfall', 'falls', 'cataract'], examples: ['Kaieteur Falls', 'Tugela Falls'] },
+        { k: 'river in asia', req: ['river'], reqAll: ['asia'], examples: ['Irrawaddy', 'Amur'] },
+        { k: 'microstate or principality', req: ['microstate', 'principality', 'sovereign state'], examples: ['San Marino', 'Liechtenstein'] },
+        { k: 'national park', req: ['national park'], examples: ['Voyageurs', 'Congaree'] },
+        { k: 'central america or the caribbean', req: ['country', 'island'], reqAll: ['central america', 'caribbean'], examples: ['Belize', 'Dominica'] },
+        { k: 'archipelago or island group', req: ['archipelago', 'island group', 'islands'], examples: ['Svalbard', 'Lofoten'] },
+        { k: 'capital city located on a major river', req: ['capital'], reqAll: ['river'], examples: ['Budapest', 'Kinshasa'] },
+        { k: 'borders the baltic sea', req: ['baltic sea'], reqAll: ['country'], examples: ['Estonia', 'Latvia'] },
+        { k: 'middle east', req: ['middle east', 'western asia'], reqAll: ['country'], examples: ['Oman', 'Bahrain'] },
+        { k: 'river in africa or south america', req: ['river'], reqAll: ['africa', 'south america'], examples: ['Okavango', 'Orinoco'] },
+        { k: 'capital city in europe', req: ['capital'], reqAll: ['europe'], examples: ['Vaduz', 'Chisinau'] },
+        { k: 'capital city in south america or africa', req: ['capital'], reqAll: ['south america', 'africa'], examples: ['Paramaribo', 'Gaborone'] },
+        { k: 'pacific ocean or gulf of mexico', req: ['state of the united states', 'u.s. state'], reqAll: ['pacific', 'gulf of mexico'], examples: ['Oregon', 'Alabama'] },
+        { k: 'canyon, gorge, or valley', req: ['canyon', 'gorge', 'valley'], examples: ['Colca Canyon', 'Verdon Gorge'] },
+        { k: 'cape, bay, or gulf', req: ['cape', 'bay', 'gulf', 'headland'], examples: ['Cape Agulhas', 'Gulf of Carpentaria'] },
+        { k: 'glacier, ice shelf, or fjord', req: ['glacier', 'ice shelf', 'fjord'], examples: ['Geirangerfjord', 'Ross Ice Shelf'] },
+        { k: 'more than one continent or time zone', req: ['transcontinental', 'time zone', 'country'], examples: ['Kazakhstan', 'Kiribati'] },
+        { k: 'autonomous territory, dependency, or overseas island', req: ['territory', 'dependency', 'overseas', 'crown dependency'], examples: ['Faroe Islands', 'Pitcairn Islands'] },
+
+        // Science
+        { k: 'chemical element', req: ['chemical element'], examples: ['Praseodymium', 'Technetium'] },
+        { k: 'bone in the human body', req: ['bone', 'skeleton', 'skeletal'], examples: ['Hyoid', 'Sphenoid'] },
+        { k: 'type of cloud', req: ['cloud', 'cumulus', 'stratus', 'cirrus', 'nimbus'], examples: ['Noctilucent', 'Lenticular'] },
+        { k: 'gemstone or mineral', req: ['mineral', 'gemstone', 'gem', 'silicate', 'crystal'], examples: ['Tanzanite', 'Alexandrite'] },
+        { k: 'moon in our solar system', req: ['moon of', 'natural satellite'], examples: ['Enceladus', 'Iapetus'] },
+        { k: 'constellation', req: ['constellation'], examples: ['Ophiuchus', 'Cassiopeia'] },
+        { k: 'branch of physics or biology', req: ['branch of physics', 'branch of biology', 'study of', 'physics', 'biology'], examples: ['Mycology', 'Thermodynamics'] },
+        { k: 'noble gas or alkali metal', req: ['noble gas', 'alkali metal'], examples: ['Oganesson', 'Francium'] },
+        { k: 'muscle in the human body', req: ['muscle'], examples: ['Sternocleidomastoid', 'Sartorius'] },
+        { k: 'unit of scientific measurement', req: ['unit of', 'si unit', 'measurement'], examples: ['Sievert', 'Candela'] },
+        { k: 'subatomic particle or boson', req: ['subatomic particle', 'boson', 'fermion', 'quark', 'lepton', 'hadron'], examples: ['Muon', 'Gluon'] },
+        { k: 'organelle', req: ['organelle'], examples: ['Peroxisome', 'Golgi Apparatus'] },
+        { k: 'geological epoch or period', req: ['geological', 'epoch', 'period', 'era', 'eon'], examples: ['Ordovician', 'Pleistocene'] },
+        { k: 'atmosphere or interior', req: ['atmosphere', 'mantle', 'core', 'crust', 'stratosphere', 'troposphere', 'mesosphere', 'thermosphere', 'exosphere', 'lithosphere', 'asthenosphere'], examples: ['Asthenosphere', 'Mesosphere'] },
+        { k: 'hormone', req: ['hormone'], examples: ['Aldosterone', 'Oxytocin'] },
+        { k: 'type of rock', req: ['igneous rock', 'sedimentary rock', 'metamorphic rock', 'rock'], examples: ['Gneiss', 'Obsidian'] },
+        { k: 'feature on the moon or mars', req: ['crater', 'mare', 'mons', 'planitia', 'lunar', 'martian'], examples: ['Olympus Mons', 'Mare Tranquillitatis'] },
+        { k: 'laboratory glassware', req: ['glassware', 'laboratory', 'flask', 'beaker', 'pipette', 'burette'], examples: ['Erlenmeyer Flask', 'Burette'] },
+        { k: 'vitamin or essential dietary mineral', req: ['vitamin', 'essential mineral', 'dietary mineral', 'nutrient'], examples: ['Riboflavin', 'Selenium'] },
+        { k: 'electromagnetic wave or radiation', req: ['electromagnetic', 'radiation', 'waves', 'rays'], examples: ['Gamma Rays', 'Terahertz'] },
+        { k: 'transition metal or rare-earth', req: ['transition metal', 'lanthanide', 'rare-earth', 'chemical element'], examples: ['Neodymium', 'Ruthenium'] },
+        { k: 'cranial nerve or part of the human brain', req: ['cranial nerve', 'brain', 'cerebral', 'lobe', 'cortex'], examples: ['Amygdala', 'Vagus Nerve'] },
+        { k: 'chemical bond or reaction', req: ['chemical bond', 'chemical reaction', 'bonding'], examples: ['Covalent Bond', 'Saponification'] },
+        { k: 'scientific law, principle, or theorem', req: ['law', 'principle', 'theorem', 'equation'], examples: ['Bernoulli\'s Principle', 'Noether\'s Theorem'] },
+        { k: 'bacterium, virus, or microorganism', req: ['bacterium', 'bacteria', 'virus', 'microorganism', 'protozoa', 'archaea'], examples: ['Tardigrade', 'Bacteriophage'] },
+        { k: 'fungus or lichen', req: ['fungus', 'fungi', 'lichen', 'mushroom', 'yeast', 'mold'], examples: ['Cordyceps', 'Reindeer Lichen'] },
+        { k: 'alloy', req: ['alloy'], examples: ['Constantan', 'Invar'] },
+        { k: 'weather phenomenon', req: ['weather', 'meteorological', 'storm', 'wind', 'precipitation', 'lightning'], examples: ['Derecho', 'Ball Lightning'] },
+
+        // Nature & Wildlife
+        { k: 'flightless bird', req: ['flightless bird'], examples: ['Kakapo', 'Takahe'] },
+        { k: 'nocturnal mammal', req: ['nocturnal'], reqAll: ['mammal', 'bat', 'lemur', 'marsupial', 'rodent', 'carnivore', 'primate'], examples: ['Aye-Aye', 'Kinkajou'] },
+        { k: 'species of shark', req: ['shark'], examples: ['Goblin Shark', 'Wobbegong'] },
+        { k: 'prehistoric dinosaur', req: ['dinosaur', 'theropod', 'sauropod', 'ceratopsian', 'ornithischian'], examples: ['Therizinosaurus', 'Pachycephalosaurus'] },
+        { k: 'venomous animal', req: ['venomous', 'venom'], examples: ['Inland Taipan', 'Cone Snail'] },
+        { k: 'species of tree', req: ['tree', 'conifer', 'deciduous'], examples: ['Baobab', 'Ginkgo'] },
+        { k: 'wildflower or flowering plant', req: ['flowering plant', 'wildflower', 'flower', 'perennial', 'angiosperm'], examples: ['Edelweiss', 'Trillium'] },
+        { k: 'bird of prey', req: ['bird of prey', 'raptor', 'falcon', 'eagle', 'hawk', 'owl', 'vulture', 'kite', 'osprey'], examples: ['Harpy Eagle', 'Secretarybird'] },
+        { k: 'species of snake', req: ['snake', 'serpent', 'viper', 'python', 'cobra', 'boa', 'colubrid', 'elapid'], examples: ['Boomslang', 'Gaboon Viper'] },
+        { k: 'deep-sea creature', req: ['deep-sea', 'deep sea', 'abyssal', 'bathypelagic', 'ocean'], examples: ['Vampire Squid', 'Barreleye'] },
+        { k: 'freshwater fish', req: ['freshwater fish', 'fish'], examples: ['Arapaima', 'Coelacanth'] },
+        { k: 'species of bear or wild cat', req: ['bear', 'ursidae', 'felidae', 'wild cat', 'big cat', 'feline'], examples: ['Margay', 'Sun Bear'] },
+        { k: 'marsupial', req: ['marsupial'], examples: ['Quokka', 'Numbat'] },
+        { k: 'insect or beetle', req: ['insect', 'beetle', 'coleoptera', 'hymenoptera', 'orthoptera', 'hemiptera', 'diptera'], examples: ['Hercules Beetle', 'Orchid Mantis'] },
+        { k: 'whale or dolphin', req: ['whale', 'dolphin', 'cetacean', 'porpoise'], examples: ['Vaquita', 'Narwhal'] },
+        { k: 'reptile other than a snake', req: ['reptile', 'lizard', 'turtle', 'tortoise', 'crocodile', 'alligator', 'gecko', 'iguana', 'chameleon', 'tuatara'], forbid: ['snake', 'serpent'], examples: ['Tuatara', 'Gharial'] },
+        { k: 'dog breed', req: ['dog breed', 'breed of dog'], examples: ['Azawakh', 'Xoloitzcuintli'] },
+        { k: 'cat breed', req: ['cat breed', 'breed of cat'], examples: ['Korat', 'Singapura'] },
+        { k: 'amphibian', req: ['amphibian', 'frog', 'toad', 'salamander', 'newt', 'caecilian'], examples: ['Axolotl', 'Hellbender'] },
+        { k: 'biome or terrestrial ecosystem', req: ['biome', 'ecosystem', 'tundra', 'taiga', 'savanna', 'rainforest', 'chaparral', 'steppe', 'wetland'], examples: ['Chaparral', 'Taiga'] },
+        { k: 'species of primate', req: ['primate', 'monkey', 'ape', 'lemur', 'tarsier', 'loris', 'gibbon'], examples: ['Mandrill', 'Tarsier'] },
+        { k: 'penguin or seabird', req: ['penguin', 'seabird', 'albatross', 'puffin', 'gannet', 'petrel', 'booby', 'cormorant'], examples: ['Frigatebird', 'Auklet'] },
+        { k: 'crustacean or mollusk', req: ['crustacean', 'mollusk', 'mollusc', 'crab', 'lobster', 'shrimp', 'octopus', 'squid', 'snail', 'clam'], examples: ['Mantis Shrimp', 'Nautilus'] },
+        { k: 'butterfly or moth', req: ['butterfly', 'moth', 'lepidoptera'], examples: ['Atlas Moth', 'Glasswing Butterfly'] },
+        { k: 'carnivorous plant or succulent', req: ['carnivorous plant', 'succulent', 'pitcher plant', 'cactus', 'sundew'], examples: ['Nepenthes', 'Lithops'] },
+        { k: 'deer, antelope, or wild hoofed', req: ['deer', 'antelope', 'ungulate', 'cervidae', 'bovidae', 'gazelle', 'ibex', 'okapi', 'tapir'], examples: ['Okapi', 'Saiga Antelope'] },
+        { k: 'spider or arachnid', req: ['spider', 'arachnid', 'scorpion', 'tarantula', 'harvestman', 'tick', 'mite'], examples: ['Whip Scorpion', 'Ogre-Faced Spider'] },
+        { k: 'migratory bird or waterfowl', req: ['waterfowl', 'duck', 'goose', 'swan', 'migratory', 'bird', 'crane', 'stork', 'heron'], examples: ['Arctic Tern', 'Whooping Crane'] },
+
+        // Everyday
+        { k: 'toolbox', req: ['tool', 'wrench', 'hammer', 'screwdriver', 'pliers', 'saw', 'drill', 'chisel', 'caliper'], examples: ['Vernier Caliper', 'Spokeshave'] },
+        { k: 'kitchen drawer', req: ['kitchen', 'utensil', 'cutlery', 'tool', 'cooking'], examples: ['Mandoline', 'Zester'] },
+        { k: 'office stationery', req: ['stationery', 'office', 'paper', 'pen', 'stapler', 'binder', 'clip'], examples: ['Bodkin', 'Brads'] },
+        { k: 'footwear', req: ['footwear', 'shoe', 'boot', 'sandal', 'slipper'], examples: ['Espadrille', 'Monk Strap'] },
+        { k: 'wallet or purse', req: ['card', 'money', 'currency', 'identification', 'passport', 'receipt', 'coin', 'key'], examples: ['Currency', 'Passport'] },
+        { k: 'bedroom furniture', req: ['furniture', 'bed', 'dresser', 'wardrobe', 'nightstand', 'chest'], examples: ['Chifforobe', 'Credenza'] },
+        { k: 'hat or headwear', req: ['hat', 'headgear', 'headwear', 'cap', 'helmet'], examples: ['Deerstalker', 'Fascinator'] },
+        { k: 'personal hygiene', req: ['hygiene', 'toiletry', 'soap', 'brush', 'floss', 'deodorant', 'razor', 'shampoo'], examples: ['Tongue Scraper', 'Pumice Stone'] },
+        { k: 'kept in a refrigerator', req: ['food', 'dairy', 'condiment', 'beverage', 'vegetable', 'fruit', 'meat', 'sauce', 'milk', 'butter', 'egg'], examples: ['Worcestershire Sauce', 'Kefir'] },
+        { k: 'gardening shed', req: ['garden', 'gardening', 'horticulture', 'tool', 'lawn', 'soil'], examples: ['Dibber', 'Mattock'] },
+        { k: 'attic', req: ['storage', 'box', 'trunk', 'luggage', 'furniture', 'decoration', 'antiques', 'insulation'], examples: ['Steamer Trunk', 'Heirloom'] },
+        { k: 'fastener', req: ['fastener', 'screw', 'bolt', 'nail', 'rivet', 'button', 'zipper', 'buckle', 'pin'], examples: ['Cotter Pin', 'Turnbuckle'] },
+        { k: 'glove compartment', req: ['manual', 'registration', 'insurance', 'flashlight', 'map', 'tire', 'gauge', 'fuse'], examples: ['Tire Pressure Gauge', 'Owner\'s Manual'] },
+        { k: 'fabric or textile', req: ['fabric', 'textile', 'cloth', 'weave', 'fiber'], examples: ['Seersucker', 'Gabardine'] },
+        { k: 'kitchen appliance', req: ['appliance', 'kitchen', 'cooking', 'machine', 'oven', 'blender', 'toaster'], examples: ['Immersion Blender', 'Samovar'] },
+        { k: 'knot tied in rope', req: ['knot', 'hitch', 'bend', 'loop'], examples: ['Bowline', 'Prusik'] },
+        { k: 'first-aid kit', req: ['first aid', 'bandage', 'medical', 'antiseptic', 'gauze', 'splint', 'tourniquet'], examples: ['Butterfly Closure', 'Tourniquet'] },
+        { k: 'bag or luggage', req: ['bag', 'luggage', 'backpack', 'suitcase', 'pouch', 'tote', 'satchel'], examples: ['Portmanteau', 'Haversack'] },
+        { k: 'part of a bicycle', req: ['bicycle', 'cycling'], examples: ['Derailleur', 'Bottom Bracket'] },
+        { k: 'cleaning supply or tool', req: ['cleaning', 'broom', 'mop', 'detergent', 'sponge', 'vacuum', 'brush'], examples: ['Chamois', 'Squeegee'] },
+        { k: 'medicine cabinet', req: ['medication', 'medicine', 'ointment', 'bandage', 'thermometer', 'aspirin', 'antiseptic'], examples: ['Styptic Pencil', 'Hydrocortisone'] },
+        { k: 'lock, latch, or hinge', req: ['lock', 'latch', 'hinge', 'bolt', 'padlock'], examples: ['Mortise Lock', 'Hasp'] },
+        { k: 'camping or backpacking', req: ['camping', 'hiking', 'tent', 'sleeping bag', 'lantern', 'compass', 'stove'], examples: ['Bivy Sack', 'Ferrocerium Rod'] },
+        { k: 'tableware or dining glassware', req: ['tableware', 'glassware', 'plate', 'bowl', 'cup', 'glass', 'goblet', 'pitcher'], examples: ['Ramekin', 'Decanter'] },
+        { k: 'lamp, light fixture, or bulb', req: ['lamp', 'lighting', 'light fixture', 'light bulb', 'lantern', 'chandelier', 'sconce'], examples: ['Sconce', 'Banker\'s Lamp'] },
+        { k: 'sewing or crafting', req: ['sewing', 'needle', 'thread', 'thimble', 'bobbin', 'scissors', 'yarn', 'craft'], examples: ['Seam Ripper', 'Bodkin'] },
+        { k: 'timepiece or clock', req: ['clock', 'watch', 'timepiece', 'horology', 'sundial', 'hourglass'], examples: ['Chronometer', 'Astrolabe'] },
+        { k: 'laundry room', req: ['laundry', 'washing', 'iron', 'hamper', 'detergent', 'clothespin', 'dryer'], examples: ['Washboard', 'Clothespin'] },
+
+        // Pop Culture
+        { k: 'superhero who does not naturally possess biological superpowers', req: ['superhero', 'vigilante', 'comic'], forbid: ['superhuman strength', 'mutant', 'kryptonian', 'alien'], examples: ['Question', 'Blue Beetle'] },
+        { k: 'franchise created by nintendo', req: ['nintendo'], reqAll: ['video game', 'franchise', 'series'], examples: ['Chibi-Robo', 'Sin and Punishment'] },
+        { k: 'board game that involves rolling dice', req: ['board game', 'dice game', 'tabletop'], reqAll: ['dice'], examples: ['Backgammon', 'Talisman'] },
+        { k: 'pixar animated feature film', req: ['pixar'], reqAll: ['film'], examples: ['Onward', 'Luca'] },
+        { k: 'mario franchise', req: ['mario'], reqAll: ['character', 'nintendo', 'video game'], examples: ['Wart', 'Geno'] },
+        { k: 'card game played with a standard deck', req: ['card game'], examples: ['Euchre', 'Cribbage'] },
+        { k: 'video game console released before 2010', req: ['video game console', 'handheld game console'], examples: ['Neo Geo', 'TurboGrafx-16'] },
+        { k: 'tabletop board or card game', req: ['board game', 'card game', 'tabletop game'], examples: ['Carcassonne', 'Agricola'] },
+        { k: 'film genre', req: ['film genre', 'cinema', 'genre'], examples: ['Giallo', 'Mumblecore'] },
+        { k: 'arcade video game', req: ['arcade'], reqAll: ['video game'], examples: ['Tempest', 'Sinistar'] },
+        { k: 'superhero team', req: ['superhero team', 'comics'], examples: ['Alpha Flight', 'Great Lakes Avengers'] },
+        { k: 'superhero secret identity', req: ['superhero', 'alter ego', 'character', 'comics'], examples: ['Carter Hall', 'Ted Kord'] },
+        { k: 'x-men', req: ['x-men', 'mutant', 'marvel'], examples: ['Morph', 'Forge'] },
+        { k: 'fictional detective', req: ['detective', 'fictional'], examples: ['Nero Wolfe', 'Father Brown'] },
+        { k: 'studio ghibli', req: ['studio ghibli'], examples: ['Porco Rosso', 'Only Yesterday'] },
+        { k: 'chess piece or special chess move', req: ['chess'], examples: ['En Passant', 'Zugzwang'] },
+        { k: 'super smash bros', req: ['super smash bros', 'nintendo', 'video game'], examples: ['Mr. Game & Watch', 'Ice Climbers'] },
+        { k: 'spaceship or starship', req: ['starship', 'spaceship', 'spacecraft', 'fictional'], examples: ['Rocinante', 'Nostromo'] },
+        { k: 'monster from horror cinema', req: ['horror', 'monster', 'film', 'creature'], examples: ['Nosferatu', 'Brundlefly'] },
+        { k: 'indie video game', req: ['indie', 'video game'], examples: ['Outer Wilds', 'Return of the Obra Dinn'] },
+        { k: 'original 151', req: ['pokemon', 'pokémon'], examples: ['Tangela', 'Farfetch\'d'] },
+        { k: 'villain from batman or spider-man', req: ['batman', 'spider-man', 'supervillain'], examples: ['Clock King', 'Chameleon'] },
+        { k: 'star wars', req: ['star wars'], examples: ['Mon Calamari', 'Coruscant'] },
+        { k: 'sitcom or animated tv series', req: ['sitcom', 'television series', 'animated'], examples: ['Mission Hill', 'Clone High'] },
+        { k: 'capcom, square enix, or sega', req: ['capcom', 'square enix', 'squaresoft', 'sega'], reqAll: ['video game'], examples: ['Panzer Dragoon', 'Vagrant Story'] },
+        { k: 'fictional castle, kingdom, or fantasy realm', req: ['fictional', 'kingdom', 'realm', 'castle', 'fantasy'], examples: ['Gormenghast', 'Earthsea'] },
+        { k: 'movie director', req: ['film director', 'filmmaker'], examples: ['Agnès Varda', 'Abbas Kiarostami'] },
+        { k: 'dungeons & dragons', req: ['dungeons & dragons'], examples: ['Beholder', 'Gelatinous Cube'] },
+
+        // History & Myth
+        { k: 'ancient civilization or empire', req: ['ancient', 'civilization', 'empire', 'kingdom'], examples: ['Aksumite Empire', 'Hittites'] },
+        { k: 'greek mythology', req: ['greek mythology'], examples: ['Hecate', 'Asclepius'] },
+        { k: 'norse mythology', req: ['norse mythology'], examples: ['Skadi', 'Tyr'] },
+        { k: 'egyptian mythology', req: ['egyptian'], reqAll: ['deity', 'god', 'goddess', 'mythology'], examples: ['Sobek', 'Sekhmet'] },
+        { k: 'historical explorer or navigator', req: ['explorer', 'navigator'], examples: ['Ibn Battuta', 'Zheng He'] },
+        { k: 'seven wonders', req: ['wonder', 'ancient', 'colossus', 'mausoleum', 'lighthouse', 'pyramid', 'hanging gardens', 'statue of zeus', 'temple of artemis', 'taj mahal', 'petra', 'colosseum', 'chichen itza', 'machu picchu', 'christ the redeemer', 'great wall'], examples: ['Mausoleum at Halicarnassus', 'Colossus of Rhodes'] },
+        { k: 'medieval weapon or piece of armor', req: ['weapon', 'armor', 'armour', 'sword', 'polearm', 'medieval'], examples: ['Halberd', 'Brigandine'] },
+        { k: 'treaty, pact, or declaration', req: ['treaty', 'pact', 'declaration', 'accord', 'armistice'], examples: ['Treaty of Tordesillas', 'Peace of Westphalia'] },
+        { k: 'roman emperor', req: ['roman emperor'], examples: ['Aurelian', 'Vespasian'] },
+        { k: 'industrial revolution', req: ['industrial revolution', 'invented', 'steam', 'loom', 'engine', 'telegraph'], examples: ['Spinning Jenny', 'Bessemer Process'] },
+        { k: 'ancient city', req: ['ancient city', 'archaeological site', 'ancient'], examples: ['Persepolis', 'Carthage'] },
+        { k: 'queen or empress', req: ['queen', 'empress'], examples: ['Zenobia', 'Hatshepsut'] },
+        { k: 'mythical creature', req: ['mythological', 'mythical', 'folklore', 'legendary creature'], examples: ['Manticore', 'Selkie'] },
+        { k: 'ship famous in history', req: ['ship', 'vessel', 'frigate', 'galleon', 'hms', 'uss'], examples: ['HMS Beagle', 'Vasa'] },
+        { k: 'ancient monument or archaeological site', req: ['monument', 'archaeological', 'megalith', 'ruins', 'temple'], examples: ['Gobekli Tepe', 'Newgrange'] },
+        { k: 'renaissance', req: ['renaissance'], examples: ['Pico della Mirandola', 'Filippo Brunelleschi'] },
+        { k: 'currency', req: ['currency', 'coin'], examples: ['Florin', 'Ngultrum'] },
+        { k: 'dynasty', req: ['dynasty'], examples: ['Ptolemaic Dynasty', 'Sassanid'] },
+        { k: 'roman, celtic, or hindu mythology', req: ['roman mythology', 'celtic mythology', 'hindu', 'deity'], examples: ['Cernunnos', 'Janus'] },
+        { k: 'ancient battle or military campaign', req: ['battle', 'campaign', 'siege', 'war'], examples: ['Battle of Cannae', 'Battle of Gaugamela'] },
+        { k: 'trade route or ancient road', req: ['trade route', 'road', 'silk road'], examples: ['Amber Road', 'Incense Route'] },
+        { k: 'pharaoh', req: ['pharaoh'], examples: ['Akhenaten', 'Sneferu'] },
+        { k: 'library, university, or archive', req: ['library', 'university', 'archive', 'academy'], examples: ['Library of Pergamum', 'Nalanda'] },
+        { k: 'ancient writing material', req: ['writing', 'papyrus', 'parchment', 'vellum', 'clay tablet', 'scroll', 'codex'], examples: ['Ostracon', 'Vellum'] },
+        { k: 'medieval guild, knightly order, or feudal title', req: ['guild', 'knight', 'feudal', 'order', 'nobility', 'vassal'], examples: ['Hanseatic League', 'Margrave'] },
+        { k: 'historical speech or philosophical text', req: ['speech', 'treatise', 'philosophy', 'dialogue', 'text'], examples: ['Nicomachean Ethics', 'Gettysburg Address'] },
+
+        // Sports
+        { k: 'summer olympic', req: ['olympic', 'sport'], examples: ['Modern Pentathlon', 'Handball'] },
+        { k: 'winter olympic', req: ['winter olympic', 'skiing', 'skating', 'curling', 'bobsleigh', 'luge', 'biathlon', 'snowboard', 'ice hockey'], examples: ['Nordic Combined', 'Skeleton'] },
+        { k: 'track and field', req: ['track and field', 'athletics', 'decathlon', 'heptathlon', 'hurdles', 'javelin', 'discus', 'shot put', 'pole vault', 'steeplechase'], examples: ['Steeplechase', 'Heptathlon'] },
+        { k: 'swimming stroke', req: ['swimming', 'stroke', 'freestyle', 'backstroke', 'breaststroke', 'butterfly', 'medley'], examples: ['Sidestroke', 'Butterfly'] },
+        { k: 'martial art or combat sport', req: ['martial art', 'combat sport', 'wrestling', 'boxing', 'fencing'], examples: ['Capoeira', 'Sambo'] },
+        { k: 'racquet or paddle sport', req: ['racquet', 'racket', 'paddle', 'tennis', 'squash', 'badminton', 'pickleball', 'padel'], examples: ['Padel', 'Pelota'] },
+        { k: 'position in soccer', req: ['association football', 'soccer', 'position', 'midfielder', 'defender', 'goalkeeper', 'forward'], examples: ['Sweeper', 'Trequartista'] },
+        { k: 'position in baseball', req: ['baseball', 'position', 'shortstop', 'catcher', 'pitcher', 'outfielder', 'baseman'], examples: ['Shortstop', 'Designated Hitter'] },
+        { k: 'sporting trophy or championship cup', req: ['trophy', 'cup', 'championship'], examples: ['Claret Jug', 'Borg-Warner Trophy'] },
+        { k: 'gymnastics apparatus', req: ['gymnastics', 'pommel', 'rings', 'vault', 'beam', 'bars', 'floor'], examples: ['Pommel Horse', 'Uneven Bars'] },
+        { k: 'pitch in baseball', req: ['pitch', 'baseball', 'fastball', 'curveball', 'slider', 'changeup', 'knuckleball', 'splitter'], examples: ['Eephus', 'Screwball'] },
+        { k: 'water sport', req: ['water sport', 'swimming', 'surfing', 'rowing', 'kayaking', 'canoeing', 'water polo', 'sailing', 'diving'], examples: ['Sepak Takraw', 'Canoe Polo'] },
+        { k: 'protective gear worn in sports', req: ['helmet', 'pad', 'guard', 'mask', 'protective', 'cup', 'glove'], examples: ['Shin Guard', 'Jockstrap'] },
+        { k: 'cycling discipline or grand tour', req: ['cycling', 'tour de france', 'giro d\'italia', 'vuelta', 'velodrome', 'cyclocross', 'bmx'], examples: ['Keirin', 'Cyclo-cross'] },
+        { k: 'scoring term in tennis or golf', req: ['tennis', 'golf', 'scoring', 'birdie', 'eagle', 'albatross', 'bogey', 'deuce', 'love'], examples: ['Albatross', 'Deuce'] },
+        { k: 'cue sport or target sport', req: ['cue sport', 'billiards', 'snooker', 'pool', 'archery', 'darts', 'shooting', 'bowling'], examples: ['Carom Billiards', 'Snooker'] },
+        { k: 'position or penalty in american football', req: ['american football', 'quarterback', 'linebacker', 'offside', 'holding', 'safety'], examples: ['Nose Tackle', 'Horse-Collar Tackle'] },
+        { k: 'position or violation in basketball', req: ['basketball', 'point guard', 'center', 'traveling', 'goaltending', 'double dribble'], examples: ['Goaltending', 'Three-Second Violation'] },
+        { k: 'position or penalty in ice hockey', req: ['ice hockey', 'goaltender', 'defenseman', 'icing', 'offside', 'high-sticking'], examples: ['Icing', 'Enforcer'] },
+        { k: 'stadium, arena, or racetrack', req: ['stadium', 'arena', 'racetrack', 'circuit', 'speedway', 'velodrome'], examples: ['Nürburgring', 'San Siro'] },
+        { k: 'golf club or type of golf shot', req: ['golf', 'club', 'iron', 'putter', 'wedge', 'driver', 'fade', 'draw', 'slice'], examples: ['Niblick', 'Sand Wedge'] },
+        { k: 'skateboarding, snowboarding, or surfing', req: ['skateboarding', 'snowboarding', 'surfing', 'trick', 'maneuver'], examples: ['Kickflip', 'McTwist'] },
+        { k: 'weight class in boxing or mma', req: ['weight class', 'heavyweight', 'middleweight', 'lightweight', 'featherweight', 'bantamweight', 'flyweight'], examples: ['Strawweight', 'Cruiserweight'] },
+        { k: 'folk or regional sport', req: ['sport', 'game', 'traditional'], examples: ['Buzkashi', 'Kabaddi'] },
+
+        // Music
+        { k: 'genre of music', req: ['music genre', 'genre of music', 'musical style'], examples: ['Shoegaze', 'Zydeco'] },
+        { k: 'percussion instrument', req: ['percussion instrument'], examples: ['Vibraphone', 'Cajon'] },
+        { k: 'woodwind or brass instrument', req: ['woodwind instrument', 'brass instrument'], examples: ['Oboe', 'Euphonium'] },
+        { k: 'stringed musical instrument', req: ['string instrument', 'stringed instrument', 'chordophone'], examples: ['Hurdy-Gurdy', 'Dulcimer'] },
+        { k: 'style of dance', req: ['dance'], examples: ['Fandango', 'Lindy Hop'] },
+        { k: 'musical tempo or dynamic marking', req: ['tempo', 'dynamics', 'musical', 'italian'], examples: ['Rubato', 'Pianissimo'] },
+        { k: 'vocal range or singing voice', req: ['vocal range', 'voice type', 'soprano', 'alto', 'tenor', 'baritone', 'bass', 'contralto'], examples: ['Contralto', 'Countertenor'] },
+        { k: 'classical composer', req: ['composer'], examples: ['Hildegard of Bingen', 'Jean Sibelius'] },
+        { k: 'folk instrument', req: ['folk', 'traditional', 'instrument'], examples: ['Kora', 'Balalaika'] },
+        { k: 'part of a drum kit', req: ['drum', 'cymbal', 'hi-hat', 'snare', 'tom', 'pedal'], examples: ['Hi-Hat', 'China Cymbal'] },
+        { k: 'musical scale or mode', req: ['scale', 'mode', 'musical'], examples: ['Phrygian', 'Mixolydian'] },
+        { k: 'broadway or west end stage musical', req: ['musical'], examples: ['Hadestown', 'Sunday in the Park with George'] },
+        { k: 'subgenre of rock or electronic music', req: ['rock', 'electronic', 'music', 'genre'], examples: ['Math Rock', 'IDM'] },
+        { k: 'famous opera', req: ['opera'], examples: ['Turandot', 'Wozzeck'] },
+        { k: 'keyboard or electronic musical instrument', req: ['keyboard instrument', 'electronic musical instrument', 'synthesizer', 'organ', 'piano'], examples: ['Theremin', 'Mellotron'] },
+        { k: 'musical chord, interval, or harmony', req: ['chord', 'interval', 'harmony', 'musical'], examples: ['Tritone', 'Neapolitan Sixth'] },
+        { k: 'jazz musician or bandleader', req: ['jazz'], examples: ['Thelonious Monk', 'Sun Ra'] },
+        { k: 'part of a guitar or violin', req: ['guitar', 'violin', 'fret', 'bridge', 'scroll', 'neck', 'soundhole'], examples: ['F-Hole', 'Truss Rod'] },
+        { k: 'song structure or classical composition form', req: ['musical form', 'sonata', 'fugue', 'rondo', 'symphony', 'concerto', 'verse', 'chorus'], examples: ['Passacaglia', 'Fugue'] },
+        { k: 'music festival or concert hall', req: ['music festival', 'concert hall', 'opera house'], examples: ['Musikverein', 'Montreux Jazz Festival'] },
+
+        // Arts & Architecture
+        { k: 'art movement or style', req: ['art movement', 'art style', 'painting'], examples: ['Fauvism', 'Constructivism'] },
+        { k: 'architectural style', req: ['architectural style', 'architecture'], examples: ['Brutalism', 'Beaux-Arts'] },
+        { k: 'poetic form or meter', req: ['poetic form', 'poem', 'meter', 'verse', 'sonnet', 'haiku'], examples: ['Villanelle', 'Sestina'] },
+        { k: 'literary genre', req: ['literary genre', 'genre of literature', 'fiction', 'literature'], examples: ['Epistolary', 'Bildungsroman'] },
+        { k: 'medium or material used in painting or sculpture', req: ['painting', 'sculpture', 'pigment', 'medium', 'bronze', 'marble', 'tempera', 'fresco'], examples: ['Encaustic', 'Gouache'] },
+        { k: 'structural part of a building or cathedral', req: ['architecture', 'cathedral', 'building', 'arch', 'vault', 'nave', 'buttress', 'dome'], examples: ['Flying Buttress', 'Clerestory'] },
+        { k: 'playwright', req: ['playwright', 'dramatist'], examples: ['Anton Chekhov', 'Henrik Ibsen'] },
+        { k: 'shade of blue or green', req: ['shade of blue', 'shade of green', 'color', 'colour', 'pigment'], examples: ['Viridian', 'Cerulean'] },
+        { k: 'art museum', req: ['art museum', 'gallery'], examples: ['Uffizi', 'Rijksmuseum'] },
+        { k: 'classic novel', req: ['novel'], examples: ['Middlemarch', 'Nostromo'] },
+        { k: 'printmaking or graphic art', req: ['printmaking', 'engraving', 'etching', 'lithography', 'woodcut', 'screenprinting'], examples: ['Mezzotint', 'Aquatint'] },
+        { k: 'mythological or literary monster', req: ['monster', 'creature', 'mythology', 'fictional'], examples: ['Grendel', 'Chimera'] },
+        { k: 'shade of red, yellow, or purple', req: ['shade of red', 'shade of yellow', 'shade of purple', 'color', 'colour', 'pigment'], examples: ['Vermilion', 'Gamboge'] },
+        { k: 'painter or sculptor', req: ['painter', 'sculptor', 'artist'], examples: ['Artemisia Gentileschi', 'Caravaggio'] },
+        { k: 'pottery, ceramic, or glass art', req: ['pottery', 'ceramic', 'porcelain', 'glass', 'stoneware', 'earthenware'], examples: ['Celadon', 'Kintsugi'] },
+        { k: 'column order or architectural ornament', req: ['architectural order', 'column', 'capital', 'cornice', 'frieze', 'pediment'], examples: ['Composite Order', 'Caryatid'] },
+        { k: 'epic poem or collection of fables', req: ['epic poem', 'fables', 'poem'], examples: ['Kalevala', 'Panchatantra'] },
+        { k: 'calligraphy, typeface, or font', req: ['typeface', 'font', 'typography', 'calligraphy', 'script'], examples: ['Garamond', 'Fraktur'] },
+
+        // Tech & Engineering
+        { k: 'programming language', req: ['programming language'], examples: ['Haskell', 'Erlang'] },
+        { k: 'bridge structure', req: ['bridge'], examples: ['Cable-Stayed Bridge', 'Bascule Bridge'] },
+        { k: 'sailing vessel or boat', req: ['sailing', 'ship', 'boat', 'vessel', 'yacht'], examples: ['Catamaran', 'Brigantine'] },
+        { k: 'aircraft or rotorcraft', req: ['aircraft', 'helicopter', 'rotorcraft', 'airplane', 'glider', 'airship'], examples: ['Autogyro', 'Ornithopter'] },
+        { k: 'renewable energy source', req: ['renewable energy', 'solar', 'wind', 'hydroelectric', 'geothermal', 'biomass', 'tidal'], examples: ['Tidal Power', 'Geothermal'] },
+        { k: 'simple machine or mechanical linkage', req: ['simple machine', 'linkage', 'lever', 'pulley', 'fulcrum', 'cam', 'crank'], examples: ['Pantograph', 'Inclined Plane'] },
+        { k: 'file format or image extension', req: ['file format', 'image format', 'audio format', 'video format'], examples: ['WebP', 'FLAC'] },
+        { k: 'component inside a desktop computer', req: ['computer', 'processor', 'motherboard', 'memory', 'storage', 'graphics', 'power supply'], examples: ['Northbridge', 'Heatsink'] },
+        { k: 'railway train or locomotive', req: ['locomotive', 'train', 'railway', 'rail'], examples: ['Maglev', 'Funicular'] },
+        { k: 'space mission or space probe', req: ['space probe', 'spacecraft', 'spaceflight', 'mission'], examples: ['Cassini-Huygens', 'New Horizons'] },
+        { k: 'network protocol or internet standard', req: ['protocol', 'internet', 'network'], examples: ['BGP', 'QUIC'] },
+        { k: 'camera lens or photographic term', req: ['camera', 'lens', 'photography', 'aperture', 'shutter'], examples: ['Bokeh', 'Tilt-Shift'] },
+        { k: 'operating system or linux distribution', req: ['operating system', 'linux distribution', 'unix'], examples: ['FreeBSD', 'Slackware'] },
+        { k: 'gear, bearing, or mechanical fastener', req: ['gear', 'bearing', 'fastener', 'mechanical'], examples: ['Worm Gear', 'Ball Bearing'] },
+        { k: 'logic gate, electronic component, or circuit element', req: ['logic gate', 'electronic component', 'resistor', 'capacitor', 'transistor', 'diode', 'inductor'], examples: ['Memristor', 'Schmitt Trigger'] },
+        { k: 'cryptographic cipher, hash algorithm, or security protocol', req: ['cipher', 'cryptographic', 'hash', 'encryption', 'cryptography'], examples: ['ChaCha20', 'Elliptic-Curve'] },
+        { k: 'dam, tunnel, or civil engineering structure', req: ['dam', 'tunnel', 'aqueduct', 'viaduct', 'civil engineering'], examples: ['Viaduct', 'Arch Dam'] },
+        { k: 'mathematician or computer scientist', req: ['mathematician', 'computer scientist'], examples: ['Emmy Noether', 'Edsger Dijkstra'] },
+
+        // Space & Astronomy
+        { k: 'dwarf planet, asteroid, or kuiper belt object', req: ['dwarf planet', 'asteroid', 'kuiper belt', 'trans-neptunian', 'minor planet'], examples: ['Makemake', 'Haumea'] },
+        { k: 'comet or meteor shower', req: ['comet', 'meteor shower'], examples: ['Perseids', 'Hale-Bopp'] },
+        { k: 'star or stellar remnant', req: ['star', 'white dwarf', 'neutron star', 'pulsar', 'magnetar', 'red giant', 'supergiant', 'black hole'], examples: ['Magnetar', 'Wolf-Rayet Star'] },
+        { k: 'nebula, galaxy, or star cluster', req: ['nebula', 'galaxy', 'star cluster'], examples: ['Sombrero Galaxy', 'Carina Nebula'] },
+        { k: 'space telescope or orbital observatory', req: ['space telescope', 'observatory', 'telescope'], examples: ['Chandra', 'Spitzer'] },
+        { k: 'rover or lander', req: ['rover', 'lander'], examples: ['Spirit', 'Philae'] },
+        { k: 'phase of the moon or type of eclipse', req: ['lunar phase', 'eclipse', 'gibbous', 'crescent', 'syzygy'], examples: ['Waxing Gibbous', 'Annular Eclipse'] },
+        { k: 'bright named star', req: ['star', 'constellation'], examples: ['Fomalhaut', 'Aldebaran'] },
+        { k: 'rocket family or launch vehicle', req: ['launch vehicle', 'rocket'], examples: ['Ariane 5', 'Proton'] },
+        { k: 'part of a telescope or spacecraft', req: ['telescope', 'spacecraft', 'mirror', 'eyepiece', 'thruster', 'heat shield'], examples: ['Heat Shield', 'Reaction Wheel'] },
+
+        // Fashion & Textiles
+        { k: 'coat, jacket, or outerwear', req: ['coat', 'jacket', 'outerwear', 'parka', 'cloak', 'cape'], examples: ['Chesterfield Coat', 'Anorak'] },
+        { k: 'collar, neckline, or sleeve', req: ['collar', 'neckline', 'sleeve'], examples: ['Raglan Sleeve', 'Mandarin Collar'] },
+        { k: 'pattern or weave used in clothing', req: ['pattern', 'weave', 'plaid', 'tartan', 'houndstooth', 'paisley', 'twill', 'jacquard'], examples: ['Houndstooth', 'Herringbone'] },
+        { k: 'jewelry or personal adornment', req: ['jewellery', 'jewelry', 'ring', 'necklace', 'bracelet', 'brooch', 'earring', 'tiara'], examples: ['Cameo', 'Signet Ring'] },
+        { k: 'trousers, skirt, or dress', req: ['trousers', 'pants', 'skirt', 'dress', 'gown', 'jeans'], examples: ['Culottes', 'Sarong'] },
+        { k: 'eyeglasses or sunglasses', req: ['eyeglasses', 'glasses', 'sunglasses', 'eyewear'], examples: ['Wayfarer', 'Pince-Nez'] },
+        { k: 'traditional garment', req: ['garment', 'clothing', 'traditional', 'dress', 'robe'], examples: ['Kimono', 'Dirndl'] },
+        { k: 'leather, fur, or synthetic material', req: ['leather', 'fur', 'synthetic', 'suede', 'nylon', 'polyester', 'vinyl'], examples: ['Suede', 'Cordovan'] },
+        { k: 'sewing stitch, seam, or tailoring', req: ['stitch', 'seam', 'tailoring', 'sewing', 'hem', 'pleat', 'dart'], examples: ['French Seam', 'Basting'] },
+        { k: 'accessory worn around the neck or waist', req: ['necktie', 'scarf', 'belt', 'cravat', 'ascot', 'cummerbund', 'suspenders', 'shawl'], examples: ['Ascot Tie', 'Cummerbund'] },
+
+        // Vehicles & Transit
+        { k: 'car body style', req: ['car', 'automobile', 'sedan', 'coupe', 'hatchback', 'wagon', 'convertible', 'suv', 'roadster'], examples: ['Shooting-Brake', 'Landaulet'] },
+        { k: 'mechanical part under the hood of a car', req: ['engine', 'alternator', 'radiator', 'carburetor', 'transmission', 'battery', 'automotive'], examples: ['Alternator', 'Serpentine Belt'] },
+        { k: 'construction or agricultural vehicle', req: ['tractor', 'excavator', 'bulldozer', 'combine', 'harvester', 'loader', 'crane', 'grader'], examples: ['Combine Harvester', 'Backhoe'] },
+        { k: 'motorcycle or two-wheeled vehicle', req: ['motorcycle', 'scooter', 'moped', 'bicycle'], examples: ['Cafe Racer', 'Sidecar'] },
+        { k: 'horse-drawn carriage', req: ['carriage', 'horse-drawn', 'wagon', 'chariot', 'coach'], examples: ['Hansom Cab', 'Phaeton'] },
+        { k: 'part of a ship', req: ['ship', 'nautical', 'bow', 'stern', 'keel', 'rudder', 'mast', 'hull', 'bulkhead'], examples: ['Bowsprit', 'Gunwale'] },
+        { k: 'historic airplane or flying boat', req: ['aircraft', 'airplane', 'flying boat', 'airliner', 'biplane'], examples: ['Spruce Goose', 'Concorde'] },
+        { k: 'public transit or urban rail', req: ['rapid transit', 'subway', 'tram', 'monorail', 'light rail', 'trolleybus', 'funicular', 'bus'], examples: ['Trolleybus', 'Funicular'] },
+        { k: 'road sign, traffic feature, or highway interchange', req: ['road', 'traffic', 'interchange', 'roundabout', 'highway', 'sign'], examples: ['Diverging Diamond', 'Cloverleaf Interchange'] },
+        { k: 'defunct automobile manufacturer', req: ['defunct', 'automobile', 'car manufacturer', 'automaker'], examples: ['Studebaker', 'Duesenberg'] }
+      ];
+
+      for (const r of rules) {
+        if (pLower.includes(r.k)) return r;
+      }
+      return null;
+    }
+
+    async function verifyAnswerWithKnowledgeAPIs(prompt, userAnswer) {
+      const pLower = prompt.toLowerCase();
+      const raw = userAnswer.trim();
+      const norm = normalize(raw);
+      const words = norm.split(/\s+/).filter(Boolean);
+      const titleCase = (str) => str.replace(/\b\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+
+      // 1. Reject blank / single-char / generic junk immediately
+      const singleLetterElements = new Set(['h','b','c','n','o','f','p','s','k','v','y','i','w','u']);
+      if (!norm || (norm.length < 2 && !(pLower.includes('chemical element') && singleLetterElements.has(norm)))) {
+        return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'Answer is too short to be a valid specific response.', rarerExamples: [] };
+      }
+
+      const bannedGeneric = new Set([
+        'thing', 'things', 'stuff', 'item', 'items', 'object', 'objects',
+        'food', 'foods', 'animal', 'animals', 'bird', 'birds', 'fish',
+        'plant', 'plants', 'place', 'places', 'country', 'countries',
+        'city', 'cities', 'word', 'words', 'game', 'games', 'sport', 'sports',
+        'music', 'song', 'songs', 'movie', 'movies', 'idk', 'none', 'nothing',
+        'test', 'asdf', 'qwerty', 'yes', 'no', 'maybe', 'something', 'anything'
+      ]);
+      if (bannedGeneric.has(norm)) {
+        return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'Too vague or generic \u2014 name a specific example.', rarerExamples: [] };
+      }
+
+      // Reject repeating a category word from the prompt itself
+      const promptStopwords = new Set(['name', 'an', 'a', 'the', 'of', 'in', 'on', 'with', 'that', 'is', 'or', 'for', 'from', 'to', 'used', 'found', 'type', 'variety', 'species', 'piece', 'part', 'english', 'word']);
+      const promptKeywords = normalize(prompt).split(/\s+/).filter(w => w.length > 3 && !promptStopwords.has(w));
+      if (words.length === 1 && promptKeywords.includes(norm)) {
+        return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'Cannot simply repeat a category word from the prompt.', rarerExamples: [] };
+      }
+
+      // 2. Check genuine "Sarcastic / Too Clever" loopholes first
+      const sarcasticHit = checkSarcasticLoophole(pLower, norm, raw);
+      if (sarcasticHit) return sarcasticHit;
+
+      // 3. Orthographic & Wordplay Prompts (verify exact letter rule + real English dictionary word)
+      const isOrthographic = [
+        'silent k', 'silent b', 'silent g', 'silent p', 'silent t', 'silent l', 'silent w',
+        'palindrome', 'ends in -ology', 'ends in -phobia', 'ends in -ism',
+        'all five vowels', 'double o (oo)', 'both a noun and a verb',
+        'borrowed from', 'collective noun', 'onomatopoeic', 'singular and plural'
+      ].some(k => pLower.includes(k));
+
+      if (isOrthographic) {
+        const w = words[0];
+        if (pLower.includes('silent k') && !/^kn[a-z]{2,}$/.test(w)) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not begin with a silent K.`, rarerExamples: ['Knapsack', 'Knurl'] };
+        }
+        if (pLower.includes('silent b')) {
+          const validB = /(mb(s|ed|ing|er)?$|bt)/.test(w) && !['number', 'timber', 'member', 'remember', 'amber', 'chamber', 'ember', 'limber', 'lumber', 'slumber', 'somber', 'cucumber', 'december', 'november', 'september', 'obtain', 'subtract'].includes(w);
+          if (!validB) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent B.`, rarerExamples: ['Aplomb', 'Redoubt'] };
+        }
+        if (pLower.includes('silent g')) {
+          const validG = /(^gn|ign$|eign$|aign$|gm$|gh[t]?$)/.test(w) || ['lasagna', 'bologna', 'cologne', 'champagne', 'gnocchi', 'gneiss', 'gnomon', 'poignant', 'paradigm', 'phlegm', 'diaphragm'].includes(w);
+          if (!validG) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent G.`, rarerExamples: ['Impugn', 'Gnomon'] };
+        }
+        if (pLower.includes('silent p')) {
+          const validP = /^(ps|pn|pt)/.test(w) || ['receipt', 'coup', 'corps', 'raspberry', 'cupboard'].includes(w);
+          if (!validP) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent P.`, rarerExamples: ['Ptarmigan', 'Ptyalin'] };
+        }
+        if (pLower.includes('silent t')) {
+          const validT = /(stle|sten|ften)$/.test(w) || ['often', 'soften', 'listen', 'castle', 'whistle', 'fasten', 'moisten', 'hasten', 'glisten', 'christen', 'rustle', 'bustle', 'hustle', 'jostle', 'nestle', 'thistle', 'bristle', 'wrestle', 'ballet', 'buffet', 'gourmet', 'rapport', 'debut', 'depot', 'ricochet', 'valet', 'chalet', 'crochet', 'sorbet', 'cabaret', 'beret', 'bouquet', 'mortgage', 'christmas', 'chestnut', 'apostle', 'epistle'].includes(w);
+          if (!validT) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent T.`, rarerExamples: ['Epistle', 'Chasten'] };
+        }
+        if (pLower.includes('silent l')) {
+          const validL = /(alk|alm|alf|alv|olk|ould)$/.test(w) || ['salmon', 'almond', 'colonel', 'solder', 'halve', 'calve', 'salve', 'embalm', 'napalm', 'qualm', 'psalm'].includes(w);
+          if (!validL) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent L.`, rarerExamples: ['Qualm', 'Embalm'] };
+        }
+        if (pLower.includes('silent w')) {
+          const validW = /^wr/.test(w) || ['who', 'whom', 'whose', 'whole', 'wholly', 'whoop', 'two', 'sword', 'answer', 'playwright', 'awry', 'boatswain', 'coxswain', 'gunwale'].includes(w);
+          if (!validW) return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have a silent W.`, rarerExamples: ['Boatswain', 'Gunwale'] };
+        }
+        if (pLower.includes('palindrome')) {
+          const clean = norm.replace(/\s+/g, '');
+          if (clean.length < 3 || clean !== clean.split('').reverse().join('')) {
+            return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not read the same forward and backward.`, rarerExamples: ['Rotator', 'Deified'] };
+          }
+        }
+        if (pLower.includes('ends in -ology') && (!w.endsWith('ology') || w.length < 7)) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not end in -ology.`, rarerExamples: ['Vexillology', 'Horology'] };
+        }
+        if (pLower.includes('ends in -phobia') && (!w.endsWith('phobia') || w.length < 8)) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not end in -phobia.`, rarerExamples: ['Submechanophobia', 'Anatidaephobia'] };
+        }
+        if (pLower.includes('ends in -ism') && (!w.endsWith('ism') || w.length < 6)) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not end in -ism.`, rarerExamples: ['Solipsism', 'Syncretism'] };
+        }
+        if (pLower.includes('all five vowels') && !['a', 'e', 'i', 'o', 'u'].every(v => w.includes(v))) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not contain all five vowels (A, E, I, O, U).`, rarerExamples: ['Facetious', 'Sequoia'] };
+        }
+        if (pLower.includes('double o (oo)') && (!w.includes('oo') || w.startsWith('oo') || w.endsWith('oo'))) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not have double O (OO) in the middle.`, rarerExamples: ['Monsoon', 'Bassoon'] };
+        }
+
+        // Verify the word actually exists in the English dictionary or Wikipedia!
+        const [dictEntry, wikiHits] = await Promise.all([
+          verifyWordInDictionary(w),
+          fetchWikipediaCandidates(raw)
+        ]);
+        const exactWiki = wikiHits.find(c => isTitleCloseMatch(norm, c.title, c.wasRedirect));
+
+        if (!dictEntry && !exactWiki) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" could not be verified as a real English word.`, rarerExamples: [] };
+        }
+
+        if (pLower.includes('both a noun and a verb')) {
+          const pos = dictEntry?.partsOfSpeech || [];
+          if (!(pos.includes('noun') && pos.includes('verb'))) {
+            return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" is not commonly used as both a noun and a verb.`, rarerExamples: ['Quarantine', 'Jockey'] };
+          }
+        }
+
+        if (pLower.includes('borrowed from')) {
+          const langMatch = pLower.match(/borrowed from ([a-z]+)/);
+          const targetLang = langMatch ? langMatch[1] : '';
+          const combined = `${dictEntry?.text || ''} ${exactWiki?.extract || ''} ${exactWiki?.categories || ''}`;
+          if (targetLang && !combined.includes(targetLang)) {
+            return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" is not verified as a loanword from ${titleCase(targetLang)}.`, rarerExamples: [] };
+          }
+        }
+
+        if (pLower.includes('collective noun')) {
+          const combined = `${dictEntry?.text || ''} ${exactWiki?.extract || ''} ${exactWiki?.categories || ''}`;
+          if (!/(collective|group of|flock|herd|pack of|swarm|school of|pride of|murder of)/.test(combined)) {
+            return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" is not verified as a collective noun for animals.`, rarerExamples: ['Unkindness', 'Ostentation'] };
+          }
+        }
+
+        if (pLower.includes('onomatopoeic')) {
+          const combined = `${dictEntry?.text || ''} ${exactWiki?.extract || ''}`;
+          if (!/(onomatopo|imitative|sound of|mimic)/.test(combined)) {
+            return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" is not an onomatopoeic word.`, rarerExamples: ['Susurrus', 'Tintinnabulation'] };
+          }
+        }
+
+        const invariantWords = new Set(['deer', 'sheep', 'moose', 'bison', 'buffalo', 'fish', 'salmon', 'trout', 'squid', 'shrimp', 'swine', 'elk', 'caribou', 'reindeer', 'cod', 'halibut', 'tuna', 'aircraft', 'spacecraft', 'hovercraft', 'watercraft', 'series', 'species', 'corps', 'chassis', 'rendezvous', 'offspring', 'crossroads', 'headquarters', 'means']);
+        if (pLower.includes('singular and plural') && !invariantWords.has(w)) {
+          return { valid: false, rarity: null, normalizedAnswer: raw, reason: `"${raw}" does not share the exact same spelling in singular and plural.`, rarerExamples: ['Chamois', 'Grouse'] };
+        }
+
+        const formatted = titleCase(dictEntry?.word || raw);
+        const rarity = w.length >= 8 ? 'gold' : w.length >= 6 ? 'epic' : w.length >= 5 ? 'rare' : w.length >= 4 ? 'uncommon' : 'common';
+        return {
+          valid: true,
+          rarity,
+          normalizedAnswer: formatted,
+          reason: `"${formatted}" is a verified English word matching the prompt.`,
+          rarerExamples: []
+        };
+      }
+
+      // 4. Live Wikipedia + Wikidata Semantic Fact-Checking for All Knowledge Prompts
+      const spec = getPromptSemanticSpec(pLower);
+      const candidates = await fetchWikipediaCandidates(raw);
+
+      if (!candidates || candidates.length === 0) {
+        return {
+          valid: false,
+          rarity: null,
+          normalizedAnswer: raw,
+          reason: `Could not verify "${raw}" as a recognized real-world answer.`,
+          rarerExamples: spec?.examples || []
+        };
+      }
+
+      // Filter to candidates whose title actually matches what the user typed (with strict typo bounds)
+      const titleMatchedCandidates = candidates.filter(c => isTitleCloseMatch(norm, c.title, c.wasRedirect));
+      if (titleMatchedCandidates.length === 0) {
+        return {
+          valid: false,
+          rarity: null,
+          normalizedAnswer: raw,
+          reason: `"${raw}" does not match a verified entry for this prompt.`,
+          rarerExamples: spec?.examples || []
+        };
+      }
+
+      // Check semantic category & constraint fit against candidate pages
+      let bestMatch = null;
+      if (spec) {
+        for (const cand of titleMatchedCandidates) {
+          const corpus = `${cand.title.toLowerCase()} | ${cand.description} | ${cand.extract} | ${cand.categories}`;
+          const hasReqAny = spec.req.some(term => corpus.includes(term));
+          const hasReqAll = !spec.reqAll || spec.reqAll.some(term => corpus.includes(term));
+          const hasForbid = spec.forbid && spec.forbid.some(term => (`${cand.description} ${cand.extract.slice(0, 180)}`).includes(term));
+
+          if (hasReqAny && hasReqAll && !hasForbid) {
+            bestMatch = cand;
+            break;
+          }
+        }
+
+        if (!bestMatch) {
+          const topCand = titleMatchedCandidates[0];
+          const descNote = topCand.description ? ` (${topCand.description})` : '';
+          return {
+            valid: false,
+            rarity: null,
+            normalizedAnswer: raw,
+            reason: `"${topCand.title}"${descNote} does not fit this prompt.`,
+            rarerExamples: spec.examples || []
+          };
+        }
+      } else {
+        bestMatch = titleMatchedCandidates[0];
+      }
+
+      // Grade rarity deterministically using calibrated Wikipedia article byte length (generous thresholds)
+      const len = bestMatch.length || 0;
+      let rarity = 'rare';
+      if (len >= 135000) rarity = 'common';
+      else if (len >= 72000) rarity = 'uncommon';
+      else if (len >= 34000) rarity = 'rare';
+      else if (len >= 15000) rarity = 'epic';
+      else rarity = 'gold';
+
+      const cleanTitle = bestMatch.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+      const descSnippet = bestMatch.description ? ` (${bestMatch.description})` : '';
+      return {
+        valid: true,
+        rarity,
+        normalizedAnswer: cleanTitle,
+        reason: `"${cleanTitle}"${descSnippet} is a verified ${RARITY_CONFIG[rarity].name}-tier answer.`,
+        rarerExamples: spec?.examples || []
+      };
     }
 
     async function evaluateAnswerWithGroq(prompt, userAnswer) {
@@ -1183,8 +2273,10 @@ Rules:
         .map((key, idx) => ({ key: (key || '').trim(), slot: idx + 1 }))
         .filter(item => item.key.length > 0);
 
-      if (configuredKeys.length === 0) {
-        throw new Error('NO_KEYS_CONFIGURED');
+      if (configuredKeys.length === 0 || groqKeysUnavailable) {
+        const verifiedVerdict = await verifyAnswerWithKnowledgeAPIs(prompt, userAnswer);
+        if (verifiedVerdict.valid) persistVerdictCache(primaryCacheKey, verifiedVerdict);
+        return verifiedVerdict;
       }
 
       const canonicalAnswer = normAns || userAnswer.trim().toLowerCase();
@@ -1200,8 +2292,8 @@ Rules:
 
         try {
           const verdict = await callSingleGroqKey(key, prompt, canonicalAnswer, deterministicSeed);
-          // Remember this healthy key for subsequent turns
           activeGroqKeyIndex = targetIdx;
+          groqKeysUnavailable = false;
 
           // If canonical normalizedAnswer already has a locked verdict, reuse its rarity for full consistency
           if (verdict && verdict.valid && verdict.normalizedAnswer) {
@@ -1230,7 +2322,14 @@ Rules:
         }
       }
 
-      throw lastError || new Error('ALL_KEYS_FAILED');
+      // If all remote keys are revoked, rate-limited, or unreachable, use live Wikipedia & Dictionary fact-checking
+      groqKeysUnavailable = true;
+      console.warn('[PIK Judge] Remote keys unavailable, using live Wikipedia/Dictionary fact-checker:', lastError?.message);
+      const fallbackVerdict = await verifyAnswerWithKnowledgeAPIs(prompt, userAnswer);
+      if (fallbackVerdict.valid) {
+        persistVerdictCache(primaryCacheKey, fallbackVerdict);
+      }
+      return fallbackVerdict;
     }
 
     /* ----------------------------------------------------
@@ -1251,6 +2350,8 @@ Rules:
     let userHistory = [];
     let usedAnswersSet = new Set();
     let selectedProjectedIndex = -1;
+    let isResettingGame = false;
+    let resetSequenceId = 0;
 
     // Global SVG Canvas & Camera State
     let accumulatedX = 60;
@@ -1260,13 +2361,62 @@ Rules:
     let currentDotIndex = 0;
     let placedBadges = [];
 
+    function getRandomInt(maxExclusive) {
+      if (maxExclusive <= 1) return 0;
+      if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+        const range = 0x100000000;
+        const limit = range - (range % maxExclusive);
+        const buf = new Uint32Array(1);
+        let val = 0;
+        do {
+          window.crypto.getRandomValues(buf);
+          val = buf[0];
+        } while (val >= limit);
+        return val % maxExclusive;
+      }
+      return Math.floor(Math.random() * maxExclusive);
+    }
+
     function shuffleArray(arr) {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = getRandomInt(i + 1);
         [copy[i], copy[j]] = [copy[j], copy[i]];
       }
       return copy;
+    }
+
+    const RECENT_PROMPTS_STORAGE_KEY = 'pik_recent_prompts_v1';
+    const MAX_RECENT_PROMPTS = 140;
+
+    function loadRecentPrompts() {
+      try {
+        const raw = localStorage.getItem(RECENT_PROMPTS_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function recordRecentPrompts(prompts) {
+      try {
+        const existing = loadRecentPrompts();
+        const combined = [...existing, ...prompts];
+        const deduped = [];
+        const seen = new Set();
+        for (let i = combined.length - 1; i >= 0; i--) {
+          if (!seen.has(combined[i])) {
+            seen.add(combined[i]);
+            deduped.unshift(combined[i]);
+          }
+          if (deduped.length >= MAX_RECENT_PROMPTS) break;
+        }
+        localStorage.setItem(RECENT_PROMPTS_STORAGE_KEY, JSON.stringify(deduped));
+      } catch (e) {
+        // Ignore storage restrictions
+      }
     }
 
     function normalize(str) {
@@ -1286,6 +2436,7 @@ Rules:
         { cat: 'language', prompt: 'Name an English word with a silent P' },
         { cat: 'language', prompt: 'Name an English word with a silent T' },
         { cat: 'language', prompt: 'Name an English word with a silent L' },
+        { cat: 'language', prompt: 'Name an English word with a silent W' },
         { cat: 'language', prompt: 'Name a palindrome word in English' },
         { cat: 'language', prompt: 'Name an English word that ends in -ology' },
         { cat: 'language', prompt: 'Name an English word that ends in -phobia' },
@@ -1293,8 +2444,24 @@ Rules:
         { cat: 'language', prompt: 'Name an English word borrowed from French' },
         { cat: 'language', prompt: 'Name an English word borrowed from Japanese' },
         { cat: 'language', prompt: 'Name an English word borrowed from Spanish' },
+        { cat: 'language', prompt: 'Name an English word borrowed from German' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Arabic' },
         { cat: 'language', prompt: 'Name an English word that is both a noun and a verb' },
         { cat: 'language', prompt: 'Name a rhetorical or literary device' },
+        { cat: 'language', prompt: 'Name an English word containing all five vowels (A, E, I, O, U)' },
+        { cat: 'language', prompt: 'Name an English word with double O (OO) in the middle' },
+        { cat: 'language', prompt: 'Name a punctuation mark or typographic symbol' },
+        { cat: 'language', prompt: 'Name a Romance language' },
+        { cat: 'language', prompt: 'Name a written alphabet or writing script used in the world' },
+        { cat: 'language', prompt: 'Name an English word that ends in -ism' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Italian' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Hindi or Sanskrit' },
+        { cat: 'language', prompt: 'Name an English word borrowed from Yiddish' },
+        { cat: 'language', prompt: 'Name a figure of speech or idiom involving an animal' },
+        { cat: 'language', prompt: 'Name a grammatical tense, mood, or part of speech' },
+        { cat: 'language', prompt: 'Name a Celtic, Slavic, or Germanic language' },
+        { cat: 'language', prompt: 'Name an onomatopoeic word in English' },
+        { cat: 'language', prompt: 'Name an English noun that is spelled the same in both singular and plural' },
 
         // --- CULINARY & FOOD ---
         { cat: 'culinary', prompt: 'Name a variety of cheese' },
@@ -1312,6 +2479,25 @@ Rules:
         { cat: 'culinary', prompt: 'Name a type of bean or legume' },
         { cat: 'culinary', prompt: 'Name a tropical fruit' },
         { cat: 'culinary', prompt: 'Name a type of pastry or baked dessert' },
+        { cat: 'culinary', prompt: 'Name a variety of chili pepper' },
+        { cat: 'culinary', prompt: 'Name a type of dumpling from around the world' },
+        { cat: 'culinary', prompt: 'Name a type of root vegetable' },
+        { cat: 'culinary', prompt: 'Name a classic French sauce or mother sauce derivative' },
+        { cat: 'culinary', prompt: 'Name a variety of rice or grain' },
+        { cat: 'culinary', prompt: 'Name a type of cured meat or charcuterie' },
+        { cat: 'culinary', prompt: 'Name a variety of tea' },
+        { cat: 'culinary', prompt: 'Name a type of edible seaweed or shellfish' },
+        { cat: 'culinary', prompt: 'Name a traditional street food from anywhere in the world' },
+        { cat: 'culinary', prompt: 'Name a variety of coffee drink or espresso preparation' },
+        { cat: 'culinary', prompt: 'Name a type of sushi roll or Japanese dish' },
+        { cat: 'culinary', prompt: 'Name a traditional Indian curry or flatbread' },
+        { cat: 'culinary', prompt: 'Name a variety of grape used for winemaking' },
+        { cat: 'culinary', prompt: 'Name a type of sausage from around the world' },
+        { cat: 'culinary', prompt: 'Name a variety of squash, gourd, or melon' },
+        { cat: 'culinary', prompt: 'Name a traditional Mexican dish or salsa' },
+        { cat: 'culinary', prompt: 'Name a type of cookie or biscuit' },
+        { cat: 'culinary', prompt: 'Name a culinary cooking technique or knife cut' },
+        { cat: 'culinary', prompt: 'Name a variety of honey, syrup, or natural sweetener' },
 
         // --- GEOGRAPHY & WORLD ---
         { cat: 'geography', prompt: 'Name a landlocked country' },
@@ -1329,23 +2515,85 @@ Rules:
         { cat: 'geography', prompt: 'Name a city located on the Mediterranean Sea' },
         { cat: 'geography', prompt: 'Name an active or famous volcano' },
         { cat: 'geography', prompt: 'Name a lake in North America' },
+        { cat: 'geography', prompt: 'Name a country through which the Equator passes' },
+        { cat: 'geography', prompt: 'Name a waterfall anywhere in the world' },
+        { cat: 'geography', prompt: 'Name a major river in Asia' },
+        { cat: 'geography', prompt: 'Name a European microstate or principality' },
+        { cat: 'geography', prompt: 'Name a US national park' },
+        { cat: 'geography', prompt: 'Name a country in Central America or the Caribbean' },
+        { cat: 'geography', prompt: 'Name an archipelago or island group' },
+        { cat: 'geography', prompt: 'Name a capital city located on a major river' },
+        { cat: 'geography', prompt: 'Name a country that borders the Baltic Sea' },
+        { cat: 'geography', prompt: 'Name a country in the Middle East' },
+        { cat: 'geography', prompt: 'Name a river in Africa or South America' },
+        { cat: 'geography', prompt: 'Name a capital city in Europe' },
+        { cat: 'geography', prompt: 'Name a capital city in South America or Africa' },
+        { cat: 'geography', prompt: 'Name a US state that borders the Pacific Ocean or Gulf of Mexico' },
+        { cat: 'geography', prompt: 'Name a famous canyon, gorge, or valley' },
+        { cat: 'geography', prompt: 'Name a cape, bay, or gulf on a world map' },
+        { cat: 'geography', prompt: 'Name a famous glacier, ice shelf, or fjord' },
+        { cat: 'geography', prompt: 'Name a country that spans more than one continent or time zone' },
+        { cat: 'geography', prompt: 'Name an autonomous territory, dependency, or overseas island' },
 
         // --- SCIENCE & NATURE ---
         { cat: 'science', prompt: 'Name a chemical element on the periodic table' },
         { cat: 'science', prompt: 'Name a bone in the human body' },
         { cat: 'science', prompt: 'Name a type of cloud' },
         { cat: 'science', prompt: 'Name a gemstone or mineral' },
-        { cat: 'science', prompt: 'Name a flightless bird' },
-        { cat: 'science', prompt: 'Name a nocturnal mammal' },
         { cat: 'science', prompt: 'Name a moon in our solar system' },
         { cat: 'science', prompt: 'Name a constellation in the night sky' },
-        { cat: 'science', prompt: 'Name a species of shark' },
         { cat: 'science', prompt: 'Name a branch of physics or biology' },
         { cat: 'science', prompt: 'Name a noble gas or alkali metal' },
-        { cat: 'science', prompt: 'Name a prehistoric dinosaur' },
-        { cat: 'science', prompt: 'Name a venomous animal' },
         { cat: 'science', prompt: 'Name a muscle in the human body' },
         { cat: 'science', prompt: 'Name a unit of scientific measurement' },
+        { cat: 'science', prompt: 'Name a subatomic particle or boson' },
+        { cat: 'science', prompt: 'Name an organelle inside a eukaryotic cell' },
+        { cat: 'science', prompt: 'Name a geological epoch or period' },
+        { cat: 'science', prompt: 'Name a layer of Earth\u2019s atmosphere or interior' },
+        { cat: 'science', prompt: 'Name a hormone produced by the human body' },
+        { cat: 'science', prompt: 'Name a type of rock (igneous, sedimentary, or metamorphic)' },
+        { cat: 'science', prompt: 'Name a crater, sea, or feature on the Moon or Mars' },
+        { cat: 'science', prompt: 'Name a piece of chemistry laboratory glassware' },
+        { cat: 'science', prompt: 'Name a vitamin or essential dietary mineral' },
+        { cat: 'science', prompt: 'Name a type of electromagnetic wave or radiation' },
+        { cat: 'science', prompt: 'Name a transition metal or rare-earth element' },
+        { cat: 'science', prompt: 'Name a cranial nerve or part of the human brain' },
+        { cat: 'science', prompt: 'Name a type of chemical bond or reaction' },
+        { cat: 'science', prompt: 'Name a scientific law, principle, or theorem' },
+        { cat: 'science', prompt: 'Name a bacterium, virus, or microorganism' },
+        { cat: 'science', prompt: 'Name a species of fungus or lichen' },
+        { cat: 'science', prompt: 'Name an alloy made from two or more metals' },
+        { cat: 'science', prompt: 'Name a meteorological weather phenomenon' },
+
+        // --- NATURE & WILDLIFE ---
+        { cat: 'nature', prompt: 'Name a flightless bird' },
+        { cat: 'nature', prompt: 'Name a nocturnal mammal' },
+        { cat: 'nature', prompt: 'Name a species of shark' },
+        { cat: 'nature', prompt: 'Name a prehistoric dinosaur' },
+        { cat: 'nature', prompt: 'Name a venomous animal' },
+        { cat: 'nature', prompt: 'Name a species of tree' },
+        { cat: 'nature', prompt: 'Name a wildflower or flowering plant' },
+        { cat: 'nature', prompt: 'Name a bird of prey (raptor)' },
+        { cat: 'nature', prompt: 'Name a species of snake' },
+        { cat: 'nature', prompt: 'Name a deep-sea creature' },
+        { cat: 'nature', prompt: 'Name a freshwater fish' },
+        { cat: 'nature', prompt: 'Name a species of bear or wild cat' },
+        { cat: 'nature', prompt: 'Name a marsupial mammal' },
+        { cat: 'nature', prompt: 'Name a type of insect or beetle' },
+        { cat: 'nature', prompt: 'Name a species of whale or dolphin' },
+        { cat: 'nature', prompt: 'Name a reptile other than a snake' },
+        { cat: 'nature', prompt: 'Name a recognized dog breed' },
+        { cat: 'nature', prompt: 'Name a recognized domestic cat breed' },
+        { cat: 'nature', prompt: 'Name an amphibian (frog, toad, or salamander)' },
+        { cat: 'nature', prompt: 'Name a biome or terrestrial ecosystem' },
+        { cat: 'nature', prompt: 'Name a species of primate (monkey, ape, or lemur)' },
+        { cat: 'nature', prompt: 'Name a species of penguin or seabird' },
+        { cat: 'nature', prompt: 'Name a crustacean or mollusk' },
+        { cat: 'nature', prompt: 'Name a species of butterfly or moth' },
+        { cat: 'nature', prompt: 'Name a carnivorous plant or succulent' },
+        { cat: 'nature', prompt: 'Name a species of deer, antelope, or wild hoofed mammal' },
+        { cat: 'nature', prompt: 'Name a species of spider or arachnid' },
+        { cat: 'nature', prompt: 'Name a migratory bird or waterfowl' },
 
         // --- EVERYDAY OBJECTS & LIFE ---
         { cat: 'everyday', prompt: 'Name a tool found in a toolbox' },
@@ -1363,29 +2611,201 @@ Rules:
         { cat: 'everyday', prompt: 'Name an item found in a car glove compartment' },
         { cat: 'everyday', prompt: 'Name a type of fabric or textile' },
         { cat: 'everyday', prompt: 'Name a kitchen appliance' },
+        { cat: 'everyday', prompt: 'Name a type of knot tied in rope' },
+        { cat: 'everyday', prompt: 'Name an item found in a first-aid kit' },
+        { cat: 'everyday', prompt: 'Name a type of bag or luggage' },
+        { cat: 'everyday', prompt: 'Name a part of a bicycle' },
+        { cat: 'everyday', prompt: 'Name a household cleaning supply or tool' },
+        { cat: 'everyday', prompt: 'Name an item found in a bathroom medicine cabinet' },
+        { cat: 'everyday', prompt: 'Name a type of lock, latch, or hinge' },
+        { cat: 'everyday', prompt: 'Name an item used when camping or backpacking' },
+        { cat: 'everyday', prompt: 'Name a piece of tableware or dining glassware' },
+        { cat: 'everyday', prompt: 'Name a type of lamp, light fixture, or bulb' },
+        { cat: 'everyday', prompt: 'Name an item found on a sewing or crafting table' },
+        { cat: 'everyday', prompt: 'Name a type of timepiece or clock' },
+        { cat: 'everyday', prompt: 'Name an item found in a laundry room' },
 
         // --- POP CULTURE, ENTERTAINMENT & GAMES ---
         { cat: 'popculture', prompt: 'Name a superhero who does not naturally possess biological superpowers' },
         { cat: 'popculture', prompt: 'Name a video game franchise created by Nintendo' },
         { cat: 'popculture', prompt: 'Name a classic tabletop board game that involves rolling dice' },
-        { cat: 'popculture', prompt: 'Name a sport played in the Summer Olympic Games' },
         { cat: 'popculture', prompt: 'Name a Pixar animated feature film' },
         { cat: 'popculture', prompt: 'Name a Mario franchise video game character' },
-        { cat: 'popculture', prompt: 'Name a genre of music' },
         { cat: 'popculture', prompt: 'Name a card game played with a standard deck' },
         { cat: 'popculture', prompt: 'Name a video game console released before 2010' },
         { cat: 'popculture', prompt: 'Name a tabletop board or card game' },
-        { cat: 'popculture', prompt: 'Name a musical percussion instrument' },
-        { cat: 'popculture', prompt: 'Name an event in the Winter Olympic Games' },
         { cat: 'popculture', prompt: 'Name a film genre' },
         { cat: 'popculture', prompt: 'Name a classic arcade video game released before 1995' },
         { cat: 'popculture', prompt: 'Name a comic book superhero team or organization' },
-        { cat: 'popculture', prompt: 'Name a recognized dog breed' },
-        { cat: 'popculture', prompt: 'Name a track and field Olympic event' },
-        { cat: 'popculture', prompt: 'Name a style of dance' },
         { cat: 'popculture', prompt: 'Name a classic comic book superhero secret identity' },
         { cat: 'popculture', prompt: 'Name a character from Marvel X-Men' },
-        { cat: 'popculture', prompt: 'Name an Olympic swimming stroke' }
+        { cat: 'popculture', prompt: 'Name a famous fictional detective' },
+        { cat: 'popculture', prompt: 'Name a Studio Ghibli animated film' },
+        { cat: 'popculture', prompt: 'Name a chess piece or special chess move' },
+        { cat: 'popculture', prompt: 'Name a playable fighter in Super Smash Bros.' },
+        { cat: 'popculture', prompt: 'Name a fictional spaceship or starship from sci-fi' },
+        { cat: 'popculture', prompt: 'Name a classic monster from horror cinema' },
+        { cat: 'popculture', prompt: 'Name an indie video game released since 2010' },
+        { cat: 'popculture', prompt: 'Name a Pok\u00e9mon from the original 151 (Kanto region)' },
+        { cat: 'popculture', prompt: 'Name a villain from Batman or Spider-Man comics' },
+        { cat: 'popculture', prompt: 'Name a Star Wars planet, moon, or starship' },
+        { cat: 'popculture', prompt: 'Name a classic sitcom or animated TV series' },
+        { cat: 'popculture', prompt: 'Name a video game developed by Capcom, Square Enix, or Sega' },
+        { cat: 'popculture', prompt: 'Name a fictional castle, kingdom, or fantasy realm' },
+        { cat: 'popculture', prompt: 'Name a famous movie director' },
+        { cat: 'popculture', prompt: 'Name a character class or monster from Dungeons & Dragons' },
+
+        // --- HISTORY & MYTHOLOGY ---
+        { cat: 'history', prompt: 'Name an ancient civilization or empire' },
+        { cat: 'history', prompt: 'Name a figure from Greek mythology' },
+        { cat: 'history', prompt: 'Name a figure from Norse mythology' },
+        { cat: 'history', prompt: 'Name a god or goddess from Egyptian mythology' },
+        { cat: 'history', prompt: 'Name a famous historical explorer or navigator' },
+        { cat: 'history', prompt: 'Name one of the Seven Wonders of the Ancient or Modern World' },
+        { cat: 'history', prompt: 'Name a medieval weapon or piece of armor' },
+        { cat: 'history', prompt: 'Name a famous historical treaty, pact, or declaration' },
+        { cat: 'history', prompt: 'Name a Roman emperor' },
+        { cat: 'history', prompt: 'Name an invention from the Industrial Revolution' },
+        { cat: 'history', prompt: 'Name an ancient city that no longer exists as a major metropolis' },
+        { cat: 'history', prompt: 'Name a famous historical queen or empress' },
+        { cat: 'history', prompt: 'Name a legendary mythical creature from world folklore' },
+        { cat: 'history', prompt: 'Name a ship famous in history' },
+        { cat: 'history', prompt: 'Name an ancient monument or archaeological site' },
+        { cat: 'history', prompt: 'Name a famous Renaissance polymath, inventor, or thinker' },
+        { cat: 'history', prompt: 'Name a currency used in history or around the world today' },
+        { cat: 'history', prompt: 'Name a major dynasty in world history' },
+        { cat: 'history', prompt: 'Name a figure from Roman, Celtic, or Hindu mythology' },
+        { cat: 'history', prompt: 'Name a famous ancient battle or military campaign' },
+        { cat: 'history', prompt: 'Name a historic trade route or ancient road' },
+        { cat: 'history', prompt: 'Name a pharaoh of ancient Egypt' },
+        { cat: 'history', prompt: 'Name a famous historical library, university, or archive' },
+        { cat: 'history', prompt: 'Name an ancient writing material or record-keeping artifact' },
+        { cat: 'history', prompt: 'Name a medieval guild, knightly order, or feudal title' },
+        { cat: 'history', prompt: 'Name a famous historical speech or philosophical text' },
+
+        // --- SPORTS & ATHLETICS ---
+        { cat: 'sports', prompt: 'Name a sport played in the Summer Olympic Games' },
+        { cat: 'sports', prompt: 'Name an event in the Winter Olympic Games' },
+        { cat: 'sports', prompt: 'Name a track and field Olympic event' },
+        { cat: 'sports', prompt: 'Name an Olympic swimming stroke' },
+        { cat: 'sports', prompt: 'Name a martial art or combat sport' },
+        { cat: 'sports', prompt: 'Name a racquet or paddle sport' },
+        { cat: 'sports', prompt: 'Name a position in soccer (association football)' },
+        { cat: 'sports', prompt: 'Name a position in baseball' },
+        { cat: 'sports', prompt: 'Name a famous sporting trophy or championship cup' },
+        { cat: 'sports', prompt: 'Name a gymnastics apparatus or event' },
+        { cat: 'sports', prompt: 'Name a type of pitch in baseball' },
+        { cat: 'sports', prompt: 'Name a water sport' },
+        { cat: 'sports', prompt: 'Name a piece of protective gear worn in sports' },
+        { cat: 'sports', prompt: 'Name a cycling discipline or Grand Tour race' },
+        { cat: 'sports', prompt: 'Name a scoring term in tennis or golf' },
+        { cat: 'sports', prompt: 'Name a cue sport or target sport' },
+        { cat: 'sports', prompt: 'Name a position or penalty in American football' },
+        { cat: 'sports', prompt: 'Name a position or violation in basketball' },
+        { cat: 'sports', prompt: 'Name a position or penalty in ice hockey' },
+        { cat: 'sports', prompt: 'Name a famous stadium, arena, or racetrack' },
+        { cat: 'sports', prompt: 'Name a golf club or type of golf shot' },
+        { cat: 'sports', prompt: 'Name a trick or maneuver in skateboarding, snowboarding, or surfing' },
+        { cat: 'sports', prompt: 'Name a weight class in boxing or MMA' },
+        { cat: 'sports', prompt: 'Name a traditional folk or regional sport from around the world' },
+
+        // --- MUSIC & PERFORMING ARTS ---
+        { cat: 'music', prompt: 'Name a genre of music' },
+        { cat: 'music', prompt: 'Name a musical percussion instrument' },
+        { cat: 'music', prompt: 'Name a woodwind or brass instrument' },
+        { cat: 'music', prompt: 'Name a stringed musical instrument' },
+        { cat: 'music', prompt: 'Name a style of dance' },
+        { cat: 'music', prompt: 'Name an Italian musical tempo or dynamic marking' },
+        { cat: 'music', prompt: 'Name a vocal range or singing voice type' },
+        { cat: 'music', prompt: 'Name a famous classical composer' },
+        { cat: 'music', prompt: 'Name a traditional folk instrument from anywhere in the world' },
+        { cat: 'music', prompt: 'Name a part of a drum kit' },
+        { cat: 'music', prompt: 'Name a type of musical scale or mode' },
+        { cat: 'music', prompt: 'Name a Broadway or West End stage musical' },
+        { cat: 'music', prompt: 'Name a subgenre of rock or electronic music' },
+        { cat: 'music', prompt: 'Name a famous opera' },
+        { cat: 'music', prompt: 'Name a keyboard or electronic musical instrument' },
+        { cat: 'music', prompt: 'Name a type of musical chord, interval, or harmony term' },
+        { cat: 'music', prompt: 'Name a famous jazz musician or bandleader' },
+        { cat: 'music', prompt: 'Name a part of a guitar or violin' },
+        { cat: 'music', prompt: 'Name a type of song structure or classical composition form' },
+        { cat: 'music', prompt: 'Name a famous music festival or concert hall' },
+
+        // --- ARTS, LITERATURE & ARCHITECTURE ---
+        { cat: 'arts', prompt: 'Name an art movement or style' },
+        { cat: 'arts', prompt: 'Name an architectural style' },
+        { cat: 'arts', prompt: 'Name a poetic form or meter' },
+        { cat: 'arts', prompt: 'Name a literary genre' },
+        { cat: 'arts', prompt: 'Name a medium or material used in painting or sculpture' },
+        { cat: 'arts', prompt: 'Name a structural part of a building or cathedral' },
+        { cat: 'arts', prompt: 'Name a famous playwright from any era' },
+        { cat: 'arts', prompt: 'Name a shade of blue or green used in art' },
+        { cat: 'arts', prompt: 'Name a famous world art museum' },
+        { cat: 'arts', prompt: 'Name a classic novel published before 1950' },
+        { cat: 'arts', prompt: 'Name a type of printmaking or graphic art technique' },
+        { cat: 'arts', prompt: 'Name a famous mythological or literary monster' },
+        { cat: 'arts', prompt: 'Name a shade of red, yellow, or purple used in art' },
+        { cat: 'arts', prompt: 'Name a famous painter or sculptor from before 1900' },
+        { cat: 'arts', prompt: 'Name a type of pottery, ceramic, or glass art' },
+        { cat: 'arts', prompt: 'Name a classical column order or architectural ornament' },
+        { cat: 'arts', prompt: 'Name a famous epic poem or collection of fables' },
+        { cat: 'arts', prompt: 'Name a type of calligraphy, typeface, or font classification' },
+
+        // --- TECHNOLOGY, TRANSPORTATION & ENGINEERING ---
+        { cat: 'tech', prompt: 'Name a programming language' },
+        { cat: 'tech', prompt: 'Name a type of bridge structure' },
+        { cat: 'tech', prompt: 'Name a type of sailing vessel or boat' },
+        { cat: 'tech', prompt: 'Name a type of aircraft or rotorcraft' },
+        { cat: 'tech', prompt: 'Name a renewable energy source' },
+        { cat: 'tech', prompt: 'Name a classic simple machine or mechanical linkage' },
+        { cat: 'tech', prompt: 'Name a computer file format or image extension' },
+        { cat: 'tech', prompt: 'Name a component inside a desktop computer' },
+        { cat: 'tech', prompt: 'Name a type of railway train or locomotive' },
+        { cat: 'tech', prompt: 'Name a historic space mission or space probe' },
+        { cat: 'tech', prompt: 'Name a network protocol or internet standard' },
+        { cat: 'tech', prompt: 'Name a type of camera lens or photographic term' },
+        { cat: 'tech', prompt: 'Name an operating system or Linux distribution' },
+        { cat: 'tech', prompt: 'Name a type of gear, bearing, or mechanical fastener' },
+        { cat: 'tech', prompt: 'Name a logic gate, electronic component, or circuit element' },
+        { cat: 'tech', prompt: 'Name a cryptographic cipher, hash algorithm, or security protocol' },
+        { cat: 'tech', prompt: 'Name a type of dam, tunnel, or civil engineering structure' },
+        { cat: 'tech', prompt: 'Name a famous mathematician or computer scientist' },
+
+        // --- SPACE & ASTRONOMY ---
+        { cat: 'astronomy', prompt: 'Name a dwarf planet, asteroid, or Kuiper Belt object' },
+        { cat: 'astronomy', prompt: 'Name a famous comet or meteor shower' },
+        { cat: 'astronomy', prompt: 'Name a type of star or stellar remnant' },
+        { cat: 'astronomy', prompt: 'Name a famous nebula, galaxy, or star cluster' },
+        { cat: 'astronomy', prompt: 'Name a space telescope or orbital observatory' },
+        { cat: 'astronomy', prompt: 'Name a rover or lander sent to Mars or the Moon' },
+        { cat: 'astronomy', prompt: 'Name a phase of the Moon or type of eclipse' },
+        { cat: 'astronomy', prompt: 'Name a bright named star in the night sky' },
+        { cat: 'astronomy', prompt: 'Name a rocket family or launch vehicle' },
+        { cat: 'astronomy', prompt: 'Name a part of a telescope or spacecraft' },
+
+        // --- FASHION & TEXTILES ---
+        { cat: 'fashion', prompt: 'Name a style of coat, jacket, or outerwear' },
+        { cat: 'fashion', prompt: 'Name a type of shirt collar, neckline, or sleeve' },
+        { cat: 'fashion', prompt: 'Name a pattern or weave used in clothing' },
+        { cat: 'fashion', prompt: 'Name a piece of jewelry or personal adornment' },
+        { cat: 'fashion', prompt: 'Name a style of trousers, skirt, or dress' },
+        { cat: 'fashion', prompt: 'Name a type of eyeglasses or sunglasses frame style' },
+        { cat: 'fashion', prompt: 'Name a traditional garment from a specific culture' },
+        { cat: 'fashion', prompt: 'Name a type of leather, fur, or synthetic material' },
+        { cat: 'fashion', prompt: 'Name a sewing stitch, seam, or tailoring term' },
+        { cat: 'fashion', prompt: 'Name a fashion accessory worn around the neck or waist' },
+
+        // --- VEHICLES & TRANSIT ---
+        { cat: 'vehicles', prompt: 'Name a type of car body style' },
+        { cat: 'vehicles', prompt: 'Name a mechanical part under the hood of a car' },
+        { cat: 'vehicles', prompt: 'Name a type of heavy construction or agricultural vehicle' },
+        { cat: 'vehicles', prompt: 'Name a type of motorcycle or two-wheeled vehicle' },
+        { cat: 'vehicles', prompt: 'Name a type of horse-drawn carriage or historic vehicle' },
+        { cat: 'vehicles', prompt: 'Name a nautical term for a part of a ship' },
+        { cat: 'vehicles', prompt: 'Name a famous historic airplane or flying boat' },
+        { cat: 'vehicles', prompt: 'Name a type of public transit or urban rail system' },
+        { cat: 'vehicles', prompt: 'Name a road sign, traffic feature, or highway interchange type' },
+        { cat: 'vehicles', prompt: 'Name a classic defunct automobile manufacturer' }
       ];
 
       QUESTION_BANK = rawPrompts;
@@ -1394,9 +2814,18 @@ Rules:
 
     function toggleHelpModal(show) {
       const modal = document.getElementById('helpModal');
+      const dialog = document.getElementById('helpModalDialog');
       if (modal) {
-        if (show) modal.classList.remove('hidden');
-        else modal.classList.add('hidden');
+        if (show) {
+          modal.classList.remove('hidden');
+          if (dialog) {
+            dialog.classList.remove('modal-pop-in');
+            void dialog.offsetWidth;
+            dialog.classList.add('modal-pop-in');
+          }
+        } else {
+          modal.classList.add('hidden');
+        }
       }
     }
 
@@ -1406,6 +2835,7 @@ Rules:
       if (!item || !qObj) return;
 
       const modal = document.getElementById('questionDetailModal');
+      const dialog = document.getElementById('questionDetailDialog');
       const qNum = document.getElementById('detailQNum');
       const rarityBadge = document.getElementById('detailRarityBadge');
       const promptEl = document.getElementById('detailPrompt');
@@ -1468,18 +2898,29 @@ Rules:
     }
 
     function returnToMenu() {
+      resetSequenceId++;
+      isResettingGame = false;
       if (timerInterval) clearInterval(timerInterval);
       setEvaluatingState(false);
+
+      const playAgainBtn = document.getElementById('playAgainBtn');
+      const playAgainIcon = document.getElementById('playAgainIcon');
+      if (playAgainBtn) playAgainBtn.disabled = false;
+      if (playAgainIcon) playAgainIcon.style.transform = '';
 
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
+      const resultsHeaderBar = document.getElementById('resultsHeaderBar');
+      const detailPanel = document.getElementById('projectedDetailPanel');
 
       if (menuScreen) menuScreen.classList.remove('-translate-y-full');
       if (gameArea) gameArea.classList.remove('hidden');
+      if (resultsHeaderBar) resultsHeaderBar.classList.remove('results-header-lift');
+      if (detailPanel) detailPanel.classList.remove('results-panel-fold');
       if (resultsSection) {
         resultsSection.classList.add('hidden-results');
-        resultsSection.classList.remove('show-results');
+        resultsSection.classList.remove('show-results', 'results-exit-out');
       }
 
       initSvgTrackLine();
@@ -1487,152 +2928,75 @@ Rules:
 
     // Hash current UTC date (YYYYMMDD) for deterministic daily challenge generation
     function getDailySeed() {
-      const d = new Date();
-      const dateStr = `${d.getUTCFullYear()}${(d.getUTCMonth() + 1).toString().padStart(2, '0')}${d.getUTCDate().toString().padStart(2, '0')}`;
-      let hash = 0;
-      for (let i = 0; i < dateStr.length; i++) {
-        hash = ((hash << 5) - hash) + dateStr.charCodeAt(i);
-        hash |= 0;
-      }
-      return Math.abs(hash);
+      const now = new Date();
+      const yyyy = now.getUTCFullYear();
+      const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(now.getUTCDate()).padStart(2, '0');
+      return computeDeterministicSeed(`pik-daily-${yyyy}${mm}${dd}`);
     }
 
-    // Fast PRNG algorithm seeded by daily hash
-    function mulberry32(a) {
-      return function() {
-        let t = (a += 0x6d2b79f5);
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    function mulberry32(seed) {
+      let a = seed >>> 0;
+      return function () {
+        a |= 0;
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
       };
     }
 
-    function selectCategoryBalancedQuestions(isDaily = false) {
+    function selectCategoryBalancedQuestions(daily = false) {
       if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
         buildMassiveQuestionBank();
       }
 
-      const totalTarget = 8;
+      const byCategory = {};
+      for (const item of QUESTION_BANK) {
+        if (!byCategory[item.cat]) byCategory[item.cat] = [];
+        byCategory[item.cat].push(item);
+      }
 
-      if (isDaily) {
-        const seed = getDailySeed();
-        const rng = mulberry32(seed);
+      const categories = Object.keys(byCategory).sort();
+      const selected = [];
 
-        const seededShuffle = (arr) => {
-          const array = [...arr];
-          for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(rng() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-          return array;
-        };
+      if (daily) {
+        const rng = mulberry32(getDailySeed());
+        const shuffledCats = [...categories];
+        for (let i = shuffledCats.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [shuffledCats[i], shuffledCats[j]] = [shuffledCats[j], shuffledCats[i]];
+        }
 
-        const byCategory = {};
-        QUESTION_BANK.forEach((q) => {
-          if (!byCategory[q.cat]) byCategory[q.cat] = [];
-          byCategory[q.cat].push(q);
-        });
-
-        const categories = seededShuffle(Object.keys(byCategory));
-        categories.forEach((c) => {
-          byCategory[c] = seededShuffle(byCategory[c]);
-        });
-
-        const selected = [];
-        const usedPrompts = new Set();
-        let categoryIdx = 0;
-        let safetyCounter = 0;
-
-        while (selected.length < totalTarget && safetyCounter < 100) {
-          safetyCounter++;
-          const cat = categories[categoryIdx % categories.length];
+        for (let i = 0; i < 8; i++) {
+          const cat = shuffledCats[i % shuffledCats.length];
           const pool = byCategory[cat];
-          if (pool && pool.length > 0) {
-            const q = pool.pop();
-            if (q && !usedPrompts.has(q.prompt)) {
-              usedPrompts.add(q.prompt);
-              selected.push(q);
-            }
-          }
-          categoryIdx++;
-
-          if (Object.values(byCategory).every((p) => p.length === 0)) {
-            break;
-          }
+          const pickIdx = Math.floor(rng() * pool.length);
+          selected.push(pool[pickIdx]);
         }
-
-        if (selected.length < totalTarget) {
-          const remainingPool = seededShuffle(QUESTION_BANK);
-          for (const eq of remainingPool) {
-            if (selected.length >= totalTarget) break;
-            if (!usedPrompts.has(eq.prompt)) {
-              usedPrompts.add(eq.prompt);
-              selected.push(eq);
-            }
-          }
-        }
-
         return selected;
       }
 
-      if (unseenQuestionPool.length < totalTarget) {
-        unseenQuestionPool = shuffleArray(QUESTION_BANK);
+      const recentSet = new Set(loadRecentPrompts());
+      const shuffledCats = shuffleArray(categories);
+
+      for (let i = 0; i < 8; i++) {
+        const cat = shuffledCats[i % shuffledCats.length];
+        const fullPool = byCategory[cat];
+        const freshPool = fullPool.filter(q => !recentSet.has(q.prompt));
+        const candidatePool = freshPool.length > 0 ? freshPool : fullPool;
+        const pick = candidatePool[getRandomInt(candidatePool.length)];
+        selected.push(pick);
       }
 
-      const selected = [];
-      const usedPrompts = new Set();
-
-      const poolByCat = {};
-      unseenQuestionPool.forEach((q) => {
-        if (!poolByCat[q.cat]) poolByCat[q.cat] = [];
-        poolByCat[q.cat].push(q);
-      });
-
-      const availableCats = shuffleArray(Object.keys(poolByCat));
-      let catIndex = 0;
-      let passes = 0;
-
-      while (selected.length < totalTarget && passes < 50) {
-        passes++;
-        if (availableCats.length === 0) break;
-
-        const cat = availableCats[catIndex % availableCats.length];
-        const catQuestions = poolByCat[cat];
-
-        if (catQuestions && catQuestions.length > 0) {
-          const randIdx = Math.floor(Math.random() * catQuestions.length);
-          const q = catQuestions.splice(randIdx, 1)[0];
-
-          if (q && !usedPrompts.has(q.prompt)) {
-            usedPrompts.add(q.prompt);
-            selected.push(q);
-
-            const globalIdx = unseenQuestionPool.indexOf(q);
-            if (globalIdx !== -1) unseenQuestionPool.splice(globalIdx, 1);
-          }
-        } else {
-          const rmIdx = availableCats.indexOf(cat);
-          if (rmIdx !== -1) availableCats.splice(rmIdx, 1);
-        }
-
-        catIndex++;
-      }
-
-      if (selected.length < totalTarget) {
-        const fallback = shuffleArray(QUESTION_BANK);
-        for (const q of fallback) {
-          if (selected.length >= totalTarget) break;
-          if (!usedPrompts.has(q.prompt)) {
-            usedPrompts.add(q.prompt);
-            selected.push(q);
-          }
-        }
-      }
-
-      return shuffleArray(selected);
+      const finalQuestions = shuffleArray(selected);
+      recordRecentPrompts(finalQuestions.map(q => q.prompt));
+      return finalQuestions;
     }
 
-    function launchGame(mode) {
+    function launchGame(mode, entranceStyle = false) {
+      resetSequenceId++;
+      isResettingGame = false;
       isTimedMode = (mode === 'timed');
       isDailyMode = (mode === 'daily');
 
@@ -1643,17 +3007,27 @@ Rules:
       usedAnswersSet = new Set();
       setEvaluatingState(false);
 
+      const playAgainBtn = document.getElementById('playAgainBtn');
+      const playAgainIcon = document.getElementById('playAgainIcon');
+      if (playAgainBtn) playAgainBtn.disabled = false;
+      if (playAgainIcon) playAgainIcon.style.transform = '';
+
       activeQuestions = selectCategoryBalancedQuestions(isDailyMode);
 
       const menuScreen = document.getElementById('menuScreen');
       const gameArea = document.getElementById('gameArea');
       const resultsSection = document.getElementById('resultsSection');
+      const resultsHeaderBar = document.getElementById('resultsHeaderBar');
       const lineSection = document.getElementById('lineSection');
+      const detailPanel = document.getElementById('projectedDetailPanel');
+      const questionCard = document.getElementById('questionCard');
 
       if (menuScreen) menuScreen.classList.add('-translate-y-full');
+      if (resultsHeaderBar) resultsHeaderBar.classList.remove('results-header-lift');
+      if (detailPanel) detailPanel.classList.remove('results-panel-fold');
       if (resultsSection) {
         resultsSection.classList.add('hidden-results');
-        resultsSection.classList.remove('show-results');
+        resultsSection.classList.remove('show-results', 'results-exit-out');
       }
       if (gameArea) gameArea.classList.remove('hidden');
 
@@ -1663,22 +3037,258 @@ Rules:
       }
 
       initSvgTrackLine();
-      renderQuestion(0);
+
+      if (entranceStyle === 'rise' && questionCard) {
+        questionCard.classList.add('card-rise-in-prepare');
+        renderQuestion(0);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            questionCard.classList.add('card-rise-in-spring');
+            questionCard.classList.remove('card-rise-in-prepare');
+            setTimeout(() => questionCard.classList.remove('card-rise-in-spring'), 460);
+          });
+        });
+      } else if (entranceStyle && questionCard) {
+        questionCard.classList.add('card-slide-in-prepare');
+        renderQuestion(0);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            questionCard.classList.remove('card-slide-in-prepare');
+          });
+        });
+      } else {
+        renderQuestion(0);
+      }
+    }
+
+    function animateSvgTrackRewind(durationMs = 520) {
+      const svg = document.getElementById('mainLineSvg');
+      const segGroup = document.getElementById('svgLineSegments');
+      const badgeGroup = document.getElementById('svgLineBadges');
+      const nodeGroup = document.getElementById('svgLineNodes');
+
+      if (panAnimationFrame) {
+        cancelAnimationFrame(panAnimationFrame);
+        panAnimationFrame = null;
+      }
+
+      const startTrackX = Math.max(60, accumulatedX);
+      const endTrackX = 60;
+      const totalSpan = Math.max(1, startTrackX - endTrackX);
+      const startCamX = currentViewBoxX;
+
+      const segments = segGroup
+        ? Array.from(segGroup.querySelectorAll('line')).map(line => ({
+            el: line,
+            x1: parseFloat(line.getAttribute('x1') || '60'),
+            x2: parseFloat(line.getAttribute('x2') || '60')
+          }))
+        : [];
+
+      const badgeItems = badgeGroup
+        ? Array.from(badgeGroup.children).map(el => {
+            const tr = el.getAttribute('transform') || '';
+            const m = tr.match(/translate\(([\d.-]+)/);
+            const x = m ? parseFloat(m[1]) : parseFloat(el.getAttribute('x1') || '60');
+            return { el, x, triggered: false };
+          })
+        : [];
+
+      const activeHalo = document.getElementById('svg-active-halo');
+      const startNode = document.getElementById('svg-node-0');
+      const intermediateNodes = nodeGroup
+        ? Array.from(nodeGroup.querySelectorAll('circle'))
+            .filter(c => {
+              const id = c.getAttribute('id') || '';
+              return id !== 'svg-active-halo' && id !== 'svg-node-0';
+            })
+            .map(c => ({
+              el: c,
+              cx: parseFloat(c.getAttribute('cx') || '60'),
+              triggered: false
+            }))
+        : [];
+
+      // Create traveling gold-and-white vacuum spark at the end of the track
+      let sparkEl = null;
+      if (nodeGroup && startTrackX > endTrackX) {
+        sparkEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        sparkEl.setAttribute('id', 'svg-rewind-spark');
+        sparkEl.setAttribute('cx', startTrackX.toString());
+        sparkEl.setAttribute('cy', '70');
+        sparkEl.setAttribute('r', '7');
+        sparkEl.setAttribute('fill', '#ffffff');
+        sparkEl.setAttribute('stroke', '#d4af37');
+        sparkEl.setAttribute('stroke-width', '3');
+        nodeGroup.appendChild(sparkEl);
+      }
+
+      const startTime = performance.now();
+
+      function stepVacuumUnspool(now) {
+        const t = Math.min(1, (now - startTime) / durationMs);
+        // Smooth ease-in-out sweep from right end back to X = 60
+        const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        const sparkX = startTrackX - totalSpan * eased;
+
+        if (sparkEl) {
+          sparkEl.setAttribute('cx', sparkX.toFixed(1));
+        }
+
+        if (activeHalo) {
+          activeHalo.setAttribute('cx', sparkX.toFixed(1));
+        }
+
+        // Unspool each segment physically as the spark passes over it
+        for (const seg of segments) {
+          if (sparkX <= seg.x1) {
+            seg.el.setAttribute('x2', seg.x1.toFixed(1));
+            seg.el.setAttribute('opacity', '0');
+          } else if (sparkX < seg.x2) {
+            seg.el.setAttribute('x2', sparkX.toFixed(1));
+          }
+        }
+
+        // Pop badges inward as the spark sweeps beneath them
+        for (const b of badgeItems) {
+          if (!b.triggered && sparkX <= b.x + 12) {
+            b.triggered = true;
+            if (b.el.tagName.toLowerCase() === 'g') {
+              const inner = b.el.firstElementChild;
+              if (inner) inner.classList.add('svg-badge-pop-out');
+              else b.el.classList.add('svg-badge-pop-out');
+            } else {
+              b.el.style.transition = 'opacity 0.18s ease-out';
+              b.el.style.opacity = '0';
+            }
+          }
+        }
+
+        // Shrink intermediate dots as the spark passes them
+        for (const n of intermediateNodes) {
+          if (!n.triggered && sparkX <= n.cx + 4) {
+            n.triggered = true;
+            n.el.classList.add('svg-node-shrink');
+          }
+        }
+
+        // Glide SVG camera smoothly back to X = 0 in sync with the spark
+        if (svg && startCamX > 0.5) {
+          currentViewBoxX = startCamX * (1 - eased);
+          targetViewBoxX = currentViewBoxX;
+          svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
+        }
+
+        if (t < 1) {
+          panAnimationFrame = requestAnimationFrame(stepVacuumUnspool);
+        } else {
+          if (sparkEl) sparkEl.remove();
+          if (startNode) {
+            startNode.setAttribute('fill', '#121212');
+            startNode.setAttribute('stroke', '#ffffff');
+          }
+          if (activeHalo) {
+            activeHalo.setAttribute('cx', '60');
+          }
+          // Emit ready-pulse shockwave at X = 60 when the spark arrives home
+          if (nodeGroup) {
+            const readyWrap = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            readyWrap.setAttribute('transform', 'translate(60, 70)');
+            const readyRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            readyRing.setAttribute('cx', '0');
+            readyRing.setAttribute('cy', '0');
+            readyRing.setAttribute('r', '8');
+            readyRing.setAttribute('fill', 'none');
+            readyRing.setAttribute('stroke', '#d4af37');
+            readyRing.classList.add('node-shockwave');
+            readyWrap.appendChild(readyRing);
+            nodeGroup.appendChild(readyWrap);
+            setTimeout(() => readyWrap.remove(), 750);
+          }
+          currentViewBoxX = 0;
+          targetViewBoxX = 0;
+          if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
+          panAnimationFrame = null;
+        }
+      }
+
+      panAnimationFrame = requestAnimationFrame(stepVacuumUnspool);
+    }
+
+    function playAgainWithAnimation() {
+      if (isResettingGame) return;
+      isResettingGame = true;
+      const seqId = ++resetSequenceId;
+
+      const mode = isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard');
+      playAudioTone('rewind');
+
+      // 1. Rewind-spin the Play Again icon counter-clockwise & disable temporarily
+      const playAgainBtn = document.getElementById('playAgainBtn');
+      const playAgainIcon = document.getElementById('playAgainIcon');
+      if (playAgainBtn) playAgainBtn.disabled = true;
+      if (playAgainIcon) {
+        playAgainIcon.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+        playAgainIcon.style.transform = 'rotate(-360deg)';
+      }
+
+      // 2. Lift the top results header upward & hide projection lines/scrubber
+      const resultsHeaderBar = document.getElementById('resultsHeaderBar');
+      if (resultsHeaderBar) resultsHeaderBar.classList.add('results-header-lift');
+
+      const projSvg = document.getElementById('projectionSvg');
+      if (projSvg) projSvg.innerHTML = '';
+
+      const sliderContainer = document.getElementById('lineSliderContainer');
+      if (sliderContainer) sliderContainer.classList.add('hidden');
+
+      // 3. Fold the 8 left-edge cards downward toward the track line in a reverse wave (Q8 -> Q1)
+      const leftCards = Array.from(document.querySelectorAll('#summaryCardsList > div'));
+      const totalCards = leftCards.length;
+      leftCards.forEach((card, idx) => {
+        const reverseIdx = Math.max(0, totalCards - 1 - idx);
+        card.style.animation = 'none';
+        card.style.transformOrigin = 'bottom center';
+        card.style.transition = `transform 0.3s cubic-bezier(0.4, 0, 1, 1) ${reverseIdx * 24}ms, opacity 0.25s ease-in ${reverseIdx * 24}ms`;
+        card.style.transform = 'translateY(36px) scaleY(0.84)';
+        card.style.opacity = '0';
+      });
+
+      // 4. Fold the right-hand overview/detail panel downward toward the track line
+      const detailPanel = document.getElementById('projectedDetailPanel');
+      if (detailPanel) detailPanel.classList.add('results-panel-fold');
+
+      // 5. Zip the vacuum spark backward along the SVG track to unspool segments, badges & nodes
+      animateSvgTrackRewind(520);
+
+      // 6. Launch fresh game and spring Question 1 upward from below
+      setTimeout(() => {
+        if (seqId !== resetSequenceId) return;
+        launchGame(mode, 'rise');
+      }, 560);
     }
 
     function setEvaluatingState(loading) {
       isEvaluatingAnswer = loading;
+      const cardEl = document.getElementById('questionCard');
       const inputEl = document.getElementById('answerInput');
       const submitBtn = document.getElementById('submitBtn');
       const submitBtnText = document.getElementById('submitBtnText');
       const skipBtn = document.getElementById('skipBtn');
+
+      if (cardEl) {
+        if (loading) cardEl.classList.add('card-evaluating');
+        else cardEl.classList.remove('card-evaluating');
+      }
 
       if (inputEl) inputEl.disabled = loading;
       if (submitBtn) submitBtn.disabled = loading;
       if (skipBtn) skipBtn.disabled = loading;
 
       if (submitBtnText) {
-        submitBtnText.textContent = loading ? 'Judging...' : 'Submit';
+        submitBtnText.innerHTML = loading
+          ? `<svg class="w-3.5 h-3.5 animate-spin text-slate-900" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle><path class="opacity-85" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z"></path></svg><span>Judging...</span>`
+          : `<span>Submit</span>`;
       }
     }
 
@@ -1698,71 +3308,120 @@ Rules:
       accumulatedX = 60;
       currentViewBoxX = 0;
       targetViewBoxX = 0;
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+      if (panAnimationFrame) {
+        cancelAnimationFrame(panAnimationFrame);
+        panAnimationFrame = null;
+      }
       currentDotIndex = 0;
       placedBadges = [];
-      if (svg) svg.setAttribute('viewBox', '0 0 1000 140');
 
       const sliderContainer = document.getElementById('lineSliderContainer');
       if (sliderContainer) sliderContainer.classList.add('hidden');
 
-      const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      startNode.setAttribute('id', 'svg-node-0');
-      startNode.setAttribute('cx', '60');
-      startNode.setAttribute('cy', '70');
-      startNode.setAttribute('r', '7');
-      startNode.setAttribute('stroke', '#ffffff');
-      startNode.setAttribute('stroke-width', '3');
-      startNode.setAttribute('fill', '#121212');
-      startNode.classList.add('node-transition');
-      if (nodeGroup) nodeGroup.appendChild(startNode);
+      if (svg) {
+        svg.setAttribute('viewBox', '0 0 1000 140');
+      }
+
+      if (nodeGroup) {
+        const activeHalo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        activeHalo.setAttribute('id', 'svg-active-halo');
+        activeHalo.setAttribute('cx', '60');
+        activeHalo.setAttribute('cy', '70');
+        activeHalo.setAttribute('r', '10');
+        activeHalo.setAttribute('fill', 'none');
+        activeHalo.setAttribute('stroke', '#ffffff');
+        activeHalo.setAttribute('stroke-width', '1.5');
+        activeHalo.classList.add('target-node-halo');
+        nodeGroup.appendChild(activeHalo);
+
+        const startNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        startNode.setAttribute('id', 'svg-node-0');
+        startNode.setAttribute('cx', '60');
+        startNode.setAttribute('cy', '70');
+        startNode.setAttribute('r', '7');
+        startNode.setAttribute('stroke', '#ffffff');
+        startNode.setAttribute('stroke-width', '3');
+        startNode.setAttribute('fill', '#121212');
+        startNode.classList.add('node-transition');
+        nodeGroup.appendChild(startNode);
+      }
     }
 
-    function panCameraToFit(targetX, instant = false) {
+    function panCameraToFit(endX, isSlow = false) {
       const svg = document.getElementById('mainLineSvg');
       if (!svg) return;
 
-      if (targetX > 750) {
-        targetViewBoxX = targetX - 650;
-      } else {
-        targetViewBoxX = 0;
-      }
+      const viewWidth = 1000;
+      const rightPadding = 160;
+      targetViewBoxX = Math.max(0, endX - (viewWidth - rightPadding));
 
-      if (instant) {
-        if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-        currentViewBoxX = targetViewBoxX;
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
+
+      if (isSlow) {
+        const startCamX = currentViewBoxX;
+        const slowDuration = 2800;
+        const slowStart = performance.now();
+        const needsScroll = targetViewBoxX > startCamX + 10;
+        const finalTargetX = targetViewBoxX;
+
+        function stepSlowPan(now) {
+          const t = Math.min(1, (now - slowStart) / slowDuration);
+          const eased = 1 - Math.pow(1 - t, 2);
+
+          if (needsScroll) {
+            currentViewBoxX = startCamX + (finalTargetX - startCamX) * eased;
+          } else {
+            // Gently glide camera forward with the slowly stretching line on early questions, then ease back
+            const drift = Math.sin(t * Math.PI) * 90;
+            currentViewBoxX = startCamX + drift;
+          }
+
+          svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
+
+          if (t < 1) {
+            panAnimationFrame = requestAnimationFrame(stepSlowPan);
+          } else {
+            currentViewBoxX = finalTargetX;
+            svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
+            panAnimationFrame = null;
+          }
+        }
+
+        panAnimationFrame = requestAnimationFrame(stepSlowPan);
         return;
       }
 
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-
-      function animatePan() {
+      function stepPan() {
         const diff = targetViewBoxX - currentViewBoxX;
-        if (Math.abs(diff) < 0.3) {
+        if (Math.abs(diff) < 0.5) {
           currentViewBoxX = targetViewBoxX;
-          svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+          svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
           panAnimationFrame = null;
           return;
         }
-        currentViewBoxX += diff * 0.08;
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
-        panAnimationFrame = requestAnimationFrame(animatePan);
+        currentViewBoxX += diff * 0.12;
+        svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
+        panAnimationFrame = requestAnimationFrame(stepPan);
       }
 
-      panAnimationFrame = requestAnimationFrame(animatePan);
+      panAnimationFrame = requestAnimationFrame(stepPan);
     }
 
-    function scrubLineView(percent) {
-      if (panAnimationFrame) cancelAnimationFrame(panAnimationFrame);
-      const maxPanX = Math.max(0, accumulatedX - 650);
-      const targetX = (percent / 100) * maxPanX;
-      currentViewBoxX = targetX;
-      targetViewBoxX = targetX;
+    function scrubLineView(val) {
       const svg = document.getElementById('mainLineSvg');
-      if (svg) {
-        svg.setAttribute('viewBox', `${currentViewBoxX} 0 1000 140`);
+      if (!svg) return;
+      if (panAnimationFrame) {
+        cancelAnimationFrame(panAnimationFrame);
+        panAnimationFrame = null;
       }
+
+      const viewWidth = 1000;
+      const rightPadding = 160;
+      const maxScrollX = Math.max(0, accumulatedX - (viewWidth - rightPadding));
+      const pct = Math.max(0, Math.min(100, Number(val))) / 100;
+      currentViewBoxX = maxScrollX * pct;
+      targetViewBoxX = currentViewBoxX;
+      svg.setAttribute('viewBox', `${currentViewBoxX.toFixed(1)} 0 1000 140`);
     }
 
     /* ----------------------------------------------------
@@ -1772,7 +3431,15 @@ Rules:
       const fb = document.getElementById('feedbackText');
       if (fb) {
         fb.textContent = msg;
-        fb.classList.remove('hidden');
+        fb.classList.remove('hidden', 'feedback-slide-in');
+        void fb.offsetWidth;
+        fb.classList.add('feedback-slide-in');
+      }
+      const inputEl = document.getElementById('answerInput');
+      if (inputEl) {
+        inputEl.classList.remove('input-shake');
+        void inputEl.offsetWidth;
+        inputEl.classList.add('input-shake');
       }
     }
 
@@ -1781,6 +3448,11 @@ Rules:
       if (fb) {
         fb.textContent = '';
         fb.classList.add('hidden');
+        fb.classList.remove('feedback-slide-in');
+      }
+      const inputEl = document.getElementById('answerInput');
+      if (inputEl) {
+        inputEl.classList.remove('input-shake');
       }
     }
 
@@ -1788,13 +3460,23 @@ Rules:
       if (timerInterval) clearInterval(timerInterval);
       timerValue = seconds;
       const timerText = document.getElementById('timerText');
+      const timerPill = document.getElementById('timerPill');
       if (timerText) timerText.textContent = `${timerValue}s`;
+      if (timerPill) {
+        if (timerValue <= 7) timerPill.classList.add('timer-urgent');
+        else timerPill.classList.remove('timer-urgent');
+      }
 
       timerInterval = setInterval(() => {
         timerValue--;
         if (timerText) timerText.textContent = `${Math.max(0, timerValue)}s`;
+        if (timerPill) {
+          if (timerValue > 0 && timerValue <= 7) timerPill.classList.add('timer-urgent');
+          else timerPill.classList.remove('timer-urgent');
+        }
         if (timerValue <= 0) {
           clearInterval(timerInterval);
+          if (timerPill) timerPill.classList.remove('timer-urgent');
           playAudioTone('timeout');
           skipQuestion(true);
         }
@@ -1876,7 +3558,12 @@ Rules:
       }
 
       const promptEl = document.getElementById('questionPrompt');
-      if (promptEl) promptEl.textContent = q.prompt;
+      if (promptEl) {
+        promptEl.textContent = q.prompt;
+        promptEl.classList.remove('prompt-reveal');
+        void promptEl.offsetWidth;
+        promptEl.classList.add('prompt-reveal');
+      }
 
       const inputEl = document.getElementById('answerInput');
       if (inputEl) {
@@ -1921,17 +3608,17 @@ Rules:
         setEvaluatingState(false);
 
         if (!verdict || !verdict.valid) {
-          const reasonMsg = verdict?.reason ? ` — ${verdict.reason}` : '';
+          const reasonMsg = verdict?.reason ? ` \u2014 ${verdict.reason}` : '';
           showFeedback(`"${rawVal}" doesn't fit${reasonMsg}`);
           playAudioTone('error');
           if (inputEl) inputEl.focus();
           if (isTimedMode && timerValue > 0) startQuestionTimer(timerValue);
           return;
         }
-
-        // Normalize rarity output to one of the 5 Pik tiers
+        // Normalize rarity output to one of the 6 Pik tiers
         let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
         if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
         if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
 
         const cleanAnswer = (verdict.normalizedAnswer || rawVal).trim();
@@ -2038,6 +3725,9 @@ Rules:
       const endX = accumulatedX + result.length;
       accumulatedX = endX;
 
+      const isSarcastic = result.key === 'sarcastic';
+      const stretchDurationMs = isSarcastic ? 2800 : 750;
+
       const segGroup = document.getElementById('svgLineSegments');
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', startX.toString());
@@ -2047,7 +3737,7 @@ Rules:
       line.setAttribute('stroke', result.color);
       line.setAttribute('stroke-width', '6');
       line.setAttribute('stroke-linecap', 'round');
-      line.classList.add('pik-line-stroke');
+      line.classList.add(isSarcastic ? 'pik-line-stroke-slow' : 'pik-line-stroke');
 
       const pathLen = result.length;
       line.style.strokeDasharray = pathLen;
@@ -2058,11 +3748,39 @@ Rules:
         line.style.strokeDashoffset = '0';
       });
 
+      // Glowing Tip Spark Traveling Along the Stretching Segment
+      if (segGroup) {
+        const spark = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        spark.setAttribute('cx', startX.toString());
+        spark.setAttribute('cy', '70');
+        spark.setAttribute('r', '5');
+        spark.setAttribute('fill', '#ffffff');
+        spark.setAttribute('stroke', result.color);
+        spark.setAttribute('stroke-width', '2.5');
+        segGroup.appendChild(spark);
+
+        const sparkStart = performance.now();
+        const sparkDuration = isSarcastic ? 2750 : 720;
+        function animateSpark(now) {
+          const t = Math.min(1, (now - sparkStart) / sparkDuration);
+          const eased = isSarcastic ? (1 - Math.pow(1 - t, 2)) : (1 - Math.pow(1 - t, 3));
+          const curX = startX + (endX - startX) * eased;
+          spark.setAttribute('cx', curX.toFixed(1));
+          spark.setAttribute('opacity', (1 - t * 0.65).toFixed(2));
+          if (t < 1) {
+            requestAnimationFrame(animateSpark);
+          } else {
+            spark.remove();
+          }
+        }
+        requestAnimationFrame(animateSpark);
+      }
+
       // Alternating & Anti-Overlap Floating SVG Badge Positioning
       const badgeGroup = document.getElementById('svgLineBadges');
       const centerX = (startX + endX) / 2;
 
-      const badgeTextStr = `${ansText} • +${result.length}px`;
+      const badgeTextStr = `${ansText} \u2022 +${result.length}px`;
       const approxCharWidth = 6.8;
       const badgeWidth = Math.max(85, badgeTextStr.length * approxCharWidth + 18);
 
@@ -2090,63 +3808,111 @@ Rules:
       const chosenY = isTop ? (chosen.tier === 0 ? 25 : 8) : (chosen.tier === 0 ? 115 : 132);
       const leaderY2 = isTop ? (chosen.tier === 0 ? 38 : 21) : (chosen.tier === 0 ? 102 : 119);
 
-      // Leader line connecting badge box to the central line track at Y=70
-      const leaderLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      leaderLine.setAttribute('x1', centerX.toString());
-      leaderLine.setAttribute('y1', '70');
-      leaderLine.setAttribute('x2', centerX.toString());
-      leaderLine.setAttribute('y2', leaderY2.toString());
-      leaderLine.setAttribute('stroke', result.color);
-      leaderLine.setAttribute('stroke-width', '1.5');
-      leaderLine.setAttribute('stroke-dasharray', '3 3');
-      leaderLine.setAttribute('stroke-opacity', '0.7');
-      if (badgeGroup) badgeGroup.appendChild(leaderLine);
+      const renderBadgeAndNode = () => {
+        // Leader line connecting badge box to the central line track at Y=70
+        const leaderLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        leaderLine.setAttribute('x1', centerX.toString());
+        leaderLine.setAttribute('y1', '70');
+        leaderLine.setAttribute('x2', centerX.toString());
+        leaderLine.setAttribute('y2', leaderY2.toString());
+        leaderLine.setAttribute('stroke', result.color);
+        leaderLine.setAttribute('stroke-width', '1.5');
+        leaderLine.setAttribute('stroke-dasharray', '3 3');
+        leaderLine.setAttribute('stroke-opacity', '0.7');
+        leaderLine.classList.add('leader-draw-in');
+        if (badgeGroup) badgeGroup.appendChild(leaderLine);
 
-      // Badge Container Group
-      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      g.setAttribute('transform', `translate(${centerX}, ${chosenY})`);
+        // Badge Container Group (outer positioned, inner spring-animated)
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('transform', `translate(${centerX}, ${chosenY})`);
 
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', (-badgeWidth / 2).toString());
-      rect.setAttribute('y', '-11');
-      rect.setAttribute('width', badgeWidth.toString());
-      rect.setAttribute('height', '22');
-      rect.setAttribute('rx', '6');
-      rect.setAttribute('fill', '#1a1a1a');
-      rect.setAttribute('stroke', result.color);
-      rect.setAttribute('stroke-width', '1.5');
+        const innerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        innerG.classList.add('badge-pop-in');
 
-      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      text.setAttribute('x', '0');
-      text.setAttribute('y', '4');
-      text.setAttribute('text-anchor', 'middle');
-      text.setAttribute('fill', result.color);
-      text.setAttribute('font-family', 'Space Grotesk, sans-serif');
-      text.setAttribute('font-size', '10.5');
-      text.setAttribute('font-weight', 'bold');
-      text.textContent = badgeTextStr;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', (-badgeWidth / 2).toString());
+        rect.setAttribute('y', '-11');
+        rect.setAttribute('width', badgeWidth.toString());
+        rect.setAttribute('height', '22');
+        rect.setAttribute('rx', '6');
+        rect.setAttribute('fill', '#1a1a1a');
+        rect.setAttribute('stroke', result.color);
+        rect.setAttribute('stroke-width', '1.5');
 
-      g.appendChild(rect);
-      g.appendChild(text);
-      if (badgeGroup) badgeGroup.appendChild(g);
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', '0');
+        text.setAttribute('y', '4');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', result.color);
+        text.setAttribute('font-family', 'Space Grotesk, sans-serif');
+        text.setAttribute('font-size', '10.5');
+        text.setAttribute('font-weight', 'bold');
+        text.textContent = badgeTextStr;
 
-      currentDotIndex++;
-      const nodeGroup = document.getElementById('svgLineNodes');
-      const nextNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      nextNode.setAttribute('id', `svg-node-${currentDotIndex}`);
-      nextNode.setAttribute('cx', endX.toString());
-      nextNode.setAttribute('cy', '70');
-      nextNode.setAttribute('r', '7');
-      nextNode.setAttribute('stroke', '#ffffff');
-      nextNode.setAttribute('stroke-width', '3');
-      nextNode.setAttribute('fill', '#121212');
-      nextNode.classList.add('node-transition');
-      if (nodeGroup) nodeGroup.appendChild(nextNode);
+        innerG.appendChild(rect);
+        innerG.appendChild(text);
+        g.appendChild(innerG);
+        if (badgeGroup) badgeGroup.appendChild(g);
 
-      panCameraToFit(endX);
+        currentDotIndex++;
+        const nodeGroup = document.getElementById('svgLineNodes');
+        if (nodeGroup) {
+          // Landing Shockwave Ring(s)
+          const rippleWrap = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          rippleWrap.setAttribute('transform', `translate(${endX}, 70)`);
+
+          const ripple = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          ripple.setAttribute('cx', '0');
+          ripple.setAttribute('cy', '0');
+          ripple.setAttribute('r', '8');
+          ripple.setAttribute('fill', 'none');
+          ripple.setAttribute('stroke', result.color);
+          ripple.classList.add('node-shockwave');
+          rippleWrap.appendChild(ripple);
+
+          if (result.key === 'rare' || result.key === 'epic' || result.key === 'gold' || result.key === 'sarcastic') {
+            const ripple2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            ripple2.setAttribute('cx', '0');
+            ripple2.setAttribute('cy', '0');
+            ripple2.setAttribute('r', '8');
+            ripple2.setAttribute('fill', 'none');
+            ripple2.setAttribute('stroke', result.color);
+            ripple2.classList.add('node-shockwave-delayed');
+            rippleWrap.appendChild(ripple2);
+          }
+
+          nodeGroup.appendChild(rippleWrap);
+          setTimeout(() => rippleWrap.remove(), 1100);
+
+          // Move active radar halo to the new hollow target node
+          const activeHalo = document.getElementById('svg-active-halo');
+          if (activeHalo) {
+            activeHalo.setAttribute('cx', endX.toString());
+          }
+
+          const nextNode = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          nextNode.setAttribute('id', `svg-node-${currentDotIndex}`);
+          nextNode.setAttribute('cx', endX.toString());
+          nextNode.setAttribute('cy', '70');
+          nextNode.setAttribute('r', '7');
+          nextNode.setAttribute('stroke', '#ffffff');
+          nextNode.setAttribute('stroke-width', '3');
+          nextNode.setAttribute('fill', '#121212');
+          nextNode.classList.add('node-transition');
+          nodeGroup.appendChild(nextNode);
+        }
+      };
+
+      if (isSarcastic) {
+        setTimeout(renderBadgeAndNode, stretchDurationMs - 150);
+      } else {
+        renderBadgeAndNode();
+      }
+
+      panCameraToFit(endX, isSarcastic);
       playAudioTone('stretch', result.key);
 
-      // Question card waits until line stroke finishes (~750ms), THEN slides out to the right
+      // Question card waits until line stroke finishes, THEN slides out to the right
       setTimeout(() => {
         animateCardOut(false, () => {
           currentQIndex++;
@@ -2156,7 +3922,7 @@ Rules:
             finishGame();
           }
         });
-      }, 750);
+      }, stretchDurationMs);
     }
 
     /* ----------------------------------------------------
