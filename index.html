@@ -459,6 +459,59 @@
     /* Hide Scrollbar for internal results overflow if needed on small displays */
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ===== P-V-PIK (Multiplayer Mode) ===== */
+    @keyframes menuBtnPvpDeal {
+      0% { opacity: 0; transform: scale(0.8) translateY(18px) rotate(4deg); }
+      70% { opacity: 1; transform: scale(1.03) translateY(-2px) rotate(-1.5deg); }
+      100% { opacity: 1; transform: scale(1) translateY(0) rotate(1deg); }
+    }
+
+    .menu-btn-pvp-in {
+      animation: menuBtnPvpDeal 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) 0.2s both;
+    }
+
+    @keyframes pvpScreenIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pvp-screen-in { animation: pvpScreenIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    @keyframes pvpCountPop {
+      0% { transform: scale(0.35); opacity: 0; }
+      55% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .pvp-count-pop { animation: pvpCountPop 0.55s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
+
+    .pvp-row {
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pvp-row-me { background-color: rgba(255, 255, 255, 0.04) !important; }
+
+    @keyframes pvpRowFlash {
+      0%, 100% { background-color: rgba(239, 68, 68, 0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+      50% { background-color: rgba(239, 68, 68, 0.24); box-shadow: 0 0 24px rgba(239, 68, 68, 0.5); }
+    }
+
+    @keyframes pvpSegFlash {
+      50% { stroke: #ef4444; }
+    }
+
+    .pvp-flash-red {
+      animation: pvpRowFlash 0.5s ease-in-out 4;
+      border-color: rgba(239, 68, 68, 0.6) !important;
+    }
+
+    .pvp-flash-red .pvp-seg { animation: pvpSegFlash 0.5s ease-in-out 4; }
+
+    .pvp-row-winner {
+      border-color: #d4af37 !important;
+      box-shadow: 0 0 22px rgba(212, 175, 55, 0.3);
+    }
   </style>
 </head>
 <body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
@@ -523,6 +576,12 @@
       <button id="playStandardBtn" onclick="startModeWithAnimation('standard', this)" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Play Standard
+      </button>
+
+      <!-- Multiplayer: P-V-PIK (opens public / private matchmaking) -->
+      <button id="pvpModeBtn" onclick="openPvp()" class="w-64 py-3 bg-pik-card hover:bg-slate-800 text-pik-gold border border-pik-gold/50 font-display font-extrabold text-sm rounded-2xl transition shadow-lg transform rotate-1 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        P-V-PIK
       </button>
 
       <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
@@ -889,6 +948,156 @@
     </div>
   </section>
 
+  <!-- ================= P-V-PIK MULTIPLAYER SCREEN ================= -->
+  <div id="pvpScreen" class="hidden absolute inset-0 flex flex-col bg-pik-bg overflow-hidden" style="z-index:45;">
+    <!-- Top bar -->
+    <div class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-pik-border/40 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="11" r="4" fill="#7e8c8d"/>
+          <circle cx="36.3" cy="20" r="4" fill="#388e3c"/>
+          <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
+          <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
+          <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+          <circle cx="24" cy="24" r="4" fill="#f97316"/>
+        </svg>
+        <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">P-V-PIK</span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="pvpToggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+          <svg id="pvpAudioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
+        </button>
+        <button onclick="pvpExitToMenu()" title="Main Menu" class="px-3 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 border border-pik-border rounded-xl transition text-slate-300 font-display font-bold text-xs flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Menu
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: MATCHMAKING (Public / Private) ===== -->
+    <div id="pvpViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
+      <div class="text-center">
+        <h2 class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
+        <p class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;4 players &bull; Don&rsquo;t give the most common answer</p>
+        <p class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
+      </div>
+
+      <div class="w-full max-w-sm flex flex-col gap-3">
+        <div>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1">Your Name</div>
+          <input id="pvpNameInput" type="text" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Enter a name..." class="w-full bg-pik-card border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
+        </div>
+
+        <button id="pvpPublicBtn" onclick="pvpPlayPublic()" class="w-full py-3 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Public Match
+        </button>
+
+        <button id="pvpPrivateToggleBtn" onclick="pvpTogglePrivate()" class="w-full py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-sm rounded-2xl transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Private Lobby
+        </button>
+
+        <div id="pvpPrivateBox" class="hidden flex flex-col gap-2 bg-pik-card/60 border border-pik-border rounded-2xl p-3">
+          <button onclick="pvpCreatePrivate()" class="w-full py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-100 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+            Create Private Lobby
+          </button>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 h-px bg-pik-border"></div>
+            <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">or join with code</span>
+            <div class="flex-1 h-px bg-pik-border"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="pvpCodeInput" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE" onkeydown="if(event.key==='Enter')pvpJoinPrivate()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-display font-bold tracking-[0.3em] uppercase text-center">
+            <button onclick="pvpJoinPrivate()" class="px-4 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition active:scale-95 whitespace-nowrap">Join</button>
+          </div>
+        </div>
+
+        <div id="pvpMatchMsg" class="min-h-[18px] text-center text-xs text-pik-gold font-display font-medium"></div>
+        <div id="pvpBackendNote" class="text-center text-[10px] text-slate-600 font-display"></div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: LOBBY ===== -->
+    <div id="pvpViewLobby" class="hidden flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-2">
+          <span id="pvpLobbyBadge" class="px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] font-display font-bold tracking-widest uppercase text-slate-400">Private</span>
+          <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">Lobby Code</span>
+        </div>
+        <button onclick="pvpCopyCode()" title="Copy code" class="font-display font-black text-4xl sm:text-5xl tracking-[0.3em] text-pik-gold mt-1 hover:text-white transition pl-[0.3em]" id="pvpLobbyCode">----</button>
+        <div id="pvpCopyNote" class="text-[10px] text-slate-500 font-display h-3">Click the code to copy it</div>
+      </div>
+
+      <div id="pvpLobbySlots" class="w-full max-w-sm flex flex-col gap-2"></div>
+
+      <div class="w-full max-w-sm flex flex-col gap-2">
+        <button id="pvpStartBtn" onclick="pvpStartGame()" class="hidden w-full py-3 bg-slate-100 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95">
+          Start Match
+        </button>
+        <div id="pvpLobbyWait" class="text-center text-xs text-slate-400 font-display"></div>
+        <button onclick="pvpLeaveToMatch()" class="w-full py-2.5 bg-pik-card hover:bg-slate-800 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+          Leave Lobby
+        </button>
+        <div id="pvpLobbyMsg" class="min-h-[16px] text-center text-xs text-pik-gold font-display font-medium"></div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: GAME (lines + question) ===== -->
+    <div id="pvpViewGame" class="hidden flex-1 min-h-0 w-full max-w-4xl mx-auto flex flex-col gap-2 px-3 sm:px-6 py-2 overflow-y-auto scrollbar-none">
+      <!-- Stage: countdown / question card / prompt echo -->
+      <div id="pvpStage" class="relative flex items-center justify-center min-h-[170px] sm:min-h-[190px] flex-shrink-0">
+        <div id="pvpCountdown" class="hidden font-display font-black text-7xl sm:text-8xl text-pik-gold"></div>
+        <div id="pvpPromptEcho" class="hidden text-center font-display font-bold text-base sm:text-lg text-slate-300 px-4 max-w-xl"></div>
+
+        <div id="pvpQCard" class="hidden w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative">
+          <div class="flex items-center justify-between border-b border-pik-border/60 pb-2.5">
+            <span id="pvpQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Round 1</span>
+            <div id="pvpTimerPill" class="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/40 border border-red-500/40 rounded-full font-display text-xs text-red-400 font-bold">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span id="pvpTimerText">35s</span>
+            </div>
+          </div>
+          <h2 id="pvpPrompt" class="font-display font-extrabold text-lg sm:text-xl text-slate-100 tracking-tight leading-snug py-1"></h2>
+          <div class="flex flex-col sm:flex-row items-center gap-2">
+            <input id="pvpAnswerInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')pvpSubmit()" oninput="pvpHideFeedback()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button id="pvpSubmitBtn" onclick="pvpSubmit()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition-all shadow-md whitespace-nowrap">
+                <span id="pvpSubmitText">Submit</span>
+              </button>
+              <button id="pvpSkipBtn" onclick="pvpSkip(false)" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition-all">
+                Skip
+              </button>
+            </div>
+          </div>
+          <div id="pvpFeedback" class="hidden text-xs text-pik-gold font-display font-medium"></div>
+        </div>
+      </div>
+
+      <!-- Round info + point determination (sits right above the lines, no card) -->
+      <div class="text-center flex-shrink-0">
+        <div id="pvpRoundLine" class="text-[10px] uppercase tracking-wider font-display font-bold text-slate-500"></div>
+        <div id="pvpVerdict" class="min-h-[24px] font-display font-bold text-sm sm:text-base text-slate-100"></div>
+      </div>
+
+      <!-- All players' lines, one above the other -->
+      <div id="pvpLines" class="flex flex-col gap-1.5 w-full flex-shrink-0"></div>
+
+      <!-- End of match actions -->
+      <div id="pvpEndActions" class="hidden flex-col items-center gap-2 pt-1 pb-2 flex-shrink-0">
+        <div class="flex items-center justify-center gap-2">
+          <button id="pvpAgainBtn" onclick="pvpPlayAgain()" class="hidden px-4 py-2 bg-slate-100 hover:bg-white active:scale-95 text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg">
+            Play Again
+          </button>
+          <button onclick="pvpLeaveToMatch()" class="px-4 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+            Leave
+          </button>
+        </div>
+        <div id="pvpEndWait" class="text-[11px] text-slate-500 font-display"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= JAVASCRIPT ENGINE ================= -->
   <script>
     /* ====================================================
@@ -1092,7 +1301,7 @@
       const dailyBtn = document.getElementById('playDailyBtn');
 
       if (heroBlock) heroBlock.classList.remove('menu-hero-expand');
-      [standardBtn, timedBtn, dailyBtn].forEach(btn => {
+      [standardBtn, timedBtn, dailyBtn, document.getElementById('pvpModeBtn')].forEach(btn => {
         if (btn) {
           btn.disabled = false;
           btn.classList.remove('menu-btn-launching', 'menu-btn-wing-left', 'menu-btn-wing-right');
@@ -1144,7 +1353,8 @@
       [
         { el: standardBtn, cls: 'menu-btn-standard-in' },
         { el: timedBtn, cls: 'menu-btn-timed-in' },
-        { el: dailyBtn, cls: 'menu-btn-daily-in' }
+        { el: dailyBtn, cls: 'menu-btn-daily-in' },
+        { el: document.getElementById('pvpModeBtn'), cls: 'menu-btn-pvp-in' }
       ].forEach(({ el, cls }) => {
         if (!el) return;
         el.classList.remove(cls);
@@ -1164,12 +1374,12 @@
       const standardBtn = document.getElementById('playStandardBtn');
       const timedBtn = document.getElementById('playTimedBtn');
       const dailyBtn = document.getElementById('playDailyBtn');
-      const allBtns = [standardBtn, timedBtn, dailyBtn].filter(Boolean);
+      const allBtns = [standardBtn, timedBtn, dailyBtn, document.getElementById('pvpModeBtn')].filter(Boolean);
 
       // Clear entrance animations and glide unselected buttons out laterally by wing
       allBtns.forEach(btn => {
         btn.disabled = true;
-        btn.classList.remove('menu-btn-standard-in', 'menu-btn-timed-in', 'menu-btn-daily-in');
+        btn.classList.remove('menu-btn-standard-in', 'menu-btn-timed-in', 'menu-btn-daily-in', 'menu-btn-pvp-in');
         if (btn === clickedBtn) {
           btn.classList.add('menu-btn-launching');
         } else if (btn === timedBtn) {
@@ -4821,15 +5031,1233 @@ Rules:
     }
   </script>
 
+  <!-- ================= P-V-PIK MULTIPLAYER ENGINE ================= -->
+  <script>
+    /* ====================================================
+       P-V-PIK — MULTIPLAYER MODE (2-4 players)
+       Transport: Firestore (when the cloud is available) or
+       same-browser tabs via localStorage as a fallback.
+    ==================================================== */
+    const PVP_MAX_PLAYERS = 4;
+    const PVP_ANSWER_SECONDS = 35;
+    const PVP_LOSE_POINTS = 5;
+    const PVP_COUNTDOWN_MS = 3000;
+    const PVP_REVEAL_MS = 6800;
+    const PVP_GRACE_MS = 20000;
+    const PVP_STALE_MS = 25000;
+    const PVP_QUESTION_COUNT = 20;
+    const PVP_DEL = { __pvpDelete: true };
+
+    const PVP = {
+      myId: 'p' + Math.random().toString(36).slice(2, 9),
+      backend: null, code: null, room: null, unwatch: null, everSeen: false,
+      hbTimer: null, tickTimer: null, lastKey: null, lastStatus: null,
+      beatSeen: {}, hostKey: null, hostKeyAt: 0, hostBusy: false, fullSince: 0,
+      timer: null, timeLeft: PVP_ANSWER_SECONDS, evaluating: false, submitted: false,
+      qStart: 0, pausedMs: 0, used: new Set(), cdTimers: [], phaseTimers: [], rafs: [], busy: false
+    };
+
+    const pvpEl = (id) => document.getElementById(id);
+
+    function pvpEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function pvpApplyPatch(docObj, patch) {
+      for (const path in patch) {
+        const parts = path.split('.');
+        let o = docObj;
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (o[parts[i]] == null || typeof o[parts[i]] !== 'object') o[parts[i]] = {};
+          o = o[parts[i]];
+        }
+        const last = parts[parts.length - 1];
+        const v = patch[path];
+        if (v && v.__pvpDelete) delete o[last];
+        else o[last] = JSON.parse(JSON.stringify(v === undefined ? null : v));
+      }
+    }
+
+    /* ---------- Transport backends ---------- */
+    function pvpLocalBackend() {
+      const P = 'pik_pvp_room_';
+      const watchers = {};
+      const read = (c) => { try { const r = localStorage.getItem(P + c); return r ? JSON.parse(r) : null; } catch (e) { return null; } };
+      const write = (c, d) => { try { localStorage.setItem(P + c, JSON.stringify(d)); } catch (e) {} };
+      const notify = (c) => { (watchers[c] || []).slice().forEach(cb => cb(read(c))); };
+      window.addEventListener('storage', (e) => {
+        if (e.key && e.key.startsWith(P)) notify(e.key.slice(P.length));
+      });
+      return {
+        kind: 'local',
+        async get(c) { return read(c); },
+        async set(c, d) { write(c, d); notify(c); },
+        async patch(c, obj) { const d = read(c); if (!d) return; pvpApplyPatch(d, obj); write(c, d); notify(c); },
+        async remove(c) { try { localStorage.removeItem(P + c); } catch (e) {} notify(c); },
+        async listPublic() {
+          const out = [];
+          try {
+            for (let i = 0; i < localStorage.length; i++) {
+              const k = localStorage.key(i);
+              if (k && k.startsWith(P)) {
+                const d = read(k.slice(P.length));
+                if (d && d.isPublic && d.status === 'lobby') out.push(d);
+              }
+            }
+          } catch (e) {}
+          return out;
+        },
+        watch(c, cb) {
+          (watchers[c] = watchers[c] || []).push(cb);
+          setTimeout(() => cb(read(c)), 0);
+          return () => { watchers[c] = (watchers[c] || []).filter(x => x !== cb); };
+        }
+      };
+    }
+
+    function pvpCloudBackend(cloud) {
+      const { db, appId, fb } = cloud;
+      const base = ['artifacts', appId, 'public', 'data', 'pvpRooms'];
+      const ref = (c) => fb.doc(db, ...base, c);
+      return {
+        kind: 'cloud',
+        async get(c) { const s = await fb.getDoc(ref(c)); return s.exists() ? s.data() : null; },
+        async set(c, d) { await fb.setDoc(ref(c), d); },
+        async patch(c, obj) {
+          const o = {};
+          for (const k in obj) o[k] = (obj[k] && obj[k].__pvpDelete) ? fb.deleteField() : obj[k];
+          await fb.updateDoc(ref(c), o);
+        },
+        async remove(c) { await fb.deleteDoc(ref(c)); },
+        async listPublic() {
+          const q = fb.query(fb.collection(db, ...base), fb.where('isPublic', '==', true), fb.where('status', '==', 'lobby'));
+          const s = await fb.getDocs(q);
+          return s.docs.map(d => d.data());
+        },
+        watch(c, cb) {
+          return fb.onSnapshot(ref(c), (s) => cb(s.exists() ? s.data() : null), (err) => console.warn('[P-V-PIK] listener error:', err));
+        }
+      };
+    }
+
+    async function pvpGetBackend() {
+      if (PVP.backend) return PVP.backend;
+      const t0 = Date.now();
+      while (Date.now() - t0 < 3500) {
+        if (window.__pikCloud) { PVP.backend = pvpCloudBackend(window.__pikCloud); return PVP.backend; }
+        if (window.__pikCloudFailed) break;
+        await new Promise(r => setTimeout(r, 120));
+      }
+      PVP.backend = pvpLocalBackend();
+      return PVP.backend;
+    }
+
+    /* ---------- Screen / view helpers ---------- */
+    function pvpShowView(name) {
+      ['Match', 'Lobby', 'Game'].forEach(v => {
+        const el = pvpEl('pvpView' + v);
+        if (el) el.classList.toggle('hidden', v !== name);
+      });
+    }
+
+    function pvpSetMsg(msg, id = 'pvpMatchMsg') {
+      const el = pvpEl(id);
+      if (el) el.textContent = msg || '';
+    }
+
+    function pvpToggleAudio() {
+      toggleAudio();
+      const a = pvpEl('pvpAudioIcon'), b = pvpEl('audioIcon');
+      if (a && b) a.innerHTML = b.innerHTML;
+    }
+
+    function pvpGetName() {
+      const input = pvpEl('pvpNameInput');
+      let name = (input ? input.value : '').trim().replace(/\s+/g, ' ').slice(0, 14);
+      if (!name) name = 'Player ' + (100 + getRandomInt(900));
+      if (input) input.value = name;
+      try { localStorage.setItem('pik_pvp_name', name); } catch (e) {}
+      return name;
+    }
+
+    function openPvp() {
+      if (isLaunchingMode) return;
+      playAudioTone('launch');
+      const screen = pvpEl('pvpScreen');
+      if (!screen) return;
+      screen.classList.remove('hidden');
+      screen.classList.remove('pvp-screen-in');
+      void screen.offsetWidth;
+      screen.classList.add('pvp-screen-in');
+      pvpShowView('Match');
+      pvpSetMsg('');
+      const priv = pvpEl('pvpPrivateBox');
+      if (priv) priv.classList.add('hidden');
+      const input = pvpEl('pvpNameInput');
+      if (input && !input.value) {
+        try { input.value = localStorage.getItem('pik_pvp_name') || ''; } catch (e) {}
+      }
+      const note = pvpEl('pvpBackendNote');
+      if (note) note.textContent = '';
+      pvpGetBackend().then(b => {
+        if (note) note.textContent = b.kind === 'cloud' ? 'Online matchmaking connected' : 'Offline mode \u2014 only tabs in this browser can join each other';
+      });
+    }
+
+    async function pvpExitToMenu() {
+      await pvpLeaveRoom();
+      const screen = pvpEl('pvpScreen');
+      if (screen) screen.classList.add('hidden');
+      playAudioTone('menu');
+      animateMenuEntrance();
+    }
+
+    async function pvpLeaveToMatch() {
+      await pvpLeaveRoom();
+      pvpShowView('Match');
+      pvpSetMsg('');
+    }
+
+    function pvpTogglePrivate() {
+      const box = pvpEl('pvpPrivateBox');
+      if (box) box.classList.toggle('hidden');
+      pvpSetMsg('');
+    }
+
+    /* ---------- Matchmaking ---------- */
+    function pvpRandomCode() {
+      const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+      let s = '';
+      for (let i = 0; i < 4; i++) s += A[getRandomInt(A.length)];
+      return s;
+    }
+
+    function pvpSortedPlayerIds(room) {
+      return Object.keys(room.players || {}).sort((a, b) => {
+        const pa = room.players[a], pb = room.players[b];
+        return ((pa.joinedAt || 0) - (pb.joinedAt || 0)) || (a < b ? -1 : 1);
+      });
+    }
+
+    function pvpRoomFresh(r) {
+      const now = Date.now();
+      return Object.values(r.players || {}).some(p => now - (p.seen || 0) < 60000);
+    }
+
+    function pvpUniqueName(players, name) {
+      const taken = new Set(Object.values(players || {}).map(p => (p.name || '').toLowerCase()));
+      if (!taken.has(name.toLowerCase())) return name;
+      for (let i = 2; i < 10; i++) {
+        const cand = (name.slice(0, 11) + ' ' + i);
+        if (!taken.has(cand.toLowerCase())) return cand;
+      }
+      return name + Math.floor(Math.random() * 9);
+    }
+
+    function pvpSetBusy(on) {
+      PVP.busy = on;
+      ['pvpPublicBtn', 'pvpPrivateToggleBtn'].forEach(id => { const b = pvpEl(id); if (b) b.disabled = on; });
+    }
+
+    async function pvpTryJoin(code) {
+      const b = await pvpGetBackend();
+      const name = pvpGetName();
+      const r = await b.get(code);
+      if (!r) return 'Lobby not found.';
+      if (r.status !== 'lobby') return 'That match has already started.';
+      if (Object.keys(r.players || {}).length >= PVP_MAX_PLAYERS) return 'That lobby is full.';
+      const now = Date.now();
+      await b.patch(code, { ['players.' + PVP.myId]: { name: pvpUniqueName(r.players, name), joinedAt: now, seen: now } });
+      const r2 = await b.get(code);
+      if (!r2 || !r2.players || !r2.players[PVP.myId]) return 'Lobby not found.';
+      const idx = pvpSortedPlayerIds(r2).indexOf(PVP.myId);
+      if (idx >= PVP_MAX_PLAYERS) {
+        await b.patch(code, { ['players.' + PVP.myId]: PVP_DEL });
+        return 'That lobby is full.';
+      }
+      pvpEnterRoom(code);
+      return null;
+    }
+
+    async function pvpCreateRoom(isPublic) {
+      const b = await pvpGetBackend();
+      const name = pvpGetName();
+      let code = null;
+      for (let i = 0; i < 10; i++) {
+        const c = pvpRandomCode();
+        if (!(await b.get(c))) { code = c; break; }
+      }
+      if (!code) return 'Could not create a lobby. Try again.';
+      const now = Date.now();
+      await b.set(code, {
+        code, isPublic: !!isPublic, hostId: PVP.myId, status: 'lobby', createdAt: now, updatedAt: now,
+        players: { [PVP.myId]: { name, joinedAt: now, seen: now } }
+      });
+      pvpEnterRoom(code);
+      return null;
+    }
+
+    async function pvpPlayPublic() {
+      if (PVP.busy) return;
+      pvpSetBusy(true);
+      pvpSetMsg('Searching for a public lobby...');
+      try {
+        const b = await pvpGetBackend();
+        const list = (await b.listPublic())
+          .filter(r => r.status === 'lobby' && Object.keys(r.players || {}).length < PVP_MAX_PLAYERS && pvpRoomFresh(r))
+          .sort((a, c) => Object.keys(c.players).length - Object.keys(a.players).length);
+        for (const r of list) {
+          const err = await pvpTryJoin(r.code);
+          if (!err) { pvpSetBusy(false); return; }
+        }
+        pvpSetMsg('No open lobby found \u2014 creating one...');
+        const err = await pvpCreateRoom(true);
+        if (err) pvpSetMsg(err);
+      } catch (e) {
+        console.warn('[P-V-PIK]', e);
+        pvpSetMsg('Could not reach matchmaking. Please try again.');
+      }
+      pvpSetBusy(false);
+    }
+
+    async function pvpCreatePrivate() {
+      if (PVP.busy) return;
+      pvpSetBusy(true);
+      pvpSetMsg('Creating private lobby...');
+      try {
+        const err = await pvpCreateRoom(false);
+        if (err) pvpSetMsg(err);
+      } catch (e) {
+        console.warn('[P-V-PIK]', e);
+        pvpSetMsg('Could not create a lobby. Please try again.');
+      }
+      pvpSetBusy(false);
+    }
+
+    async function pvpJoinPrivate() {
+      if (PVP.busy) return;
+      const input = pvpEl('pvpCodeInput');
+      const code = (input ? input.value : '').trim().toUpperCase();
+      if (code.length !== 4) { pvpSetMsg('Enter the 4-letter lobby code.'); playAudioTone('error'); return; }
+      pvpSetBusy(true);
+      pvpSetMsg('Joining...');
+      try {
+        const err = await pvpTryJoin(code);
+        if (err) { pvpSetMsg(err); playAudioTone('error'); }
+      } catch (e) {
+        console.warn('[P-V-PIK]', e);
+        pvpSetMsg('Could not join. Please try again.');
+      }
+      pvpSetBusy(false);
+    }
+
+    /* ---------- Room lifecycle ---------- */
+    function pvpEnterRoom(code) {
+      pvpStopAll();
+      PVP.code = code;
+      PVP.room = null;
+      PVP.everSeen = false;
+      PVP.lastKey = null;
+      PVP.lastStatus = null;
+      PVP.beatSeen = {};
+      PVP.hostKey = null;
+      PVP.used = new Set();
+      pvpSetMsg('');
+      pvpSetMsg('', 'pvpLobbyMsg');
+      PVP.unwatch = PVP.backend.watch(code, pvpOnRoom);
+      PVP.hbTimer = setInterval(pvpHeartbeat, 4000);
+      PVP.tickTimer = setInterval(pvpTick, 1000);
+    }
+
+    function pvpStopAll() {
+      if (PVP.unwatch) { try { PVP.unwatch(); } catch (e) {} PVP.unwatch = null; }
+      clearInterval(PVP.hbTimer); clearInterval(PVP.tickTimer); clearInterval(PVP.timer);
+      PVP.hbTimer = PVP.tickTimer = PVP.timer = null;
+      pvpClearTransient();
+      PVP.code = null;
+      PVP.room = null;
+      PVP.everSeen = false;
+      PVP.lastKey = null;
+      PVP.lastStatus = null;
+      PVP.evaluating = false;
+      PVP.submitted = false;
+    }
+
+    function pvpClearTransient() {
+      PVP.cdTimers.forEach(clearTimeout); PVP.cdTimers = [];
+      PVP.phaseTimers.forEach(clearTimeout); PVP.phaseTimers = [];
+      PVP.rafs.forEach(cancelAnimationFrame); PVP.rafs = [];
+    }
+
+    async function pvpLeaveRoom() {
+      const b = PVP.backend, code = PVP.code, room = PVP.room;
+      pvpStopAll();
+      if (!b || !code) return;
+      try {
+        const others = Object.keys((room && room.players) || {}).filter(id => id !== PVP.myId);
+        if (!room || others.length === 0) {
+          await b.remove(code);
+        } else {
+          const patch = { ['players.' + PVP.myId]: PVP_DEL };
+          if (room.hostId === PVP.myId) {
+            const next = pvpSortedPlayerIds(room).filter(id => id !== PVP.myId)[0];
+            if (next) patch.hostId = next;
+          }
+          await b.patch(code, patch);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    window.addEventListener('pagehide', () => { if (PVP.code) pvpLeaveRoom(); });
+
+    function pvpHeartbeat() {
+      if (!PVP.code || !PVP.backend) return;
+      PVP.backend.patch(PVP.code, { ['players.' + PVP.myId + '.seen']: Date.now() }).catch(() => {});
+    }
+
+    function pvpTrackBeats(room) {
+      const now = Date.now();
+      for (const id in (room.players || {})) {
+        const s = room.players[id].seen;
+        const b = PVP.beatSeen[id];
+        if (!b || b.seen !== s) PVP.beatSeen[id] = { seen: s, at: now };
+      }
+    }
+
+    function pvpAlive(id) {
+      if (id === PVP.myId) return true;
+      const b = PVP.beatSeen[id];
+      if (!b) return true;
+      return Date.now() - b.at <= PVP_STALE_MS;
+    }
+
+    function pvpActiveIds(room) {
+      const g = room.game || {};
+      return (g.order || []).filter(id => room.players && room.players[id] && pvpAlive(id));
+    }
+
+    function pvpClosedBack(msg) {
+      pvpStopAll();
+      pvpShowView('Match');
+      pvpSetMsg(msg);
+    }
+
+    function pvpOnRoom(room) {
+      if (!PVP.code) return;
+      if (!room) {
+        if (PVP.everSeen) pvpClosedBack('The lobby was closed.');
+        return;
+      }
+      if (!room.players || !room.players[PVP.myId]) {
+        if (PVP.everSeen) pvpClosedBack('You were removed from the lobby.');
+        return;
+      }
+      PVP.everSeen = true;
+      PVP.room = room;
+      pvpTrackBeats(room);
+
+      if (room.status === 'lobby') {
+        if (PVP.lastStatus !== 'lobby') pvpResetGameUi();
+        pvpShowView('Lobby');
+        pvpRenderLobby(room);
+      } else if (room.status === 'playing' && room.game) {
+        if (PVP.lastStatus !== 'playing') {
+          pvpResetGameUi();
+          pvpBuildRows(room);
+          PVP.lastKey = null;
+        }
+        pvpShowView('Game');
+        pvpOnGame(room);
+      }
+      PVP.lastStatus = room.status;
+      pvpHostStep();
+    }
+
+    function pvpTick() {
+      const room = PVP.room;
+      if (!room || !PVP.code) return;
+      // Host migration (any client may claim the host role if the host went silent)
+      const host = room.players[room.hostId];
+      if (!host || !pvpAlive(room.hostId)) {
+        const alive = pvpSortedPlayerIds(room).filter(id => pvpAlive(id));
+        if (alive[0] === PVP.myId) {
+          PVP.backend.patch(PVP.code, { hostId: PVP.myId }).catch(() => {});
+        }
+      }
+      pvpHostStep();
+    }
+
+    function pvpResetGameUi() {
+      clearInterval(PVP.timer);
+      pvpClearTransient();
+      PVP.used = new Set();
+      PVP.submitted = false;
+      PVP.evaluating = false;
+      PVP.hostKey = null;
+      PVP.hostBusy = false;
+      const card = pvpEl('pvpQCard'); if (card) card.classList.add('hidden');
+      const cd = pvpEl('pvpCountdown'); if (cd) cd.classList.add('hidden');
+      const echo = pvpEl('pvpPromptEcho'); if (echo) echo.classList.add('hidden');
+      const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      const v = pvpEl('pvpVerdict'); if (v) v.innerHTML = '';
+      const rl = pvpEl('pvpRoundLine'); if (rl) rl.textContent = '';
+      const lines = pvpEl('pvpLines'); if (lines) lines.innerHTML = '';
+    }
+
+    /* ---------- Lobby ---------- */
+    function pvpRenderLobby(room) {
+      const ids = pvpSortedPlayerIds(room);
+      const isHost = room.hostId === PVP.myId;
+      const codeEl = pvpEl('pvpLobbyCode'); if (codeEl) codeEl.textContent = room.code;
+      const badge = pvpEl('pvpLobbyBadge'); if (badge) badge.textContent = room.isPublic ? 'Public' : 'Private';
+
+      let html = '';
+      for (let i = 0; i < PVP_MAX_PLAYERS; i++) {
+        const id = ids[i];
+        if (id) {
+          const p = room.players[id];
+          html += `<div class="flex items-center justify-between gap-2 bg-pik-card border ${id === PVP.myId ? 'border-slate-400/60' : 'border-pik-border'} rounded-xl px-3.5 py-2.5">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-pik-uncommon flex-shrink-0"></span>
+              <span class="font-display font-bold text-sm text-slate-100 truncate">${pvpEsc(p.name)}</span>
+              ${id === PVP.myId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-400">You</span>' : ''}
+            </div>
+            ${id === room.hostId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-pik-gold">Host</span>' : ''}
+          </div>`;
+        } else {
+          html += `<div class="flex items-center gap-2 bg-pik-bg border border-dashed border-pik-border rounded-xl px-3.5 py-2.5 text-slate-600 font-display text-sm">
+            <span class="w-2.5 h-2.5 rounded-full border border-slate-700"></span>Waiting for player...
+          </div>`;
+        }
+      }
+      const slots = pvpEl('pvpLobbySlots'); if (slots) slots.innerHTML = html;
+
+      const startBtn = pvpEl('pvpStartBtn');
+      const wait = pvpEl('pvpLobbyWait');
+      if (startBtn) {
+        startBtn.classList.toggle('hidden', !isHost);
+        startBtn.disabled = ids.length < 2;
+        startBtn.textContent = ids.length < 2 ? 'Need at least 2 players' : 'Start Match';
+      }
+      if (wait) {
+        wait.textContent = isHost
+          ? (room.isPublic && ids.length === PVP_MAX_PLAYERS ? 'Lobby full \u2014 starting soon...' : `${ids.length} / ${PVP_MAX_PLAYERS} players`)
+          : 'Waiting for the host to start...';
+      }
+    }
+
+    function pvpCopyCode() {
+      const room = PVP.room;
+      if (!room) return;
+      const note = pvpEl('pvpCopyNote');
+      try {
+        navigator.clipboard.writeText(room.code).then(() => { if (note) note.textContent = 'Copied!'; }).catch(() => {});
+      } catch (e) {}
+      setTimeout(() => { if (note) note.textContent = 'Click the code to copy it'; }, 1500);
+    }
+
+    function pvpPickQuestions(n) {
+      if (!QUESTION_BANK || QUESTION_BANK.length === 0) buildMassiveQuestionBank();
+      const byCat = {};
+      QUESTION_BANK.forEach(q => { (byCat[q.cat] = byCat[q.cat] || []).push(q); });
+      const recent = new Set(loadRecentPrompts());
+      const cats = shuffleArray(Object.keys(byCat));
+      const pools = {};
+      cats.forEach(c => {
+        pools[c] = shuffleArray(byCat[c]).sort((a, b) => (recent.has(a.prompt) ? 1 : 0) - (recent.has(b.prompt) ? 1 : 0));
+      });
+      const out = [];
+      let guard = 0;
+      while (out.length < n && guard++ < 400) {
+        for (const c of cats) {
+          if (out.length >= n) break;
+          const q = pools[c].shift();
+          if (q) out.push(q.prompt);
+        }
+      }
+      recordRecentPrompts(out);
+      return out;
+    }
+
+    async function pvpStartGame() {
+      const room = PVP.room;
+      if (!room || room.hostId !== PVP.myId || room.status !== 'lobby') return;
+      const order = pvpSortedPlayerIds(room).filter(id => pvpAlive(id)).slice(0, PVP_MAX_PLAYERS);
+      if (order.length < 2) { pvpSetMsg('You need at least 2 players.', 'pvpLobbyMsg'); return; }
+      const names = {};
+      order.forEach(id => { names[id] = room.players[id].name; });
+      try {
+        await PVP.backend.patch(PVP.code, {
+          status: 'playing',
+          updatedAt: Date.now(),
+          game: { questions: pvpPickQuestions(PVP_QUESTION_COUNT), order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], winners: [] }
+        });
+        playAudioTone('launch');
+      } catch (e) {
+        console.warn('[P-V-PIK]', e);
+        pvpSetMsg('Could not start the match. Try again.', 'pvpLobbyMsg');
+      }
+    }
+
+    async function pvpPlayAgain() {
+      const room = PVP.room;
+      if (!room || room.hostId !== PVP.myId) return;
+      try {
+        await PVP.backend.patch(PVP.code, { status: 'lobby', game: PVP_DEL, updatedAt: Date.now() });
+      } catch (e) { console.warn('[P-V-PIK]', e); }
+    }
+
+    /* ---------- Host-authoritative round engine ---------- */
+    function pvpPoints(room, id, excludeLast) {
+      const rs = (room.game && room.game.rounds) || [];
+      const n = excludeLast ? rs.length - 1 : rs.length;
+      let p = 0;
+      for (let i = 0; i < n; i++) if (rs[i].loser === id) p++;
+      return p;
+    }
+
+    function pvpTotalLen(room, id) {
+      return ((room.game && room.game.rounds) || []).reduce((s, r) => {
+        const a = r.answers && r.answers[id];
+        return s + (a && !a.skip ? (a.len || 0) : 0);
+      }, 0);
+    }
+
+    function pvpHostStep() {
+      const room = PVP.room;
+      if (!room || room.hostId !== PVP.myId || !PVP.code) return;
+      const now = Date.now();
+
+      if (room.status === 'lobby') {
+        // Drop silent players from the lobby
+        Object.keys(room.players).forEach(id => {
+          if (id !== PVP.myId && !pvpAlive(id)) PVP.backend.patch(PVP.code, { ['players.' + id]: PVP_DEL }).catch(() => {});
+        });
+        // Public lobbies start automatically once full
+        const count = Object.keys(room.players).length;
+        if (room.isPublic && count >= PVP_MAX_PLAYERS) {
+          if (!PVP.fullSince) PVP.fullSince = now;
+          if (now - PVP.fullSince > 2500) { PVP.fullSince = 0; pvpStartGame(); }
+        } else {
+          PVP.fullSince = 0;
+        }
+        return;
+      }
+
+      const g = room.game;
+      if (room.status !== 'playing' || !g || g.phase === 'done') return;
+
+      const key = `${g.round}:${g.phase}`;
+      if (PVP.hostKey !== key) { PVP.hostKey = key; PVP.hostKeyAt = now; PVP.hostBusy = false; }
+      const elapsed = now - PVP.hostKeyAt;
+      const active = pvpActiveIds(room);
+
+      if (PVP.hostBusy) return;
+
+      if (active.length < 2) {
+        PVP.hostBusy = true;
+        pvpEndMatch(room).catch(() => { PVP.hostBusy = false; });
+        return;
+      }
+
+      const guarded = (fn) => {
+        PVP.hostBusy = true;
+        let p;
+        try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); }
+        p.catch((e) => { console.warn('[P-V-PIK]', e); setTimeout(() => { PVP.hostBusy = false; }, 1500); });
+      };
+
+      if (g.phase === 'countdown') {
+        if (elapsed >= PVP_COUNTDOWN_MS + 350) {
+          guarded(() => PVP.backend.patch(PVP.code, { 'game.phase': 'answering' }));
+        }
+      } else if (g.phase === 'answering') {
+        const answers = g.answers || {};
+        const allIn = active.every(id => answers[id]);
+        if (allIn || elapsed >= PVP_ANSWER_SECONDS * 1000 + PVP_GRACE_MS) {
+          guarded(() => pvpFinalizeRound(room, active));
+        }
+      } else if (g.phase === 'reveal') {
+        if (elapsed >= PVP_REVEAL_MS) {
+          const maxPts = Math.max(0, ...(g.order || []).map(id => pvpPoints(room, id, false)));
+          if (maxPts >= PVP_LOSE_POINTS || g.round + 1 >= (g.questions || []).length) {
+            guarded(() => pvpEndMatch(room));
+          } else {
+            guarded(() => PVP.backend.patch(PVP.code, { 'game.round': g.round + 1, 'game.phase': 'countdown', 'game.answers': {} }));
+          }
+        }
+      }
+    }
+
+    async function pvpFinalizeRound(room, active) {
+      const g = room.game;
+      if ((g.rounds || []).length > g.round) {
+        await PVP.backend.patch(PVP.code, { 'game.phase': 'reveal' });
+        return;
+      }
+      const answers = {};
+      active.forEach(id => {
+        const a = g.answers && g.answers[id];
+        answers[id] = a
+          ? { text: a.text || '', key: a.key || '', len: a.len || 0, ms: a.ms || 0, skip: !!a.skip }
+          : { text: '', key: '', len: 0, ms: PVP_ANSWER_SECONDS * 1000, skip: true };
+      });
+      const entries = active.map((id, i) => ({ id, i, rank: answers[id].skip ? -1 : answers[id].len, ms: answers[id].ms }));
+      const minRank = Math.min(...entries.map(e => e.rank));
+      const cands = entries.filter(e => e.rank === minRank).sort((a, b) => (b.ms - a.ms) || (a.i - b.i));
+      const round = {
+        prompt: g.questions[g.round],
+        answers,
+        loser: cands[0].id,
+        tied: cands.length > 1,
+        tiedIds: cands.map(c => c.id)
+      };
+      await PVP.backend.patch(PVP.code, {
+        'game.rounds': (g.rounds || []).concat([round]),
+        'game.phase': 'reveal'
+      });
+    }
+
+    async function pvpEndMatch(room) {
+      const g = room.game;
+      let pool = pvpActiveIds(room);
+      if (pool.length === 0) pool = (g.order || []).slice();
+      const pts = {};
+      pool.forEach(id => { pts[id] = pvpPoints(room, id, false); });
+      const minPts = Math.min(...pool.map(id => pts[id]));
+      let winners = pool.filter(id => pts[id] === minPts);
+      if (winners.length > 1) {
+        const maxLen = Math.max(...winners.map(id => pvpTotalLen(room, id)));
+        winners = winners.filter(id => pvpTotalLen(room, id) === maxLen);
+      }
+      await PVP.backend.patch(PVP.code, { 'game.phase': 'done', 'game.winners': winners });
+    }
+
+    /* ---------- Client-side phase handling ---------- */
+    function pvpOnGame(room) {
+      const g = room.game;
+      const key = `${g.round}:${g.phase}`;
+      if (key !== PVP.lastKey) {
+        const first = PVP.lastKey === null;
+        PVP.lastKey = key;
+        pvpEnterPhase(room, first);
+      } else {
+        pvpRefreshLive(room);
+      }
+    }
+
+    function pvpName(room, id) {
+      return (room.players && room.players[id] && room.players[id].name) || (room.game.names && room.game.names[id]) || 'Player';
+    }
+
+    function pvpChipHtml(a) {
+      if (!a) return '';
+      const secs = ((a.ms || 0) / 1000).toFixed(1);
+      if (a.skip) return `<span class="text-slate-500">${a.text ? 'Skipped' : 'No answer'} &bull; ${secs}s</span>`;
+      const cfg = RARITY_CONFIG[a.key] || RARITY_CONFIG.common;
+      return `<span style="color:${cfg.color}">${pvpEsc(a.text)} &bull; ${cfg.name} &bull; ${secs}s</span>`;
+    }
+
+    function pvpSetChip(id, html, pop) {
+      const el = pvpEl('pvp-chip-' + id);
+      if (!el) return;
+      el.innerHTML = html;
+      if (pop) {
+        el.classList.remove('feedback-slide-in');
+        void el.offsetWidth;
+        el.classList.add('feedback-slide-in');
+      }
+    }
+
+    function pvpSetTag(id, html) {
+      const el = pvpEl('pvp-tag-' + id);
+      if (el) el.innerHTML = html;
+    }
+
+    function pvpResetRowMarks(room) {
+      (room.game.order || []).forEach(id => {
+        const row = pvpEl('pvp-row-' + id);
+        if (row) row.classList.remove('pvp-flash-red', 'pvp-row-winner');
+        pvpSetTag(id, '');
+        pvpSetChip(id, '');
+      });
+    }
+
+    function pvpRefreshLive(room) {
+      const g = room.game;
+      (g.order || []).forEach(id => {
+        const present = room.players && room.players[id] && pvpAlive(id);
+        const row = pvpEl('pvp-row-' + id);
+        if (row) row.style.opacity = present || g.phase === 'done' ? '' : '0.45';
+        if (g.phase === 'answering') {
+          if (!present) { pvpSetChip(id, '<span class="text-slate-600">left the match</span>'); return; }
+          const done = g.answers && g.answers[id];
+          pvpSetChip(id, done
+            ? '<span class="text-pik-uncommon">Locked in &#10003;</span>'
+            : '<span class="text-slate-500">typing...</span>');
+        }
+      });
+      if (g.phase === 'done') pvpRenderEndActions(room);
+    }
+
+    function pvpEnterPhase(room, firstLoad) {
+      const g = room.game;
+      pvpClearTransient();
+      clearInterval(PVP.timer);
+
+      const roundLine = pvpEl('pvpRoundLine');
+      if (roundLine) roundLine.textContent = g.phase === 'done' ? 'Match over' : `Round ${g.round + 1} \u2022 ${PVP_LOSE_POINTS} points ends the match \u2022 fewest points wins`;
+
+      const card = pvpEl('pvpQCard');
+      const cd = pvpEl('pvpCountdown');
+      const echo = pvpEl('pvpPromptEcho');
+      const verdict = pvpEl('pvpVerdict');
+
+      if (g.phase === 'countdown') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+        pvpResetRowMarks(room);
+        pvpRenderPips(room, true);
+        pvpDrawAllTracks(room, -1);
+        if (verdict) verdict.innerHTML = '<span class="text-slate-400">Get ready...</span>';
+        if (cd) cd.classList.remove('hidden');
+        const show = (txt) => {
+          if (!cd) return;
+          cd.textContent = txt;
+          cd.classList.remove('pvp-count-pop');
+          void cd.offsetWidth;
+          cd.classList.add('pvp-count-pop');
+        };
+        show('3'); playAudioTone('menu');
+        PVP.cdTimers.push(setTimeout(() => { show('2'); playAudioTone('menu'); }, 1000));
+        PVP.cdTimers.push(setTimeout(() => { show('1'); playAudioTone('menu'); }, 2000));
+        PVP.cdTimers.push(setTimeout(() => { show('GO'); playAudioTone('launch'); }, 3000));
+      } else if (g.phase === 'answering') {
+        if (cd) cd.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (verdict) verdict.innerHTML = '';
+        pvpRenderPips(room, true);
+        PVP.used = PVP.used || new Set();
+        const prompt = g.questions[g.round];
+        const qn = pvpEl('pvpQNum'); if (qn) qn.textContent = `Round ${g.round + 1}`;
+        const pr = pvpEl('pvpPrompt'); if (pr) pr.textContent = prompt;
+        pvpHideFeedback();
+        PVP.evaluating = false;
+        const already = g.answers && g.answers[PVP.myId];
+        PVP.submitted = !!already;
+        PVP.qStart = Date.now();
+        PVP.pausedMs = 0;
+        const input = pvpEl('pvpAnswerInput');
+        if (input) input.value = '';
+        pvpSetEvalUi(false);
+        if (already) pvpLockInputs();
+        if (card) {
+          card.classList.remove('hidden');
+          card.classList.add('card-rise-in-prepare');
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            card.classList.add('card-rise-in-spring');
+            card.classList.remove('card-rise-in-prepare');
+            PVP.phaseTimers.push(setTimeout(() => card.classList.remove('card-rise-in-spring'), 480));
+          }));
+        }
+        if (input && !already) setTimeout(() => input.focus(), 60);
+        pvpRefreshLive(room);
+        if (!already) pvpStartTimer(PVP_ANSWER_SECONDS);
+      } else if (g.phase === 'reveal') {
+        if (cd) cd.classList.add('hidden');
+        if (card && !card.classList.contains('hidden')) {
+          card.classList.add('card-slide-out');
+          PVP.phaseTimers.push(setTimeout(() => { card.classList.add('hidden'); card.classList.remove('card-slide-out'); }, 320));
+        } else if (card) {
+          card.classList.add('hidden');
+        }
+        const r = (g.rounds || [])[g.round];
+        if (!r) return;
+        if (echo) { echo.textContent = r.prompt; echo.classList.remove('hidden'); }
+        pvpPlayReveal(room, r, firstLoad);
+      } else if (g.phase === 'done') {
+        if (cd) cd.classList.add('hidden');
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        pvpRenderPips(room, true);
+        if (firstLoad) {
+          pvpDrawAllTracks(room, -1);
+          const last = (g.rounds || [])[(g.rounds || []).length - 1];
+          if (last) (g.order || []).forEach(id => { if (last.answers && last.answers[id]) pvpSetChip(id, pvpChipHtml(last.answers[id])); });
+        }
+        pvpShowWinner(room, firstLoad);
+      }
+    }
+
+    function pvpPlayReveal(room, r, firstLoad) {
+      const g = room.game;
+      const idx = g.round;
+      const verdict = pvpEl('pvpVerdict');
+      (g.order || []).forEach(id => {
+        pvpSetTag(id, '');
+        const row = pvpEl('pvp-row-' + id);
+        if (row) { row.classList.remove('pvp-flash-red'); row.style.opacity = ''; }
+        if (r.answers && r.answers[id]) pvpSetChip(id, pvpChipHtml(r.answers[id]), !firstLoad);
+        else pvpSetChip(id, '<span class="text-slate-600">left the match</span>');
+      });
+      pvpRenderPips(room, firstLoad);
+      pvpDrawAllTracks(room, firstLoad ? -1 : idx);
+
+      // Best answer's tone for the stretch
+      let bestKey = 'common', bestLen = -1;
+      Object.values(r.answers || {}).forEach(a => { if (!a.skip && a.len > bestLen) { bestLen = a.len; bestKey = a.key; } });
+      if (!firstLoad) playAudioTone('stretch', RARITY_CONFIG[bestKey] ? bestKey : 'common');
+
+      if (firstLoad) {
+        pvpApplyDetermination(room, r, false);
+      } else {
+        if (verdict) verdict.innerHTML = '<span class="text-slate-400 animate-pulse">Comparing rarity...</span>';
+        PVP.phaseTimers.push(setTimeout(() => pvpApplyDetermination(room, r, true), 1700));
+      }
+    }
+
+    function pvpApplyDetermination(room, r, animate) {
+      const verdict = pvpEl('pvpVerdict');
+      pvpRenderPips(room, true);
+      const row = pvpEl('pvp-row-' + r.loser);
+      if (row) {
+        row.classList.remove('pvp-flash-red');
+        void row.offsetWidth;
+        row.classList.add('pvp-flash-red');
+      }
+      pvpSetTag(r.loser, '<span class="text-red-400">+1 POINT</span>');
+      if (animate) playAudioTone('timeout');
+
+      const name = `<span class="text-red-400">${pvpEsc(pvpName(room, r.loser))}</span>`;
+      const a = r.answers[r.loser] || {};
+      const low = a.skip ? 'no answer' : ((RARITY_CONFIG[a.key] || RARITY_CONFIG.common).name);
+      const secs = ((a.ms || 0) / 1000).toFixed(1);
+      let html;
+      if (r.tied && (r.tiedIds || []).length > 1) {
+        html = `${r.tiedIds.length}-way tie on ${pvpEsc(low)} &mdash; ${name} was slowest (${secs}s) and takes the point.`;
+      } else if (a.skip) {
+        html = `${name} didn't answer and takes the point.`;
+      } else {
+        html = `${name} had the lowest rarity (${pvpEsc(low)}) and takes the point.`;
+      }
+      if (verdict) verdict.innerHTML = html;
+    }
+
+    function pvpShowWinner(room, firstLoad) {
+      const g = room.game;
+      const winners = g.winners || [];
+      (g.order || []).forEach(id => {
+        const row = pvpEl('pvp-row-' + id);
+        if (row) { row.classList.remove('pvp-flash-red'); row.style.opacity = ''; }
+        if (winners.includes(id)) {
+          if (row) row.classList.add('pvp-row-winner');
+          pvpSetTag(id, '<span class="text-pik-gold">WINNER</span>');
+        } else {
+          pvpSetTag(id, '');
+        }
+      });
+      const names = winners.map(id => `<span class="text-pik-gold">${pvpEsc(pvpName(room, id))}</span>`).join(' &amp; ');
+      const hit = (g.order || []).filter(id => pvpPoints(room, id, false) >= PVP_LOSE_POINTS);
+      const wPts = winners.length ? pvpPoints(room, winners[0], false) : 0;
+      let html;
+      if (!winners.length) {
+        html = 'Match over.';
+      } else if (hit.length) {
+        const hitNames = hit.map(id => pvpEsc(pvpName(room, id))).join(' & ');
+        html = `${hitNames} hit ${PVP_LOSE_POINTS} points &mdash; ${names} ${winners.length > 1 ? 'win' : 'wins'} with ${wPts} point${wPts === 1 ? '' : 's'}!`;
+      } else {
+        html = `Match ended early &mdash; ${names} ${winners.length > 1 ? 'win' : 'wins'}!`;
+      }
+      const verdict = pvpEl('pvpVerdict');
+      if (verdict) verdict.innerHTML = html;
+      if (!firstLoad) playAudioTone('finish');
+      pvpRenderEndActions(room);
+    }
+
+    function pvpRenderEndActions(room) {
+      const end = pvpEl('pvpEndActions');
+      if (!end) return;
+      end.classList.remove('hidden');
+      end.classList.add('flex');
+      const isHost = room.hostId === PVP.myId;
+      const again = pvpEl('pvpAgainBtn'); if (again) again.classList.toggle('hidden', !isHost);
+      const wait = pvpEl('pvpEndWait'); if (wait) wait.textContent = isHost ? '' : 'Waiting for the host to start another match...';
+    }
+
+    /* ---------- Lines (one per player, stacked) ---------- */
+    function pvpBuildRows(room) {
+      const g = room.game;
+      const host = pvpEl('pvpLines');
+      if (!host) return;
+      host.innerHTML = '';
+      (g.order || []).forEach(id => {
+        const row = document.createElement('div');
+        row.id = 'pvp-row-' + id;
+        row.className = 'pvp-row rounded-xl px-2.5 py-1.5 border border-pik-border/50 bg-pik-card/40' + (id === PVP.myId ? ' pvp-row-me' : '');
+        row.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-0.5">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="font-display font-bold text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
+              ${id === PVP.myId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-500">You</span>' : ''}
+              <span id="pvp-pips-${id}" class="flex items-center gap-1 flex-shrink-0"></span>
+              <span id="pvp-tag-${id}" class="text-[10px] font-display font-extrabold tracking-wide whitespace-nowrap"></span>
+            </div>
+            <div id="pvp-chip-${id}" class="text-[11px] font-display font-bold truncate max-w-[58%] text-right"></div>
+          </div>
+          <div class="relative h-5">
+            <svg id="pvp-svg-${id}" class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 20" preserveAspectRatio="none"></svg>
+            <span id="pvp-dot-${id}" class="absolute top-1/2 w-3 h-3 rounded-full" style="left:4%;transform:translate(-50%,-50%);border:3px solid #fff;background:#121212;"></span>
+          </div>`;
+        host.appendChild(row);
+      });
+      pvpRenderPips(room, true);
+      pvpDrawAllTracks(room, -1);
+    }
+
+    function pvpRenderPips(room, includeLast) {
+      (room.game.order || []).forEach(id => {
+        const box = pvpEl('pvp-pips-' + id);
+        if (!box) return;
+        const p = pvpPoints(room, id, !includeLast);
+        let h = '';
+        for (let i = 0; i < PVP_LOSE_POINTS; i++) {
+          h += `<span class="w-2 h-2 rounded-full border ${i < p ? 'bg-red-500 border-red-500' : 'border-slate-600'}"></span>`;
+        }
+        box.innerHTML = h;
+      });
+    }
+
+    function pvpPlaceDot(id, x, W, color) {
+      const dot = pvpEl('pvp-dot-' + id);
+      if (!dot) return;
+      dot.style.left = ((x / W) * 100).toFixed(3) + '%';
+      dot.style.background = color || '#121212';
+      dot.style.borderColor = color || '#ffffff';
+    }
+
+    function pvpDrawAllTracks(room, animRound) {
+      const order = room.game.order || [];
+      const maxT = Math.max(0, ...order.map(id => pvpTotalLen(room, id)));
+      const W = Math.max(1000, maxT + 90);
+      order.forEach(id => pvpDrawTrack(room, id, W, animRound));
+    }
+
+    function pvpDrawTrack(room, id, W, animRound) {
+      const svg = pvpEl('pvp-svg-' + id);
+      if (!svg) return;
+      svg.setAttribute('viewBox', `0 0 ${W} 20`);
+      const rounds = room.game.rounds || [];
+      let html = `<line x1="0" y1="10" x2="${W}" y2="10" stroke="#ffffff" stroke-opacity="0.13" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+      let x = 40, lastColor = null, anim = null;
+      rounds.forEach((r, i) => {
+        const a = r.answers && r.answers[id];
+        const len = (a && !a.skip) ? (a.len || 0) : 0;
+        if (len > 0) {
+          const color = (RARITY_CONFIG[a.key] || RARITY_CONFIG.common).color;
+          if (i === animRound) anim = { x1: x, x2: x + len, color };
+          else {
+            lastColor = color;
+            html += `<line class="pvp-seg" x1="${x}" y1="10" x2="${x + len}" y2="10" stroke="${color}" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+          }
+        }
+        x += len;
+      });
+      if (anim) {
+        html += `<line id="pvp-anim-${id}" class="pvp-seg" x1="${anim.x1}" y1="10" x2="${anim.x1}" y2="10" stroke="${anim.color}" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+      }
+      svg.innerHTML = html;
+
+      if (!anim) { pvpPlaceDot(id, x, W, lastColor); return; }
+
+      pvpPlaceDot(id, anim.x1, W, lastColor);
+      const line = pvpEl('pvp-anim-' + id);
+      const t0 = performance.now();
+      const dur = 900;
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - t, 3);
+        const cx = anim.x1 + (anim.x2 - anim.x1) * e;
+        if (line) line.setAttribute('x2', cx.toFixed(1));
+        pvpPlaceDot(id, cx, W, anim.color);
+        if (t < 1) PVP.rafs.push(requestAnimationFrame(step));
+      };
+      PVP.rafs.push(requestAnimationFrame(step));
+    }
+
+    /* ---------- Answering ---------- */
+    function pvpShowFeedback(msg) {
+      const fb = pvpEl('pvpFeedback');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden', 'feedback-slide-in');
+        void fb.offsetWidth;
+        fb.classList.add('feedback-slide-in');
+      }
+      const input = pvpEl('pvpAnswerInput');
+      if (input) {
+        input.classList.remove('input-shake');
+        void input.offsetWidth;
+        input.classList.add('input-shake');
+      }
+    }
+
+    function pvpHideFeedback() {
+      const fb = pvpEl('pvpFeedback');
+      if (fb) { fb.textContent = ''; fb.classList.add('hidden'); }
+      const input = pvpEl('pvpAnswerInput');
+      if (input) input.classList.remove('input-shake');
+    }
+
+    function pvpSetEvalUi(on) {
+      const i = pvpEl('pvpAnswerInput'), s = pvpEl('pvpSubmitBtn'), k = pvpEl('pvpSkipBtn'), t = pvpEl('pvpSubmitText'), c = pvpEl('pvpQCard');
+      if (i) i.disabled = on;
+      if (s) s.disabled = on;
+      if (k) k.disabled = on;
+      if (c) c.classList.toggle('card-evaluating', on);
+      if (t) t.textContent = on ? 'Judging...' : 'Submit';
+    }
+
+    function pvpLockInputs() {
+      const i = pvpEl('pvpAnswerInput'), s = pvpEl('pvpSubmitBtn'), k = pvpEl('pvpSkipBtn'), t = pvpEl('pvpSubmitText');
+      if (i) i.disabled = true;
+      if (s) s.disabled = true;
+      if (k) k.disabled = true;
+      if (t) t.textContent = 'Locked in';
+    }
+
+    function pvpStartTimer(seconds) {
+      clearInterval(PVP.timer);
+      PVP.timeLeft = seconds;
+      const txt = pvpEl('pvpTimerText'), pill = pvpEl('pvpTimerPill');
+      const paint = () => {
+        if (txt) txt.textContent = `${Math.max(0, PVP.timeLeft)}s`;
+        if (pill) pill.classList.toggle('timer-urgent', PVP.timeLeft > 0 && PVP.timeLeft <= 7);
+      };
+      paint();
+      PVP.timer = setInterval(() => {
+        if (PVP.evaluating || PVP.submitted) return;
+        PVP.timeLeft--;
+        paint();
+        if (PVP.timeLeft <= 0) {
+          clearInterval(PVP.timer);
+          if (pill) pill.classList.remove('timer-urgent');
+          playAudioTone('timeout');
+          pvpSkip(true);
+        }
+      }, 1000);
+    }
+
+    async function pvpSendAnswer(ans) {
+      const room = PVP.room;
+      if (!room || !room.game || room.game.phase !== 'answering') return;
+      PVP.submitted = true;
+      clearInterval(PVP.timer);
+      const pill = pvpEl('pvpTimerPill'); if (pill) pill.classList.remove('timer-urgent');
+      pvpLockInputs();
+      pvpSetChip(PVP.myId, '<span class="text-pik-uncommon">Locked in &#10003;</span>');
+      try {
+        await PVP.backend.patch(PVP.code, { ['game.answers.' + PVP.myId]: ans });
+      } catch (e) {
+        console.warn('[P-V-PIK]', e);
+        PVP.submitted = false;
+        pvpSetEvalUi(false);
+        pvpShowFeedback('Connection problem \u2014 please try again.');
+        pvpStartTimer(Math.max(1, PVP.timeLeft));
+      }
+    }
+
+    function pvpSkip(auto) {
+      if (PVP.submitted) return;
+      if (PVP.evaluating && !auto) return;
+      const g = PVP.room && PVP.room.game;
+      if (!g || g.phase !== 'answering') return;
+      if (!auto) playAudioTone('skip');
+      const ms = auto ? PVP_ANSWER_SECONDS * 1000 : Math.max(0, Date.now() - PVP.qStart - PVP.pausedMs);
+      pvpSendAnswer({ text: 'Skipped', key: 'skipped', len: 0, ms, skip: true });
+    }
+
+    async function pvpSubmit() {
+      if (PVP.submitted || PVP.evaluating) return;
+      const g = PVP.room && PVP.room.game;
+      if (!g || g.phase !== 'answering') return;
+
+      const input = pvpEl('pvpAnswerInput');
+      const raw = input ? input.value.trim() : '';
+      if (!raw) { pvpShowFeedback('Please enter an answer or skip.'); playAudioTone('error'); return; }
+
+      const norm = normalize(raw);
+      if (PVP.used.has(norm)) { pvpShowFeedback(`"${raw}" has already been used this match.`); playAudioTone('error'); return; }
+
+      // Typing time stops the moment the answer is submitted (judging time doesn't count against you)
+      const typedMs = Math.max(0, Date.now() - PVP.qStart - PVP.pausedMs);
+      const round = g.round;
+      const prompt = g.questions[round];
+      const judgeStart = Date.now();
+
+      PVP.evaluating = true;
+      pvpHideFeedback();
+      pvpSetEvalUi(true);
+
+      const stillValid = () => {
+        const cur = PVP.room && PVP.room.game;
+        return cur && cur.round === round && cur.phase === 'answering';
+      };
+
+      try {
+        const verdict = await evaluateAnswerWithGroq(prompt, raw);
+        PVP.evaluating = false;
+        if (!stillValid()) return;
+        pvpSetEvalUi(false);
+
+        if (!verdict || !verdict.valid) {
+          PVP.pausedMs += Date.now() - judgeStart;
+          const reasonMsg = verdict && verdict.reason ? ` \u2014 ${verdict.reason}` : '';
+          pvpShowFeedback(`"${raw}" doesn't fit${reasonMsg}`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+
+        let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
+        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
+        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
+
+        const cleanAnswer = (verdict.normalizedAnswer || raw).trim();
+        const normClean = normalize(cleanAnswer);
+        if (PVP.used.has(normClean)) {
+          PVP.pausedMs += Date.now() - judgeStart;
+          pvpShowFeedback(`"${cleanAnswer}" has already been used this match.`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+        PVP.used.add(norm);
+        PVP.used.add(normClean);
+
+        pvpSendAnswer({ text: cleanAnswer, key: rarityKey, len: RARITY_CONFIG[rarityKey].length, ms: typedMs, skip: false });
+      } catch (err) {
+        PVP.evaluating = false;
+        if (!stillValid()) return;
+        pvpSetEvalUi(false);
+        PVP.pausedMs += Date.now() - judgeStart;
+        playAudioTone('error');
+        pvpShowFeedback('Unable to verify answer right now. Please try again.');
+        if (input) input.focus();
+      }
+    }
+  </script>
+
   <!-- ================= SHARED CLOUD VERDICT SYNC ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, query, where, getDocs, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     (async function initSharedCloudVerdicts() {
       try {
-        if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
+        if (typeof __firebase_config === 'undefined' || !__firebase_config) { window.__pikCloudFailed = true; return; }
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(__firebase_config);
@@ -4845,9 +6273,12 @@ Rules:
         }
 
         const currentUser = auth.currentUser;
-        if (!currentUser) return;
+        if (!currentUser) { window.__pikCloudFailed = true; return; }
 
         const verdictsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'aiVerdicts');
+
+        // Expose Firestore helpers for P-V-PIK matchmaking
+        window.__pikCloud = { db, appId, fb: { doc, collection, getDoc, setDoc, updateDoc, deleteDoc, deleteField, query, where, getDocs, onSnapshot } };
 
         // Real-time listener keeps all players synced to the same answer rarities without refreshing
         onSnapshot(
@@ -4914,6 +6345,7 @@ Rules:
           }
         };
       } catch (err) {
+        window.__pikCloudFailed = true;
         console.warn('[PIK Cloud Verdicts] Initialization skipped:', err);
       }
     })();
