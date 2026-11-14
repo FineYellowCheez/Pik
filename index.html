@@ -559,8 +559,8 @@
       }
     }
 
-    /* Short screens (phones held sideways, small windows) */
-    @media (max-height: 640px) {
+    /* Short phone screens (phones held sideways) - never applies to computer-sized windows */
+    @media (max-height: 640px) and (max-width: 940px) and (pointer: coarse) {
       #menuScreen { justify-content: flex-start; gap: 0.6rem; padding-top: 0.75rem; padding-bottom: 0.75rem; overflow-y: auto; }
       #menuHeroBlock { margin-top: 0; }
       #menuLogoSvg { width: 2.75rem; height: 2.75rem; margin-bottom: 0.15rem; }
@@ -571,7 +571,7 @@
       #questionCard { padding: 0.75rem; gap: 0.5rem; }
     }
 
-    @media (max-height: 460px) {
+    @media (max-height: 460px) and (max-width: 940px) and (pointer: coarse) {
       header { padding-top: 0.25rem; padding-bottom: 0.25rem; }
       #menuTagline2, #menuBetaNote { display: none; }
       #pvpStage { min-height: 100px; }
@@ -629,7 +629,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.4-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.5-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
