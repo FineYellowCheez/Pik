@@ -6184,9 +6184,9 @@ Rules:
             </div>
             <div id="pvp-chip-${id}" class="text-[11px] font-display font-bold truncate max-w-[58%] text-right"></div>
           </div>
-          <div class="relative h-5">
+          <div class="relative h-6">
             <svg id="pvp-svg-${id}" class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 20" preserveAspectRatio="none"></svg>
-            <span id="pvp-dot-${id}" class="absolute top-1/2 w-3 h-3 rounded-full" style="left:4%;transform:translate(-50%,-50%);border:3px solid #fff;background:#121212;"></span>
+            <div id="pvp-nodes-${id}" class="absolute inset-0 pointer-events-none"></div>
           </div>`;
         host.appendChild(row);
       });
@@ -6207,39 +6207,49 @@ Rules:
       });
     }
 
-    function pvpPlaceDot(id, x, W, color) {
-      const dot = pvpEl('pvp-dot-' + id);
-      if (!dot) return;
-      dot.style.left = ((x / W) * 100).toFixed(3) + '%';
-      dot.style.background = color || '#121212';
-      dot.style.borderColor = color || '#ffffff';
+    const PVP_LINE_START = 60;
+
+    // Same node style as the other modes: filled rarity-colored dot per segment,
+    // hollow white-ringed dot (with pulsing halo) at the end of the line.
+    function pvpNodeHtml(pct, color) {
+      return `<span style="position:absolute;top:50%;left:${pct}%;width:17px;height:17px;transform:translate(-50%,-50%);border-radius:9999px;border:3px solid ${color || '#ffffff'};background:${color || '#121212'};transition:background .3s ease,border-color .3s ease;"></span>`;
+    }
+
+    function pvpHaloHtml(pct) {
+      return `<span style="position:absolute;top:50%;left:${pct}%;width:0;height:0;"><span class="target-node-halo" style="position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:9999px;border:1.5px solid #ffffff;"></span></span>`;
+    }
+
+    function pvpRipple(container, pct, color, double) {
+      const ring = (cls) => `<span class="${cls}" style="position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:9999px;border:3px solid ${color};"></span>`;
+      container.insertAdjacentHTML('beforeend', `<span class="pvp-ripple" style="position:absolute;top:50%;left:${pct}%;width:0;height:0;">${ring('node-shockwave')}${double ? ring('node-shockwave-delayed') : ''}</span>`);
+      const wrap = container.lastElementChild;
+      setTimeout(() => { if (wrap && wrap.parentNode) wrap.remove(); }, 1100);
     }
 
     function pvpDrawAllTracks(room, animRound) {
       const order = room.game.order || [];
       const maxT = Math.max(0, ...order.map(id => pvpTotalLen(room, id)));
-      const W = Math.max(1000, maxT + 90);
+      const W = Math.max(1000, maxT + PVP_LINE_START + 60);
       order.forEach(id => pvpDrawTrack(room, id, W, animRound));
     }
 
     function pvpDrawTrack(room, id, W, animRound) {
-      const svg = pvpEl('pvp-svg-' + id);
-      if (!svg) return;
+      const svg = pvpEl('pvp-svg-' + id), nodes = pvpEl('pvp-nodes-' + id);
+      if (!svg || !nodes) return;
       svg.setAttribute('viewBox', `0 0 ${W} 20`);
+      const pct = (x) => ((x / W) * 100).toFixed(3);
       const rounds = room.game.rounds || [];
-      let html = `<line x1="0" y1="10" x2="${W}" y2="10" stroke="#ffffff" stroke-opacity="0.13" stroke-width="2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
-      let x = 40, lastColor = null, anim = null;
+      let html = `<line x1="0" y1="10" x2="${W}" y2="10" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+      let nodeHtml = '';
+      let x = PVP_LINE_START, anim = null;
       rounds.forEach((r, i) => {
         const a = r.answers && r.answers[id];
-        const len = (a && !a.skip) ? (a.len || 0) : 0;
-        if (len > 0) {
-          const color = (RARITY_CONFIG[a.key] || RARITY_CONFIG.common).color;
-          if (i === animRound) anim = { x1: x, x2: x + len, color };
-          else {
-            lastColor = color;
-            html += `<line class="pvp-seg" x1="${x}" y1="10" x2="${x + len}" y2="10" stroke="${color}" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
-          }
-        }
+        if (!a || a.skip) return;
+        const len = a.len || 0;
+        const color = (RARITY_CONFIG[a.key] || RARITY_CONFIG.common).color;
+        nodeHtml += pvpNodeHtml(pct(x), color);
+        if (i === animRound) anim = { x1: x, x2: x + len, color, key: a.key };
+        else html += `<line class="pvp-seg" x1="${x}" y1="10" x2="${x + len}" y2="10" stroke="${color}" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
         x += len;
       });
       if (anim) {
@@ -6247,18 +6257,28 @@ Rules:
       }
       svg.innerHTML = html;
 
-      if (!anim) { pvpPlaceDot(id, x, W, lastColor); return; }
+      if (!anim) {
+        nodes.innerHTML = nodeHtml + pvpHaloHtml(pct(x)) + pvpNodeHtml(pct(x), null);
+        return;
+      }
 
-      pvpPlaceDot(id, anim.x1, W, lastColor);
+      // Segment stretches out; the new hollow end node + ripple land when it arrives
+      nodes.innerHTML = nodeHtml + pvpHaloHtml(pct(anim.x1));
       const line = pvpEl('pvp-anim-' + id);
+      const sarcastic = anim.key === 'sarcastic';
+      const dur = sarcastic ? 2800 : 750;
       const t0 = performance.now();
-      const dur = 900;
+      let landed = false;
       const step = (now) => {
-        const t = Math.min(1, (now - t0) / dur);
-        const e = 1 - Math.pow(1 - t, 3);
-        const cx = anim.x1 + (anim.x2 - anim.x1) * e;
-        if (line) line.setAttribute('x2', cx.toFixed(1));
-        pvpPlaceDot(id, cx, W, anim.color);
+        const el = now - t0;
+        const t = Math.min(1, el / dur);
+        const e = 1 - Math.pow(1 - t, 4);
+        if (line) line.setAttribute('x2', (anim.x1 + (anim.x2 - anim.x1) * e).toFixed(1));
+        if (!landed && el >= dur - (sarcastic ? 150 : 0)) {
+          landed = true;
+          nodes.innerHTML = nodeHtml + pvpHaloHtml(pct(anim.x2)) + pvpNodeHtml(pct(anim.x2), null);
+          pvpRipple(nodes, pct(anim.x2), anim.color, ['rare', 'epic', 'gold', 'sarcastic'].includes(anim.key));
+        }
         if (t < 1) PVP.rafs.push(requestAnimationFrame(step));
       };
       PVP.rafs.push(requestAnimationFrame(step));
