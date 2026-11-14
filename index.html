@@ -5140,16 +5140,169 @@ Rules:
       };
     }
 
-    async function pvpGetBackend() {
-      if (PVP.backend) return PVP.backend;
-      const t0 = Date.now();
-      while (Date.now() - t0 < 3500) {
-        if (window.__pikCloud) { PVP.backend = pvpCloudBackend(window.__pikCloud); return PVP.backend; }
-        if (window.__pikCloudFailed) break;
-        await new Promise(r => setTimeout(r, 120));
+    /* ---------- Internet transport (MQTT over secure WebSocket) ----------
+       Works from a plain HTML file on any device: no account or setup needed.
+       The room's host is the single writer: other players send patches to
+       the host, and the host publishes the authoritative room state. */
+    const PVP_MQTT_LIB = 'https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js';
+    const PVP_MQTT_BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081'];
+
+    function pvpLoadScript(src) {
+      return new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = res;
+        s.onerror = () => rej(new Error('script load failed'));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function pvpConnectMqtt() {
+      try { if (!window.mqtt) await pvpLoadScript(PVP_MQTT_LIB); } catch (e) { return null; }
+      if (!window.mqtt) return null;
+      const brokers = window.PVP_MQTT_BROKERS || PVP_MQTT_BROKERS;
+      for (const url of brokers) {
+        let client = null;
+        try {
+          client = window.mqtt.connect(url, {
+            clientId: 'pik_' + PVP.myId + '_' + Math.random().toString(16).slice(2, 6),
+            connectTimeout: 4000, reconnectPeriod: 2000, clean: true, keepalive: 30
+          });
+          await new Promise((res, rej) => {
+            client.once('connect', res);
+            client.once('error', rej);
+            setTimeout(() => rej(new Error('timeout')), 5000);
+          });
+          client.on('error', () => {});
+          return client;
+        } catch (e) {
+          try { if (client) client.end(true); } catch (e2) {}
+        }
       }
-      PVP.backend = pvpLocalBackend();
-      return PVP.backend;
+      return null;
+    }
+
+    function pvpMqttBackend(client) {
+      const ROOT = 'pik/pvp/v1/';
+      const docs = {}, revs = {}, watchers = {}, waiters = {}, pubOn = {};
+      const subs = new Set();
+      let pubCollector = null;
+      const stateT = (c) => `${ROOT}r/${c}/state`;
+      const inT = (c) => `${ROOT}r/${c}/in`;
+      const pubT = (c) => `${ROOT}public/${c}`;
+      const pub = (topic, payload, retain) => { try { client.publish(topic, payload, { qos: 1, retain: !!retain }); } catch (e) {} };
+      const sub = (t) => { if (subs.has(t)) return; subs.add(t); try { client.subscribe(t, { qos: 1 }); } catch (e) {} };
+      const unsub = (t) => { if (!subs.has(t)) return; subs.delete(t); try { client.unsubscribe(t); } catch (e) {} };
+      const iAmHost = (c) => !!(docs[c] && docs[c].hostId === PVP.myId);
+      const emit = (c) => { (watchers[c] || []).slice().forEach(cb => cb(docs[c] || null)); };
+
+      function publishState(c) {
+        const d = docs[c];
+        if (!d) return;
+        revs[c] = (revs[c] || 0) + 1;
+        pub(stateT(c), JSON.stringify({ by: PVP.myId, rev: revs[c], doc: d }), true);
+        if (d.isPublic && d.status === 'lobby') { pub(pubT(c), JSON.stringify(d), true); pubOn[c] = true; }
+        else if (pubOn[c]) { pub(pubT(c), '', true); pubOn[c] = false; }
+        emit(c);
+      }
+
+      client.on('connect', () => { subs.forEach(t => { try { client.subscribe(t, { qos: 1 }); } catch (e) {} }); });
+
+      client.on('message', (topic, buf) => {
+        const text = buf.toString();
+        if (topic.startsWith(ROOT + 'public/')) {
+          if (pubCollector && text) { try { const d = JSON.parse(text); pubCollector[d.code] = d; } catch (e) {} }
+          return;
+        }
+        const m = topic.match(/^pik\/pvp\/v1\/r\/([A-Z0-9]+)\/(state|in)$/);
+        if (!m) return;
+        const c = m[1];
+        let msg = null;
+        if (text) { try { msg = JSON.parse(text); } catch (e) { return; } }
+        if (m[2] === 'state') {
+          if (msg && msg.by === PVP.myId) return;
+          docs[c] = msg ? msg.doc : null;
+          if (msg) revs[c] = Math.max(revs[c] || 0, msg.rev || 0);
+          (waiters[c] || []).splice(0).forEach(f => f());
+          emit(c);
+        } else if (msg && msg.patch && iAmHost(c)) {
+          pvpApplyPatch(docs[c], msg.patch);
+          publishState(c);
+        }
+      });
+
+      return {
+        kind: 'mqtt',
+        async get(c) {
+          sub(stateT(c));
+          if (docs[c] === undefined) {
+            await new Promise(res => { (waiters[c] = waiters[c] || []).push(res); setTimeout(res, 1500); });
+          }
+          const d = docs[c] === undefined ? null : docs[c];
+          if (!d && !(watchers[c] && watchers[c].length)) { unsub(stateT(c)); delete docs[c]; }
+          return d;
+        },
+        async set(c, d) {
+          docs[c] = d; revs[c] = 0;
+          sub(stateT(c)); sub(inT(c));
+          publishState(c);
+        },
+        async patch(c, obj) {
+          if (iAmHost(c)) { pvpApplyPatch(docs[c], obj); publishState(c); return; }
+          if (obj.hostId === PVP.myId && docs[c]) {   // taking over as host
+            pvpApplyPatch(docs[c], obj);
+            sub(inT(c));
+            publishState(c);
+            return;
+          }
+          pub(inT(c), JSON.stringify({ patch: obj, from: PVP.myId }), false);
+        },
+        async remove(c) {
+          pub(stateT(c), '', true);
+          if (pubOn[c] || (docs[c] && docs[c].isPublic)) pub(pubT(c), '', true);
+          pubOn[c] = false;
+          docs[c] = null;
+        },
+        async listPublic() {
+          pubCollector = {};
+          const t = ROOT + 'public/+';
+          sub(t);
+          await new Promise(r => setTimeout(r, 1500));
+          const out = Object.values(pubCollector);
+          pubCollector = null;
+          unsub(t);
+          return out;
+        },
+        watch(c, cb) {
+          sub(stateT(c)); sub(inT(c));
+          (watchers[c] = watchers[c] || []).push(cb);
+          if (docs[c] !== undefined) setTimeout(() => cb(docs[c]), 0);
+          return () => { watchers[c] = (watchers[c] || []).filter(x => x !== cb); };
+        },
+        release(c) {
+          if (watchers[c] && watchers[c].length) return;
+          unsub(stateT(c)); unsub(inT(c));
+          delete docs[c]; delete revs[c];
+        }
+      };
+    }
+
+    function pvpGetBackend() {
+      if (PVP.backend) return Promise.resolve(PVP.backend);
+      if (!PVP.backendPromise) {
+        PVP.backendPromise = (async () => {
+          const t0 = Date.now();
+          while (Date.now() - t0 < 3500) {
+            if (window.__pikCloud) { PVP.backend = pvpCloudBackend(window.__pikCloud); return PVP.backend; }
+            if (window.__pikCloudFailed) break;
+            await new Promise(r => setTimeout(r, 120));
+          }
+          const client = await pvpConnectMqtt();
+          PVP.backend = client ? pvpMqttBackend(client) : pvpLocalBackend();
+          return PVP.backend;
+        })();
+      }
+      return PVP.backendPromise;
     }
 
     /* ---------- Screen / view helpers ---------- */
@@ -5200,7 +5353,7 @@ Rules:
       const note = pvpEl('pvpBackendNote');
       if (note) note.textContent = '';
       pvpGetBackend().then(b => {
-        if (note) note.textContent = b.kind === 'cloud' ? 'Online matchmaking connected' : 'Offline mode \u2014 only tabs in this browser can join each other';
+        if (note) note.textContent = b.kind === 'local' ? 'Could not reach online matchmaking \u2014 only tabs in this browser can join each other' : 'Online matchmaking connected';
       });
     }
 
@@ -5262,18 +5415,24 @@ Rules:
     async function pvpTryJoin(code) {
       const b = await pvpGetBackend();
       const name = pvpGetName();
+      const fail = (m) => { if (b.release) b.release(code); return m; };
       const r = await b.get(code);
-      if (!r) return 'Lobby not found.';
-      if (r.status !== 'lobby') return 'That match has already started.';
-      if (Object.keys(r.players || {}).length >= PVP_MAX_PLAYERS) return 'That lobby is full.';
+      if (!r) return fail('Lobby not found.');
+      if (r.status !== 'lobby') return fail('That match has already started.');
+      if (Object.keys(r.players || {}).length >= PVP_MAX_PLAYERS) return fail('That lobby is full.');
       const now = Date.now();
       await b.patch(code, { ['players.' + PVP.myId]: { name: pvpUniqueName(r.players, name), joinedAt: now, seen: now } });
-      const r2 = await b.get(code);
-      if (!r2 || !r2.players || !r2.players[PVP.myId]) return 'Lobby not found.';
+      let r2 = null;
+      for (let i = 0; i < 14; i++) {
+        r2 = await b.get(code);
+        if (r2 && r2.players && r2.players[PVP.myId]) break;
+        await new Promise(res => setTimeout(res, 250));
+      }
+      if (!r2 || !r2.players || !r2.players[PVP.myId]) return fail('Could not join \u2014 the host may have left.');
       const idx = pvpSortedPlayerIds(r2).indexOf(PVP.myId);
       if (idx >= PVP_MAX_PLAYERS) {
         await b.patch(code, { ['players.' + PVP.myId]: PVP_DEL });
-        return 'That lobby is full.';
+        return fail('That lobby is full.');
       }
       pvpEnterRoom(code);
       return null;
@@ -5360,6 +5519,8 @@ Rules:
       PVP.lastKey = null;
       PVP.lastStatus = null;
       PVP.beatSeen = {};
+      PVP.prevHost = null;
+      PVP.noHostSince = 0;
       PVP.hostKey = null;
       PVP.used = new Set();
       pvpSetMsg('');
@@ -5370,6 +5531,8 @@ Rules:
     }
 
     function pvpStopAll() {
+      const prevCode = PVP.code, prevBackend = PVP.backend;
+      if (prevCode && prevBackend && prevBackend.release) setTimeout(() => prevBackend.release(prevCode), 3000);
       if (PVP.unwatch) { try { PVP.unwatch(); } catch (e) {} PVP.unwatch = null; }
       clearInterval(PVP.hbTimer); clearInterval(PVP.tickTimer); clearInterval(PVP.timer);
       PVP.hbTimer = PVP.tickTimer = PVP.timer = null;
@@ -5455,6 +5618,13 @@ Rules:
       PVP.everSeen = true;
       PVP.room = room;
       pvpTrackBeats(room);
+      if (PVP.prevHost !== room.hostId) {
+        if (room.hostId === PVP.myId && PVP.prevHost) {
+          const t = Date.now();
+          Object.keys(PVP.beatSeen).forEach(id => { PVP.beatSeen[id].at = t; });
+        }
+        PVP.prevHost = room.hostId;
+      }
 
       if (room.status === 'lobby') {
         if (PVP.lastStatus !== 'lobby') pvpResetGameUi();
@@ -5476,11 +5646,20 @@ Rules:
     function pvpTick() {
       const room = PVP.room;
       if (!room || !PVP.code) return;
-      // Host migration (any client may claim the host role if the host went silent)
-      const host = room.players[room.hostId];
-      if (!host || !pvpAlive(room.hostId)) {
-        const alive = pvpSortedPlayerIds(room).filter(id => pvpAlive(id));
-        if (alive[0] === PVP.myId) {
+      // Host migration: if the host goes silent, the next player in join order takes over
+      if (room.hostId !== PVP.myId) {
+        const host = room.players[room.hostId];
+        const rank = Math.max(0, pvpSortedPlayerIds(room).indexOf(PVP.myId));
+        let silent = 0;
+        if (!host) {
+          if (!PVP.noHostSince) PVP.noHostSince = Date.now();
+          silent = Date.now() - PVP.noHostSince + PVP_STALE_MS;
+        } else {
+          PVP.noHostSince = 0;
+          const hb = PVP.beatSeen[room.hostId];
+          silent = hb ? Date.now() - hb.at : 0;
+        }
+        if (silent > PVP_STALE_MS + rank * 2500) {
           PVP.backend.patch(PVP.code, { hostId: PVP.myId }).catch(() => {});
         }
       }
