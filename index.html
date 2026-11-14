@@ -564,7 +564,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.2.10-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.0-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1083,6 +1083,9 @@
       <!-- All players' lines, one above the other -->
       <div id="pvpLines" class="flex flex-col gap-1.5 w-full flex-shrink-0"></div>
 
+      <!-- End-of-match awards (3 per game) -->
+      <div id="pvpAwards" class="hidden w-full flex-shrink-0 pt-1"></div>
+
       <!-- End of match actions -->
       <div id="pvpEndActions" class="hidden flex-col items-center gap-2 pt-1 pb-2 flex-shrink-0">
         <div class="flex items-center justify-center gap-2">
@@ -1126,6 +1129,20 @@
     let isEvaluatingAnswer = false;
     let groqKeysUnavailable = false;
     let geminiJudgeUnavailable = false;
+    window.__pikJudgeDiag = { groq: '', gemini: '', claude: '' };
+    function pikJudgeDiagText() {
+      const d = window.__pikJudgeDiag || {};
+      return [d.gemini && `Gemini: ${d.gemini}`, d.groq && `Groq: ${d.groq}`, d.claude && `Claude: ${d.claude}`].filter(Boolean).join('; ');
+    }
+    const pikDiagOf = (err) => {
+      const m = (err && err.message) ? String(err.message) : String(err);
+      if (err && err.name === 'AbortError') return 'timed out';
+      if (err && err.status) return `HTTP ${err.status}`;
+      return m.slice(0, 60);
+    };
+    let claudeRetryAt = 0;
+    let groqRetryAt = 0;
+    let geminiRetryAt = 0;
 
     const RARITY_CONFIG = {
       common: { name: 'Common', color: '#7e8c8d', length: 110, points: 22 },
@@ -1136,7 +1153,8 @@
       gold: { name: 'The Pik', color: '#d4af37', length: 540, points: 108 }
     };
 
-    const VERDICT_CACHE_STORAGE_KEY = 'pik_verdict_cache_v2';
+    const VERDICT_CACHE_STORAGE_KEY = 'pik_verdict_cache_v3';
+    const JUDGE_CACHE_VERSION = 'j3';
     window.__pikVerdictCache = window.__pikVerdictCache || {};
     try {
       const savedCache = localStorage.getItem(VERDICT_CACHE_STORAGE_KEY);
@@ -2022,19 +2040,28 @@
   }
 
     function buildJudgeSystemPrompt() {
-      return `You are a fair, accurate, deterministic judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
-Evaluate whether the player's answer genuinely fits the prompt, and if valid, assign the rarity tier that best reflects how well-known or obscure that answer is to an average person:
-- "common": Obvious, everyday, top-of-mind answers that most people think of quickly (e.g., Cheddar, Apple, Banana, Hammer, Fork, Guitar, Piano, France, Japan, Lion, Great White Shark, Batman, Monopoly).
-- "uncommon": Familiar secondary answers that are still well known to the general public, just not the #1–2 cliché picks (e.g., Gouda, Brie, Mango, Wrench, Oboe, Banjo, Peru, Norway, Cheetah, Falcon, Scrabble).
-- "sarcastic": ("Too Clever" tier — moderately challenging) Reserved ONLY for witty, cheeky, pedantic, or technically-true loophole answers that exploit the literal wording of the prompt in an unexpected way (e.g., answering "Ice" as a mineral, "Cereal" as a soup, or "Pluto" as a dwarf planet).
-- "rare": Specific, thoughtful, moderately niche answers that go beyond everyday defaults and show solid familiarity (e.g., Manchego, Halloumi, Euphonium, Suriname, Pangolin, Capoeira, Brutalism, Carcassonne).
-- "epic": Specialized, off-the-beaten-path trivia answers that most casual players would not immediately pull offhand (e.g., Époisses, Strozzapreti, Okapi, Theremin, Spokeshave, Vexillology, Magnetar, Agricola).
-- "gold": ("The Pik") STRICTLY reserved for genuinely obscure, hyper-niche, expert-level deep cuts that almost nobody would think of without specialized knowledge (e.g., Bitto, Pule cheese, Kakapo, Aye-Aye, Tuatara, Chibi-Robo, Ostracon, Trofie). NEVER give "gold" to somewhat obvious or mainstream answers!
+      return `You are a fair, knowledgeable, GENEROUS judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
+Your two jobs: (1) decide whether the player's answer fits the prompt, and (2) if it does, assign the rarity tier that reflects how many average players would have thought of it.
+
+VALIDITY — be inclusive. Accept the answer if it reasonably fits the prompt under ANY sensible reading of it. Specifically accept:
+- Real subtypes, varieties, brands/products, regional or alternate names, scientific names, slang and nicknames that are widely used, and answers from any country or language community.
+- Abbreviations, plurals, different capitalization, missing spaces/hyphens/accents/apostrophes, transliteration differences, and minor or obvious typos.
+- Fictional or pop-culture answers whenever the prompt could reasonably include them.
+- Obscure but plausible real answers. If you cannot be sure an obscure answer exists but it is a believable fit, lean toward accepting it as a high tier rather than rejecting it.
+Mark it invalid ONLY when it clearly does not fit: it is nonsense or gibberish, it is just the prompt's own category word or far too generic to be a specific answer (e.g., answering "cheese" to "Name a variety of cheese"), it is plainly a different kind of thing, or it breaks a hard rule of the prompt. For letter/sound/spelling rules (silent letters, palindromes, word endings, vowels, loanword origins, etc.), check the actual spelling and pronunciation carefully before deciding, and accept every word that genuinely satisfies the rule.
+
+RARITY — judge relative to this specific prompt, by how many average players would name it. Do NOT default to "common" and do NOT be stingy; when torn between two tiers, choose the higher one.
+- "common": ONLY the handful (roughly the top 3-5) of most obvious, top-of-mind answers to this prompt (e.g., Cheddar, Apple, Banana, Hammer, Guitar, Piano, France, Japan, Lion, Batman, Monopoly).
+- "uncommon": Well-known answers that a typical adult would recognize but that are not the first things people say (e.g., Gouda, Brie, Mango, Wrench, Oboe, Banjo, Peru, Norway, Cheetah, Falcon, Scrabble).
+- "sarcastic": ("Too Clever" tier) Reserved ONLY for witty, cheeky, pedantic, or technically-true loophole answers that exploit the literal wording of the prompt in an unexpected way (e.g., answering "Ice" as a mineral, "Cereal" as a soup, or "Pluto" as a dwarf planet).
+- "rare": Specific answers that need some real familiarity — a hobbyist or enthusiast would know them, an average person would not think of them quickly (e.g., Manchego, Halloumi, Euphonium, Suriname, Pangolin, Capoeira, Brutalism, Carcassonne).
+- "epic": Specialist or off-the-beaten-path answers that most casual players would not come up with (e.g., Epoisses, Strozzapreti, Okapi, Theremin, Spokeshave, Vexillology, Magnetar, Agricola).
+- "gold": ("The Pik") Genuine deep cuts that almost nobody would think of without expert knowledge (e.g., Bitto, Pule cheese, Kakapo, Aye-Aye, Tuatara, Chibi-Robo, Ostracon, Trofie). Give "gold" to answers that are truly this obscure — but never to answers that are somewhat obvious or mainstream.
 
 Rules:
-1. Recognize ALL valid answers—including regional names, scientific/common equivalents, minor typos, capitalization, or plurals—and return the properly spelled "normalizedAnswer".
+1. Recognize ALL valid answers and return the properly spelled "normalizedAnswer".
 2. Keep "normalizedAnswer" faithful to what the player actually typed: you may fix typos/capitalization or expand direct shorthand/abbreviations into the full canonical name of the EXACT SAME thing (e.g., "Curve" -> "Curveball", "Cheddar" -> "Cheddar Cheese", "T-Rex" -> "Tyrannosaurus Rex", "NYC" -> "New York City"), NEVER substitute a different subtype, hybrid, or more specific variant (e.g., NEVER turn "Curve" into "Knuckleball Curve" or "Knuckle Curve", "Fastball" into "Split-Finger Fastball", or "Apple" into "Honeycrisp Apple"). Grade the rarity of the player's actual answer.
-3. Grade the underlying canonical concept consistently—never boost rarity just because a player added an obvious adjective (e.g., "wooden spoon" or "green apple" is still "common").
+3. Grade the underlying concept consistently — never boost rarity just because a player added an obvious adjective (e.g., "wooden spoon" or "green apple" is still as common as "spoon" or "apple").
 4. Provide 2 distinct, real, rarer valid examples ("rarerExamples") for the prompt (e.g., an Epic-tier answer and a The Pik-tier answer) that differ from the player's answer.
 5. Respond ONLY with a valid JSON object matching this exact schema:
 {
@@ -2044,6 +2071,14 @@ Rules:
   "reason": "1 concise sentence explaining why it fits or doesn't fit and why it got that rarity",
   "rarerExamples": ["string", "string"]
 }`;
+    }
+
+    function buildJudgeUserMessage(prompt, answer, recheck) {
+      let msg = `Prompt: "${prompt}"\nPlayer Answer: "${answer}"`;
+      if (recheck) {
+        msg += `\n\nSECOND OPINION: an earlier pass rejected this answer. Re-evaluate generously and from first principles — consider alternate meanings, spellings, regional or scientific names, brand or product names, fictional entries when the prompt allows them, and broader readings of the prompt. Only mark it invalid if it truly cannot fit.`;
+      }
+      return msg;
     }
 
     function toDisplayTitleCase(str) {
@@ -2144,13 +2179,48 @@ Rules:
       return toDisplayTitleCase(cleanRaw);
     }
 
-    async function callSingleGroqKey(apiKey, prompt, canonicalAnswer, seed) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 14000);
+    function pikFetchTimeout(url, opts, ms) {
+      return new Promise((resolve, reject) => {
+        const t = setTimeout(() => { const e = new Error('Request timed out'); e.name = 'AbortError'; reject(e); }, ms);
+        fetch(url, opts).then(
+          (r) => { clearTimeout(t); resolve(r); },
+          (e) => { clearTimeout(t); reject(e); }
+        );
+      });
+    }
+
+    async function callClaudeJudge(prompt, canonicalAnswer, recheck = false) {
+      const response = await pikFetchTimeout('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          system: buildJudgeSystemPrompt(),
+          messages: [{ role: 'user', content: buildJudgeUserMessage(prompt, canonicalAnswer, recheck) }]
+        })
+      }, 25000);
+      if (!response.ok) {
+        const errText = await response.text().catch(() => '');
+        const err = new Error(`Claude HTTP ${response.status}: ${errText}`);
+        err.status = response.status;
+        throw err;
+      }
+      const data = await response.json();
+      const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('Empty response from Claude');
+      const parsed = JSON.parse(match[0]);
+      if (typeof parsed.valid !== 'boolean') throw new Error('Invalid Claude JSON schema');
+      return parsed;
+    }
+
+    async function callSingleGroqKey(apiKey, prompt, canonicalAnswer, seed, recheck = false) {
+      const timeoutId = null;
       const systemPrompt = buildJudgeSystemPrompt();
 
       try {
-        const response = await fetch(GROQ_API_URL, {
+        const response = await pikFetchTimeout(GROQ_API_URL, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${apiKey.trim()}`,
@@ -2160,16 +2230,15 @@ Rules:
             model: GROQ_MODEL,
             messages: [
               { role: 'system', content: systemPrompt },
-              { role: 'user', content: `Prompt: "${prompt}"\nPlayer Answer: "${canonicalAnswer}"` }
+              { role: 'user', content: buildJudgeUserMessage(prompt, canonicalAnswer, recheck) }
             ],
             temperature: 0,
             top_p: 1,
             seed: seed,
             reasoning_effort: "low",
             response_format: { type: 'json_object' }
-          }),
-          signal: controller.signal
-        });
+          })
+        }, 14000);
 
         clearTimeout(timeoutId);
 
@@ -2204,16 +2273,15 @@ Rules:
       }
     }
 
-    async function callGeminiJudge(prompt, canonicalAnswer, seed) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 14000);
+    async function callGeminiJudge(prompt, canonicalAnswer, seed, recheck = false) {
+      const timeoutId = null;
       const apiKey = "";
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_JUDGE_MODEL}:generateContent?key=${apiKey}`;
 
       const payload = {
         contents: [{
           role: 'user',
-          parts: [{ text: `Prompt: "${prompt}"\nPlayer Answer: "${canonicalAnswer}"` }]
+          parts: [{ text: buildJudgeUserMessage(prompt, canonicalAnswer, recheck) }]
         }],
         systemInstruction: {
           parts: [{ text: buildJudgeSystemPrompt() }]
@@ -2240,12 +2308,11 @@ Rules:
       };
 
       try {
-        const response = await fetch(apiUrl, {
+        const response = await pikFetchTimeout(apiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-          signal: controller.signal
-        });
+          body: JSON.stringify(payload)
+        }, 14000);
 
         clearTimeout(timeoutId);
 
@@ -3099,13 +3166,13 @@ Rules:
       const views = bestMatch.monthlyViews || 0;
       const articleLen = bestMatch.length || 0;
       let rarity = 'rare';
-      if (views >= 90000 || articleLen >= 65000) {
+      if (views >= 180000 || articleLen >= 90000) {
         rarity = 'common';
-      } else if (views >= 22000 || articleLen >= 28000) {
+      } else if (views >= 45000 || articleLen >= 40000) {
         rarity = 'uncommon';
-      } else if (views >= 4500 || articleLen >= 11000) {
+      } else if (views >= 9000 || articleLen >= 16000) {
         rarity = 'rare';
-      } else if (views >= 900 || articleLen >= 4000) {
+      } else if (views >= 1800 || articleLen >= 6000) {
         rarity = 'epic';
       } else {
         rarity = 'gold';
@@ -3129,14 +3196,19 @@ Rules:
     async function evaluateAnswerWithGroq(prompt, userAnswer) {
       const normPrompt = normalize(prompt);
       const normAns = normalize(userAnswer);
-      const primaryCacheKey = `${normPrompt}::${normAns}`;
+      const primaryCacheKey = `${JUDGE_CACHE_VERSION}::${normPrompt}::${normAns}`;
 
       const finalizeVerdict = (verdict) => {
         if (!verdict) return verdict;
         if (!verdict.valid) return { ...verdict };
         const safeNormalized = sanitizeNormalizedAnswer(userAnswer, verdict.normalizedAnswer || userAnswer, prompt);
+        let rarityKey = String(verdict.rarity || '').toLowerCase().trim();
+        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
+        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'uncommon';
         return {
           ...verdict,
+          rarity: rarityKey,
           normalizedAnswer: safeNormalized
         };
       };
@@ -3155,12 +3227,12 @@ Rules:
       }
 
       const canonicalAnswer = normAns || userAnswer.trim().toLowerCase();
-      const deterministicSeed = computeDeterministicSeed(primaryCacheKey);
+      const deterministicSeed = (computeDeterministicSeed(primaryCacheKey) % 2147483000) + 1;
 
       const handleSuccessfulVerdict = async (rawVerdict) => {
         const verdict = finalizeVerdict(rawVerdict);
         if (verdict && verdict.valid && verdict.normalizedAnswer) {
-          const resolvedCacheKey = `${normPrompt}::${normalize(verdict.normalizedAnswer)}`;
+          const resolvedCacheKey = `${JUDGE_CACHE_VERSION}::${normPrompt}::${normalize(verdict.normalizedAnswer)}`;
           if (verdictCache[resolvedCacheKey]) {
             const lockedVerdict = finalizeVerdict(verdictCache[resolvedCacheKey]);
             persistVerdictCache(primaryCacheKey, lockedVerdict);
@@ -3176,48 +3248,106 @@ Rules:
           }
           persistVerdictCache(resolvedCacheKey, verdict);
         }
-        persistVerdictCache(primaryCacheKey, verdict);
+        if (verdict && verdict.valid) persistVerdictCache(primaryCacheKey, verdict);
         return verdict;
       };
 
-      // Tier 1: Groq API Keys (if available)
-      const configuredKeys = getGroqApiKeys()
-        .map((key, idx) => ({ key: (key || '').trim(), slot: idx + 1 }))
-        .filter(item => item.key.length > 0);
+      // AI judges. A failure only pauses that judge briefly instead of disabling it for the whole session.
+      const COOLDOWN_MS = 30000;
+      const COOLDOWN_NET_MS = 300000;
+      const runAiJudge = async (recheck) => {
+        const seed = recheck ? deterministicSeed + 1 : deterministicSeed;
 
-      if (configuredKeys.length > 0 && !groqKeysUnavailable) {
-        const totalKeys = configuredKeys.length;
-        for (let attempt = 0; attempt < totalKeys; attempt++) {
-          const targetIdx = (activeGroqKeyIndex + attempt) % totalKeys;
-          const { key } = configuredKeys[targetIdx];
-          try {
-            const verdict = await callSingleGroqKey(key, prompt, canonicalAnswer, deterministicSeed);
-            activeGroqKeyIndex = targetIdx;
-            groqKeysUnavailable = false;
-            return await handleSuccessfulVerdict(verdict);
-          } catch (err) {
-            // Try next Groq key
+        // Tier 1: Groq API Keys (if available)
+        const configuredKeys = getGroqApiKeys()
+          .map((key, idx) => ({ key: (key || '').trim(), slot: idx + 1 }))
+          .filter(item => item.key.length > 0);
+
+        if (configuredKeys.length === 0) window.__pikJudgeDiag.groq = 'no keys';
+        if (configuredKeys.length > 0 && Date.now() >= groqRetryAt) {
+          const totalKeys = configuredKeys.length;
+          let groqOutage = false, groqNet = false;
+          for (let attempt = 0; attempt < totalKeys; attempt++) {
+            const targetIdx = (activeGroqKeyIndex + attempt) % totalKeys;
+            const { key } = configuredKeys[targetIdx];
+            try {
+              const verdict = await callSingleGroqKey(key, prompt, canonicalAnswer, seed, recheck);
+              activeGroqKeyIndex = targetIdx;
+              groqKeysUnavailable = false;
+              window.__pikJudgeDiag.groq = '';
+              return verdict;
+            } catch (err) {
+              console.warn('[PIK Judge] Groq key failed:', err && err.message ? err.message.slice(0, 200) : err);
+              window.__pikJudgeDiag.groq = pikDiagOf(err);
+              if (!err || err.status !== 400) groqOutage = true;
+              if (!err || !err.status) groqNet = true;
+              // Try next Groq key
+            }
+          }
+          if (groqOutage) {
+            groqKeysUnavailable = true;
+            groqRetryAt = Date.now() + (groqNet ? COOLDOWN_NET_MS : COOLDOWN_MS);
           }
         }
-        groqKeysUnavailable = true;
-      }
 
-      // Tier 2: Gemini 3 Flash Preview Judge (works seamlessly in Canvas runtime)
-      if (!geminiJudgeUnavailable) {
-        try {
-          const geminiVerdict = await callGeminiJudge(prompt, canonicalAnswer, deterministicSeed);
-          return await handleSuccessfulVerdict(geminiVerdict);
-        } catch (err) {
-          geminiJudgeUnavailable = true;
+        // Tier 2: Gemini 3 Flash Preview Judge (works seamlessly in Canvas runtime)
+        if (Date.now() >= geminiRetryAt) {
+          let geminiOutage = false, geminiNet = false;
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+              const geminiVerdict = await callGeminiJudge(prompt, canonicalAnswer, seed, recheck);
+              geminiJudgeUnavailable = false;
+              window.__pikJudgeDiag.gemini = '';
+              return geminiVerdict;
+            } catch (err) {
+              console.warn('[PIK Judge] Gemini failed:', err && err.message ? err.message.slice(0, 200) : err);
+              window.__pikJudgeDiag.gemini = pikDiagOf(err);
+              if (err && err.status === 400) { geminiOutage = false; break; }
+              geminiOutage = true;
+              if (!err || !err.status) geminiNet = true;
+              if (err && (err.status === 429 || err.status === 401 || err.status === 403)) break;
+              if (attempt === 0) await new Promise(r => setTimeout(r, 400));
+            }
+          }
+          if (geminiOutage) {
+            geminiJudgeUnavailable = true;
+            geminiRetryAt = Date.now() + (geminiNet ? COOLDOWN_NET_MS : COOLDOWN_MS);
+          }
         }
+
+        // Tier 3: Claude (available inside Claude artifacts, where other websites are blocked)
+        if (Date.now() >= claudeRetryAt) {
+          try {
+            const claudeVerdict = await callClaudeJudge(prompt, canonicalAnswer, recheck);
+            window.__pikJudgeDiag.claude = '';
+            return claudeVerdict;
+          } catch (err) {
+            console.warn('[PIK Judge] Claude failed:', err && err.message ? err.message.slice(0, 200) : err);
+            window.__pikJudgeDiag.claude = pikDiagOf(err);
+            if (!err || err.status !== 400) claudeRetryAt = Date.now() + ((!err || !err.status) ? COOLDOWN_NET_MS : COOLDOWN_MS);
+          }
+        }
+        return null;
+      };
+
+      let aiVerdict = await runAiJudge(false);
+      if (aiVerdict && !aiVerdict.valid) {
+        // Second opinion before rejecting: the judge re-checks with a generous reading of the prompt
+        const second = await runAiJudge(true);
+        if (second && second.valid) aiVerdict = second;
+      }
+      if (aiVerdict) {
+        return await handleSuccessfulVerdict(aiVerdict);
       }
 
-      // Tier 3: Live Wikipedia + Wikidata + Dictionary Semantic Fact-Checker
-      const fallbackVerdict = await verifyAnswerWithKnowledgeAPIs(prompt, userAnswer);
-      if (fallbackVerdict.valid) {
-        persistVerdictCache(primaryCacheKey, fallbackVerdict);
+      // Tier 4: Live Wikipedia + Wikidata + Dictionary Semantic Fact-Checker (only when no AI judge is reachable)
+      // Not cached, so the AI can give the real verdict next time.
+      const fallbackResult = await verifyAnswerWithKnowledgeAPIs(prompt, userAnswer);
+      if (fallbackResult && !fallbackResult.valid && /^Could not verify/.test(fallbackResult.reason || '')) {
+        // Nothing could judge this answer right now (not the player's fault) - let the UI ask them to retry
+        throw new Error('Judge unavailable' + (pikJudgeDiagText() ? ' (' + pikJudgeDiagText() + ')' : ''));
       }
-      return fallbackVerdict;
+      return fallbackResult;
     }
 
     /* ----------------------------------------------------
@@ -4724,7 +4854,7 @@ Rules:
         if (err && err.message === 'NO_KEYS_CONFIGURED') {
           showFeedback("No API keys configured. Insert your 3 keys in GROQ_API_KEYS in the code.");
         } else {
-          showFeedback("Unable to verify answer right now. Please check your connection or keys and try again.");
+          showFeedback("Unable to verify answer right now. Please check your connection or keys and try again." + (pikJudgeDiagText() ? ` [${pikJudgeDiagText()}]` : ''));
         }
 
         if (inputEl) inputEl.focus();
@@ -5678,6 +5808,7 @@ Rules:
       const cd = pvpEl('pvpCountdown'); if (cd) cd.classList.add('hidden');
       const echo = pvpEl('pvpPromptEcho'); if (echo) echo.classList.add('hidden');
       const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      const aw = pvpEl('pvpAwards'); if (aw) { aw.classList.add('hidden'); aw.innerHTML = ''; }
       const v = pvpEl('pvpVerdict'); if (v) v.innerHTML = '';
       const rl = pvpEl('pvpRoundLine'); if (rl) rl.textContent = '';
       const lines = pvpEl('pvpLines'); if (lines) lines.innerHTML = '';
@@ -5997,6 +6128,7 @@ Rules:
         if (echo) echo.classList.add('hidden');
         const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
         pvpResetRowMarks(room);
+        const awBox = pvpEl('pvpAwards'); if (awBox) { awBox.classList.add('hidden'); awBox.innerHTML = ''; }
         pvpRenderPips(room, true);
         pvpDrawAllTracks(room, -1);
         if (verdict) verdict.innerHTML = '<span class="text-slate-400">Get ready...</span>';
@@ -6151,7 +6283,93 @@ Rules:
       const verdict = pvpEl('pvpVerdict');
       if (verdict) verdict.innerHTML = html;
       if (!firstLoad) playAudioTone('finish');
+      pvpRenderAwards(room);
       pvpRenderEndActions(room);
+    }
+
+    /* ---------- End-of-match awards (exactly 3 per game) ---------- */
+    function pvpSeededRandom(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+      let a = h >>> 0;
+      return () => {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function pvpComputeAwards(room) {
+      const g = room.game;
+      const rounds = g.rounds || [];
+      const order = g.order || [];
+      const stats = {};
+      order.forEach(id => { stats[id] = { id, n: 0, sumMs: 0, total: 0, bestLen: -1, bestAns: null, minMs: Infinity, maxMs: -1, skips: 0, rarePlus: 0, points: 0 }; });
+      rounds.forEach(r => {
+        Object.keys(r.answers || {}).forEach(id => {
+          const st = stats[id];
+          if (!st) return;
+          const a = r.answers[id];
+          if (a.skip) { st.skips++; return; }
+          st.n++; st.sumMs += a.ms; st.total += a.len;
+          if (a.len > st.bestLen) { st.bestLen = a.len; st.bestAns = a; }
+          st.minMs = Math.min(st.minMs, a.ms);
+          st.maxMs = Math.max(st.maxMs, a.ms);
+          if (['rare', 'epic', 'gold', 'sarcastic'].includes(a.key)) st.rarePlus++;
+        });
+        if (stats[r.loser]) stats[r.loser].points++;
+      });
+
+      const all = order.map(id => stats[id]);
+      const withData = all.filter(st => st.n > 0);
+      // Unique winner only: ties don't earn an award
+      const pick = (arr, fn, max) => {
+        if (arr.length < 2) return null;
+        const sorted = arr.slice().sort((x, y) => max ? fn(y) - fn(x) : fn(x) - fn(y));
+        return fn(sorted[0]) === fn(sorted[1]) ? null : sorted[0];
+      };
+      const secs = (ms) => (ms / 1000).toFixed(1) + 's';
+
+      const cands = [];
+      const add = (title, w, textFn) => { if (w) cands.push({ title, id: w.id, text: textFn(w) }); };
+      add('Fastest Typer', pick(withData, x => x.sumMs / x.n, false), w => `avg ${secs(w.sumMs / w.n)} per answer`);
+      add('Slowest Typer', pick(withData, x => x.sumMs / x.n, true), w => `avg ${secs(w.sumMs / w.n)} per answer`);
+      add('Rarity King', pick(withData, x => x.total, true), () => 'longest line overall');
+      add('Mr. Common', pick(withData, x => x.total / x.n, false), () => 'most common answers on average');
+      add('Best Answer', pick(withData, x => x.bestLen, true), w => `${(RARITY_CONFIG[w.bestAns.key] || RARITY_CONFIG.common).name}: ${w.bestAns.text}`);
+      add('Lightning Round', pick(withData, x => x.minMs, false), w => `one answer in ${secs(w.minMs)}`);
+      add('Procrastinator', pick(withData, x => x.maxMs, true), w => `${secs(w.maxMs)} on a single answer`);
+      const skipW = pick(all, x => x.skips, true);
+      if (skipW && skipW.skips > 0) add('Skip Artist', skipW, w => `skipped ${w.skips} time${w.skips === 1 ? '' : 's'}`);
+      const ptW = pick(all, x => x.points, true);
+      if (ptW && ptW.points > 0) add('Point Magnet', ptW, w => `${w.points} point${w.points === 1 ? '' : 's'}`);
+      const rareW = pick(withData, x => x.rarePlus, true);
+      if (rareW && rareW.rarePlus > 0) add('Rare Collector', rareW, w => `${w.rarePlus} rare-or-better answer${w.rarePlus === 1 ? '' : 's'}`);
+
+      // Same 3 awards on every device: shuffle with a seed from the match itself
+      const rand = pvpSeededRandom(`${room.code}:${rounds.length}:${order.join(',')}`);
+      const shuffled = cands.map(c => ({ c, k: rand() })).sort((x, y) => x.k - y.k).map(o => o.c);
+      const chosen = [];
+      const used = new Set();
+      shuffled.forEach(c => { if (chosen.length < 3 && !used.has(c.id)) { chosen.push(c); used.add(c.id); } });
+      shuffled.forEach(c => { if (chosen.length < 3 && !chosen.includes(c)) chosen.push(c); });
+      return chosen;
+    }
+
+    function pvpRenderAwards(room) {
+      const box = pvpEl('pvpAwards');
+      if (!box) return;
+      const list = pvpComputeAwards(room);
+      if (!list.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+      box.innerHTML = `<div class="text-center text-[10px] uppercase tracking-widest font-display font-bold text-slate-500 mb-1.5">Awards</div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">${list.map((a, i) => `
+          <div class="feedback-slide-in rounded-xl border border-pik-gold/40 bg-pik-card/50 px-3 py-2 text-center min-w-0" style="animation-delay:${(0.2 + i * 0.35).toFixed(2)}s;animation-fill-mode:both;">
+            <div class="text-[10px] uppercase tracking-wider font-display font-extrabold text-pik-gold">${pvpEsc(a.title)}</div>
+            <div class="font-display font-extrabold text-sm text-slate-100 truncate">${pvpEsc(pvpName(room, a.id))}</div>
+            <div class="text-[11px] text-slate-400 truncate">${pvpEsc(a.text)}</div>
+          </div>`).join('')}</div>`;
+      box.classList.remove('hidden');
     }
 
     function pvpRenderEndActions(room) {
@@ -6442,7 +6660,7 @@ Rules:
         pvpSetEvalUi(false);
         PVP.pausedMs += Date.now() - judgeStart;
         playAudioTone('error');
-        pvpShowFeedback('Unable to verify answer right now. Please try again.');
+        pvpShowFeedback('Unable to verify answer right now. Please try again.' + (pikJudgeDiagText() ? ` [${pikJudgeDiagText()}]` : ''));
         if (input) input.focus();
       }
     }
