@@ -508,10 +508,23 @@
 
     .pvp-flash-red .pvp-seg { animation: pvpSegFlash 0.5s ease-in-out 4; }
 
+    @keyframes pvpWinnerGlow {
+      0%, 100% { box-shadow: 0 0 14px rgba(212, 175, 55, 0.25); }
+      50% { box-shadow: 0 0 36px rgba(212, 175, 55, 0.7); }
+    }
+
     .pvp-row-winner {
       border-color: #d4af37 !important;
-      box-shadow: 0 0 22px rgba(212, 175, 55, 0.3);
+      animation: pvpWinnerGlow 1.6s ease-in-out infinite;
     }
+
+    @keyframes pvpYouWinPop {
+      0% { transform: scale(0.4); opacity: 0; }
+      60% { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .pvp-you-win { display: inline-block; animation: pvpYouWinPop 0.7s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
 
     /* ===== Phone / small-screen adjustments ===== */
     body.h-screen { height: 100vh; height: 100dvh; }
@@ -629,7 +642,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.6-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.8-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1164,6 +1177,9 @@
         <div id="pvpEndWait" class="text-[11px] text-slate-500 font-display"></div>
       </div>
     </div>
+
+    <!-- Winner celebration -->
+    <canvas id="pvpConfetti" class="hidden pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:60;"></canvas>
   </div>
 
   <!-- ================= JAVASCRIPT ENGINE ================= -->
@@ -2105,17 +2121,15 @@
       return `You are a fair, knowledgeable, GENEROUS judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
 Your two jobs: (1) decide whether the player's answer fits the prompt, and (2) if it does, assign the rarity tier that reflects how many average players would have thought of it.
 
-VALIDITY — be inclusive. Accept the answer if it reasonably fits the prompt under ANY sensible reading of it. Specifically accept:
-- Real subtypes, varieties, brands/products, regional or alternate names, scientific names, slang and nicknames that are widely used, and answers from any country or language community.
-- Abbreviations, plurals, different capitalization, missing spaces/hyphens/accents/apostrophes, transliteration differences, and minor or obvious typos.
-- Fictional or pop-culture answers whenever the prompt could reasonably include them.
-- Obscure but plausible real answers. If you cannot be sure an obscure answer exists but it is a believable fit, lean toward accepting it as a high tier rather than rejecting it.
-Mark it invalid ONLY when it clearly does not fit: it is nonsense or gibberish, it is just the prompt's own category word or far too generic to be a specific answer (e.g., answering "cheese" to "Name a variety of cheese"), it is plainly a different kind of thing, or it breaks a hard rule of the prompt. For letter/sound/spelling rules (silent letters, palindromes, word endings, vowels, loanword origins, etc.), check the actual spelling and pronunciation carefully before deciding, and accept every word that genuinely satisfies the rule.
+VALIDITY — judge like a friendly game host playing a casual game with friends, NOT like a strict taxonomist or fact-checker. Accept the answer if a reasonable person would accept it in casual play, even when it is technically a different classification. Never reject over pedantry, technicalities, or scientific/official categorization.
+Examples that MUST be accepted: "Calico" or "Tabby" for "Name a cat breed" (people commonly call these cat types, even though they are coat patterns); "Husky", "Pitbull" or "Lab" for a dog breed; "Tomato" for a vegetable; "Peanut" for a nut; "Koala bear" for a bear; "Spiderman" for a superhero; a brand name used generically ("Kleenex", "Jacuzzi"); a nickname, slang, or colloquial or regional name; an informal grouping or popular "type" (coat colors, patterns, styles, flavors, sizes); a subtype, variety, or specific example; an abbreviation, plural, different capitalization, missing spaces/hyphens/accents, transliteration, or an obvious typo; fictional or pop-culture answers whenever the prompt could plausibly include them; and obscure but plausible real answers from any country or language community (if you are unsure an obscure answer exists but it is a believable fit, accept it as a high tier).
+Mark the answer invalid ONLY if one of these is clearly true: (a) it is gibberish or not a real or recognizable thing; (b) it clearly belongs to a completely different kind of thing than the prompt asks for (e.g., "Pizza" for a cat breed, "Paris" for a fruit); (c) it is just the prompt's own generic category word (e.g., "cheese" for "Name a variety of cheese"); or (d) it breaks an explicit letter, sound, or spelling rule of the prompt. For letter/sound/spelling rules (silent letters, palindromes, word endings, vowels, loanword origins, etc.), check the actual spelling and pronunciation carefully and accept every word that genuinely satisfies the rule.
+When in doubt, ACCEPT. If you accepted a loose fit, simply say so in "reason" (for example, "a popular cat coat pattern that people treat as a type") and still give it a normal rarity tier for how familiar it is.
 
 RARITY — judge relative to this specific prompt, by how many average players would name it. Do NOT default to "common" and do NOT be stingy; when torn between two tiers, choose the higher one.
 - "common": ONLY the handful (roughly the top 3-5) of most obvious, top-of-mind answers to this prompt (e.g., Cheddar, Apple, Banana, Hammer, Guitar, Piano, France, Japan, Lion, Batman, Monopoly).
 - "uncommon": Well-known answers that a typical adult would recognize but that are not the first things people say (e.g., Gouda, Brie, Mango, Wrench, Oboe, Banjo, Peru, Norway, Cheetah, Falcon, Scrabble).
-- "sarcastic": ("Too Clever" tier) Reserved ONLY for witty, cheeky, pedantic, or technically-true loophole answers that exploit the literal wording of the prompt in an unexpected way (e.g., answering "Ice" as a mineral, "Cereal" as a soup, or "Pluto" as a dwarf planet).
+- "sarcastic": ("Too Clever" tier) Reserved ONLY for deliberately witty, cheeky, or technically-true loophole jokes that exploit the literal wording of the prompt in an unexpected way (e.g., answering "Ice" as a mineral, "Cereal" as a soup, or "Pluto" as a dwarf planet). Never use it for a sincere answer that merely fits loosely (like "Calico" for a cat breed) — grade those by how familiar they are.
 - "rare": Specific answers that need some real familiarity — a hobbyist or enthusiast would know them, an average person would not think of them quickly (e.g., Manchego, Halloumi, Euphonium, Suriname, Pangolin, Capoeira, Brutalism, Carcassonne).
 - "epic": Specialist or off-the-beaten-path answers that most casual players would not come up with (e.g., Epoisses, Strozzapreti, Okapi, Theremin, Spokeshave, Vexillology, Magnetar, Agricola).
 - "gold": ("The Pik") Genuine deep cuts that almost nobody would think of without expert knowledge (e.g., Bitto, Pule cheese, Kakapo, Aye-Aye, Tuatara, Chibi-Robo, Ostracon, Trofie). Give "gold" to answers that are truly this obscure — but never to answers that are somewhat obvious or mainstream.
@@ -2138,7 +2152,7 @@ Rules:
     function buildJudgeUserMessage(prompt, answer, recheck) {
       let msg = `Prompt: "${prompt}"\nPlayer Answer: "${answer}"`;
       if (recheck) {
-        msg += `\n\nSECOND OPINION: an earlier pass rejected this answer. Re-evaluate generously and from first principles — consider alternate meanings, spellings, regional or scientific names, brand or product names, fictional entries when the prompt allows them, and broader readings of the prompt. Only mark it invalid if it truly cannot fit.`;
+        msg += `\n\nSECOND OPINION: an earlier pass rejected this answer, and the player believes it is a fair answer. Ask yourself: \"Would a reasonable friend playing this game casually accept it?\" Ignore technicalities and strict classifications (for example, coat patterns people call cat types, informal groupings, nicknames, brand names, regional names, common misnomers). Consider alternate meanings, spellings, and broader readings of the prompt. Reject it only if it is gibberish, clearly a completely different kind of thing, or breaks an explicit rule of the prompt.`;
       }
       return msg;
     }
@@ -4179,7 +4193,177 @@ Rules:
         { cat: 'vehicles', prompt: 'Name a type of military or naval vessel (such as a corvette or frigate)' },
         { cat: 'vehicles', prompt: 'Name a type of cargo ship or maritime workboat' },
         { cat: 'vehicles', prompt: 'Name a famous subway or metro system around the world' },
-        { cat: 'vehicles', prompt: 'Name a component of a bicycle wheel, handlebar, or braking system' }
+        { cat: 'vehicles', prompt: 'Name a component of a bicycle wheel, handlebar, or braking system' },
+
+        // --- MORE QUESTIONS (everyday "any" prompts, holidays, and more) ---
+        { cat: 'holidays', prompt: 'Name a Christmas term' },
+        { cat: 'holidays', prompt: 'Name a Christmas song or carol' },
+        { cat: 'holidays', prompt: 'Name something you would find on a Christmas tree' },
+        { cat: 'holidays', prompt: 'Name a Christmas movie' },
+        { cat: 'holidays', prompt: 'Name one of Santa\'s reindeer' },
+        { cat: 'holidays', prompt: 'Name a traditional Christmas food or drink' },
+        { cat: 'holidays', prompt: 'Name a Christmas decoration' },
+        { cat: 'holidays', prompt: 'Name a Christmas gift people often give' },
+        { cat: 'holidays', prompt: 'Name a Halloween costume' },
+        { cat: 'holidays', prompt: 'Name a Halloween candy' },
+        { cat: 'holidays', prompt: 'Name a Halloween movie or monster' },
+        { cat: 'holidays', prompt: 'Name a spooky creature or being' },
+        { cat: 'holidays', prompt: 'Name a Thanksgiving dish' },
+        { cat: 'holidays', prompt: 'Name a Thanksgiving tradition' },
+        { cat: 'holidays', prompt: 'Name a Valentine\'s Day tradition or gift' },
+        { cat: 'holidays', prompt: 'Name an Easter tradition or symbol' },
+        { cat: 'holidays', prompt: 'Name a New Year\'s tradition' },
+        { cat: 'holidays', prompt: 'Name a Fourth of July tradition' },
+        { cat: 'holidays', prompt: 'Name a holiday celebrated somewhere in the world' },
+        { cat: 'holidays', prompt: 'Name a winter holiday tradition from any culture' },
+        { cat: 'holidays', prompt: 'Name a Hanukkah, Diwali, or Lunar New Year tradition' },
+        { cat: 'holidays', prompt: 'Name a birthday party tradition' },
+        { cat: 'holidays', prompt: 'Name a wedding tradition or item' },
+        { cat: 'holidays', prompt: 'Name a festival or carnival from around the world' },
+        { cat: 'holidays', prompt: 'Name a holiday-themed character' },
+        { cat: 'holidays', prompt: 'Name a gift-giving occasion' },
+        { cat: 'nature', prompt: 'Name any flower' },
+        { cat: 'nature', prompt: 'Name any tree' },
+        { cat: 'nature', prompt: 'Name any bird' },
+        { cat: 'nature', prompt: 'Name any insect' },
+        { cat: 'nature', prompt: 'Name any mammal' },
+        { cat: 'nature', prompt: 'Name any fish' },
+        { cat: 'nature', prompt: 'Name any reptile or amphibian' },
+        { cat: 'nature', prompt: 'Name any type of weather' },
+        { cat: 'nature', prompt: 'Name any dog breed' },
+        { cat: 'nature', prompt: 'Name any cat breed' },
+        { cat: 'nature', prompt: 'Name any farm animal' },
+        { cat: 'nature', prompt: 'Name any dinosaur' },
+        { cat: 'nature', prompt: 'Name any sea creature' },
+        { cat: 'nature', prompt: 'Name any zoo animal' },
+        { cat: 'nature', prompt: 'Name any rodent' },
+        { cat: 'nature', prompt: 'Name any big cat' },
+        { cat: 'nature', prompt: 'Name any animal that lives in the Arctic' },
+        { cat: 'nature', prompt: 'Name any animal that can fly' },
+        { cat: 'nature', prompt: 'Name any kind of whale or dolphin' },
+        { cat: 'nature', prompt: 'Name any type of cloud' },
+        { cat: 'culinary', prompt: 'Name any fruit' },
+        { cat: 'culinary', prompt: 'Name any vegetable' },
+        { cat: 'culinary', prompt: 'Name any dessert' },
+        { cat: 'culinary', prompt: 'Name any candy or chocolate bar' },
+        { cat: 'culinary', prompt: 'Name any breakfast food' },
+        { cat: 'culinary', prompt: 'Name any sandwich' },
+        { cat: 'culinary', prompt: 'Name any pizza topping' },
+        { cat: 'culinary', prompt: 'Name any ice cream flavor' },
+        { cat: 'culinary', prompt: 'Name any soda or soft drink' },
+        { cat: 'culinary', prompt: 'Name any fast food chain' },
+        { cat: 'culinary', prompt: 'Name any kind of tea or coffee drink' },
+        { cat: 'culinary', prompt: 'Name any kind of cookie or biscuit' },
+        { cat: 'culinary', prompt: 'Name any snack food' },
+        { cat: 'culinary', prompt: 'Name any sauce or condiment' },
+        { cat: 'culinary', prompt: 'Name any breakfast cereal' },
+        { cat: 'culinary', prompt: 'Name any potato dish' },
+        { cat: 'culinary', prompt: 'Name a street food from anywhere in the world' },
+        { cat: 'culinary', prompt: 'Name a type of sushi or sashimi' },
+        { cat: 'culinary', prompt: 'Name a type of dumpling' },
+        { cat: 'culinary', prompt: 'Name a type of curry' },
+        { cat: 'everyday', prompt: 'Name any color' },
+        { cat: 'everyday', prompt: 'Name any piece of furniture' },
+        { cat: 'everyday', prompt: 'Name any kitchen utensil' },
+        { cat: 'everyday', prompt: 'Name any tool' },
+        { cat: 'everyday', prompt: 'Name any school supply' },
+        { cat: 'everyday', prompt: 'Name any room in a house' },
+        { cat: 'everyday', prompt: 'Name any household appliance' },
+        { cat: 'everyday', prompt: 'Name any toy' },
+        { cat: 'everyday', prompt: 'Name any board game' },
+        { cat: 'everyday', prompt: 'Name any type of container' },
+        { cat: 'everyday', prompt: 'Name any bathroom item' },
+        { cat: 'everyday', prompt: 'Name any item you might carry in a backpack' },
+        { cat: 'everyday', prompt: 'Name anything you would find in a garage' },
+        { cat: 'geography', prompt: 'Name any country' },
+        { cat: 'geography', prompt: 'Name any capital city' },
+        { cat: 'geography', prompt: 'Name any river' },
+        { cat: 'geography', prompt: 'Name any mountain' },
+        { cat: 'geography', prompt: 'Name any island' },
+        { cat: 'geography', prompt: 'Name any US state' },
+        { cat: 'geography', prompt: 'Name any ocean or sea' },
+        { cat: 'geography', prompt: 'Name any desert' },
+        { cat: 'geography', prompt: 'Name any famous landmark' },
+        { cat: 'geography', prompt: 'Name any lake' },
+        { cat: 'geography', prompt: 'Name any national park' },
+        { cat: 'geography', prompt: 'Name any famous castle' },
+        { cat: 'popculture', prompt: 'Name any superhero' },
+        { cat: 'popculture', prompt: 'Name any Disney movie' },
+        { cat: 'popculture', prompt: 'Name any cartoon character' },
+        { cat: 'popculture', prompt: 'Name any video game' },
+        { cat: 'popculture', prompt: 'Name any Pixar movie' },
+        { cat: 'popculture', prompt: 'Name any video game character' },
+        { cat: 'popculture', prompt: 'Name any movie villain' },
+        { cat: 'popculture', prompt: 'Name any fictional detective' },
+        { cat: 'popculture', prompt: 'Name any Pokemon' },
+        { cat: 'popculture', prompt: 'Name any TV sitcom' },
+        { cat: 'popculture', prompt: 'Name any famous wizard or witch' },
+        { cat: 'popculture', prompt: 'Name any princess from a story or film' },
+        { cat: 'sports', prompt: 'Name any sport' },
+        { cat: 'sports', prompt: 'Name any Olympic event' },
+        { cat: 'sports', prompt: 'Name any piece of sports equipment' },
+        { cat: 'sports', prompt: 'Name any NBA team' },
+        { cat: 'sports', prompt: 'Name any NFL team' },
+        { cat: 'sports', prompt: 'Name any soccer club' },
+        { cat: 'sports', prompt: 'Name any famous athlete' },
+        { cat: 'sports', prompt: 'Name any position in baseball' },
+        { cat: 'sports', prompt: 'Name any winter sport' },
+        { cat: 'sports', prompt: 'Name any martial art' },
+        { cat: 'music', prompt: 'Name any musical instrument' },
+        { cat: 'music', prompt: 'Name any music genre' },
+        { cat: 'music', prompt: 'Name any famous band' },
+        { cat: 'music', prompt: 'Name any pop singer' },
+        { cat: 'music', prompt: 'Name any rapper' },
+        { cat: 'music', prompt: 'Name any classical composer' },
+        { cat: 'music', prompt: 'Name any stage musical' },
+        { cat: 'science', prompt: 'Name any chemical element' },
+        { cat: 'science', prompt: 'Name any bone in the human body' },
+        { cat: 'science', prompt: 'Name any organ in the human body' },
+        { cat: 'science', prompt: 'Name any unit of measurement' },
+        { cat: 'science', prompt: 'Name any scientist' },
+        { cat: 'science', prompt: 'Name any gas' },
+        { cat: 'science', prompt: 'Name any metal' },
+        { cat: 'science', prompt: 'Name any vitamin or mineral' },
+        { cat: 'history', prompt: 'Name any US president' },
+        { cat: 'history', prompt: 'Name any ancient civilization' },
+        { cat: 'history', prompt: 'Name any famous explorer' },
+        { cat: 'history', prompt: 'Name any Greek god or goddess' },
+        { cat: 'history', prompt: 'Name any Roman emperor' },
+        { cat: 'history', prompt: 'Name any famous war or battle' },
+        { cat: 'history', prompt: 'Name any king or queen of England' },
+        { cat: 'history', prompt: 'Name any Norse god' },
+        { cat: 'history', prompt: 'Name any Egyptian god or goddess' },
+        { cat: 'tech', prompt: 'Name any programming language' },
+        { cat: 'tech', prompt: 'Name any social media app' },
+        { cat: 'tech', prompt: 'Name any computer or tech company' },
+        { cat: 'tech', prompt: 'Name any smartphone brand' },
+        { cat: 'tech', prompt: 'Name any website' },
+        { cat: 'tech', prompt: 'Name any type of aircraft' },
+        { cat: 'vehicles', prompt: 'Name any car brand' },
+        { cat: 'vehicles', prompt: 'Name any type of boat or ship' },
+        { cat: 'vehicles', prompt: 'Name any kind of truck or work vehicle' },
+        { cat: 'fashion', prompt: 'Name any item of clothing' },
+        { cat: 'fashion', prompt: 'Name any type of shoe' },
+        { cat: 'fashion', prompt: 'Name any type of hat' },
+        { cat: 'fashion', prompt: 'Name any fashion brand' },
+        { cat: 'fashion', prompt: 'Name any piece of jewelry' },
+        { cat: 'fashion', prompt: 'Name any type of fabric' },
+        { cat: 'arts', prompt: 'Name any famous painter' },
+        { cat: 'arts', prompt: 'Name any famous painting' },
+        { cat: 'arts', prompt: 'Name any author' },
+        { cat: 'arts', prompt: 'Name any book that became a movie' },
+        { cat: 'arts', prompt: 'Name any poet' },
+        { cat: 'arts', prompt: 'Name any Shakespeare play' },
+        { cat: 'arts', prompt: 'Name any art style or movement' },
+        { cat: 'language', prompt: 'Name a word that rhymes with "night"' },
+        { cat: 'language', prompt: 'Name a compound word' },
+        { cat: 'language', prompt: 'Name a word that starts and ends with the same letter' },
+        { cat: 'language', prompt: 'Name a word with double letters' },
+        { cat: 'language', prompt: 'Name a contraction' },
+        { cat: 'language', prompt: 'Name a synonym for "happy"' },
+        { cat: 'language', prompt: 'Name a language spoken in Africa' },
+        { cat: 'language', prompt: 'Name a language spoken in Asia' },
+        { cat: 'language', prompt: 'Name a word that sounds the same as another word but is spelled differently' }
       ];
 
       QUESTION_BANK = rawPrompts;
@@ -5854,6 +6038,7 @@ Rules:
       const prevCode = PVP.code, prevBackend = PVP.backend;
       if (prevCode && prevBackend && prevBackend.release) setTimeout(() => prevBackend.release(prevCode), 3000);
       if (PVP.unwatch) { try { PVP.unwatch(); } catch (e) {} PVP.unwatch = null; }
+      pvpStopConfetti();
       clearInterval(PVP.hbTimer); clearInterval(PVP.tickTimer); clearInterval(PVP.timer);
       PVP.hbTimer = PVP.tickTimer = PVP.timer = null;
       pvpClearTransient();
@@ -5998,6 +6183,7 @@ Rules:
       const cd = pvpEl('pvpCountdown'); if (cd) cd.classList.add('hidden');
       const echo = pvpEl('pvpPromptEcho'); if (echo) echo.classList.add('hidden');
       const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      pvpStopConfetti();
       const aw = pvpEl('pvpAwards'); if (aw) { aw.classList.add('hidden'); aw.innerHTML = ''; }
       const v = pvpEl('pvpVerdict'); if (v) v.innerHTML = '';
       const rl = pvpEl('pvpRoundLine'); if (rl) rl.textContent = '';
@@ -6457,6 +6643,88 @@ Rules:
       if (verdict) verdict.innerHTML = html;
     }
 
+    /* ---------- Winner celebration (confetti) ---------- */
+    function pvpStopConfetti() {
+      if (PVP.confettiRaf) cancelAnimationFrame(PVP.confettiRaf);
+      PVP.confettiRaf = 0;
+      const cv = pvpEl('pvpConfetti');
+      if (!cv) return;
+      try { const c = cv.getContext && cv.getContext('2d'); if (c) c.clearRect(0, 0, cv.width, cv.height); } catch (e) {}
+      cv.classList.add('hidden');
+    }
+
+    function pvpLaunchConfetti() {
+      const cv = pvpEl('pvpConfetti');
+      if (!cv) return;
+      try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+      pvpStopConfetti();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const W = cv.clientWidth || window.innerWidth || 800;
+      const H = cv.clientHeight || window.innerHeight || 600;
+      cv.width = Math.round(W * dpr);
+      cv.height = Math.round(H * dpr);
+      cv.classList.remove('hidden');
+      const ctx = cv.getContext && cv.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+
+      const colors = ['#d4af37', '#f5d76e', '#ffffff', '#f97316', '#1976d2', '#8e24aa', '#388e3c', '#e53935'];
+      const rnd = (a, b) => a + Math.random() * (b - a);
+      const small = W < 500;
+      const G = 0.16;
+      const parts = [];
+      const add = (x, y, vx, vy) => parts.push({
+        x, y, vx, vy, rot: rnd(0, 6.28), vr: rnd(-0.25, 0.25),
+        w: rnd(6, 11) * (small ? 0.8 : 1), h: rnd(4, 7) * (small ? 0.8 : 1),
+        c: colors[(Math.random() * colors.length) | 0], circle: Math.random() < 0.25,
+        tilt: rnd(0, 6.28), tv: rnd(0.08, 0.25)
+      });
+      const cannon = (x, dir) => {
+        const n = small ? 40 : 70;
+        for (let i = 0; i < n; i++) {
+          const a = -rnd(0.7, 1.3);
+          const sp = rnd(10, 17) * (H / 800 + 0.35);
+          add(x, H + 10, Math.cos(a) * sp * dir, Math.sin(a) * sp);
+        }
+      };
+
+      const t0 = performance.now();
+      let last = t0, burst = 0;
+      const bursts = [0, 650, 1400];
+      const frame = (now) => {
+        const el = now - t0;
+        const dt = Math.min(2.5, (now - last) / 16.67);
+        last = now;
+        while (burst < bursts.length && el >= bursts[burst]) { cannon(W * 0.04, 1); cannon(W * 0.96, -1); burst++; }
+        if (el < 2400) for (let i = 0; i < 2; i++) add(rnd(0, W), -10, rnd(-1.5, 1.5), rnd(1, 3));
+
+        ctx.clearRect(0, 0, W, H);
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i];
+          p.vy += G * dt;
+          const drag = Math.pow(0.98, dt);
+          p.vx = p.vx * drag + Math.sin(p.tilt) * 0.06 * dt;
+          p.vy *= drag;
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.rot += p.vr * dt;
+          p.tilt += p.tv * dt;
+          if (p.y > H + 30) { parts.splice(i, 1); continue; }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.c;
+          const sq = Math.max(0.15, Math.abs(Math.cos(p.tilt)));
+          if (p.circle) { ctx.beginPath(); ctx.arc(0, 0, p.w / 2.2, 0, 6.283); ctx.fill(); }
+          else ctx.fillRect(-p.w / 2, -(p.h * sq) / 2, p.w, p.h * sq);
+          ctx.restore();
+        }
+        if (el < 8000 && (parts.length || el < 2600)) PVP.confettiRaf = requestAnimationFrame(frame);
+        else pvpStopConfetti();
+      };
+      PVP.confettiRaf = requestAnimationFrame(frame);
+    }
+
     function pvpShowWinner(room, firstLoad) {
       const g = room.game;
       const winners = g.winners || [];
@@ -6482,9 +6750,14 @@ Rules:
       } else {
         html = `Match ended early &mdash; ${names} ${winners.length > 1 ? 'win' : 'wins'}!`;
       }
+      const iWon = winners.includes(PVP.myId);
+      if (iWon) html = '<span class="pvp-you-win text-pik-gold text-lg sm:text-xl font-black mr-1">You win!</span> ' + html;
       const verdict = pvpEl('pvpVerdict');
       if (verdict) verdict.innerHTML = html;
-      if (!firstLoad) playAudioTone('finish');
+      if (!firstLoad) {
+        playAudioTone('finish');
+        if (iWon) pvpLaunchConfetti();
+      }
       pvpRenderAwards(room);
       pvpRenderEndActions(room);
     }
