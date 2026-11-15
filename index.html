@@ -629,7 +629,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.5-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.6-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1260,9 +1260,6 @@
         localStorage.setItem(VERDICT_CACHE_STORAGE_KEY, JSON.stringify(verdictCache));
       } catch (e) {
         // Ignore storage quota restrictions
-      }
-      if (typeof window.saveVerdictToCloud === 'function') {
-        window.saveVerdictToCloud(cacheKey, verdict);
       }
     }
 
@@ -3258,6 +3255,136 @@ Rules:
       };
     }
 
+    /* ----------------------------------------------------
+       SHARED VERDICT STORE
+       The first rarity ever given to an answer is final for everyone, on every device.
+       Every lookup reads the live shared store, so new verdicts from other players
+       show up immediately without reloading. Backends (all used when present):
+       Firestore, Claude's shared artifact storage, and a public MQTT broker.
+    ---------------------------------------------------- */
+    const pikWithTimeout = (p, ms) => Promise.race([Promise.resolve(p).catch(() => null), new Promise(r => setTimeout(() => r(null), ms))]);
+
+    function pikVerdictId(key) {
+      const a = computeDeterministicSeed(key).toString(36);
+      const b = computeDeterministicSeed(key.split('').reverse().join('') + '|pik').toString(36);
+      return `pikv_${a}${b}`;
+    }
+
+    function pikSlimVerdict(v) {
+      return {
+        valid: !!v.valid,
+        rarity: v.rarity || null,
+        normalizedAnswer: v.normalizedAnswer || '',
+        reason: v.reason || '',
+        rarerExamples: Array.isArray(v.rarerExamples) ? v.rarerExamples.slice(0, 3) : []
+      };
+    }
+
+    async function pikStorageGet(key) {
+      if (!window.storage || typeof window.storage.get !== 'function') return null;
+      try {
+        const r = await window.storage.get(pikVerdictId(key), true);
+        if (!r || !r.value) return null;
+        const rec = JSON.parse(r.value);
+        return rec && rec.k === key && rec.v ? rec.v : null;
+      } catch (e) { return null; }
+    }
+
+    async function pikStoragePut(key, verdict) {
+      if (!window.storage || typeof window.storage.set !== 'function') return;
+      try { await window.storage.set(pikVerdictId(key), JSON.stringify({ k: key, v: pikSlimVerdict(verdict), t: Date.now() }), true); } catch (e) {}
+    }
+
+    let pikMqttFailedAt = 0;
+    let pikMqttPending = null;
+    async function pikGetMqttClient() {
+      if (window.__pikMqttClient) return window.__pikMqttClient;
+      if (window.__pikCloud) return null;
+      if (Date.now() - pikMqttFailedAt < 300000) return null;
+      if (typeof pvpConnectMqtt !== 'function') return null;
+      if (!pikMqttPending) {
+        pikMqttPending = pvpConnectMqtt().then(c => { if (!c) pikMqttFailedAt = Date.now(); pikMqttPending = null; return c; }, () => { pikMqttFailedAt = Date.now(); pikMqttPending = null; return null; });
+      }
+      return pikMqttPending;
+    }
+
+    async function pikMqttGet(key) {
+      const client = await pikGetMqttClient();
+      if (!client) return null;
+      const topic = `pik/v1/verdict/${pikVerdictId(key)}`;
+      return new Promise((resolve) => {
+        let done = false;
+        const finish = (rec) => {
+          if (done) return;
+          done = true;
+          try { client.removeListener('message', onMsg); client.unsubscribe(topic); } catch (e) {}
+          resolve(rec && rec.k === key && rec.v ? rec.v : null);
+        };
+        const onMsg = (t, buf) => {
+          if (t !== topic) return;
+          try { finish(JSON.parse(buf.toString())); } catch (e) { finish(null); }
+        };
+        client.on('message', onMsg);
+        try { client.subscribe(topic, { qos: 1 }); } catch (e) { finish(null); return; }
+        setTimeout(() => finish(null), 900);
+      });
+    }
+
+    function pikMqttPut(key, verdict) {
+      const client = window.__pikMqttClient;
+      if (!client) return;
+      try {
+        client.publish(`pik/v1/verdict/${pikVerdictId(key)}`, JSON.stringify({ k: key, v: pikSlimVerdict(verdict), t: Date.now() }), { qos: 1, retain: true });
+      } catch (e) {}
+    }
+
+    // Returns the first verdict any backend has for this key (or null)
+    function pikSharedFetch(key) {
+      const getters = [];
+      if (typeof window.fetchVerdictFromCloud === 'function') getters.push(pikWithTimeout(window.fetchVerdictFromCloud(key), 2500));
+      if (window.storage) getters.push(pikWithTimeout(pikStorageGet(key), 2500));
+      getters.push(pikWithTimeout(pikMqttGet(key), 1500));
+      return new Promise((resolve) => {
+        let pending = getters.length;
+        getters.forEach(g => g.then((v) => { if (v) resolve(v); else if (--pending === 0) resolve(null); }, () => { if (--pending === 0) resolve(null); }));
+      });
+    }
+
+    // Short pause after writing so that players who answer at the same instant all read the same final value
+    const PIK_SETTLE_MS = 600;
+
+    // First writer wins: re-checks right before writing, and returns whichever verdict is now the official one
+    async function pikSharedClaim(key, verdict) {
+      const tasks = [];
+      if (typeof window.saveVerdictToCloud === 'function' && typeof window.fetchVerdictFromCloud === 'function') {
+        tasks.push((async () => {
+          const ex = await pikWithTimeout(window.fetchVerdictFromCloud(key), 3000);
+          if (ex) return ex;
+          await pikWithTimeout(window.saveVerdictToCloud(key, verdict), 3000);
+          await new Promise(r => setTimeout(r, PIK_SETTLE_MS));
+          return await pikWithTimeout(window.fetchVerdictFromCloud(key), 3000);
+        })());
+      }
+      if (window.storage) {
+        tasks.push((async () => {
+          const ex = await pikStorageGet(key);
+          if (ex) return ex;
+          await pikStoragePut(key, verdict);
+          await new Promise(r => setTimeout(r, PIK_SETTLE_MS));
+          return await pikStorageGet(key);
+        })());
+      }
+      tasks.push((async () => {
+        const ex = await pikMqttGet(key);
+        if (ex) return ex;
+        pikMqttPut(key, verdict);
+        await new Promise(r => setTimeout(r, PIK_SETTLE_MS));
+        return await pikMqttGet(key);
+      })());
+      const results = await Promise.all(tasks.map(t => pikWithTimeout(t, 6000)));
+      return results.find(Boolean) || verdict;
+    }
+
     async function evaluateAnswerWithGroq(prompt, userAnswer) {
       const normPrompt = normalize(prompt);
       const normAns = normalize(userAnswer);
@@ -3278,42 +3405,38 @@ Rules:
         };
       };
 
-      if (verdictCache[primaryCacheKey]) {
-        return finalizeVerdict(verdictCache[primaryCacheKey]);
+      // The live shared store comes first: the first rarity ever given to this answer is final for everyone
+      const sharedHit = await pikSharedFetch(primaryCacheKey);
+      if (sharedHit) {
+        const cleanedShared = finalizeVerdict(sharedHit);
+        persistVerdictCache(primaryCacheKey, cleanedShared);
+        return cleanedShared;
       }
 
-      if (typeof window.fetchVerdictFromCloud === 'function') {
-        const cloudHit = await window.fetchVerdictFromCloud(primaryCacheKey);
-        if (cloudHit) {
-          const cleanedCloud = finalizeVerdict(cloudHit);
-          verdictCache[primaryCacheKey] = { ...cleanedCloud };
-          return cleanedCloud;
-        }
+      if (verdictCache[primaryCacheKey]) {
+        const localVerdict = finalizeVerdict(verdictCache[primaryCacheKey]);
+        if (localVerdict && localVerdict.valid) pikSharedClaim(primaryCacheKey, localVerdict).catch(() => {});
+        return localVerdict;
       }
 
       const canonicalAnswer = normAns || userAnswer.trim().toLowerCase();
       const deterministicSeed = (computeDeterministicSeed(primaryCacheKey) % 2147483000) + 1;
 
       const handleSuccessfulVerdict = async (rawVerdict) => {
-        const verdict = finalizeVerdict(rawVerdict);
+        let verdict = finalizeVerdict(rawVerdict);
         if (verdict && verdict.valid && verdict.normalizedAnswer) {
           const resolvedCacheKey = `${JUDGE_CACHE_VERSION}::${normPrompt}::${normalize(verdict.normalizedAnswer)}`;
-          if (verdictCache[resolvedCacheKey]) {
-            const lockedVerdict = finalizeVerdict(verdictCache[resolvedCacheKey]);
-            persistVerdictCache(primaryCacheKey, lockedVerdict);
-            return lockedVerdict;
-          }
-          if (typeof window.fetchVerdictFromCloud === 'function') {
-            const cloudCanonicalHit = await window.fetchVerdictFromCloud(resolvedCacheKey);
-            if (cloudCanonicalHit) {
-              const lockedVerdict = finalizeVerdict(cloudCanonicalHit);
-              persistVerdictCache(primaryCacheKey, lockedVerdict);
-              return lockedVerdict;
-            }
-          }
+          // Did anyone (on any device) already lock in this answer while the AI was thinking?
+          let locked = await pikSharedFetch(resolvedCacheKey);
+          if (!locked && verdictCache[resolvedCacheKey]) locked = verdictCache[resolvedCacheKey];
+          if (!locked) locked = await pikSharedClaim(resolvedCacheKey, verdict); // first writer wins
+          verdict = finalizeVerdict(locked);
           persistVerdictCache(resolvedCacheKey, verdict);
+          if (primaryCacheKey !== resolvedCacheKey) {
+            persistVerdictCache(primaryCacheKey, verdict);
+            pikSharedClaim(primaryCacheKey, verdict).catch(() => {});
+          }
         }
-        if (verdict && verdict.valid) persistVerdictCache(primaryCacheKey, verdict);
         return verdict;
       };
 
@@ -5353,6 +5476,7 @@ Rules:
     }
 
     async function pvpConnectMqtt() {
+      if (window.__pikMqttClient) return window.__pikMqttClient;
       try { if (!window.mqtt) await pvpLoadScript(PVP_MQTT_LIB); } catch (e) { return null; }
       if (!window.mqtt) return null;
       const brokers = window.PVP_MQTT_BROKERS || PVP_MQTT_BROKERS;
@@ -5369,6 +5493,7 @@ Rules:
             setTimeout(() => rej(new Error('timeout')), 5000);
           });
           client.on('error', () => {});
+          window.__pikMqttClient = client;
           return client;
         } catch (e) {
           try { if (client) client.end(true); } catch (e2) {}
@@ -6076,6 +6201,18 @@ Rules:
         answers[id] = a
           ? { text: a.text || '', key: a.key || '', len: a.len || 0, ms: a.ms || 0, skip: !!a.skip }
           : { text: '', key: '', len: 0, ms: PVP_ANSWER_SECONDS * 1000, skip: true };
+      });
+      // Identical answers in the same round always share one rarity (the earliest submitter's)
+      const byText = {};
+      active.forEach(id => {
+        const a = answers[id];
+        if (a.skip || !a.text) return;
+        (byText[normalize(a.text)] = byText[normalize(a.text)] || []).push(id);
+      });
+      Object.values(byText).forEach(ids => {
+        if (ids.length < 2) return;
+        const ref = ids.slice().sort((x, y) => answers[x].ms - answers[y].ms)[0];
+        ids.forEach(id => { answers[id].key = answers[ref].key; answers[id].len = answers[ref].len; });
       });
       const entries = active.map((id, i) => ({ id, i, rank: answers[id].skip ? -1 : answers[id].len, ms: answers[id].ms }));
       const minRank = Math.min(...entries.map(e => e.rank));
