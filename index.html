@@ -490,33 +490,57 @@
       transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .pvp-row-me { background-color: rgba(255, 255, 255, 0.04) !important; }
-
-    @keyframes pvpRowFlash {
-      0%, 100% { background-color: rgba(239, 68, 68, 0); box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
-      50% { background-color: rgba(239, 68, 68, 0.24); box-shadow: 0 0 24px rgba(239, 68, 68, 0.5); }
-    }
 
     @keyframes pvpSegFlash {
       50% { stroke: #ef4444; }
     }
 
-    .pvp-flash-red {
-      animation: pvpRowFlash 0.5s ease-in-out 4;
-      border-color: rgba(239, 68, 68, 0.6) !important;
+    @keyframes pvpNameFlash {
+      50% { color: #ef4444; text-shadow: 0 0 12px rgba(239, 68, 68, 0.8); }
     }
 
+    /* The loser's line (and name) flash red - no box needed */
     .pvp-flash-red .pvp-seg { animation: pvpSegFlash 0.5s ease-in-out 4; }
+    .pvp-flash-red .pvp-name { animation: pvpNameFlash 0.5s ease-in-out 4; }
 
     @keyframes pvpWinnerGlow {
-      0%, 100% { box-shadow: 0 0 14px rgba(212, 175, 55, 0.25); }
-      50% { box-shadow: 0 0 36px rgba(212, 175, 55, 0.7); }
+      0%, 100% { text-shadow: 0 0 6px rgba(212, 175, 55, 0.35); }
+      50% { text-shadow: 0 0 18px rgba(212, 175, 55, 0.95); }
     }
 
-    .pvp-row-winner {
-      border-color: #d4af37 !important;
-      animation: pvpWinnerGlow 1.6s ease-in-out infinite;
+    .pvp-row-winner .pvp-name { color: #d4af37; animation: pvpWinnerGlow 1.6s ease-in-out infinite; }
+
+    /* PIK Par: weld flashes, sparks, trails and the PAR pulse */
+    @keyframes parWeld {
+      0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.95; }
+      100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
     }
+    .par-weld { position: absolute; width: 18px; height: 18px; border-radius: 9999px; border: 2px solid #fff; box-shadow: 0 0 16px var(--c, #fff); animation: parWeld 0.6s ease-out forwards; pointer-events: none; }
+
+    @keyframes parSpark {
+      0% { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+    }
+    .par-spark { position: absolute; width: 5px; height: 5px; border-radius: 9999px; background: var(--c, #fff); box-shadow: 0 0 8px var(--c, #fff); animation: parSpark 0.65s cubic-bezier(0.2, 0.8, 0.3, 1) forwards; pointer-events: none; }
+
+    @keyframes parTrail {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+      100% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+    }
+    .par-trail { position: absolute; width: 7px; height: 7px; border-radius: 9999px; background: var(--c, #fff); box-shadow: 0 0 10px var(--c, #fff); animation: parTrail 0.45s ease-out forwards; pointer-events: none; }
+
+    @keyframes parLand {
+      0% { transform: scaleY(2.2); }
+      45% { transform: scaleY(0.65); }
+      100% { transform: scaleY(1); }
+    }
+    .par-landed { animation: parLand 0.34s ease-out; }
+
+    @keyframes parMarkerPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.8); box-shadow: 0 0 26px #fff; }
+    }
+    .par-marker-pulse { animation: parMarkerPulse 0.7s ease-in-out 3; }
 
     @keyframes pvpYouWinPop {
       0% { transform: scale(0.4); opacity: 0; }
@@ -662,7 +686,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.0-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.1-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -6713,7 +6737,7 @@ Rules:
     /* ====================================================
        PIK PAR — co-op mode: the whole team builds ONE line to reach PAR
     ==================================================== */
-    const PAR_REVEAL_MS = 6500;
+    const PAR_REVEAL_MS = 7000;
     const PAR_START = 60;
     const PAR_LY = 32;
     const PAR_PER_PLAYER = 1200;
@@ -6778,7 +6802,7 @@ Rules:
       el.textContent = total >= par ? 'PAR reached!' : `Team progress: ${pct}% of the way to PAR`;
     }
 
-    function parDrawLine(room, W, total) {
+    function parDrawLine(room, W, total, showEnd = true) {
       const svg = pvpEl('parSvg'), nodes = pvpEl('parNodes');
       if (!svg || !nodes) return;
       const par = room.game.par || 0;
@@ -6793,9 +6817,9 @@ Rules:
       // Static white PAR marker, then the start node and the current end node
       const parPct = pct(PAR_START + par);
       let n = `<span class="font-display font-extrabold" style="position:absolute;left:${parPct}%;top:2px;transform:translateX(-50%);font-size:9px;letter-spacing:0.14em;color:#ffffff;">PAR</span>`;
-      n += `<span style="position:absolute;top:${PAR_LY}px;left:${parPct}%;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:9999px;background:#ffffff;border:3px solid #ffffff;box-shadow:0 0 10px rgba(255,255,255,0.35);"></span>`;
+      n += `<span id="parMarkerDot" style="position:absolute;top:${PAR_LY}px;left:${parPct}%;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:9999px;background:#ffffff;border:3px solid #ffffff;box-shadow:0 0 10px rgba(255,255,255,0.35);"></span>`;
       if (total > 0) n += parNodeHtml(pct(PAR_START), PAR_TEAM_COLOR);
-      n += parHaloHtml(pct(PAR_START + total)) + parNodeHtml(pct(PAR_START + total), null);
+      if (showEnd) n += parHaloHtml(pct(PAR_START + total)) + parNodeHtml(pct(PAR_START + total), null);
       nodes.innerHTML = n;
       parSetProgress(room, total);
     }
@@ -6818,9 +6842,9 @@ Rules:
         const order = g.order || [];
         cols.style.gridTemplateColumns = `repeat(${Math.max(1, order.length)}, minmax(0, 1fr))`;
         cols.innerHTML = order.map(id => `
-          <div id="pvp-row-${id}" class="pvp-row par-col rounded-xl border border-pik-border/50 bg-pik-card/40 px-1.5 py-1.5 flex flex-col gap-1 min-w-0${id === PVP.myId ? ' pvp-row-me' : ''}">
+          <div id="pvp-row-${id}" class="pvp-row par-col px-1 py-1 flex flex-col gap-1 min-w-0${id === PVP.myId ? ' pvp-row-me' : ''}">
             <div class="flex items-center justify-between gap-1 min-w-0">
-              <span class="font-display font-bold text-[11px] sm:text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
+              <span class="pvp-name font-display font-bold text-[11px] sm:text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
               ${id === PVP.myId ? '<span class="text-[8px] font-display font-bold uppercase tracking-wider text-slate-500">You</span>' : ''}
             </div>
             <div id="par-slot-${id}" class="relative h-[10px]"></div>
@@ -6858,12 +6882,13 @@ Rules:
       const W = parScaleW(room, newTotal);
       const verdict = pvpEl('pvpVerdict');
       const parNow = g.par || 1;
+      const prevPct = Math.min(100, Math.round((prevTotal / parNow) * 100));
+      const newPct = Math.min(100, Math.round((newTotal / parNow) * 100));
       const finalVerdict = () => {
         if (!verdict) return;
-        const pct = Math.min(100, Math.round((newTotal / parNow) * 100));
         verdict.innerHTML = newTotal >= parNow
           ? '<span class="text-pik-gold">PAR reached!</span>'
-          : `The team added ${roundSum} &mdash; ${pct}% of the way to PAR.`;
+          : `The team added ${roundSum} &mdash; ${newPct}% of the way to PAR.`;
       };
 
       // Everyone's answer, rarity, and time appear under their name
@@ -6873,13 +6898,13 @@ Rules:
         if (row) row.style.opacity = '';
       });
 
-      if (firstLoad) {
+      if (firstLoad || contrib.length === 0) {
         parDrawLine(room, W, newTotal);
         finalVerdict();
         return;
       }
 
-      parDrawLine(room, W, prevTotal);
+      parDrawLine(room, W, prevTotal, false);
       if (verdict) verdict.innerHTML = '<span class="text-slate-400">Adding up the team\'s answers...</span>';
 
       const board = pvpEl('parBoard'), track = pvpEl('parTrack'), fly = pvpEl('parFly');
@@ -6887,56 +6912,148 @@ Rules:
       fly.innerHTML = '';
       const bRect = board.getBoundingClientRect();
       const tRect = track.getBoundingClientRect();
+      const cy1 = tRect.top - bRect.top + PAR_LY;
 
-      // 1) rarity sections appear under each player's name
+      // Build one glowing pill per player, sitting under their name
       const bars = [];
-      let x = PAR_START + prevTotal;
-      contrib.forEach(c => {
+      let xUnits = PAR_START + prevTotal;
+      contrib.forEach((c) => {
         const slot = pvpEl('par-slot-' + c.id);
         if (!slot) return;
         const sr = slot.getBoundingClientRect();
         const color = (RARITY_CONFIG[c.a.key] || RARITY_CONFIG.common).color;
         const trueW = (c.a.len / W) * tRect.width;
-        const startW = Math.max(10, Math.min(trueW, sr.width - 8));
-        const el = document.createElement('div');
-        el.style.cssText = `position:absolute;left:${(sr.left - bRect.left + (sr.width - startW) / 2).toFixed(1)}px;top:${(sr.top - bRect.top + 2).toFixed(1)}px;width:${startW.toFixed(1)}px;height:6px;border-radius:3px;background:${color};transition:background-color 0.5s ease;`;
-        fly.appendChild(el);
-        if (el.animate) el.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(0.22,1.3,0.36,1)' });
-        bars.push({ el, trueW, startW, x1: x });
-        x += c.a.len;
-      });
-      let bestKey = 'common', bestLen = -1;
-      contrib.forEach(c => { if (c.a.len > bestLen) { bestLen = c.a.len; bestKey = c.a.key; } });
-      playAudioTone('stretch', RARITY_CONFIG[bestKey] ? bestKey : 'common');
-
-      // 2) after about 2 seconds the sections fly onto the line and connect
-      const WAIT = 2000, FLY = 800, GAP = 180;
-      PVP.phaseTimers.push(setTimeout(() => {
-        const tr = track.getBoundingClientRect();
-        bars.forEach((b, i) => {
-          const cur = b.el.getBoundingClientRect();
-          const dx = (tr.left + (b.x1 / W) * tr.width) - cur.left;
-          const dy = (tr.top + PAR_LY - 3) - cur.top;
-          if (b.el.animate) {
-            b.el.animate(
-              [{ transform: 'translate(0px,0px)', width: b.startW + 'px' }, { transform: `translate(${dx}px,${dy}px)`, width: b.trueW + 'px' }],
-              { duration: FLY, delay: i * GAP, easing: 'cubic-bezier(0.5,0,0.2,1)', fill: 'forwards' }
-            );
-          }
+        const startW = Math.max(14, Math.min(trueW, sr.width - 10));
+        const outer = document.createElement('div');
+        outer.style.cssText = 'position:absolute;left:0;top:0;will-change:transform;';
+        const inner = document.createElement('div');
+        inner.style.cssText = `width:${startW}px;height:10px;border-radius:9999px;background:${color};box-shadow:0 0 12px ${color}aa;transform:scale(0.05);transform-origin:center;`;
+        outer.appendChild(inner);
+        fly.appendChild(outer);
+        bars.push({
+          outer, inner, color, key: c.a.key, trueW, startW,
+          sx: sr.left - bRect.left + (sr.width - startW) / 2,
+          cy0: sr.top - bRect.top + sr.height / 2,
+          tx: tRect.left - bRect.left + (xUnits / W) * tRect.width,
+          cy1, landed: false, lastTrail: 0
         });
-      }, WAIT));
+        xUnits += c.a.len;
+      });
+      if (!bars.length) { parDrawLine(room, W, newTotal); finalVerdict(); return; }
 
-      // 3) once they are all connected, they turn into one color
-      const landed = WAIT + FLY + Math.max(0, bars.length - 1) * GAP + 80;
-      PVP.phaseTimers.push(setTimeout(() => { bars.forEach(b => { b.el.style.backgroundColor = PAR_TEAM_COLOR; }); }, landed));
+      const spawn = (cls, px, py, color, vars) => {
+        const sp = document.createElement('span');
+        sp.className = cls;
+        sp.style.left = px.toFixed(1) + 'px';
+        sp.style.top = py.toFixed(1) + 'px';
+        sp.style.setProperty('--c', color);
+        if (vars) Object.keys(vars).forEach(k => sp.style.setProperty(k, vars[k]));
+        fly.appendChild(sp);
+        setTimeout(() => { if (sp.parentNode) sp.remove(); }, 900);
+      };
 
-      // 4) the merged piece becomes part of the team line
-      PVP.phaseTimers.push(setTimeout(() => {
-        parDrawLine(room, W, newTotal);
-        fly.innerHTML = '';
-        parRipple(room, W, newTotal);
-        finalVerdict();
-      }, landed + 650));
+      // Timeline (ms): pop in -> hover -> lift -> swoop onto the line one by one -> weld -> flow into one color -> settle
+      const POP = 450, FLY0 = 2000, GAP = 230, FLY = 900, WAVE_PAD = 150, WAVE = 850, SETTLE_PAD = 250;
+      const n = bars.length;
+      const lastLand = FLY0 + (n - 1) * GAP + FLY;
+      const waveStart = lastLand + WAVE_PAD;
+      const endAt = waveStart + WAVE + SETTLE_PAD;
+      const totalTrueW = bars.reduce((s, b) => s + b.trueW, 0);
+      const firstX = bars[0].tx;
+
+      const clamp01 = (v) => Math.max(0, Math.min(1, v));
+      const easeOut3 = (t) => 1 - Math.pow(1 - t, 3);
+      const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const easeBack = (t) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+      const bez = (p0, p1, p2, t) => (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
+
+      let overlay = null, shine = null, finished = false;
+      const t0 = performance.now();
+
+      const frame = (now) => {
+        if (finished) return;
+        const el = now - t0;
+
+        bars.forEach((b, i) => {
+          let x = b.sx, cy = b.cy0, w = b.startW, h = 10, sc = 1, rot = 0;
+          const flyT = (el - (FLY0 + i * GAP)) / FLY;
+
+          if (el < POP) {
+            sc = Math.max(0.05, easeBack(clamp01(el / POP)));
+          } else if (flyT <= 0) {
+            // hover, then a quick anticipation lift right before taking off
+            const lp = clamp01((el - (FLY0 + i * GAP - 280)) / 280);
+            cy = b.cy0 + Math.sin((el + i * 240) / 170) * 2 - 7 * easeOut3(lp);
+            sc = 1 + 0.2 * easeOut3(lp);
+            h = 10 + 3 * lp;
+          } else if (flyT < 1) {
+            const e = easeInOut(flyT);
+            const p1x = b.sx + (b.tx - b.sx) * 0.35;
+            const p1y = Math.min(b.cy0, b.cy1) - 80;
+            x = bez(b.sx, p1x, b.tx, e);
+            cy = bez(b.cy0, p1y, b.cy1, e);
+            w = b.startW + (b.trueW - b.startW) * easeOut3(flyT);
+            h = 13 - 7 * e;
+            sc = 1.2 - 0.2 * e;
+            rot = Math.sin(flyT * Math.PI) * (b.tx >= b.sx ? -9 : 9) * (1 - e * 0.4);
+            if (el - b.lastTrail > 38) {
+              b.lastTrail = el;
+              spawn('par-trail', x + w - 3, cy, b.color);
+            }
+          } else {
+            x = b.tx; cy = b.cy1; w = b.trueW; h = 6;
+            if (!b.landed) {
+              b.landed = true;
+              b.inner.classList.add('par-landed');
+              spawn('par-weld', b.tx, b.cy1, b.color);
+              for (let k = 0; k < 9; k++) {
+                const ang = (Math.PI * 2 * k) / 9 + Math.random() * 0.5;
+                const dist = 16 + Math.random() * 22;
+                spawn('par-spark', b.tx, b.cy1, b.color, { '--dx': (Math.cos(ang) * dist).toFixed(1) + 'px', '--dy': (Math.sin(ang) * dist - 6).toFixed(1) + 'px' });
+              }
+              playAudioTone('stretch', RARITY_CONFIG[b.key] ? b.key : 'common');
+            }
+          }
+          b.outer.style.transform = `translate(${x.toFixed(1)}px, ${(cy - h / 2).toFixed(1)}px) rotate(${rot.toFixed(1)}deg)`;
+          b.inner.style.width = w.toFixed(1) + 'px';
+          b.inner.style.height = h.toFixed(1) + 'px';
+          if (!b.landed || el < lastLand) b.inner.style.transform = `scale(${sc.toFixed(3)})`;
+        });
+
+        // Everything is joined: a bright wave sweeps across and turns the whole piece into one color
+        if (el >= waveStart) {
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.style.cssText = `position:absolute;left:${firstX.toFixed(1)}px;top:${(cy1 - 3).toFixed(1)}px;width:${totalTrueW.toFixed(1)}px;height:6px;border-radius:3px;background:${PAR_TEAM_COLOR};box-shadow:0 0 14px ${PAR_TEAM_COLOR};clip-path:inset(-8px 100% -8px 0);`;
+            shine = document.createElement('div');
+            shine.style.cssText = 'position:absolute;left:0;top:0;width:14px;height:14px;border-radius:9999px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,0.8);';
+            fly.appendChild(overlay);
+            fly.appendChild(shine);
+          }
+          const wp = easeInOut(clamp01((el - waveStart) / WAVE));
+          overlay.style.clipPath = `inset(-8px ${((1 - wp) * 100).toFixed(1)}% -8px 0)`;
+          shine.style.transform = `translate(${(firstX + wp * totalTrueW - 7).toFixed(1)}px, ${(cy1 - 7).toFixed(1)}px)`;
+          shine.style.opacity = wp >= 1 ? '0' : '1';
+          const pctNow = Math.round(prevPct + (newPct - prevPct) * wp);
+          const prog = pvpEl('parProgress');
+          if (prog) prog.textContent = `Team progress: ${pctNow}% of the way to PAR`;
+        }
+
+        if (el >= endAt) {
+          finished = true;
+          parDrawLine(room, W, newTotal);
+          fly.innerHTML = '';
+          parRipple(room, W, newTotal);
+          finalVerdict();
+          if (newTotal >= parNow) {
+            const dot = pvpEl('parMarkerDot');
+            if (dot) dot.classList.add('par-marker-pulse');
+          }
+          return;
+        }
+        PVP.rafs = [requestAnimationFrame(frame)];
+      };
+      PVP.rafs = [requestAnimationFrame(frame)];
     }
 
     function parShowDone(room, firstLoad) {
@@ -7192,11 +7309,11 @@ Rules:
       (g.order || []).forEach(id => {
         const row = document.createElement('div');
         row.id = 'pvp-row-' + id;
-        row.className = 'pvp-row rounded-xl px-2.5 py-1.5 border border-pik-border/50 bg-pik-card/40' + (id === PVP.myId ? ' pvp-row-me' : '');
+        row.className = 'pvp-row px-1 py-1' + (id === PVP.myId ? ' pvp-row-me' : '');
         row.innerHTML = `
           <div class="flex items-center justify-between gap-2 mb-0.5">
             <div class="flex items-center gap-2 min-w-0">
-              <span class="font-display font-bold text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
+              <span class="pvp-name font-display font-bold text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
               ${id === PVP.myId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-500">You</span>' : ''}
               <span id="pvp-pips-${id}" class="flex items-center gap-1 flex-shrink-0"></span>
               <span id="pvp-tag-${id}" class="text-[10px] font-display font-extrabold tracking-wide whitespace-nowrap"></span>
