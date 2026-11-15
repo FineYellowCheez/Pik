@@ -590,6 +590,26 @@
       #pvpStage { min-height: 100px; }
       #pvpCountdown { font-size: 3.5rem; }
     }
+
+    /* ===== Multiplayer menu: two options slide out of the Multiplayer button ===== */
+    #multiMenuRow { display: flex; gap: 0.5rem; justify-content: center; width: 100%; max-height: 0; margin-top: 0; overflow: hidden; transition: max-height 0.35s ease, margin-top 0.35s ease; }
+    #multiWrap.multi-open #multiMenuRow { max-height: 3.5rem; margin-top: 0.5rem; overflow: visible; }
+    .multi-sub {
+      flex: 1; padding: 0.55rem 0.5rem; border-radius: 0.85rem; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 0.7rem; white-space: nowrap;
+      background: #1a1a1a; border: 1px solid rgba(212, 175, 55, 0.5); color: #d4af37; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      opacity: 0; visibility: hidden; transition: transform 0.42s cubic-bezier(0.22, 1.25, 0.36, 1), opacity 0.3s ease, visibility 0.3s;
+    }
+    .multi-sub:hover { background: #26262b; }
+    #multiPvpBtn { transform: translateX(-130%); }
+    #multiParBtn { transform: translateX(130%); border-color: rgba(45, 212, 191, 0.55); color: #2dd4bf; }
+    #multiWrap.multi-open .multi-sub { opacity: 1; visibility: visible; transform: none; }
+    @media (min-width: 640px) {
+      #multiMenuRow { display: contents; }
+      .multi-sub { position: absolute; top: 50%; width: 6.5rem; flex: none; }
+      #multiPvpBtn { right: 100%; margin-right: 0.5rem; transform: translate(130%, -50%); }
+      #multiParBtn { left: 100%; margin-left: 0.5rem; transform: translate(-130%, -50%); }
+      #multiWrap.multi-open .multi-sub { transform: translate(0, -50%); }
+    }
   </style>
 </head>
 <body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
@@ -642,7 +662,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.3.8-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.0-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -656,11 +676,17 @@
         Play Standard
       </button>
 
-      <!-- Multiplayer: P-V-PIK (opens public / private matchmaking) -->
-      <button id="pvpModeBtn" onclick="openPvp()" class="w-64 py-3 bg-pik-card hover:bg-slate-800 text-pik-gold border border-pik-gold/50 font-display font-extrabold text-sm rounded-2xl transition shadow-lg transform rotate-1 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        P-V-PIK
-      </button>
+      <!-- Multiplayer: slides out P-V-PIK and PIK Par -->
+      <div id="multiWrap" class="relative w-64 flex flex-col items-center">
+        <button id="pvpModeBtn" onclick="pvpToggleMultiMenu()" class="w-64 py-3 bg-pik-card hover:bg-slate-800 text-pik-gold border border-pik-gold/50 font-display font-extrabold text-sm rounded-2xl transition shadow-lg transform rotate-1 hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Multiplayer
+        </button>
+        <div id="multiMenuRow">
+          <button id="multiPvpBtn" class="multi-sub" onclick="openPvp('pvp')">P-V-PIK</button>
+          <button id="multiParBtn" class="multi-sub" onclick="openPvp('par')">PIK Par</button>
+        </div>
+      </div>
 
       <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
       <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
@@ -1039,7 +1065,7 @@
           <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
           <circle cx="24" cy="24" r="4" fill="#f97316"/>
         </svg>
-        <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">P-V-PIK</span>
+        <span id="pvpBrandName" class="font-display font-extrabold text-xl tracking-tight text-slate-100">P-V-PIK</span>
       </div>
       <div class="flex items-center gap-2 sm:gap-3">
         <button onclick="pvpToggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
@@ -1055,9 +1081,9 @@
     <!-- ===== VIEW: MATCHMAKING (Public / Private) ===== -->
     <div id="pvpViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
       <div class="text-center">
-        <h2 class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
-        <p class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;4 players &bull; Don&rsquo;t give the most common answer</p>
-        <p class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
+        <h2 id="pvpMatchTitle" class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
+        <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;4 players &bull; Don&rsquo;t give the most common answer</p>
+        <p id="pvpMatchTag2" class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
       </div>
 
       <div class="w-full max-w-sm flex flex-col gap-3">
@@ -1160,6 +1186,17 @@
 
       <!-- All players' lines, one above the other -->
       <div id="pvpLines" class="flex flex-col gap-1.5 w-full flex-shrink-0"></div>
+
+      <!-- PIK Par: one shared line with the players underneath -->
+      <div id="parBoard" class="hidden relative w-full flex-shrink-0 flex flex-col gap-1">
+        <div id="parTrack" class="relative h-12">
+          <svg id="parSvg" class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 48" preserveAspectRatio="none"></svg>
+          <div id="parNodes" class="absolute inset-0 pointer-events-none"></div>
+        </div>
+        <div id="parProgress" class="text-center text-[11px] font-display font-bold text-slate-400 min-h-[16px]"></div>
+        <div id="parPlayers" class="grid gap-1.5"></div>
+        <div id="parFly" class="absolute inset-0 pointer-events-none" style="z-index:5;"></div>
+      </div>
 
       <!-- End-of-match awards (3 per game) -->
       <div id="pvpAwards" class="hidden w-full flex-shrink-0 pt-1"></div>
@@ -5552,7 +5589,7 @@ Rules:
 
     const PVP = {
       myId: 'p' + Math.random().toString(36).slice(2, 9),
-      backend: null, code: null, room: null, unwatch: null, everSeen: false,
+      mode: 'pvp', backend: null, code: null, room: null, unwatch: null, everSeen: false,
       hbTimer: null, tickTimer: null, lastKey: null, lastStatus: null,
       beatSeen: {}, hostKey: null, hostKeyAt: 0, hostBusy: false, fullSince: 0,
       timer: null, timeLeft: PVP_ANSWER_SECONDS, evaluating: false, submitted: false,
@@ -5837,8 +5874,11 @@ Rules:
       return name;
     }
 
-    function openPvp() {
+    function openPvp(mode) {
       if (isLaunchingMode) return;
+      PVP.mode = mode === 'par' ? 'par' : 'pvp';
+      pvpApplyModeText();
+      pvpCloseMultiMenu();
       playAudioTone('launch');
       const screen = pvpEl('pvpScreen');
       if (!screen) return;
@@ -5865,6 +5905,7 @@ Rules:
       await pvpLeaveRoom();
       const screen = pvpEl('pvpScreen');
       if (screen) screen.classList.add('hidden');
+      pvpCloseMultiMenu();
       playAudioTone('menu');
       animateMenuEntrance();
     }
@@ -5953,7 +5994,7 @@ Rules:
       if (!code) return 'Could not create a lobby. Try again.';
       const now = Date.now();
       await b.set(code, {
-        code, isPublic: !!isPublic, hostId: PVP.myId, status: 'lobby', createdAt: now, updatedAt: now,
+        code, mode: PVP.mode, isPublic: !!isPublic, hostId: PVP.myId, status: 'lobby', createdAt: now, updatedAt: now,
         players: { [PVP.myId]: { name, joinedAt: now, seen: now } }
       });
       pvpEnterRoom(code);
@@ -5967,7 +6008,7 @@ Rules:
       try {
         const b = await pvpGetBackend();
         const list = (await b.listPublic())
-          .filter(r => r.status === 'lobby' && Object.keys(r.players || {}).length < PVP_MAX_PLAYERS && pvpRoomFresh(r))
+          .filter(r => r.status === 'lobby' && (r.mode || 'pvp') === PVP.mode && Object.keys(r.players || {}).length < PVP_MAX_PLAYERS && pvpRoomFresh(r))
           .sort((a, c) => Object.keys(c.players).length - Object.keys(a.players).length);
         for (const r of list) {
           const err = await pvpTryJoin(r.code);
@@ -6138,7 +6179,7 @@ Rules:
       } else if (room.status === 'playing' && room.game) {
         if (PVP.lastStatus !== 'playing') {
           pvpResetGameUi();
-          pvpBuildRows(room);
+          if (room.mode === 'par') parBuildBoard(room); else pvpBuildRows(room);
           PVP.lastKey = null;
         }
         pvpShowView('Game');
@@ -6188,6 +6229,8 @@ Rules:
       const v = pvpEl('pvpVerdict'); if (v) v.innerHTML = '';
       const rl = pvpEl('pvpRoundLine'); if (rl) rl.textContent = '';
       const lines = pvpEl('pvpLines'); if (lines) lines.innerHTML = '';
+      const parB = pvpEl('parBoard'); if (parB) parB.classList.add('hidden');
+      const parF = pvpEl('parFly'); if (parF) parF.innerHTML = '';
     }
 
     /* ---------- Lobby ---------- */
@@ -6195,7 +6238,7 @@ Rules:
       const ids = pvpSortedPlayerIds(room);
       const isHost = room.hostId === PVP.myId;
       const codeEl = pvpEl('pvpLobbyCode'); if (codeEl) codeEl.textContent = room.code;
-      const badge = pvpEl('pvpLobbyBadge'); if (badge) badge.textContent = room.isPublic ? 'Public' : 'Private';
+      const badge = pvpEl('pvpLobbyBadge'); if (badge) badge.textContent = `${pvpModeName(room.mode)} \u2022 ${room.isPublic ? 'Public' : 'Private'}`;
 
       let html = '';
       for (let i = 0; i < PVP_MAX_PLAYERS; i++) {
@@ -6276,7 +6319,7 @@ Rules:
         await PVP.backend.patch(PVP.code, {
           status: 'playing',
           updatedAt: Date.now(),
-          game: { questions: pvpPickQuestions(PVP_QUESTION_COUNT), order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], winners: [] }
+          game: { questions: pvpPickQuestions(PVP_QUESTION_COUNT), order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], winners: [], par: room.mode === 'par' ? order.length * PAR_PER_PLAYER : 0, reached: false }
         });
         playAudioTone('launch');
       } catch (e) {
@@ -6364,7 +6407,12 @@ Rules:
           guarded(() => pvpFinalizeRound(room, active));
         }
       } else if (g.phase === 'reveal') {
-        if (elapsed >= PVP_REVEAL_MS) {
+        if (elapsed >= (room.mode === 'par' ? PAR_REVEAL_MS : PVP_REVEAL_MS)) {
+          if (room.mode === 'par') {
+            if (parTotal(room) >= (g.par || Infinity) || g.round + 1 >= (g.questions || []).length) guarded(() => pvpEndMatch(room));
+            else guarded(() => PVP.backend.patch(PVP.code, { 'game.round': g.round + 1, 'game.phase': 'countdown', 'game.answers': {} }));
+            return;
+          }
           const maxPts = Math.max(0, ...(g.order || []).map(id => pvpPoints(room, id, false)));
           if (maxPts >= PVP_LOSE_POINTS || g.round + 1 >= (g.questions || []).length) {
             guarded(() => pvpEndMatch(room));
@@ -6400,6 +6448,13 @@ Rules:
         const ref = ids.slice().sort((x, y) => answers[x].ms - answers[y].ms)[0];
         ids.forEach(id => { answers[id].key = answers[ref].key; answers[id].len = answers[ref].len; });
       });
+      if (room.mode === 'par') {
+        await PVP.backend.patch(PVP.code, {
+          'game.rounds': (g.rounds || []).concat([{ prompt: g.questions[g.round], answers }]),
+          'game.phase': 'reveal'
+        });
+        return;
+      }
       const entries = active.map((id, i) => ({ id, i, rank: answers[id].skip ? -1 : answers[id].len, ms: answers[id].ms }));
       const minRank = Math.min(...entries.map(e => e.rank));
       const cands = entries.filter(e => e.rank === minRank).sort((a, b) => (b.ms - a.ms) || (a.i - b.i));
@@ -6418,6 +6473,10 @@ Rules:
 
     async function pvpEndMatch(room) {
       const g = room.game;
+      if (room.mode === 'par') {
+        await PVP.backend.patch(PVP.code, { 'game.phase': 'done', 'game.winners': [], 'game.reached': parTotal(room) >= (g.par || Infinity) });
+        return;
+      }
       let pool = pvpActiveIds(room);
       if (pool.length === 0) pool = (g.order || []).slice();
       const pts = {};
@@ -6504,7 +6563,10 @@ Rules:
       clearInterval(PVP.timer);
 
       const roundLine = pvpEl('pvpRoundLine');
-      if (roundLine) roundLine.textContent = g.phase === 'done' ? 'Match over' : `Round ${g.round + 1} \u2022 ${PVP_LOSE_POINTS} points ends the match \u2022 fewest points wins`;
+      if (roundLine) {
+        if (room.mode === 'par') roundLine.textContent = g.phase === 'done' ? 'Round complete' : `Round ${g.round + 1} \u2022 Work together to reach PAR`;
+        else roundLine.textContent = g.phase === 'done' ? 'Match over' : `Round ${g.round + 1} \u2022 ${PVP_LOSE_POINTS} points ends the match \u2022 fewest points wins`;
+      }
 
       const card = pvpEl('pvpQCard');
       const cd = pvpEl('pvpCountdown');
@@ -6515,10 +6577,14 @@ Rules:
         if (card) card.classList.add('hidden');
         if (echo) echo.classList.add('hidden');
         const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
-        pvpResetRowMarks(room);
-        const awBox = pvpEl('pvpAwards'); if (awBox) { awBox.classList.add('hidden'); awBox.innerHTML = ''; }
-        pvpRenderPips(room, true);
-        pvpDrawAllTracks(room, -1);
+        if (room.mode === 'par') {
+          parResetRound(room);
+        } else {
+          pvpResetRowMarks(room);
+          const awBox = pvpEl('pvpAwards'); if (awBox) { awBox.classList.add('hidden'); awBox.innerHTML = ''; }
+          pvpRenderPips(room, true);
+          pvpDrawAllTracks(room, -1);
+        }
         if (verdict) verdict.innerHTML = '<span class="text-slate-400">Get ready...</span>';
         if (cd) cd.classList.remove('hidden');
         const show = (txt) => {
@@ -6574,11 +6640,12 @@ Rules:
         const r = (g.rounds || [])[g.round];
         if (!r) return;
         if (echo) { echo.textContent = r.prompt; echo.classList.remove('hidden'); }
-        pvpPlayReveal(room, r, firstLoad);
+        if (room.mode === 'par') parPlayReveal(room, r, firstLoad); else pvpPlayReveal(room, r, firstLoad);
       } else if (g.phase === 'done') {
         if (cd) cd.classList.add('hidden');
         if (card) card.classList.add('hidden');
         if (echo) echo.classList.add('hidden');
+        if (room.mode === 'par') { parShowDone(room, firstLoad); return; }
         pvpRenderPips(room, true);
         if (firstLoad) {
           pvpDrawAllTracks(room, -1);
@@ -6641,6 +6708,263 @@ Rules:
         html = `${name} had the lowest rarity (${pvpEsc(low)}) and takes the point.`;
       }
       if (verdict) verdict.innerHTML = html;
+    }
+
+    /* ====================================================
+       PIK PAR — co-op mode: the whole team builds ONE line to reach PAR
+    ==================================================== */
+    const PAR_REVEAL_MS = 6500;
+    const PAR_START = 60;
+    const PAR_LY = 32;
+    const PAR_PER_PLAYER = 1200;
+    const PAR_BASE_ROUNDS = 6;
+    const PAR_TEAM_COLOR = '#2dd4bf';
+
+    function pvpModeName(mode) { return mode === 'par' ? 'PIK Par' : 'P-V-PIK'; }
+
+    function pvpApplyModeText() {
+      const par = PVP.mode === 'par';
+      const set = (id, txt) => { const el = pvpEl(id); if (el) el.innerHTML = txt; };
+      set('pvpBrandName', pvpModeName(PVP.mode));
+      set('pvpMatchTitle', pvpModeName(PVP.mode));
+      set('pvpMatchTag1', par ? '2&ndash;4 players &bull; Work together to reach PAR' : '2&ndash;4 players &bull; Don&rsquo;t give the most common answer');
+      set('pvpMatchTag2', par
+        ? 'Everyone answers each round and your rarity sections join into one shared line. Rarer answers get the team there faster.'
+        : 'Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.');
+    }
+
+    /* ----- menu: Multiplayer button with two sliding options ----- */
+    function pvpToggleMultiMenu() {
+      const wrap = pvpEl('multiWrap');
+      if (!wrap) return;
+      const open = wrap.classList.toggle('multi-open');
+      playAudioTone(open ? 'menu' : 'skip');
+    }
+
+    function pvpCloseMultiMenu() {
+      const wrap = pvpEl('multiWrap');
+      if (wrap) wrap.classList.remove('multi-open');
+    }
+
+    /* ----- shared-line helpers ----- */
+    function parTotal(room, upto) {
+      const rs = (room.game && room.game.rounds) || [];
+      const n = upto == null ? rs.length : upto;
+      let t = 0;
+      for (let i = 0; i < n && i < rs.length; i++) {
+        Object.values(rs[i].answers || {}).forEach(a => { if (a && !a.skip) t += a.len || 0; });
+      }
+      return t;
+    }
+
+    function parScaleW(room, total) {
+      const par = room.game.par || 0;
+      return Math.max(PAR_START + par + 110, PAR_START + total + 110);
+    }
+
+    function parNodeHtml(pct, color) {
+      return `<span style="position:absolute;top:${PAR_LY}px;left:${pct}%;width:17px;height:17px;transform:translate(-50%,-50%);border-radius:9999px;border:3px solid ${color || '#ffffff'};background:${color || '#121212'};"></span>`;
+    }
+
+    function parHaloHtml(pct) {
+      return `<span style="position:absolute;top:${PAR_LY}px;left:${pct}%;width:0;height:0;"><span class="target-node-halo" style="position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:9999px;border:1.5px solid #ffffff;"></span></span>`;
+    }
+
+    function parSetProgress(room, total) {
+      const el = pvpEl('parProgress');
+      if (!el) return;
+      const par = room.game.par || 1;
+      const pct = Math.min(100, Math.round((total / par) * 100));
+      el.textContent = total >= par ? 'PAR reached!' : `Team progress: ${pct}% of the way to PAR`;
+    }
+
+    function parDrawLine(room, W, total) {
+      const svg = pvpEl('parSvg'), nodes = pvpEl('parNodes');
+      if (!svg || !nodes) return;
+      const par = room.game.par || 0;
+      const pct = (x) => ((x / W) * 100).toFixed(3);
+      svg.setAttribute('viewBox', `0 0 ${W} 48`);
+      let html = `<line x1="0" y1="${PAR_LY}" x2="${W}" y2="${PAR_LY}" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+      if (total > 0) {
+        html += `<line x1="${PAR_START}" y1="${PAR_LY}" x2="${PAR_START + total}" y2="${PAR_LY}" stroke="${PAR_TEAM_COLOR}" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+      }
+      svg.innerHTML = html;
+
+      // Static white PAR marker, then the start node and the current end node
+      const parPct = pct(PAR_START + par);
+      let n = `<span class="font-display font-extrabold" style="position:absolute;left:${parPct}%;top:2px;transform:translateX(-50%);font-size:9px;letter-spacing:0.14em;color:#ffffff;">PAR</span>`;
+      n += `<span style="position:absolute;top:${PAR_LY}px;left:${parPct}%;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:9999px;background:#ffffff;border:3px solid #ffffff;box-shadow:0 0 10px rgba(255,255,255,0.35);"></span>`;
+      if (total > 0) n += parNodeHtml(pct(PAR_START), PAR_TEAM_COLOR);
+      n += parHaloHtml(pct(PAR_START + total)) + parNodeHtml(pct(PAR_START + total), null);
+      nodes.innerHTML = n;
+      parSetProgress(room, total);
+    }
+
+    function parRipple(room, W, total) {
+      const nodes = pvpEl('parNodes');
+      if (!nodes) return;
+      const p = (((PAR_START + total) / W) * 100).toFixed(3);
+      nodes.insertAdjacentHTML('beforeend', `<span style="position:absolute;top:${PAR_LY}px;left:${p}%;width:0;height:0;"><span class="node-shockwave" style="position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:9999px;border:3px solid ${PAR_TEAM_COLOR};"></span></span>`);
+      const wrap = nodes.lastElementChild;
+      setTimeout(() => { if (wrap && wrap.parentNode) wrap.remove(); }, 1100);
+    }
+
+    function parBuildBoard(room) {
+      const g = room.game;
+      const lines = pvpEl('pvpLines'); if (lines) lines.classList.add('hidden');
+      const board = pvpEl('parBoard'); if (board) board.classList.remove('hidden');
+      const cols = pvpEl('parPlayers');
+      if (cols) {
+        const order = g.order || [];
+        cols.style.gridTemplateColumns = `repeat(${Math.max(1, order.length)}, minmax(0, 1fr))`;
+        cols.innerHTML = order.map(id => `
+          <div id="pvp-row-${id}" class="pvp-row par-col rounded-xl border border-pik-border/50 bg-pik-card/40 px-1.5 py-1.5 flex flex-col gap-1 min-w-0${id === PVP.myId ? ' pvp-row-me' : ''}">
+            <div class="flex items-center justify-between gap-1 min-w-0">
+              <span class="font-display font-bold text-[11px] sm:text-xs text-slate-100 truncate">${pvpEsc(pvpName(room, id))}</span>
+              ${id === PVP.myId ? '<span class="text-[8px] font-display font-bold uppercase tracking-wider text-slate-500">You</span>' : ''}
+            </div>
+            <div id="par-slot-${id}" class="relative h-[10px]"></div>
+            <div id="pvp-chip-${id}" class="text-[10px] sm:text-[11px] font-display font-bold leading-tight break-words min-h-[2.4em]"></div>
+            <span id="pvp-tag-${id}" class="hidden"></span>
+          </div>`).join('');
+      }
+      const fly = pvpEl('parFly'); if (fly) fly.innerHTML = '';
+      const total = parTotal(room);
+      parDrawLine(room, parScaleW(room, total), total);
+    }
+
+    function parResetRound(room) {
+      const fly = pvpEl('parFly'); if (fly) fly.innerHTML = '';
+      (room.game.order || []).forEach(id => {
+        pvpSetChip(id, '');
+        const row = pvpEl('pvp-row-' + id);
+        if (row) row.classList.remove('pvp-row-winner');
+      });
+      const aw = pvpEl('pvpAwards'); if (aw) { aw.classList.add('hidden'); aw.innerHTML = ''; }
+      const end = pvpEl('pvpEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      const total = parTotal(room);
+      parDrawLine(room, parScaleW(room, total), total);
+    }
+
+    function parPlayReveal(room, r, firstLoad) {
+      const g = room.game;
+      const order = g.order || [];
+      const idx = g.round;
+      const prevTotal = parTotal(room, idx);
+      const contrib = order.filter(id => r.answers && r.answers[id] && !r.answers[id].skip && (r.answers[id].len || 0) > 0)
+        .map(id => ({ id, a: r.answers[id] }));
+      const roundSum = contrib.reduce((s, c) => s + c.a.len, 0);
+      const newTotal = prevTotal + roundSum;
+      const W = parScaleW(room, newTotal);
+      const verdict = pvpEl('pvpVerdict');
+      const parNow = g.par || 1;
+      const finalVerdict = () => {
+        if (!verdict) return;
+        const pct = Math.min(100, Math.round((newTotal / parNow) * 100));
+        verdict.innerHTML = newTotal >= parNow
+          ? '<span class="text-pik-gold">PAR reached!</span>'
+          : `The team added ${roundSum} &mdash; ${pct}% of the way to PAR.`;
+      };
+
+      // Everyone's answer, rarity, and time appear under their name
+      order.forEach(id => {
+        pvpSetChip(id, r.answers && r.answers[id] ? pvpChipHtml(r.answers[id]) : '<span class="text-slate-600">left the match</span>', !firstLoad);
+        const row = pvpEl('pvp-row-' + id);
+        if (row) row.style.opacity = '';
+      });
+
+      if (firstLoad) {
+        parDrawLine(room, W, newTotal);
+        finalVerdict();
+        return;
+      }
+
+      parDrawLine(room, W, prevTotal);
+      if (verdict) verdict.innerHTML = '<span class="text-slate-400">Adding up the team\'s answers...</span>';
+
+      const board = pvpEl('parBoard'), track = pvpEl('parTrack'), fly = pvpEl('parFly');
+      if (!board || !track || !fly) { parDrawLine(room, W, newTotal); finalVerdict(); return; }
+      fly.innerHTML = '';
+      const bRect = board.getBoundingClientRect();
+      const tRect = track.getBoundingClientRect();
+
+      // 1) rarity sections appear under each player's name
+      const bars = [];
+      let x = PAR_START + prevTotal;
+      contrib.forEach(c => {
+        const slot = pvpEl('par-slot-' + c.id);
+        if (!slot) return;
+        const sr = slot.getBoundingClientRect();
+        const color = (RARITY_CONFIG[c.a.key] || RARITY_CONFIG.common).color;
+        const trueW = (c.a.len / W) * tRect.width;
+        const startW = Math.max(10, Math.min(trueW, sr.width - 8));
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;left:${(sr.left - bRect.left + (sr.width - startW) / 2).toFixed(1)}px;top:${(sr.top - bRect.top + 2).toFixed(1)}px;width:${startW.toFixed(1)}px;height:6px;border-radius:3px;background:${color};transition:background-color 0.5s ease;`;
+        fly.appendChild(el);
+        if (el.animate) el.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 350, easing: 'cubic-bezier(0.22,1.3,0.36,1)' });
+        bars.push({ el, trueW, startW, x1: x });
+        x += c.a.len;
+      });
+      let bestKey = 'common', bestLen = -1;
+      contrib.forEach(c => { if (c.a.len > bestLen) { bestLen = c.a.len; bestKey = c.a.key; } });
+      playAudioTone('stretch', RARITY_CONFIG[bestKey] ? bestKey : 'common');
+
+      // 2) after about 2 seconds the sections fly onto the line and connect
+      const WAIT = 2000, FLY = 800, GAP = 180;
+      PVP.phaseTimers.push(setTimeout(() => {
+        const tr = track.getBoundingClientRect();
+        bars.forEach((b, i) => {
+          const cur = b.el.getBoundingClientRect();
+          const dx = (tr.left + (b.x1 / W) * tr.width) - cur.left;
+          const dy = (tr.top + PAR_LY - 3) - cur.top;
+          if (b.el.animate) {
+            b.el.animate(
+              [{ transform: 'translate(0px,0px)', width: b.startW + 'px' }, { transform: `translate(${dx}px,${dy}px)`, width: b.trueW + 'px' }],
+              { duration: FLY, delay: i * GAP, easing: 'cubic-bezier(0.5,0,0.2,1)', fill: 'forwards' }
+            );
+          }
+        });
+      }, WAIT));
+
+      // 3) once they are all connected, they turn into one color
+      const landed = WAIT + FLY + Math.max(0, bars.length - 1) * GAP + 80;
+      PVP.phaseTimers.push(setTimeout(() => { bars.forEach(b => { b.el.style.backgroundColor = PAR_TEAM_COLOR; }); }, landed));
+
+      // 4) the merged piece becomes part of the team line
+      PVP.phaseTimers.push(setTimeout(() => {
+        parDrawLine(room, W, newTotal);
+        fly.innerHTML = '';
+        parRipple(room, W, newTotal);
+        finalVerdict();
+      }, landed + 650));
+    }
+
+    function parShowDone(room, firstLoad) {
+      const g = room.game;
+      const total = parTotal(room);
+      parDrawLine(room, parScaleW(room, total), total);
+      const rounds = (g.rounds || []).length;
+      const reached = !!g.reached || total >= (g.par || Infinity);
+      let html;
+      if (reached) {
+        const diff = rounds - PAR_BASE_ROUNDS;
+        const rating = diff <= -3 ? 'Albatross!' : diff === -2 ? 'Eagle!' : diff === -1 ? 'Birdie!' : diff === 0 ? 'Par!' : diff === 1 ? 'Bogey' : diff === 2 ? 'Double Bogey' : 'Over Par';
+        html = `<span class="pvp-you-win text-pik-gold text-lg sm:text-xl font-black mr-1">${rating}</span> Your team reached PAR in ${rounds} round${rounds === 1 ? '' : 's'}.`;
+      } else {
+        html = 'The team didn\'t reach PAR this time.';
+      }
+      const verdict = pvpEl('pvpVerdict');
+      if (verdict) verdict.innerHTML = html;
+      (g.order || []).forEach(id => {
+        const row = pvpEl('pvp-row-' + id);
+        if (row) { row.style.opacity = ''; if (reached) row.classList.add('pvp-row-winner'); }
+      });
+      if (!firstLoad) {
+        playAudioTone('finish');
+        if (reached) pvpLaunchConfetti();
+      }
+      pvpRenderAwards(room);
+      pvpRenderEndActions(room);
     }
 
     /* ---------- Winner celebration (confetti) ---------- */
@@ -6862,6 +7186,8 @@ Rules:
       const g = room.game;
       const host = pvpEl('pvpLines');
       if (!host) return;
+      const parBoardEl = pvpEl('parBoard'); if (parBoardEl) parBoardEl.classList.add('hidden');
+      host.classList.remove('hidden');
       host.innerHTML = '';
       (g.order || []).forEach(id => {
         const row = document.createElement('div');
