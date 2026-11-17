@@ -344,12 +344,35 @@
     .menu-btn-launching {
       position: relative;
       overflow: hidden;
-      transform: translateX(14px) scale(1.07) rotate(0deg) !important;
-      box-shadow: 0 0 30px rgba(212, 175, 55, 0.42), 0 16px 28px -6px rgba(0, 0, 0, 0.65) !important;
       border-color: #d4af37 !important;
-      transition: transform 0.26s cubic-bezier(0.22, 1.32, 0.36, 1), box-shadow 0.24s ease, border-color 0.2s ease !important;
       z-index: 10;
+      animation: btnPressPop 0.4s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
     }
+
+    /* Squish in, spring forward (keeping the button's own tilt), then pulse a gold ring outward */
+    @keyframes btnPressPop {
+      0% {
+        transform: scale(1) rotate(var(--btn-rot, 0deg));
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6), 0 0 0 rgba(212, 175, 55, 0), 0 10px 20px -8px rgba(0, 0, 0, 0.5);
+      }
+      22% {
+        transform: scale(0.92, 0.9) rotate(calc(var(--btn-rot, 0deg) * 0.7));
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.5), 0 0 12px rgba(212, 175, 55, 0.2), 0 4px 10px -6px rgba(0, 0, 0, 0.5);
+      }
+      62% {
+        transform: scale(1.1, 1.12) translateY(-7px) rotate(calc(var(--btn-rot, 0deg) * 1.5));
+        box-shadow: 0 0 0 14px rgba(212, 175, 55, 0.22), 0 0 30px rgba(212, 175, 55, 0.5), 0 22px 30px -8px rgba(0, 0, 0, 0.6);
+      }
+      100% {
+        transform: scale(1.07) translateY(-4px) rotate(calc(var(--btn-rot, 0deg) * 1.2));
+        box-shadow: 0 0 0 28px rgba(212, 175, 55, 0), 0 0 30px rgba(212, 175, 55, 0.42), 0 18px 28px -6px rgba(0, 0, 0, 0.65);
+      }
+    }
+
+    #playStandardBtn { --btn-rot: -3deg; }
+    #playTimedBtn { --btn-rot: 2deg; }
+    #playDailyBtn { --btn-rot: -2deg; }
+    #pvpModeBtn { --btn-rot: 1deg; }
 
     .menu-btn-launching::after {
       content: '';
@@ -365,17 +388,19 @@
       100% { transform: translateX(110%); }
     }
 
+    /* The other buttons drop away one after another, still tilted */
+    @keyframes btnDropAway {
+      0% { opacity: 1; transform: translateY(0) scale(1) rotate(var(--btn-rot, 0deg)); }
+      100% { opacity: 0; transform: translateY(22px) scale(0.8) rotate(calc(var(--btn-rot, 0deg) * 2.4)); }
+    }
+
     .menu-btn-wing-left {
-      opacity: 0 !important;
-      transform: translateX(-64px) scale(0.9) rotate(-6deg) !important;
-      transition: opacity 0.22s ease-in, transform 0.26s cubic-bezier(0.4, 0, 1, 1) !important;
+      animation: btnDropAway 0.28s cubic-bezier(0.5, 0, 0.9, 0.5) 0.02s forwards !important;
       pointer-events: none !important;
     }
 
     .menu-btn-wing-right {
-      opacity: 0 !important;
-      transform: translateX(64px) scale(0.9) rotate(6deg) !important;
-      transition: opacity 0.22s ease-in, transform 0.26s cubic-bezier(0.4, 0, 1, 1) !important;
+      animation: btnDropAway 0.28s cubic-bezier(0.5, 0, 0.9, 0.5) 0.07s forwards !important;
       pointer-events: none !important;
     }
 
@@ -699,7 +724,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.3-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.8-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -2396,6 +2421,7 @@ Rules:
           const errText = await response.text().catch(() => '');
           const err = new Error(`HTTP ${response.status}: ${errText}`);
           err.status = response.status;
+          try { err.retryAfter = parseFloat(response.headers && response.headers.get ? response.headers.get('retry-after') : '') || 0; } catch (e2) { err.retryAfter = 0; }
           throw err;
         }
 
@@ -3414,7 +3440,7 @@ Rules:
         };
         client.on('message', onMsg);
         try { client.subscribe(topic, { qos: 1 }); } catch (e) { finish(null); return; }
-        setTimeout(() => finish(null), 900);
+        setTimeout(() => finish(null), 1500);
       });
     }
 
@@ -3431,7 +3457,7 @@ Rules:
       const getters = [];
       if (typeof window.fetchVerdictFromCloud === 'function') getters.push(pikWithTimeout(window.fetchVerdictFromCloud(key), 2500));
       if (window.storage) getters.push(pikWithTimeout(pikStorageGet(key), 2500));
-      getters.push(pikWithTimeout(pikMqttGet(key), 1500));
+      getters.push(pikWithTimeout(pikMqttGet(key), 2300));
       return new Promise((resolve) => {
         let pending = getters.length;
         getters.forEach(g => g.then((v) => { if (v) resolve(v); else if (--pending === 0) resolve(null); }, () => { if (--pending === 0) resolve(null); }));
@@ -3473,6 +3499,47 @@ Rules:
       return results.find(Boolean) || verdict;
     }
 
+    /* ---------- Resilience helpers ---------- */
+    // Other spellings of the same answer (plural/singular, joined words) so earlier verdicts are recognized
+    function pikKeyVariants(prompt, na) {
+      if (!na || /rhym|letter|start|begin|\bend|syllable|silent|vowel|spell|palindrome|contain|word that|homophone|sounds/i.test(prompt)) return [];
+      const out = new Set();
+      if (/ies$/.test(na) && na.length > 4) out.add(na.replace(/ies$/, 'y'));
+      else if (/(ches|shes|sses|xes|zes)$/.test(na)) out.add(na.replace(/es$/, ''));
+      else if (/[^s]s$/.test(na) && na.length > 3) out.add(na.slice(0, -1));
+      if (!/s$/.test(na)) out.add(/y$/.test(na) ? na.replace(/y$/, 'ies') : (/(ch|sh|x|z)$/.test(na) ? na + 'es' : na + 's'));
+      if (/\s/.test(na)) out.add(na.replace(/\s+/g, ''));
+      out.delete(na);
+      return Array.from(out);
+    }
+
+    async function pikSharedFetchMany(keys) {
+      const results = await Promise.all(keys.map(k => pikSharedFetch(k)));
+      return results.find(Boolean) || null;
+    }
+
+    // Last resort when no judge can be reached at all: accept sensible-looking answers with an estimated rarity
+    // (the same answer always gets the same estimate). It is never saved, so a real judge can rule on it later.
+    function pikOfflineEstimate(prompt, userAnswer) {
+      if (/rhym|letter|start|begin|\bend|syllable|silent|vowel|spell|palindrome|contain|word that|homophone|sounds/i.test(prompt)) return null;
+      const raw = (userAnswer || '').trim();
+      const letters = raw.replace(/[^A-Za-z\u00C0-\u024F]/g, '');
+      let bad = letters.length < 2 || raw.length > 40 || /(.)\1{3,}/i.test(raw);
+      if (!bad && letters.length > 4) {
+        const ratio = (letters.match(/[aeiouy]/gi) || []).length / letters.length;
+        bad = ratio < 0.15 || ratio > 0.75;
+      }
+      if (bad) return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'That does not look like a real answer.', rarerExamples: [] };
+      const words = raw.split(/\s+/).length;
+      const score = letters.length + 3 * (words - 1);
+      const h = computeDeterministicSeed(normalize(raw) + '|' + normalize(prompt)) % 100;
+      const table = score <= 5 ? [[40, 'common'], [80, 'uncommon'], [95, 'rare'], [100, 'epic']]
+        : score <= 8 ? [[20, 'common'], [60, 'uncommon'], [88, 'rare'], [98, 'epic'], [100, 'gold']]
+        : [[8, 'common'], [35, 'uncommon'], [73, 'rare'], [95, 'epic'], [100, 'gold']];
+      const rarity = (table.find(([cut]) => h < cut) || table[table.length - 1])[1];
+      return { valid: true, rarity, normalizedAnswer: toDisplayTitleCase(raw), reason: 'The judging services could not be reached, so this rarity is an estimate.', rarerExamples: [], estimated: true };
+    }
+
     async function evaluateAnswerWithGroq(prompt, userAnswer) {
       const normPrompt = normalize(prompt);
       const normAns = normalize(userAnswer);
@@ -3494,16 +3561,21 @@ Rules:
       };
 
       // The live shared store comes first: the first rarity ever given to this answer is final for everyone
-      const sharedHit = await pikSharedFetch(primaryCacheKey);
+      const variantKeys = pikKeyVariants(prompt, normAns).map(v => `${JUDGE_CACHE_VERSION}::${normPrompt}::${v}`);
+      const sharedHit = await pikSharedFetchMany([primaryCacheKey].concat(variantKeys.slice(0, 3)));
       if (sharedHit) {
         const cleanedShared = finalizeVerdict(sharedHit);
         persistVerdictCache(primaryCacheKey, cleanedShared);
         return cleanedShared;
       }
 
-      if (verdictCache[primaryCacheKey]) {
-        const localVerdict = finalizeVerdict(verdictCache[primaryCacheKey]);
-        if (localVerdict && localVerdict.valid) pikSharedClaim(primaryCacheKey, localVerdict).catch(() => {});
+      const localKey = [primaryCacheKey].concat(variantKeys).find(k => verdictCache[k]);
+      if (localKey) {
+        const localVerdict = finalizeVerdict(verdictCache[localKey]);
+        if (localVerdict && localVerdict.valid) {
+          persistVerdictCache(primaryCacheKey, localVerdict);
+          pikSharedClaim(primaryCacheKey, localVerdict).catch(() => {});
+        }
         return localVerdict;
       }
 
@@ -3531,6 +3603,7 @@ Rules:
       // AI judges. A failure only pauses that judge briefly instead of disabling it for the whole session.
       const COOLDOWN_MS = 30000;
       const COOLDOWN_NET_MS = 300000;
+      const COOLDOWN_AUTH_MS = 600000;
       const runAiJudge = async (recheck) => {
         const seed = recheck ? deterministicSeed + 1 : deterministicSeed;
 
@@ -3542,7 +3615,9 @@ Rules:
         if (configuredKeys.length === 0) window.__pikJudgeDiag.groq = 'no keys';
         if (configuredKeys.length > 0 && Date.now() >= groqRetryAt) {
           const totalKeys = configuredKeys.length;
-          let groqOutage = false, groqNet = false;
+          let groqOutage = false, groqNet = false, groqNonAuth = false;
+          for (let pass = 0; pass < 2; pass++) {
+          let only429 = true, waitS = 0;
           for (let attempt = 0; attempt < totalKeys; attempt++) {
             const targetIdx = (activeGroqKeyIndex + attempt) % totalKeys;
             const { key } = configuredKeys[targetIdx];
@@ -3557,18 +3632,25 @@ Rules:
               window.__pikJudgeDiag.groq = pikDiagOf(err);
               if (!err || err.status !== 400) groqOutage = true;
               if (!err || !err.status) groqNet = true;
+              if (!err || (err.status !== 401 && err.status !== 403)) groqNonAuth = true;
+              if (!err || err.status !== 429) only429 = false;
+              if (err && err.retryAfter) waitS = Math.max(waitS, err.retryAfter);
               // Try next Groq key
             }
           }
+          // Every key was rate limited: wait a moment and try them once more
+          if (pass === 0 && only429) { await new Promise(r => setTimeout(r, Math.min(4000, Math.max(1500, waitS * 1000)))); continue; }
+          break;
+          }
           if (groqOutage) {
             groqKeysUnavailable = true;
-            groqRetryAt = Date.now() + (groqNet ? COOLDOWN_NET_MS : COOLDOWN_MS);
+            groqRetryAt = Date.now() + (groqNet ? COOLDOWN_NET_MS : (groqNonAuth ? COOLDOWN_MS : COOLDOWN_AUTH_MS));
           }
         }
 
         // Tier 2: Gemini 3 Flash Preview Judge (works seamlessly in Canvas runtime)
         if (Date.now() >= geminiRetryAt) {
-          let geminiOutage = false, geminiNet = false;
+          let geminiOutage = false, geminiNet = false, geminiAuth = false;
           for (let attempt = 0; attempt < 2; attempt++) {
             try {
               const geminiVerdict = await callGeminiJudge(prompt, canonicalAnswer, seed, recheck);
@@ -3581,13 +3663,14 @@ Rules:
               if (err && err.status === 400) { geminiOutage = false; break; }
               geminiOutage = true;
               if (!err || !err.status) geminiNet = true;
+              if (err && (err.status === 401 || err.status === 403)) geminiAuth = true;
               if (err && (err.status === 429 || err.status === 401 || err.status === 403)) break;
               if (attempt === 0) await new Promise(r => setTimeout(r, 400));
             }
           }
           if (geminiOutage) {
             geminiJudgeUnavailable = true;
-            geminiRetryAt = Date.now() + (geminiNet ? COOLDOWN_NET_MS : COOLDOWN_MS);
+            geminiRetryAt = Date.now() + (geminiNet ? COOLDOWN_NET_MS : (geminiAuth ? COOLDOWN_AUTH_MS : COOLDOWN_MS));
           }
         }
 
@@ -3620,7 +3703,11 @@ Rules:
       // Not cached, so the AI can give the real verdict next time.
       const fallbackResult = await verifyAnswerWithKnowledgeAPIs(prompt, userAnswer);
       if (fallbackResult && !fallbackResult.valid && /^Could not verify/.test(fallbackResult.reason || '')) {
-        // Nothing could judge this answer right now (not the player's fault) - let the UI ask them to retry
+        // Nothing could judge this answer right now. Check the stored answers one more time, then fall back to an estimate.
+        const lateHit = await pikSharedFetchMany([primaryCacheKey].concat(variantKeys.slice(0, 3)));
+        if (lateHit) return finalizeVerdict(lateHit);
+        const estimate = pikOfflineEstimate(prompt, userAnswer);
+        if (estimate) return estimate;
         throw new Error('Judge unavailable' + (pikJudgeDiagText() ? ' (' + pikJudgeDiagText() + ')' : ''));
       }
       return fallbackResult;
