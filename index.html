@@ -724,7 +724,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.8-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.9-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1144,7 +1144,7 @@
     <div id="pvpViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
       <div class="text-center">
         <h2 id="pvpMatchTitle" class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
-        <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;4 players &bull; Don&rsquo;t give the most common answer</p>
+        <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;5 players &bull; Don&rsquo;t give the most common answer</p>
         <p id="pvpMatchTag2" class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
       </div>
 
@@ -5962,14 +5962,14 @@ Rules:
        Transport: Firestore (when the cloud is available) or
        same-browser tabs via localStorage as a fallback.
     ==================================================== */
-    const PVP_MAX_PLAYERS = 4;
+    const PVP_MAX_PLAYERS = 5;
     const PVP_ANSWER_SECONDS = 35;
     const PVP_LOSE_POINTS = 5;
     const PVP_COUNTDOWN_MS = 3000;
     const PVP_REVEAL_MS = 6800;
     const PVP_GRACE_MS = 20000;
     const PVP_STALE_MS = 25000;
-    const PVP_QUESTION_COUNT = 20;
+    const PVP_QUESTION_COUNT = 24;
     const PVP_DEL = { __pvpDelete: true };
 
     const PVP = {
@@ -7112,7 +7112,7 @@ Rules:
       const set = (id, txt) => { const el = pvpEl(id); if (el) el.innerHTML = txt; };
       set('pvpBrandName', pvpModeName(PVP.mode));
       set('pvpMatchTitle', pvpModeName(PVP.mode));
-      set('pvpMatchTag1', par ? '2&ndash;4 players &bull; Work together to reach PAR' : '2&ndash;4 players &bull; Don&rsquo;t give the most common answer');
+      set('pvpMatchTag1', par ? '2&ndash;5 players &bull; Work together to reach PAR' : '2&ndash;5 players &bull; Don&rsquo;t give the most common answer');
       set('pvpMatchTag2', par
         ? 'Everyone answers each round and your rarity sections join into one shared line. Rarer answers get the team there faster.'
         : 'Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.');
