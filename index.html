@@ -901,6 +901,16 @@
     .badge-proj-label { font-size: 0.6rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Grotesk', sans-serif; }
 
     /* Player lines in badge game */
+    .badge-team-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.8rem; border-radius: 0.6rem; background: rgba(142,36,170,0.1); border: 1px solid rgba(142,36,170,0.3); }
+    .badge-team-label { font-size: 0.6rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
+    .badge-team-num { font-size: 0.95rem; font-weight: 800; color: #c084fc; font-family: 'Space Grotesk', sans-serif; }
+    .badge-player-lines { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; min-height: 0; overflow-y: auto; scrollbar-none; }
+    .badge-line-row { padding: 0.35rem 0.5rem; border-radius: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; }
+    .badge-line-info { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; margin-bottom: 0.15rem; }
+    .badge-line-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.7rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+    .badge-line-name.me { color: #c084fc; }
+    .badge-line-len { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.6rem; color: #94a3b8; flex-shrink: 0; }
+    .badge-line-track { position: relative; height: 1.25rem; }
     .badge-players { display: flex; flex-direction: column; gap: 0.3rem; }
     .badge-player-row { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; font-size: 0.7rem; font-family: 'Space Grotesk', sans-serif; }
     .badge-player-name { font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 4rem; }
@@ -972,7 +982,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.5-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.6-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1651,7 +1661,11 @@
             </div>
             <div id="badgeFeedback" class="badge-feedback"></div>
           </div>
-          <div id="badgePlayers" class="badge-players"></div>
+          <div class="badge-team-bar">
+            <span class="badge-team-label">Team Distance</span>
+            <span id="badgeTeamTotal" class="badge-team-num">0 px</span>
+          </div>
+          <div id="badgePlayerLines" class="badge-player-lines"></div>
         </div>
         <div class="badge-game-right">
           <div class="badge-card-label">Active Badges</div>
@@ -9059,7 +9073,20 @@ Rules:
 
     /* ---------- Game flow ---------- */
     function badgeName(room, id) { return (room.players && room.players[id] && room.players[id].name) || 'Player'; }
-    function badgeTotalLen(room, id) { const rs = (room.game && room.game.rounds) || []; let t = 0; rs.forEach(r => { const a = r.answers && r.answers[id]; if (a && !a.skip) t += a.len || 0; }); const ca = room.game && room.game.currentAnswers && room.game.currentAnswers[room.game.round] && room.game.currentAnswers[room.game.round][id]; if (ca && !ca.skip) t += ca.len || 0; return t; }
+    function badgeTotalLen(room, id) {
+      const g = room.game || {};
+      const rr = g.roundResults || {};
+      let t = 0;
+      Object.keys(rr).forEach(r => {
+        const a = rr[r] && rr[r].answers && rr[r].answers[id];
+        if (a && !a.skip) t += a.len || 0;
+      });
+      if (g.phase === 'answering') {
+        const ca = g.currentAnswers && g.currentAnswers[g.round] && g.currentAnswers[g.round][id];
+        if (ca && !ca.skip) t += ca.len || 0;
+      }
+      return t;
+    }
 
     function badgeOnGame(room) {
       const g = room.game;
@@ -9161,21 +9188,79 @@ Rules:
     }
 
     /* ---------- Player rendering ---------- */
-    function badgeRenderPlayers(room) {
-      const g = room.game || {};
-      const players = badgeEl('badgePlayers'); if (!players) return;
+    function badgeBuildPlayerLines(room) {
+      const host = badgeEl('badgePlayerLines');
+      if (!host) return;
       const ids = badgeActiveIds(room);
+      const existing = host.querySelectorAll('.badge-line-row');
+      const existingIds = Array.from(existing).map(r => r.id.replace('badge-line-row-', ''));
+      // Rebuild only if player set changed
+      const sameSet = existingIds.length === ids.length && existingIds.every(id => ids.includes(id));
+      if (sameSet) return;
       let html = '';
       ids.forEach(id => {
-        const len = badgeTotalLen(room, id);
-        const ans = g.currentAnswers && g.currentAnswers[g.round] && g.currentAnswers[g.round][id];
-        const reveal = g.phase === 'reveal' || g.phase === 'between';
-        let chip = '';
-        if (g.phase === 'answering') { chip = ans ? '<span class="badge-player-chip text-pik-uncommon">\u2713</span>' : '<span class="badge-player-chip text-slate-500">...</span>'; }
-        else if (reveal && ans) { if (ans.skip) chip = '<span class="badge-player-chip text-slate-500">skip</span>'; else { const cfg = RARITY_CONFIG[ans.key] || RARITY_CONFIG.common; chip = '<span class="badge-player-chip" style="color:' + cfg.color + '">' + badgeEsc(ans.text) + '</span>'; } }
-        html += '<div class="badge-player-row"><span class="badge-player-name ' + (id === BADGES.myId ? 'me' : '') + '">' + badgeEsc(badgeName(room, id)) + '</span>' + chip + '<span class="badge-player-len">' + len + 'px</span></div>';
+        const isMe = id === BADGES.myId;
+        html += '<div class="badge-line-row" id="badge-line-row-' + id + '">';
+        html += '<div class="badge-line-info">';
+        html += '<span class="badge-line-name ' + (isMe ? 'me' : '') + '">' + badgeEsc(badgeName(room, id)) + (isMe ? ' (You)' : '') + '</span>';
+        html += '<span class="badge-line-len" id="badge-len-' + id + '">0px</span>';
+        html += '</div>';
+        html += '<div class="badge-line-track">';
+        html += '<svg id="badge-svg-' + id + '" class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 20" preserveAspectRatio="none"></svg>';
+        html += '<div id="badge-nodes-' + id + '" class="absolute inset-0 pointer-events-none"></div>';
+        html += '</div></div>';
       });
-      players.innerHTML = html;
+      host.innerHTML = html;
+    }
+
+    function badgeDrawAllLines(room) {
+      const ids = badgeActiveIds(room);
+      badgeBuildPlayerLines(room);
+      const maxT = Math.max(1, ...ids.map(id => badgeTotalLen(room, id)));
+      const W = Math.max(1000, maxT + 120);
+      ids.forEach(id => badgeDrawLine(room, id, W));
+      const teamTotal = ids.reduce((sum, id) => sum + badgeTotalLen(room, id), 0);
+      const tt = badgeEl('badgeTeamTotal');
+      if (tt) tt.textContent = teamTotal + ' px';
+    }
+
+    function badgeDrawLine(room, id, W) {
+      const svg = badgeEl('badge-svg-' + id);
+      const nodes = badgeEl('badge-nodes-' + id);
+      if (!svg || !nodes) return;
+      svg.setAttribute('viewBox', '0 0 ' + W + ' 20');
+      const pct = (x) => ((x / W) * 100).toFixed(3);
+      const g = room.game || {};
+      const rr = g.roundResults || {};
+      let html = '<line x1="0" y1="10" x2="' + W + '" y2="10" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>';
+      let x = 60;
+      let nodeHtml = '';
+      let hasSegments = false;
+      for (let r = 0; r < BADGE_QUESTION_COUNT; r++) {
+        let a = null;
+        if (rr[r] && rr[r].answers && rr[r].answers[id]) { a = rr[r].answers[id]; }
+        else if (r === g.round && g.phase === 'answering' && g.currentAnswers && g.currentAnswers[r] && g.currentAnswers[r][id]) { a = g.currentAnswers[r][id]; }
+        if (a && !a.skip) {
+          const len = a.len || 0;
+          const color = (RARITY_CONFIG[a.key] || RARITY_CONFIG.common).color;
+          html += '<line x1="' + x + '" y1="10" x2="' + (x + len) + '" y2="10" stroke="' + color + '" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+          nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:9999px;border:2px solid ' + color + ';background:' + color + ';"></span>';
+          x += len;
+          hasSegments = true;
+        }
+      }
+      if (hasSegments) {
+        nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:0;height:0;"><span class="target-node-halo" style="position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:9999px;border:1.5px solid #ffffff;"></span></span>';
+        nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:9999px;border:2px solid #ffffff;background:#121212;"></span>';
+      }
+      svg.innerHTML = html;
+      nodes.innerHTML = nodeHtml;
+      const lenEl = badgeEl('badge-len-' + id);
+      if (lenEl) lenEl.textContent = badgeTotalLen(room, id) + 'px';
+    }
+
+    function badgeRenderPlayers(room) {
+      badgeDrawAllLines(room);
     }
 
     /* ---------- Answer submission ---------- */
