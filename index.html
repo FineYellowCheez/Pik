@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -860,7 +861,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.0-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.1-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -8692,14 +8693,43 @@ Rules:
       };
     }
 
+    function tourCloudBackend(cloud) {
+      const { db, appId, fb } = cloud;
+      const base = ['artifacts', appId, 'public', 'data', 'tourRooms'];
+      const ref = (c) => fb.doc(db, ...base, c);
+      return {
+        kind: 'cloud',
+        async get(c) { const s = await fb.getDoc(ref(c)); return s.exists() ? s.data() : null; },
+        async set(c, d) { await fb.setDoc(ref(c), d); },
+        async patch(c, obj) {
+          const o = {};
+          for (const k in obj) o[k] = (obj[k] && obj[k].__tourDelete) ? fb.deleteField() : obj[k];
+          await fb.updateDoc(ref(c), o);
+        },
+        async remove(c) { await fb.deleteDoc(ref(c)); },
+        watch(c, cb) {
+          return fb.onSnapshot(ref(c), (s) => cb(s.exists() ? s.data() : null), (err) => console.warn('[Tournament] listener error:', err));
+        }
+      };
+    }
+
     async function tourGetBackend() {
       if (TOURNAMENT.backend) return TOURNAMENT.backend;
       if (!TOURNAMENT.backendPromise) {
         TOURNAMENT.backendPromise = (async () => {
+          // Try Firestore cloud first (same as PVP)
+          const t0 = Date.now();
+          while (Date.now() - t0 < 3500) {
+            if (window.__pikCloud) { TOURNAMENT.backend = tourCloudBackend(window.__pikCloud); return TOURNAMENT.backend; }
+            if (window.__pikCloudFailed) break;
+            await new Promise(r => setTimeout(r, 120));
+          }
+          // Then try MQTT
           if (typeof pvpConnectMqtt === 'function') {
             const client = await pvpConnectMqtt();
             if (client) { TOURNAMENT.backend = tourMqttBackend(client); return TOURNAMENT.backend; }
           }
+          // Fall back to local storage (same-browser only)
           TOURNAMENT.backend = tourLocalBackend();
           return TOURNAMENT.backend;
         })();
