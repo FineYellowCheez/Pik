@@ -369,9 +369,7 @@
       }
     }
 
-    #playStandardBtn { --btn-rot: -3deg; }
-    #playTimedBtn { --btn-rot: 2deg; }
-    #playDailyBtn { --btn-rot: -2deg; }
+    #playSoloBtn { --btn-rot: -3deg; }
     #pvpModeBtn { --btn-rot: 1deg; }
 
     .menu-btn-launching::after {
@@ -640,41 +638,98 @@
       #pvpCountdown { font-size: 3.5rem; }
     }
 
-    /* ===== Multiplayer menu: two options slide out of the Multiplayer button ===== */
-    #multiMenuRow { display: flex; gap: 0.5rem; justify-content: center; width: 100%; max-height: 0; margin-top: 0; overflow: hidden; transition: max-height 0.35s ease, margin-top 0.35s ease; }
-    #multiWrap.multi-open #multiMenuRow { max-height: 5rem; margin-top: 1.7rem; overflow: visible; }
-    .multi-sub {
-      position: relative; flex: 1; padding: 0.55rem 0.5rem; border-radius: 0.85rem; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 0.7rem; white-space: nowrap;
-      background: #1a1a1a; border: 1px solid rgba(212, 175, 55, 0.5); color: #d4af37; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-      opacity: 0; visibility: hidden; transition: transform 0.42s cubic-bezier(0.22, 1.25, 0.36, 1), opacity 0.3s ease, visibility 0.3s;
+    /* ===== Solo & Multiplayer sub-menus ===== */
+    /* Mobile (default): slide downward */
+    #soloMenuRow, #multiMenuRow {
+      display: flex; flex-direction: row; gap: 0.5rem; justify-content: center; width: 100%;
+      max-height: 0; margin-top: 0; overflow: hidden;
+      transition: max-height 0.35s ease, margin-top 0.35s ease;
     }
-    .multi-sub:hover { background: #26262b; }
+    #soloWrap.solo-open #soloMenuRow { max-height: 4rem; margin-top: 0.8rem; overflow: visible; }
+    #multiWrap.multi-open #multiMenuRow { max-height: 4rem; margin-top: 0.8rem; overflow: visible; }
+    .solo-sub, .multi-sub {
+      position: relative; padding: 0.55rem 0.5rem; border-radius: 0.85rem;
+      font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 0.7rem; white-space: nowrap;
+      background: #1a1a1a; border: 1px solid rgba(212, 175, 55, 0.5); color: #d4af37;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      opacity: 0; visibility: hidden; transform: translateY(-40%);
+      transition: transform 0.42s cubic-bezier(0.22, 1.25, 0.36, 1), opacity 0.3s ease, visibility 0.3s;
+    }
+    .solo-sub:hover, .multi-sub:hover { background: #26262b; }
+    #soloWrap.solo-open .solo-sub, #multiWrap.multi-open .multi-sub {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    #multiParBtn { border-color: rgba(45, 212, 191, 0.55); color: #2dd4bf; }
+    #soloSurvivalBtn { border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
 
-    /* Little tab that extends upward from each button once it has slid out */
-    .multi-tag {
-      position: absolute; left: 50%; bottom: calc(100% - 1px);
-      transform: translate(-50%, 70%) scaleY(0.3); transform-origin: bottom center; opacity: 0;
-      padding: 0.15rem 0.7rem; font-size: 0.55rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 800; line-height: 1.2;
-      border: 1px solid currentColor; border-bottom: none; border-radius: 0.6rem 0.6rem 0 0; background: #141416; color: inherit;
-      pointer-events: none; transition: transform 0.2s ease, opacity 0.15s ease;
-    }
-    #multiWrap.multi-open .multi-tag {
-      transform: translate(-50%, 0) scaleY(1); opacity: 1;
-      transition: transform 0.4s cubic-bezier(0.22, 1.35, 0.36, 1) 0.3s, opacity 0.25s ease 0.3s;
-    }
-    #multiPvpBtn { transform: translateX(-130%); }
-    #multiParBtn { transform: translateX(130%); border-color: rgba(45, 212, 191, 0.55); color: #2dd4bf; }
-    #multiWrap.multi-open .multi-sub { opacity: 1; visibility: visible; transform: none; }
+    /* Desktop (>=640px): lateral slide-out — Solo slides right, Multiplayer slides left */
     @media (min-width: 640px) {
-      #multiMenuRow { display: contents; }
-      .multi-sub { position: absolute; top: 50%; width: 6.5rem; flex: none; }
-      #multiPvpBtn { right: 100%; margin-right: 0.5rem; transform: translate(130%, -50%); }
-      #multiParBtn { left: 100%; margin-left: 0.5rem; transform: translate(-130%, -50%); }
-      #multiWrap.multi-open .multi-sub { transform: translate(0, -50%); }
+      /* Solo: sub-buttons positioned to the RIGHT of the button, slide in from the left */
+      #soloMenuRow {
+        position: absolute; left: 100%; margin-left: 0.5rem; top: 50%; transform: translateY(-50%);
+        max-height: none; margin-top: 0; overflow: visible;
+        width: auto; gap: 0.5rem;
+      }
+      #soloWrap.solo-open #soloMenuRow { max-height: none; margin-top: 0; }
+      .solo-sub { transform: translateX(-130%); }
+      #soloWrap.solo-open .solo-sub { transform: translateX(0); }
+      /* Solo button shifts left when its menu is open (direct transform — Tailwind
+         Play CDN doesn't use CSS variables for transforms, so --tw-translate-x is ignored) */
+      #playSoloBtn { transition-duration: 0.35s; }
+      #soloWrap.solo-open > #playSoloBtn { transform: translateX(-12px) rotate(-3deg) !important; }
+
+      /* Multiplayer: sub-buttons positioned to the LEFT of the button, slide in from the right */
+      #multiMenuRow {
+        position: absolute; right: 100%; margin-right: 0.5rem; top: 50%; transform: translateY(-50%);
+        max-height: none; margin-top: 0; overflow: visible;
+        width: auto; gap: 0.5rem;
+      }
+      #multiWrap.multi-open #multiMenuRow { max-height: none; margin-top: 0; }
+      .multi-sub { transform: translateX(130%); }
+      #multiWrap.multi-open .multi-sub { transform: translateX(0); }
+      /* Multiplayer button shifts right when its menu is open */
+      #pvpModeBtn { transition-duration: 0.35s; }
+      #multiWrap.multi-open > #pvpModeBtn { transform: translateX(12px) rotate(1deg) !important; }
+    }
+
+    /* ===== Survival mode: strike loss effect ===== */
+    .strike-loss-flash {
+      position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: 0;
+      background: radial-gradient(ellipse at center, rgba(239,68,68,0.55) 0%, rgba(239,68,68,0.18) 45%, transparent 75%);
+    }
+    .strike-loss-flash.active {
+      animation: strikeFlashAnim 0.7s ease-out forwards;
+    }
+    @keyframes strikeFlashAnim {
+      0% { opacity: 0; }
+      12% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .strike-loss-banner {
+      position: fixed; top: 50%; left: 50%; z-index: 61; pointer-events: none; opacity: 0;
+      transform: translate(-50%, -50%) scale(0.3);
+      font-family: 'Space Grotesk', sans-serif; font-weight: 900;
+      font-size: clamp(2rem, 8vw, 4.5rem); color: #ef4444;
+      text-shadow: 0 0 20px rgba(239,68,68,0.9), 0 0 40px rgba(239,68,68,0.5), 0 4px 12px rgba(0,0,0,0.8);
+      letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+    }
+    .strike-loss-banner.active {
+      animation: strikeBannerAnim 1.1s cubic-bezier(0.22, 1.35, 0.36, 1) forwards;
+    }
+    @keyframes strikeBannerAnim {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+      35% { transform: translate(-50%, -50%) scale(1); }
+      75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
     }
   </style>
 </head>
 <body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
+
+  <!-- Strike Loss Effect Overlays (Survival mode) -->
+  <div id="strikeLossFlash" class="strike-loss-flash"></div>
+  <div id="strikeLossBanner" class="strike-loss-banner"></div>
 
   <!-- ================= TOP NAVIGATION HEADER ================= -->
   <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between z-20 border-b border-pik-border/40 flex-shrink-0">
@@ -724,7 +779,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.4.9-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.5.0-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -732,11 +787,19 @@
 
     <!-- Triangular Button Arrangement -->
     <div id="menuButtonsGroup" class="flex flex-col items-center gap-4 sm:gap-5 my-auto max-w-md w-full px-4">
-      <!-- Top Center Button: Play Standard (-3 deg rotation) -->
-      <button id="playStandardBtn" onclick="startModeWithAnimation('standard', this)" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Play Standard
-      </button>
+      <!-- Solo: slides out Timed, Daily, and Survival -->
+      <div id="soloWrap" class="relative w-64 flex flex-col items-center">
+        <button id="playSoloBtn" onclick="toggleSoloMenu()" class="w-64 py-3.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl transform -rotate-3 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Solo
+        </button>
+        <div id="soloMenuRow">
+          <button id="soloStandardBtn" class="solo-sub" onclick="startModeWithAnimation('standard', this)">Standard</button>
+          <button id="soloTimedBtn" class="solo-sub" onclick="startModeWithAnimation('timed', this)">Timed</button>
+          <button id="soloDailyBtn" class="solo-sub" onclick="startModeWithAnimation('daily', this)">Daily</button>
+          <button id="soloSurvivalBtn" class="solo-sub" onclick="startModeWithAnimation('survival', this)">Survival</button>
+        </div>
+      </div>
 
       <!-- Multiplayer: slides out P-V-PIK and PIK Par -->
       <div id="multiWrap" class="relative w-64 flex flex-col items-center">
@@ -745,24 +808,9 @@
           Multiplayer
         </button>
         <div id="multiMenuRow">
-          <button id="multiPvpBtn" class="multi-sub" onclick="openPvp('pvp')">P-V-PIK<span class="multi-tag">Versus</span></button>
-          <button id="multiParBtn" class="multi-sub" onclick="openPvp('par')">PIK Par<span class="multi-tag">Co-op</span></button>
+          <button id="multiPvpBtn" class="multi-sub" onclick="openPvp('pvp')">P-V-PIK</button>
+          <button id="multiParBtn" class="multi-sub" onclick="openPvp('par')">PIK Par</button>
         </div>
-      </div>
-
-      <!-- Bottom Row Buttons (Play Timed & Play Daily) -->
-      <div class="flex items-center justify-center gap-4 sm:gap-6 w-full">
-        <!-- Bottom Left: Play Timed (+2.5 deg rotation) -->
-        <button id="playTimedBtn" onclick="startModeWithAnimation('timed', this)" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          Play Timed
-        </button>
-
-        <!-- Bottom Right: Play Daily (-2.5 deg rotation) -->
-        <button id="playDailyBtn" onclick="startModeWithAnimation('daily', this)" class="w-36 sm:w-44 py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-xs sm:text-sm rounded-2xl transition shadow-lg transform -rotate-2 hover:scale-105 active:scale-95 flex items-center justify-center gap-1.5">
-          <svg class="w-4 h-4 text-pik-epic" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Play Daily
-        </button>
       </div>
     </div>
 
@@ -1058,7 +1106,7 @@
     <!-- Header Controls & Score Bar -->
     <div id="resultsHeaderBar" class="w-full flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-pik-border/60 pb-2 flex-shrink-0">
       <div>
-        <h2 class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
+        <h2 id="resultsTitle" class="font-display font-extrabold text-base sm:text-xl text-slate-100 flex items-center gap-2">
           Game Completed
         </h2>
       </div>
@@ -1109,6 +1157,42 @@
         <!-- Projected Question Detail Panel (Slides IN from bottom when inspected) -->
         <div id="inspectedDetailContent" class="absolute inset-0 p-3 flex flex-col justify-between transition-all duration-500 ease-in-out transform translate-y-full opacity-0 z-20 pointer-events-none">
           <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Survival Results Panel (shown only for survival mode) -->
+    <div id="survivalResultsPanel" class="hidden relative flex gap-3 sm:gap-6 w-full flex-1 my-1.5 items-stretch overflow-hidden min-h-0">
+      <!-- Left: Hero stats column -->
+      <div class="w-44 sm:w-56 flex flex-col gap-2 z-20 flex-shrink-0 h-full overflow-hidden">
+        <!-- Questions Survived -->
+        <div class="bg-pik-bg/80 border border-red-500/30 rounded-xl p-3 flex-1 flex flex-col items-center justify-center text-center">
+          <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Survived</div>
+          <div id="survivalSurvivedCount" class="font-display font-black text-4xl sm:text-5xl text-slate-100 mt-1">0</div>
+          <div class="text-[9px] font-display text-slate-400 mt-0.5">questions</div>
+        </div>
+        <!-- Strikes -->
+        <div class="bg-pik-bg/80 border border-pik-border/80 rounded-xl p-2 flex flex-col items-center justify-center text-center">
+          <div class="text-[9px] uppercase font-display tracking-wider text-slate-400 mb-1">Strikes</div>
+          <div id="survivalStrikeDots" class="flex items-center gap-1.5"></div>
+        </div>
+        <!-- Best Answer -->
+        <div class="bg-pik-bg/80 border border-pik-border/80 rounded-xl p-2 flex flex-col items-center justify-center text-center min-h-0 overflow-hidden">
+          <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Best</div>
+          <div id="survivalBestAnswer" class="font-display font-extrabold text-xs sm:text-sm text-slate-100 truncate w-full mt-0.5">—</div>
+          <div id="survivalBestTier" class="text-[10px] font-display font-bold mt-0.5">—</div>
+        </div>
+      </div>
+      <!-- Right: Rarity breakdown + scrollable answers list -->
+      <div class="flex-1 z-20 bg-pik-card/50 border border-pik-border/80 backdrop-blur-sm rounded-xl relative overflow-hidden flex flex-col p-3 gap-2">
+        <div class="flex-shrink-0">
+          <div class="text-[9px] uppercase font-display tracking-wider text-slate-400 mb-1.5">Rarity Breakdown</div>
+          <div id="survivalRarityBar" class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex mb-1.5"></div>
+          <div id="survivalRarityPills" class="flex flex-wrap gap-1"></div>
+        </div>
+        <div class="flex-1 min-h-0 flex flex-col">
+          <div class="text-[9px] uppercase font-display tracking-wider text-slate-400 mb-1">All Answers</div>
+          <div id="survivalAnswersList" class="flex-1 overflow-y-auto scrollbar-none flex flex-col gap-1 pr-1"></div>
         </div>
       </div>
     </div>
@@ -1486,22 +1570,48 @@
           o.start(t0);
           o.stop(t0 + 0.28);
         });
+      } else if (type === 'strike') {
+        // Deep dramatic descending tone for survival strike loss
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.45);
+        gain.gain.setValueAtTime(0.13, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
       }
+    }
+
+    function showStrikeLostEffect() {
+      const flash = document.getElementById('strikeLossFlash');
+      const banner = document.getElementById('strikeLossBanner');
+      if (flash) {
+        flash.classList.remove('active');
+        void flash.offsetWidth;
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 700);
+      }
+      if (banner) {
+        banner.classList.remove('active');
+        void banner.offsetWidth;
+        banner.classList.add('active');
+        setTimeout(() => banner.classList.remove('active'), 1100);
+      }
+      playAudioTone('strike');
     }
 
     function resetMenuElementStates() {
       const heroBlock = document.getElementById('menuHeroBlock');
-      const standardBtn = document.getElementById('playStandardBtn');
-      const timedBtn = document.getElementById('playTimedBtn');
-      const dailyBtn = document.getElementById('playDailyBtn');
+      const soloBtn = document.getElementById('playSoloBtn');
 
       if (heroBlock) heroBlock.classList.remove('menu-hero-expand');
-      [standardBtn, timedBtn, dailyBtn, document.getElementById('pvpModeBtn')].forEach(btn => {
+      [soloBtn, document.getElementById('pvpModeBtn')].forEach(btn => {
         if (btn) {
           btn.disabled = false;
           btn.classList.remove('menu-btn-launching', 'menu-btn-wing-left', 'menu-btn-wing-right');
         }
       });
+      closeSoloMenu();
     }
 
     function animateMenuEntrance() {
@@ -1541,14 +1651,10 @@
         el.classList.add(cls);
       });
 
-      const standardBtn = document.getElementById('playStandardBtn');
-      const timedBtn = document.getElementById('playTimedBtn');
-      const dailyBtn = document.getElementById('playDailyBtn');
+      const soloBtn = document.getElementById('playSoloBtn');
 
       [
-        { el: standardBtn, cls: 'menu-btn-standard-in' },
-        { el: timedBtn, cls: 'menu-btn-timed-in' },
-        { el: dailyBtn, cls: 'menu-btn-daily-in' },
+        { el: soloBtn, cls: 'menu-btn-standard-in' },
         { el: document.getElementById('pvpModeBtn'), cls: 'menu-btn-pvp-in' }
       ].forEach(({ el, cls }) => {
         if (!el) return;
@@ -1566,21 +1672,19 @@
       playAudioTone('launch');
 
       const heroBlock = document.getElementById('menuHeroBlock');
-      const standardBtn = document.getElementById('playStandardBtn');
-      const timedBtn = document.getElementById('playTimedBtn');
-      const dailyBtn = document.getElementById('playDailyBtn');
-      const allBtns = [standardBtn, timedBtn, dailyBtn, document.getElementById('pvpModeBtn')].filter(Boolean);
+      const soloBtn = document.getElementById('playSoloBtn');
+      const pvpBtn = document.getElementById('pvpModeBtn');
 
-      // Clear entrance animations and glide unselected buttons out laterally by wing
-      allBtns.forEach(btn => {
+      // Close any open sub-menus before launching
+      closeSoloMenu();
+      pvpCloseMultiMenu();
+
+      // Launch the Solo button itself (the parent), drop the Multiplayer button away
+      [soloBtn, pvpBtn].filter(Boolean).forEach(btn => {
         btn.disabled = true;
-        btn.classList.remove('menu-btn-standard-in', 'menu-btn-timed-in', 'menu-btn-daily-in', 'menu-btn-pvp-in');
-        if (btn === clickedBtn) {
+        btn.classList.remove('menu-btn-standard-in', 'menu-btn-pvp-in');
+        if (btn === soloBtn) {
           btn.classList.add('menu-btn-launching');
-        } else if (btn === timedBtn) {
-          btn.classList.add('menu-btn-wing-left');
-        } else if (btn === dailyBtn) {
-          btn.classList.add('menu-btn-wing-right');
         } else {
           btn.classList.add('menu-btn-wing-left');
         }
@@ -1600,6 +1704,20 @@
           isLaunchingMode = false;
         }, 480);
       }, 250);
+    }
+
+    function toggleSoloMenu() {
+      const wrap = document.getElementById('soloWrap');
+      if (!wrap) return;
+      const open = wrap.classList.toggle('solo-open');
+      // Close the multiplayer menu if opening solo (and vice versa)
+      if (open) pvpCloseMultiMenu();
+      playAudioTone(open ? 'menu' : 'skip');
+    }
+
+    function closeSoloMenu() {
+      const wrap = document.getElementById('soloWrap');
+      if (wrap) wrap.classList.remove('solo-open');
     }
 
     function returnToMenu() {
@@ -1663,6 +1781,8 @@
           resultsSection.classList.add('hidden-results');
           resultsSection.classList.remove('show-results', 'results-exit-out', 'results-sweep-right');
         }
+        const survivalPanelRTM = document.getElementById('survivalResultsPanel');
+        if (survivalPanelRTM) survivalPanelRTM.classList.add('hidden');
         initSvgTrackLine();
       }, isMenuAlreadyOpen ? 0 : 420);
     }
@@ -1813,8 +1933,8 @@
 
           <div style="animation-delay: 180ms;" class="kpi-tile-in bg-pik-bg/70 border border-pik-border/60 p-2 rounded-lg">
             <div class="text-[9px] uppercase font-display tracking-wider text-slate-400">Questions Cleared</div>
-            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${clearedCount} / 8</div>
-            <div class="text-[9px] font-display text-slate-400">${8 - clearedCount} skipped</div>
+            <div class="font-display font-extrabold text-sm sm:text-base text-slate-100 mt-0.5">${isSurvivalMode ? userHistory.length : clearedCount + ' / 8'}</div>
+            <div class="text-[9px] font-display text-slate-400">${(isSurvivalMode ? userHistory.length : 8) - clearedCount} skipped</div>
           </div>
         </div>
 
@@ -1854,7 +1974,7 @@
         <div style="animation-delay: 220ms;" class="kpi-tile-in bg-pik-bg/60 border border-pik-border/60 p-2 rounded-lg flex flex-col gap-1.5">
           <div class="flex items-center justify-between">
             <span class="text-[9px] uppercase font-display tracking-wider text-slate-400">Rarity Tier Distribution</span>
-            <span class="text-[9px] font-display text-slate-400">8 total answers</span>
+            <span class="text-[9px] font-display text-slate-400">${isSurvivalMode ? userHistory.length : 8} total answers</span>
           </div>
 
           <!-- Stacked Bar -->
@@ -2016,7 +2136,7 @@
           <!-- Header with Question Number, Category Tag & Rarity Badge -->
           <div class="flex items-center justify-between border-b border-pik-border/60 pb-1.5">
             <div class="flex items-center gap-1.5">
-              <span class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question ${idx + 1} / 8</span>
+              <span class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Question ${idx + 1}${isSurvivalMode ? '' : ' / 8'}</span>
               <span class="px-1.5 py-0.5 rounded bg-pik-bg border border-pik-border text-[9px] font-display font-semibold text-slate-400 uppercase tracking-wider">${categoryLabel}</span>
             </div>
             <span class="px-2 py-0.5 rounded-md font-display text-[11px] font-bold" style="background-color: ${colorHex}25; color: ${colorHex}; border: 1px solid ${colorHex}50">
@@ -2119,6 +2239,22 @@
     if (sliderContainer) sliderContainer.classList.remove('hidden');
     if (slider) slider.value = 100;
 
+    // Survival mode: show the survival results panel instead of the standard
+    // 8-card projection layout, and update the header title.
+    const projectionContainer = document.getElementById('projectionContainer');
+    const survivalPanel = document.getElementById('survivalResultsPanel');
+    const resultsTitle = document.getElementById('resultsTitle');
+    if (isSurvivalMode) {
+      if (projectionContainer) projectionContainer.classList.add('hidden');
+      if (survivalPanel) survivalPanel.classList.remove('hidden');
+      if (resultsTitle) resultsTitle.textContent = 'Survival Over';
+      renderSurvivalResults();
+    } else {
+      if (projectionContainer) projectionContainer.classList.remove('hidden');
+      if (survivalPanel) survivalPanel.classList.add('hidden');
+      if (resultsTitle) resultsTitle.textContent = 'Game Completed';
+    }
+
     // Reset selected projection index so nothing projects initially
     selectedProjectedIndex = -1;
     const projSvg = document.getElementById('projectionSvg');
@@ -2185,6 +2321,17 @@
     // Render Left-Edge Question Cards
     const cardsList = document.getElementById('summaryCardsList');
     if (cardsList) {
+      // For survival mode (which can have many questions), make the list scroll
+      // and give each card a fixed height instead of flex-1 stretching.
+      const survivalOverflow = isSurvivalMode && userHistory.length > 8;
+      if (survivalOverflow) {
+        cardsList.classList.add('overflow-y-auto', 'scrollbar-none');
+        cardsList.classList.remove('overflow-hidden');
+      } else {
+        cardsList.classList.add('overflow-hidden');
+        cardsList.classList.remove('overflow-y-auto', 'scrollbar-none');
+      }
+      const cardFlexClass = survivalOverflow ? 'flex-none' : 'flex-1';
       cardsList.innerHTML = userHistory.map((item, idx) => {
         const isSkip = item.rarityKey === 'skipped';
         const colorHex = isSkip ? '#475569' : item.color;
@@ -2193,7 +2340,7 @@
             id="proj-left-card-${idx}"
             onclick="selectQuestionForProjection(${idx})"
             style="animation: staggerCardIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 45}ms both;"
-            class="bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 flex-1 flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden"
+            class="bg-pik-bg/80 border border-pik-border/80 hover:border-slate-500 rounded-lg p-1.5 ${cardFlexClass} flex flex-col justify-between text-left cursor-pointer transition-all opacity-80 hover:opacity-100 z-20 overflow-hidden"
           >
             <div class="flex items-center justify-between gap-1">
               <span class="font-display font-bold text-[10px] uppercase tracking-wider text-slate-400">Q${idx + 1}</span>
@@ -2211,33 +2358,141 @@
     }
 
     // Render Middle Session Performance Overview Dashboard
-    renderOverviewDashboard();
+    if (!isSurvivalMode) {
+      renderOverviewDashboard();
+    }
 
     requestAnimationFrame(stepCountUp);
   }
 
+  function renderSurvivalResults() {
+    const panel = document.getElementById('survivalResultsPanel');
+    if (!panel) return;
+
+    // Tally rarity counts + find best answer
+    const tierCounts = { gold: 0, epic: 0, rare: 0, sarcastic: 0, uncommon: 0, common: 0, skipped: 0 };
+    let bestPik = null;
+    let clearedCount = 0;
+    userHistory.forEach(item => {
+      if (item.rarityKey && tierCounts[item.rarityKey] !== undefined) tierCounts[item.rarityKey]++;
+      if (item.rarityKey !== 'skipped') {
+        clearedCount++;
+        if (!bestPik || item.length > bestPik.length) bestPik = item;
+      }
+    });
+
+    // Questions survived
+    const survivedEl = document.getElementById('survivalSurvivedCount');
+    if (survivedEl) survivedEl.textContent = userHistory.length;
+
+    // Strike dots — all 3 are lost at game over
+    const strikeDotsEl = document.getElementById('survivalStrikeDots');
+    if (strikeDotsEl) {
+      let dotsHtml = '';
+      for (let i = 0; i < 3; i++) {
+        dotsHtml += `<span class="w-3 h-3 rounded-full border-2 border-red-500/30 bg-transparent"></span>`;
+      }
+      strikeDotsEl.innerHTML = dotsHtml;
+    }
+
+    // Best answer
+    const bestAnsEl = document.getElementById('survivalBestAnswer');
+    const bestTierEl = document.getElementById('survivalBestTier');
+    if (bestAnsEl) bestAnsEl.textContent = bestPik ? bestPik.userAnswer : 'None';
+    if (bestTierEl) {
+      if (bestPik) {
+        bestTierEl.textContent = bestPik.rarityName;
+        bestTierEl.style.color = bestPik.color;
+      } else {
+        bestTierEl.textContent = 'No answers';
+        bestTierEl.style.color = '#64748b';
+      }
+    }
+
+    // Rarity breakdown bar + pills
+    const tierMeta = [
+      { key: 'gold', label: 'The Pik', color: '#d4af37' },
+      { key: 'epic', label: 'Epic', color: '#8e24aa' },
+      { key: 'rare', label: 'Rare', color: '#1976d2' },
+      { key: 'sarcastic', label: 'Sarcastic', color: '#f97316' },
+      { key: 'uncommon', label: 'Uncommon', color: '#388e3c' },
+      { key: 'common', label: 'Common', color: '#7e8c8d' },
+      { key: 'skipped', label: 'Skipped', color: '#475569' }
+    ];
+    const totalAns = Math.max(1, userHistory.length);
+    const rarityBar = document.getElementById('survivalRarityBar');
+    if (rarityBar) {
+      rarityBar.innerHTML = tierMeta
+        .filter(t => tierCounts[t.key] > 0)
+        .map(t => `<div style="width: ${(tierCounts[t.key] / totalAns) * 100}%; background-color: ${t.color};" class="h-full transition-all duration-700 ease-out" title="${t.label}: ${tierCounts[t.key]}"></div>`)
+        .join('');
+    }
+    const rarityPills = document.getElementById('survivalRarityPills');
+    if (rarityPills) {
+      rarityPills.innerHTML = tierMeta
+        .filter(t => tierCounts[t.key] > 0)
+        .map(t => `<span class="px-1.5 py-0.5 rounded-md text-[10px] font-display font-bold flex items-center gap-1 bg-pik-card border border-pik-border/80" style="color: ${t.color};"><span class="w-2 h-2 rounded-full" style="background-color: ${t.color};"></span>${t.label}: ${tierCounts[t.key]}</span>`)
+        .join('');
+    }
+
+    // Scrollable list of all answers (marks which ones cost a strike)
+    const answersList = document.getElementById('survivalAnswersList');
+    if (answersList) {
+      answersList.innerHTML = userHistory.map((item, idx) => {
+        const isSkip = item.rarityKey === 'skipped';
+        const isCommon = item.rarityKey === 'common';
+        const colorHex = isSkip ? '#475569' : item.color;
+        const strikeIcon = (isCommon || isSkip)
+          ? '<span class="text-red-400 font-display font-bold text-[8px] flex-shrink-0 px-1 py-0.5 rounded bg-red-500/15 border border-red-500/30">-1 STRIKE</span>'
+          : '';
+        return `
+          <div class="flex items-center justify-between gap-2 bg-pik-bg/60 border border-pik-border/60 rounded-lg px-2 py-1.5 text-left transition-all hover:bg-pik-bg" style="animation: staggerCardIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) ${Math.min(idx * 30, 600)}ms both;">
+            <div class="flex items-center gap-1.5 min-w-0 flex-1">
+              <span class="font-display font-bold text-[9px] text-slate-500 flex-shrink-0">Q${idx + 1}</span>
+              <span class="font-display font-bold text-[11px] text-slate-100 truncate">${item.userAnswer}</span>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              ${strikeIcon}
+              <span class="px-1.5 py-0.5 rounded font-display text-[8px] font-bold" style="background-color: ${colorHex}25; color: ${colorHex}; border: 1px solid ${colorHex}40">${item.rarityName}</span>
+              <span class="font-display font-bold text-[9px]" style="color: ${isSkip ? '#64748b' : '#d4af37'}">+${item.length}px</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
     function buildJudgeSystemPrompt() {
-      return `You are a fair, knowledgeable, GENEROUS judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
-Your two jobs: (1) decide whether the player's answer fits the prompt, and (2) if it does, assign the rarity tier that reflects how many average players would have thought of it.
+      return `You are a fair, knowledgeable, STRICT judge for "PIK", a trivia and word-association game where rarer valid answers stretch farther.
+Your two jobs: (1) decide whether the player's answer genuinely fits the prompt, and (2) if it does, assign the rarity tier that reflects how many average players would have thought of it.
 
-VALIDITY — judge like a friendly game host playing a casual game with friends, NOT like a strict taxonomist or fact-checker. Accept the answer if a reasonable person would accept it in casual play, even when it is technically a different classification. Never reject over pedantry, technicalities, or scientific/official categorization.
-Examples that MUST be accepted: "Calico" or "Tabby" for "Name a cat breed" (people commonly call these cat types, even though they are coat patterns); "Husky", "Pitbull" or "Lab" for a dog breed; "Tomato" for a vegetable; "Peanut" for a nut; "Koala bear" for a bear; "Spiderman" for a superhero; a brand name used generically ("Kleenex", "Jacuzzi"); a nickname, slang, or colloquial or regional name; an informal grouping or popular "type" (coat colors, patterns, styles, flavors, sizes); a subtype, variety, or specific example; an abbreviation, plural, different capitalization, missing spaces/hyphens/accents, transliteration, or an obvious typo; fictional or pop-culture answers whenever the prompt could plausibly include them; and obscure but plausible real answers from any country or language community (if you are unsure an obscure answer exists but it is a believable fit, accept it as a high tier).
-Mark the answer invalid ONLY if one of these is clearly true: (a) it is gibberish or not a real or recognizable thing; (b) it clearly belongs to a completely different kind of thing than the prompt asks for (e.g., "Pizza" for a cat breed, "Paris" for a fruit); (c) it is just the prompt's own generic category word (e.g., "cheese" for "Name a variety of cheese"); or (d) it breaks an explicit letter, sound, or spelling rule of the prompt. For letter/sound/spelling rules (silent letters, palindromes, word endings, vowels, loanword origins, etc.), check the actual spelling and pronunciation carefully and accept every word that genuinely satisfies the rule.
-When in doubt, ACCEPT. If you accepted a loose fit, simply say so in "reason" (for example, "a popular cat coat pattern that people treat as a type") and still give it a normal rarity tier for how familiar it is.
+VALIDITY — judge like a careful fact-checker and domain expert, NOT like a friendly game host. The answer must actually and accurately be a member of the category, type, or set the prompt asks for. Apply the real, correct classification: scientific, geographic, historical, culinary, grammatical, etc. Do NOT bend the rules to let wrong answers through.
+The ONLY spelling/format leeway you should grant: an abbreviation, plural, different capitalization, missing spaces/hyphens/accents, transliteration, or an obvious typo of a genuinely correct answer (e.g., "T-Rex" -> "Tyrannosaurus Rex", "NYC" -> "New York City"). These are surface variants of an answer that is otherwise correct.
+Examples that MUST be REJECTED as invalid:
+- A thing that belongs to a completely different category than the prompt asks for (e.g., "Pizza" for "Name a cat breed", "Paris" for "Name a fruit", "Tomato" for "Name a vegetable" because tomato is botanically a fruit/berry, "Peanut" for "Name a nut" because peanut is a legume, "Koala bear" for "Name a bear" because koalas are marsupials not bears, "Strawberry" for "Name a berry" because it is an aggregate accessory fruit).
+- A coat pattern, color, or informal "type" that is not an actual breed/subtype of what the prompt asks for (e.g., "Calico" or "Tabby" for "Name a cat breed" — these are coat patterns, not breeds; reject).
+- A brand name used generically when the prompt asks for the actual product category or generic term (e.g., answering "Kleenex" for "Name a type of paper product" is acceptable ONLY if Kleenex genuinely is one; answering "Kleenex" for "Name a tissue brand" is correct; but do not stretch a brand to fit a category it does not actually belong to).
+- A colloquial misnomer, slang, or regional nickname that is factually inaccurate (e.g., "jellyfish" for "Name a fish" — jellyfish are cnidarians, not fish; "starfish" for "Name a fish" — same reason; reject these).
+- A subtype that does not actually exist as a recognized member of the requested category, or an answer invented to sound plausible.
+- An answer that is just the prompt's own generic category word (e.g., "cheese" for "Name a variety of cheese", "dog" for "Name a dog breed").
+- An answer that breaks an explicit letter, sound, or spelling rule of the prompt. For letter/sound/spelling rules (silent letters, palindromes, word endings, vowels, loanword origins, etc.), check the actual spelling and pronunciation carefully and accept ONLY words that genuinely satisfy the rule.
+- A fictional or pop-culture answer when the prompt asks for a real-world thing (and vice versa): only accept fictional answers when the prompt clearly allows them (e.g., "Name a superhero", "Name a Pokemon", "Name a fictional detective").
+- An obscure answer you cannot verify actually exists or actually belongs to the requested category. If you are not confident it is real AND correctly categorized, reject it. Do not give the benefit of the doubt to plausible-sounding answers.
+When in doubt about whether an answer truly belongs to the requested category, REJECT it. A wrong answer that slips through is worse than a correct answer that gets rejected, because the player can simply try another answer.
 
-RARITY — judge relative to this specific prompt, by how many average players would name it. Do NOT default to "common" and do NOT be stingy; when torn between two tiers, choose the higher one.
+RARITY — judge relative to this specific prompt, by how many average players would name it. Do NOT default to "common"; assign the tier that honestly reflects how familiar the answer is.
 - "common": ONLY the handful (roughly the top 3-5) of most obvious, top-of-mind answers to this prompt (e.g., Cheddar, Apple, Banana, Hammer, Guitar, Piano, France, Japan, Lion, Batman, Monopoly).
 - "uncommon": Well-known answers that a typical adult would recognize but that are not the first things people say (e.g., Gouda, Brie, Mango, Wrench, Oboe, Banjo, Peru, Norway, Cheetah, Falcon, Scrabble).
-- "sarcastic": ("Too Clever" tier) Reserved ONLY for deliberately witty, cheeky, or technically-true loophole jokes that exploit the literal wording of the prompt in an unexpected way (e.g., answering "Ice" as a mineral, "Cereal" as a soup, or "Pluto" as a dwarf planet). Never use it for a sincere answer that merely fits loosely (like "Calico" for a cat breed) — grade those by how familiar they are.
+- "sarcastic": ("Too Clever" tier) Reserved ONLY for deliberately witty, cheeky, or technically-true loophole jokes that exploit the literal wording of the prompt in an unexpected way AND are technically, factually accurate under that literal reading (e.g., answering "Ice" as a mineral because ice IS a mineral, "Pluto" as a dwarf planet because it IS one). Never use it for a sincere answer, and never use it for an answer whose "technical truth" is itself wrong.
 - "rare": Specific answers that need some real familiarity — a hobbyist or enthusiast would know them, an average person would not think of them quickly (e.g., Manchego, Halloumi, Euphonium, Suriname, Pangolin, Capoeira, Brutalism, Carcassonne).
 - "epic": Specialist or off-the-beaten-path answers that most casual players would not come up with (e.g., Epoisses, Strozzapreti, Okapi, Theremin, Spokeshave, Vexillology, Magnetar, Agricola).
 - "gold": ("The Pik") Genuine deep cuts that almost nobody would think of without expert knowledge (e.g., Bitto, Pule cheese, Kakapo, Aye-Aye, Tuatara, Chibi-Robo, Ostracon, Trofie). Give "gold" to answers that are truly this obscure — but never to answers that are somewhat obvious or mainstream.
 
 Rules:
-1. Recognize ALL valid answers and return the properly spelled "normalizedAnswer".
-2. Keep "normalizedAnswer" faithful to what the player actually typed: you may fix typos/capitalization or expand direct shorthand/abbreviations into the full canonical name of the EXACT SAME thing (e.g., "Curve" -> "Curveball", "Cheddar" -> "Cheddar Cheese", "T-Rex" -> "Tyrannosaurus Rex", "NYC" -> "New York City"), NEVER substitute a different subtype, hybrid, or more specific variant (e.g., NEVER turn "Curve" into "Knuckleball Curve" or "Knuckle Curve", "Fastball" into "Split-Finger Fastball", or "Apple" into "Honeycrisp Apple"). Grade the rarity of the player's actual answer.
+1. Only mark "valid": true if the answer is a real, recognized member of the requested category. Otherwise mark "valid": false and set "rarity": null.
+2. Keep "normalizedAnswer" faithful to what the player actually typed: you may fix typos/capitalization or expand direct shorthand/abbreviations into the full canonical name of the EXACT SAME thing (e.g., "Curve" -> "Curveball", "Cheddar" -> "Cheddar Cheese", "T-Rex" -> "Tyrannosaurus Rex", "NYC" -> "New York City"), NEVER substitute a different subtype, hybrid, or more specific variant (e.g., NEVER turn "Curve" into "Knuckleball Curve" or "Knuckle Curve", "Fastball" into "Split-Finger Fastball", or "Apple" into "Honeycrisp Apple"). Grade the rarity of the player's actual answer. For invalid answers, return the player's text as-is.
 3. Grade the underlying concept consistently — never boost rarity just because a player added an obvious adjective (e.g., "wooden spoon" or "green apple" is still as common as "spoon" or "apple").
-4. Provide 2 distinct, real, rarer valid examples ("rarerExamples") for the prompt (e.g., an Epic-tier answer and a The Pik-tier answer) that differ from the player's answer.
+4. Provide 2 distinct, real, rarer valid examples ("rarerExamples") for the prompt (e.g., an Epic-tier answer and a The Pik-tier answer) that differ from the player's answer. For invalid answers, still provide 2 valid examples that WOULD have been accepted for this prompt.
 5. Respond ONLY with a valid JSON object matching this exact schema:
 {
   "valid": boolean,
@@ -2251,7 +2506,7 @@ Rules:
     function buildJudgeUserMessage(prompt, answer, recheck) {
       let msg = `Prompt: "${prompt}"\nPlayer Answer: "${answer}"`;
       if (recheck) {
-        msg += `\n\nSECOND OPINION: an earlier pass rejected this answer, and the player believes it is a fair answer. Ask yourself: \"Would a reasonable friend playing this game casually accept it?\" Ignore technicalities and strict classifications (for example, coat patterns people call cat types, informal groupings, nicknames, brand names, regional names, common misnomers). Consider alternate meanings, spellings, and broader readings of the prompt. Reject it only if it is gibberish, clearly a completely different kind of thing, or breaks an explicit rule of the prompt.`;
+        msg += `\n\nSECOND OPINION: an earlier pass rejected this answer, and the player believes it is a fair answer. Re-verify the facts carefully and apply the correct scientific, geographic, historical, or categorical classification. Ask yourself: "Is this answer actually and accurately a member of the category the prompt asks for?" Consider alternate meanings, spellings, and surface variants of the typed text, but do NOT relax the correctness standard. A colloquial misnomer (e.g., "koala bear" for a bear), a coat pattern misread as a breed, a botanical fruit misread as a vegetable, or a similar categorical mismatch is still invalid. Accept it only if it genuinely, factually belongs to the requested category after careful re-checking.`;
       }
       return msg;
     }
@@ -3521,23 +3776,12 @@ Rules:
     // Last resort when no judge can be reached at all: accept sensible-looking answers with an estimated rarity
     // (the same answer always gets the same estimate). It is never saved, so a real judge can rule on it later.
     function pikOfflineEstimate(prompt, userAnswer) {
-      if (/rhym|letter|start|begin|\bend|syllable|silent|vowel|spell|palindrome|contain|word that|homophone|sounds/i.test(prompt)) return null;
+      // When no AI judge is reachable and Wikipedia can't verify the answer,
+      // REJECT it instead of accepting it with a made-up rarity. The player is
+      // told to retry, which is honest. We never want a wrong answer to slip
+      // through just because the judging services are down.
       const raw = (userAnswer || '').trim();
-      const letters = raw.replace(/[^A-Za-z\u00C0-\u024F]/g, '');
-      let bad = letters.length < 2 || raw.length > 40 || /(.)\1{3,}/i.test(raw);
-      if (!bad && letters.length > 4) {
-        const ratio = (letters.match(/[aeiouy]/gi) || []).length / letters.length;
-        bad = ratio < 0.15 || ratio > 0.75;
-      }
-      if (bad) return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'That does not look like a real answer.', rarerExamples: [] };
-      const words = raw.split(/\s+/).length;
-      const score = letters.length + 3 * (words - 1);
-      const h = computeDeterministicSeed(normalize(raw) + '|' + normalize(prompt)) % 100;
-      const table = score <= 5 ? [[40, 'common'], [80, 'uncommon'], [95, 'rare'], [100, 'epic']]
-        : score <= 8 ? [[20, 'common'], [60, 'uncommon'], [88, 'rare'], [98, 'epic'], [100, 'gold']]
-        : [[8, 'common'], [35, 'uncommon'], [73, 'rare'], [95, 'epic'], [100, 'gold']];
-      const rarity = (table.find(([cut]) => h < cut) || table[table.length - 1])[1];
-      return { valid: true, rarity, normalizedAnswer: toDisplayTitleCase(raw), reason: 'The judging services could not be reached, so this rarity is an estimate.', rarerExamples: [], estimated: true };
+      return { valid: false, rarity: null, normalizedAnswer: raw, reason: 'Could not verify this answer right now \u2014 please try again.', rarerExamples: [] };
     }
 
     async function evaluateAnswerWithGroq(prompt, userAnswer) {
@@ -3690,11 +3934,8 @@ Rules:
       };
 
       let aiVerdict = await runAiJudge(false);
-      if (aiVerdict && !aiVerdict.valid) {
-        // Second opinion before rejecting: the judge re-checks with a generous reading of the prompt
-        const second = await runAiJudge(true);
-        if (second && second.valid) aiVerdict = second;
-      }
+      // No recheck / second opinion: if the AI judge says the answer is invalid,
+      // it stays invalid. The player can simply try a different answer.
       if (aiVerdict) {
         return await handleSuccessfulVerdict(aiVerdict);
       }
@@ -3718,6 +3959,8 @@ Rules:
     ---------------------------------------------------- */
     let isTimedMode = false;
     let isDailyMode = false;
+    let isSurvivalMode = false;
+    let strikesRemaining = 3;
     let timerInterval = null;
     let timerValue = 30;
     let questionStartTime = Date.now();
@@ -4828,7 +5071,7 @@ Rules:
       const examplesWrap = document.getElementById('detailExamplesWrap');
       const examplesEl = document.getElementById('detailRarerExamples');
 
-      qNum.textContent = `Question ${idx + 1} of 8`;
+      qNum.textContent = isSurvivalMode ? `Question ${idx + 1}` : `Question ${idx + 1} of 8`;
       promptEl.textContent = item.prompt;
       userAnsEl.textContent = item.userAnswer;
 
@@ -4950,6 +5193,8 @@ Rules:
       isResettingGame = false;
       isTimedMode = (mode === 'timed');
       isDailyMode = (mode === 'daily');
+      isSurvivalMode = (mode === 'survival');
+      strikesRemaining = 3;
 
       totalScore = 0;
       totalDistance = 0;
@@ -4976,6 +5221,11 @@ Rules:
       if (menuScreen) menuScreen.classList.add('menu-stage-hidden');
       if (resultsHeaderBar) resultsHeaderBar.classList.remove('results-header-lift');
       if (detailPanel) detailPanel.classList.remove('results-panel-fold');
+      const survivalPanelEl = document.getElementById('survivalResultsPanel');
+      if (survivalPanelEl) {
+        survivalPanelEl.classList.remove('results-panel-fold');
+        survivalPanelEl.classList.add('hidden');
+      }
       if (resultsSection) {
         resultsSection.classList.add('hidden-results');
         resultsSection.classList.remove('show-results', 'results-exit-out', 'results-sweep-right');
@@ -5214,7 +5464,7 @@ Rules:
       isResettingGame = true;
       const seqId = ++resetSequenceId;
 
-      const mode = isDailyMode ? 'daily' : (isTimedMode ? 'timed' : 'standard');
+      const mode = isDailyMode ? 'daily' : (isTimedMode ? 'timed' : (isSurvivalMode ? 'survival' : 'standard'));
       playAudioTone('rewind');
 
       // 1. Rewind-spin the Play Again icon counter-clockwise & disable temporarily
@@ -5251,6 +5501,10 @@ Rules:
       // 4. Fold the right-hand overview/detail panel downward toward the track line
       const detailPanel = document.getElementById('projectedDetailPanel');
       if (detailPanel) detailPanel.classList.add('results-panel-fold');
+      const survivalPanelPA = document.getElementById('survivalResultsPanel');
+      if (survivalPanelPA && !survivalPanelPA.classList.contains('hidden')) {
+        survivalPanelPA.classList.add('results-panel-fold');
+      }
 
       // 5. Zip the vacuum spark backward along the SVG track to unspool segments, badges & nodes
       animateSvgTrackRewind(520);
@@ -5507,7 +5761,19 @@ Rules:
       if (timerInterval) clearInterval(timerInterval);
       setEvaluatingState(false);
 
-      if (!activeQuestions || !activeQuestions[index]) {
+      if (isSurvivalMode) {
+        // Survival: infinite question supply. Grow activeQuestions as needed.
+        if (!QUESTION_BANK || QUESTION_BANK.length === 0) buildMassiveQuestionBank();
+        if (!activeQuestions || activeQuestions.length === 0) {
+          activeQuestions = selectCategoryBalancedQuestions(false);
+        }
+        while (activeQuestions.length <= index) {
+          if (!unseenQuestionPool || unseenQuestionPool.length === 0) {
+            unseenQuestionPool = shuffleArray(QUESTION_BANK);
+          }
+          activeQuestions.push(unseenQuestionPool.shift());
+        }
+      } else if (!activeQuestions || !activeQuestions[index]) {
         if (!QUESTION_BANK || QUESTION_BANK.length === 0) {
           buildMassiveQuestionBank();
         }
@@ -5521,7 +5787,13 @@ Rules:
       hideFeedback();
 
       const qNumText = document.getElementById('questionNumText');
-      if (qNumText) qNumText.textContent = `Question ${index + 1} / 8`;
+      if (qNumText) {
+        if (isSurvivalMode) {
+          qNumText.textContent = `Question ${index + 1}`;
+        } else {
+          qNumText.textContent = `Question ${index + 1} / 8`;
+        }
+      }
 
       const dailyBadge = document.getElementById('dailyBadge');
       if (dailyBadge) {
@@ -5537,18 +5809,31 @@ Rules:
 
       const stepPills = document.getElementById('stepPills');
       if (stepPills) {
-        let pillsHtml = '';
-        for (let i = 0; i < 8; i++) {
-          if (i < index && userHistory[i]) {
-            const c = userHistory[i].rarityKey === 'skipped' ? '#475569' : userHistory[i].color;
-            pillsHtml += `<span class="w-2.5 h-1.5 rounded-full transition-all" style="background-color: ${c};"></span>`;
-          } else if (i === index) {
-            pillsHtml += `<span class="w-4 h-1.5 rounded-full bg-pik-gold transition-all"></span>`;
-          } else {
-            pillsHtml += `<span class="w-2 h-1.5 rounded-full bg-pik-border transition-all"></span>`;
+        if (isSurvivalMode) {
+          // Survival: show 3 strike dots (solid red = remaining, hollow = lost)
+          let pillsHtml = '';
+          for (let i = 0; i < 3; i++) {
+            if (i < strikesRemaining) {
+              pillsHtml += `<span class="w-3 h-3 rounded-full bg-red-500 transition-all" style="box-shadow: 0 0 6px rgba(239,68,68,0.6);" title="Strike remaining"></span>`;
+            } else {
+              pillsHtml += `<span class="w-3 h-3 rounded-full border-2 border-red-500/30 bg-transparent transition-all" title="Strike lost"></span>`;
+            }
           }
+          stepPills.innerHTML = pillsHtml;
+        } else {
+          let pillsHtml = '';
+          for (let i = 0; i < 8; i++) {
+            if (i < index && userHistory[i]) {
+              const c = userHistory[i].rarityKey === 'skipped' ? '#475569' : userHistory[i].color;
+              pillsHtml += `<span class="w-2.5 h-1.5 rounded-full transition-all" style="background-color: ${c};"></span>`;
+            } else if (i === index) {
+              pillsHtml += `<span class="w-4 h-1.5 rounded-full bg-pik-gold transition-all"></span>`;
+            } else {
+              pillsHtml += `<span class="w-2 h-1.5 rounded-full bg-pik-border transition-all"></span>`;
+            }
+          }
+          stepPills.innerHTML = pillsHtml;
         }
-        stepPills.innerHTML = pillsHtml;
       }
 
       const promptEl = document.getElementById('questionPrompt');
@@ -5679,9 +5964,20 @@ Rules:
         timeTaken: elapsedSec
       });
 
+      if (isSurvivalMode) {
+        strikesRemaining--;
+        showStrikeLostEffect();
+      }
+
       animateCardOut(fromTimeout, () => {
         currentQIndex++;
-        if (currentQIndex < 8) {
+        if (isSurvivalMode) {
+          if (strikesRemaining <= 0) {
+            finishGame();
+          } else {
+            renderQuestion(currentQIndex);
+          }
+        } else if (currentQIndex < 8) {
           renderQuestion(currentQIndex);
         } else {
           finishGame();
@@ -5692,6 +5988,13 @@ Rules:
     function processTurn(ansText, result) {
       totalScore += result.points;
       totalDistance += result.length;
+
+      // Survival: lose a strike IMMEDIATELY when the answer is "common",
+      // and fire the strike-loss effect so it's obvious to the player.
+      if (isSurvivalMode && result.key === 'common') {
+        strikesRemaining--;
+        showStrikeLostEffect();
+      }
 
       const elapsedSec = ((Date.now() - questionStartTime) / 1000).toFixed(1);
 
@@ -5910,7 +6213,13 @@ Rules:
       setTimeout(() => {
         animateCardOut(false, () => {
           currentQIndex++;
-          if (currentQIndex < 8) {
+          if (isSurvivalMode) {
+            if (strikesRemaining <= 0) {
+              finishGame();
+            } else {
+              renderQuestion(currentQIndex);
+            }
+          } else if (currentQIndex < 8) {
             renderQuestion(currentQIndex);
           } else {
             finishGame();
@@ -6264,6 +6573,7 @@ Rules:
       PVP.mode = mode === 'par' ? 'par' : 'pvp';
       pvpApplyModeText();
       pvpCloseMultiMenu();
+      closeSoloMenu();
       playAudioTone('launch');
       const screen = pvpEl('pvpScreen');
       if (!screen) return;
@@ -7123,6 +7433,7 @@ Rules:
       const wrap = pvpEl('multiWrap');
       if (!wrap) return;
       const open = wrap.classList.toggle('multi-open');
+      if (open) closeSoloMenu();
       playAudioTone(open ? 'menu' : 'skip');
     }
 
