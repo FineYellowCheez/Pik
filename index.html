@@ -9,7 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/><circle cx='24' cy='24' r='4' fill='%23f97316'/></svg>">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1427,7 +1427,7 @@
     <div id="pvpViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
       <div class="text-center">
         <h2 id="pvpMatchTitle" class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
-        <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;5 players &bull; Don&rsquo;t give the most common answer</p>
+        <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;8 players &bull; Don&rsquo;t give the most common answer</p>
         <p id="pvpMatchTag2" class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
       </div>
 
@@ -6662,7 +6662,7 @@ Rules:
        Transport: Firestore (when the cloud is available) or
        same-browser tabs via localStorage as a fallback.
     ==================================================== */
-    const PVP_MAX_PLAYERS = 5;
+    const PVP_MAX_PLAYERS = 8;
     const PVP_ANSWER_SECONDS = 35;
     const PVP_LOSE_POINTS = 5;
     const PVP_COUNTDOWN_MS = 3000;
@@ -7813,7 +7813,7 @@ Rules:
       const set = (id, txt) => { const el = pvpEl(id); if (el) el.innerHTML = txt; };
       set('pvpBrandName', pvpModeName(PVP.mode));
       set('pvpMatchTitle', pvpModeName(PVP.mode));
-      set('pvpMatchTag1', par ? '2&ndash;5 players &bull; Work together to reach PAR' : '2&ndash;5 players &bull; Don&rsquo;t give the most common answer');
+      set('pvpMatchTag1', par ? '2&ndash;8 players &bull; Work together to reach PAR' : '2&ndash;8 players &bull; Don&rsquo;t give the most common answer');
       set('pvpMatchTag2', par
         ? 'Everyone answers each round and your rarity sections join into one shared line. Rarer answers get the team there faster.'
         : 'Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.');
