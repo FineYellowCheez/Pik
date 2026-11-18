@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/><circle cx='24' cy='24' r='4' fill='%23f97316'/></svg>">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
   <!-- Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -838,94 +837,90 @@
       75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
     }
-    /* ===== Badges mode ===== */
-    #badgesScreen.hidden { display: none; }
-    #badgesScreen { position: absolute; inset: 0; z-index: 47; background: #121212; display: flex; flex-direction: column; overflow: hidden; }
-    #badgesScreen.badge-screen-in { animation: pvpScreenIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
-    .badge-view { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 1rem; overflow-y: auto; }
-    .badge-view.hidden-v { display: none; }
+  </style>
+  <style>
+    /* ===== BADGES (Multiplayer Mode) ===== */
+    .multi-sub:nth-child(3) { --reveal-delay: 140ms; }
+    #multiBadgesBtn { border-color: rgba(167, 139, 250, 0.55); color: #a78bfa; }
+    #multiBadgesBtn:hover { border-color: rgba(167, 139, 250, 0.9); box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 18px rgba(167, 139, 250, 0.35); }
 
-    /* Lobby */
-    .badge-slot { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.9rem; border-radius: 0.75rem; border: 1px solid #2a2a2a; background: #1a1a1a; font-size: 0.8rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; min-height: 2.5rem; }
-    .badge-slot.filled { border-color: rgba(142,36,170,0.4); }
-    .badge-slot.host { border-color: rgba(142,36,170,0.6); }
-    .badge-slot.empty { border-style: dashed; color: #475569; }
-    .badge-btn { padding: 0.6rem 1.5rem; border-radius: 0.75rem; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 0.8rem; transition: all 0.15s; cursor: pointer; }
-    .badge-btn-primary { background: #f1f5f9; color: #0f172a; border: 2px solid #cbd5e1; }
-    .badge-btn-primary:hover { background: #ffffff; }
-    .badge-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-    .badge-btn-secondary { background: #1a1a1a; color: #cbd5e1; border: 1px solid #2a2a2a; }
-    .badge-btn-secondary:hover { background: #26262b; }
-    .badge-btn-purple { background: #1a1a1a; color: #c084fc; border: 1px solid rgba(142,36,170,0.5); }
-    .badge-btn-purple:hover { background: #26262b; }
-    .badge-input { width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 0.6rem; padding: 0.6rem 0.8rem; font-size: 0.85rem; color: #f1f5f9; outline: none; font-family: 'Space Grotesk', sans-serif; }
-    .badge-input:focus { border-color: #c084fc; }
-    .badge-input::placeholder { color: #475569; }
-    .badge-msg { min-height: 1.2rem; font-size: 0.75rem; color: #c084fc; font-family: 'Space Grotesk', sans-serif; text-align: center; }
-    .badge-note { font-size: 0.65rem; color: #475569; text-align: center; font-family: 'Space Grotesk', sans-serif; }
-    .badge-code { font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 2.5rem; letter-spacing: 0.3em; color: #c084fc; cursor: pointer; padding-left: 0.3em; }
-    .badge-code:hover { color: #ffffff; }
+    /* Centered screens that must still scroll when the content is taller than the screen */
+    #bdgViewMatch, #bdgViewLobby { justify-content: flex-start; }
+    #bdgViewMatch > :first-child, #bdgViewLobby > :first-child { margin-top: auto; }
+    #bdgViewMatch > :last-child, #bdgViewLobby > :last-child { margin-bottom: auto; }
 
-    /* Game view layout: question on left, badges on right */
-    .badge-game-layout { display: flex; gap: 1rem; width: 100%; max-width: 56rem; flex: 1; min-height: 0; }
-    .badge-game-left { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
-    .badge-game-right { width: 12rem; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.4rem; overflow-y: auto; padding: 0.25rem; }
-    .badge-game-right::-webkit-scrollbar { width: 4px; }
-    .badge-game-right::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-    .badge-qcard { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 0.75rem; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .badge-qcard.evaluating { border-color: rgba(192,132,252,0.5); box-shadow: 0 0 20px rgba(192,132,252,0.1); }
-    .badge-qheader { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid #2a2a2a; }
-    .badge-qnum { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.7rem; color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em; }
-    .badge-timer { display: flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(127,29,29,0.3); border: 1px solid rgba(239,68,68,0.3); font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.7rem; color: #f87171; }
-    .badge-timer.urgent { animation: urgentHeartbeat 0.85s ease-in-out infinite; }
-    .badge-prompt { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1rem; color: #f1f5f9; line-height: 1.3; }
-    .badge-feedback { font-size: 0.7rem; color: #f87171; font-family: 'Space Grotesk', sans-serif; min-height: 1rem; }
-    .badge-feedback.success { color: #388e3c; }
+    .bdg-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      padding: 0.5rem 0.75rem; border-radius: 0.75rem;
+      background: rgba(26, 26, 26, 0.6); border: 1px solid #2a2a2a;
+      transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+    }
+    .bdg-row-me { border-color: rgba(148, 163, 184, 0.45); }
+    .bdg-row-ok { border-color: rgba(56, 142, 60, 0.55); }
+    .bdg-row-skip { border-color: rgba(239, 68, 68, 0.45); }
 
-    /* Badge cards on the right side */
-    .badge-card { position: relative; padding: 0.5rem 0.6rem; border-radius: 0.6rem; border: 1.5px solid; background: #1a1a1a; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; overflow: hidden; }
-    .badge-card:hover { background: #22222a; transform: scale(1.03); }
-    .badge-card-icon { width: 1.5rem; height: 1.5rem; border-radius: 0.4rem; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; flex-shrink: 0; }
-    .badge-card-text { font-size: 0.6rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #cbd5e1; }
-    .badge-card-new { animation: badgePopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-    @keyframes badgePopIn { 0% { transform: translateX(60px) scale(0.3); opacity: 0; } 60% { transform: translateX(-4px) scale(1.1); } 100% { transform: translateX(0) scale(1); opacity: 1; } }
-    .badge-card-label { font-size: 0.5rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Space Grotesk', sans-serif; margin-bottom: 0.2rem; }
+    /* The badge rail on the right side of the screen */
+    #bdgRailWrap { width: 56px; }
+    @media (min-width: 640px) { #bdgRailWrap { width: 70px; } }
+    .bdg-badge {
+      position: relative; width: 38px; height: 44px; padding: 0; margin: 0; flex-shrink: 0;
+      background: none; border: 0; cursor: pointer; border-radius: 10px;
+      transition: transform 0.18s ease, filter 0.18s ease;
+    }
+    @media (min-width: 640px) { .bdg-badge { width: 44px; height: 51px; } }
+    .bdg-badge svg { display: block; width: 100%; height: 100%; }
+    .bdg-badge:hover, .bdg-badge:focus-visible {
+      transform: scale(1.15); outline: none;
+      filter: drop-shadow(0 0 8px var(--bc, #ffffff));
+    }
+    @keyframes bdgLand {
+      0% { transform: scale(2.4); opacity: 0; }
+      55% { transform: scale(0.88); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .bdg-badge-land { animation: bdgLand 0.55s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
+    @keyframes bdgFail {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      60% { transform: translateX(4px); }
+    }
+    .bdg-badge-fail { animation: bdgFail 0.35s ease 2; filter: drop-shadow(0 0 10px #ef4444); }
 
-    /* Badge projection overlay (appears on hover, centered) */
-    #badgeProjection { position: fixed; inset: 0; z-index: 55; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
-    #badgeProjection.active { opacity: 1; }
-    #badgeProjection::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
-    .badge-proj-card { position: relative; padding: 1.5rem 2rem; border-radius: 1rem; border: 2px solid; background: #1a1a1a; box-shadow: 0 20px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; gap: 0.75rem; max-width: 28rem; }
-    .badge-proj-icon { width: 3rem; height: 3rem; border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; }
-    .badge-proj-text { font-size: 1.1rem; font-weight: 700; font-family: 'Space Grotesk', sans-serif; color: #f1f5f9; text-align: center; }
-    .badge-proj-label { font-size: 0.6rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Grotesk', sans-serif; }
+    /* Projection: the badge beams its requirement to the middle of the screen */
+    .bdg-proj-card {
+      position: absolute; left: 50%; top: 50%;
+      width: min(320px, 76vw); padding: 1.1rem 1.25rem 1.25rem;
+      border-radius: 1.25rem; text-align: center;
+      background: #1a1a1a; border: 1.5px solid var(--bc, #d4af37);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 44px var(--bcg, rgba(212, 175, 55, 0.3));
+      opacity: 0; pointer-events: none; will-change: transform, opacity;
+      transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--s, 0.1));
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+    }
+    #bdgBeam { opacity: 0; transition: opacity 0.22s ease; }
 
-    /* Player lines in badge game */
-    .badge-team-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0.8rem; border-radius: 0.6rem; background: rgba(142,36,170,0.1); border: 1px solid rgba(142,36,170,0.3); }
-    .badge-team-label { font-size: 0.6rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Grotesk', sans-serif; }
-    .badge-team-num { font-size: 0.95rem; font-weight: 800; color: #c084fc; font-family: 'Space Grotesk', sans-serif; }
-    .badge-player-lines { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; min-height: 0; overflow-y: auto; scrollbar-none; }
-    .badge-line-row { padding: 0.35rem 0.5rem; border-radius: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; }
-    .badge-line-info { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; margin-bottom: 0.15rem; }
-    .badge-line-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.7rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
-    .badge-line-name.me { color: #c084fc; }
-    .badge-line-len { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.6rem; color: #94a3b8; flex-shrink: 0; }
-    .badge-line-track { position: relative; height: 1.25rem; }
-    .badge-players { display: flex; flex-direction: column; gap: 0.3rem; }
-    .badge-player-row { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.5rem; border-radius: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; font-size: 0.7rem; font-family: 'Space Grotesk', sans-serif; }
-    .badge-player-name { font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 4rem; }
-    .badge-player-name.me { color: #c084fc; }
-    .badge-player-chip { font-size: 0.6rem; font-weight: 600; flex-shrink: 0; }
-    .badge-player-len { color: #94a3b8; font-size: 0.6rem; flex-shrink: 0; margin-left: auto; }
+    @keyframes bdgGoPop {
+      0% { transform: scale(0.35); opacity: 0; }
+      55% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .bdg-go-pop { animation: bdgGoPop 0.55s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
 
-    /* Results */
-    .badge-standings { display: flex; flex-direction: column; gap: 0.3rem; width: 100%; max-width: 24rem; }
-    .badge-standing { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.7rem; border-radius: 0.5rem; background: #1a1a1a; border: 1px solid #2a2a2a; font-size: 0.75rem; font-family: 'Space Grotesk', sans-serif; }
-    .badge-standing .name { font-weight: 700; color: #e2e8f0; flex: 1; }
-    .badge-standing .dist { color: #c084fc; font-weight: 700; }
-    .badge-team-total { font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 2rem; color: #c084fc; text-shadow: 0 0 20px rgba(192,132,252,0.4); }
-    #badgeConfetti { position: absolute; inset: 0; pointer-events: none; z-index: 60; }
+    @media (prefers-reduced-motion: reduce) {
+      .bdg-proj-card { transition: opacity 0.15s ease; }
+      .bdg-badge-land, .bdg-badge-fail, .bdg-go-pop { animation: none; }
+    }
 
+    @media (max-width: 640px) {
+      #bdgScreen > div:first-child { padding: 0.5rem 0.75rem; }
+      #bdgViewMatch, #bdgViewLobby { padding-left: 0.75rem; padding-right: 0.75rem; gap: 0.75rem; }
+      #bdgMain { padding-left: 0.5rem; padding-right: 0.5rem; }
+      #bdgStage { min-height: 140px; }
+      #bdgCountdown { font-size: 4.5rem; }
+      #bdgQCard { padding: 0.75rem; gap: 0.6rem; }
+      #bdgVerdict { font-size: 0.8rem; line-height: 1.25; min-height: 2.4em; }
+      #bdgLobbyCode { font-size: 2.5rem; }
+    }
   </style>
 </head>
 <body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
@@ -982,7 +977,7 @@
         <circle class="menu-logo-dot" cx="24" cy="24" r="4.5" fill="#f97316"/>
       </svg>
       <h1 id="menuMainTitle" class="font-display font-black text-4xl sm:text-6xl tracking-wider text-slate-100">PIK</h1>
-      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.7-beta</span>
+      <span id="menuVersionBadge" class="mt-1 px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] sm:text-[11px] font-display font-bold tracking-widest uppercase text-slate-400">v0.6.4-beta</span>
       <p id="menuTagline1" class="text-xs sm:text-sm text-slate-200 font-display font-bold mt-2">A game of niche ball knowledge</p>
       <p id="menuTagline2" class="text-xs sm:text-sm text-slate-400 font-display font-medium mt-0.5">Rarer answers stretch farther</p>
       <p id="menuBetaNote" class="text-[11px] sm:text-xs text-pik-gold font-display font-medium mt-1.5">PIK is still in beta, so please keep that in mind while playing.</p>
@@ -1013,7 +1008,7 @@
         <div id="multiMenuRow">
           <button id="multiPvpBtn" class="multi-sub" onclick="openPvp('pvp')">P-V-PIK</button>
           <button id="multiParBtn" class="multi-sub" onclick="openPvp('par')">PIK Par</button>
-          <button id="multiBadgesBtn" class="multi-sub" onclick="openBadges()" style="border-color: rgba(142, 36, 170, 0.5); color: #c084fc;">Badges</button>
+          <button id="multiBadgesBtn" class="multi-sub" onclick="openBadges()">Badges</button>
         </div>
       </div>
     </div>
@@ -1571,9 +1566,8 @@
 
 
 
-
-  <!-- ================= BADGES SCREEN ================= -->
-  <div id="badgesScreen" class="hidden">
+  <!-- ================= BADGES MULTIPLAYER SCREEN ================= -->
+  <div id="bdgScreen" class="hidden absolute inset-0 flex flex-col bg-pik-bg overflow-hidden" style="z-index:45;">
     <!-- Top bar -->
     <div class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-pik-border/40 flex-shrink-0">
       <div class="flex items-center gap-3">
@@ -1587,111 +1581,172 @@
         </svg>
         <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">Badges</span>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="badgeToggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
-          <svg id="badgeAudioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="bdgToggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+          <svg id="bdgAudioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
         </button>
-        <button onclick="badgeExitToMenu()" title="Main Menu" class="px-3 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 border border-pik-border rounded-xl transition text-slate-300 font-display font-bold text-xs flex items-center gap-1.5">
+        <button onclick="bdgExitToMenu()" title="Main Menu" class="px-3 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 border border-pik-border rounded-xl transition text-slate-300 font-display font-bold text-xs flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
           Menu
         </button>
       </div>
     </div>
 
-    <!-- View: Lobby (create/join) -->
-    <div id="badgeViewLobby" class="badge-view">
+    <!-- ===== VIEW: MATCHMAKING ===== -->
+    <div id="bdgViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
       <div class="text-center">
-        <h2 class="font-display font-black text-3xl tracking-wider text-slate-100">Badges</h2>
-        <p class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;5 players &bull; Follow the rules, grow the line</p>
-        <p class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Each question adds a new badge rule. Answer while following ALL active badges. Game ends if the whole team skips.</p>
+        <h2 class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">Badges</h2>
+        <p class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;5 players &bull; Team up and keep answering</p>
+        <p class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5 max-w-sm mx-auto">Every question adds a new badge with a rule. Every answer has to follow all of them. If your whole team skips, the game ends.</p>
       </div>
+
       <div class="w-full max-w-sm flex flex-col gap-3">
         <div>
-          <div class="badge-note mb-1">Your Name</div>
-          <input id="badgeNameInput" type="text" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Enter a name..." class="badge-input">
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1">Your Name</div>
+          <input id="bdgNameInput" type="text" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Enter a name..." class="w-full bg-pik-card border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
         </div>
-        <button id="badgeCreateBtn" onclick="badgeCreatePrivate()" class="badge-btn badge-btn-purple">Create Badges Game</button>
-        <div class="flex items-center gap-2">
-          <div class="flex-1 h-px bg-pik-border"></div>
-          <span class="badge-note">or join with code</span>
-          <div class="flex-1 h-px bg-pik-border"></div>
+
+        <button id="bdgPublicBtn" onclick="bdgPlayPublic()" class="w-full py-3 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Public Match
+        </button>
+
+        <button id="bdgPrivateToggleBtn" onclick="bdgTogglePrivate()" class="w-full py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-sm rounded-2xl transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Private Lobby
+        </button>
+
+        <div id="bdgPrivateBox" class="hidden flex flex-col gap-2 bg-pik-card/60 border border-pik-border rounded-2xl p-3">
+          <button onclick="bdgCreatePrivate()" class="w-full py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-100 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+            Create Private Lobby
+          </button>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 h-px bg-pik-border"></div>
+            <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">or join with code</span>
+            <div class="flex-1 h-px bg-pik-border"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="bdgCodeInput" type="text" maxlength="4" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="CODE" onkeydown="if(event.key==='Enter')bdgJoinPrivate()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-display font-bold tracking-[0.3em] uppercase text-center">
+            <button onclick="bdgJoinPrivate()" class="px-4 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition active:scale-95 whitespace-nowrap">Join</button>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <input id="badgeCodeInput" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE" onkeydown="if(event.key==='Enter')badgeJoinPrivate()" class="badge-input flex-1 text-center tracking-[0.3em] uppercase font-bold">
-          <button onclick="badgeJoinPrivate()" class="badge-btn badge-btn-primary whitespace-nowrap">Join</button>
-        </div>
-        <div id="badgeLobbyMsg" class="badge-msg"></div>
-        <div id="badgeBackendNote" class="badge-note"></div>
+
+        <div id="bdgMatchMsg" class="min-h-[18px] text-center text-xs text-pik-gold font-display font-medium"></div>
+        <div id="bdgBackendNote" class="text-center text-[10px] text-slate-600 font-display"></div>
       </div>
     </div>
 
-    <!-- View: Wait lobby (after join) -->
-    <div id="badgeViewWait" class="badge-view hidden-v">
+    <!-- ===== VIEW: LOBBY ===== -->
+    <div id="bdgViewLobby" class="hidden flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
       <div class="text-center">
-        <span class="badge-note uppercase tracking-wider">Lobby Code</span>
-        <button onclick="badgeCopyCode()" id="badgeLobbyCode" class="badge-code mt-1 block">----</button>
-        <div id="badgeCopyNote" class="badge-note mt-0.5">Click code to copy</div>
+        <div class="flex items-center justify-center gap-2">
+          <span id="bdgLobbyBadge" class="px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] font-display font-bold tracking-widest uppercase text-slate-400">Badges</span>
+          <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">Lobby Code</span>
+        </div>
+        <button onclick="bdgCopyCode()" title="Copy code" class="font-display font-black text-4xl sm:text-5xl tracking-[0.3em] text-pik-gold mt-1 hover:text-white transition pl-[0.3em]" id="bdgLobbyCode">----</button>
+        <div id="bdgCopyNote" class="text-[10px] text-slate-500 font-display h-3">Click the code to copy it</div>
       </div>
-      <div id="badgeLobbySlots" class="grid grid-cols-2 gap-2 w-full max-w-sm"></div>
-      <div class="flex flex-col gap-2 w-full max-w-sm">
-        <button id="badgeStartBtn" onclick="badgeStartGame()" class="badge-btn badge-btn-primary hidden">Start Game</button>
-        <div id="badgeWaitNote" class="badge-note"></div>
-        <button onclick="badgeLeaveToLobby()" class="badge-btn badge-btn-secondary">Leave</button>
-        <div id="badgeWaitMsg" class="badge-msg"></div>
+
+      <div id="bdgLobbySlots" class="w-full max-w-sm flex flex-col gap-2"></div>
+
+      <div class="w-full max-w-sm flex flex-col gap-2">
+        <button id="bdgStartBtn" onclick="bdgStartGame()" class="hidden w-full py-3 bg-slate-100 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95">
+          Start Game
+        </button>
+        <div id="bdgLobbyWait" class="text-center text-xs text-slate-400 font-display"></div>
+        <button onclick="bdgLeaveToMatch()" class="w-full py-2.5 bg-pik-card hover:bg-slate-800 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+          Leave Lobby
+        </button>
+        <div id="bdgLobbyMsg" class="min-h-[16px] text-center text-xs text-pik-gold font-display font-medium"></div>
       </div>
     </div>
 
-    <!-- View: Game -->
-    <div id="badgeViewGame" class="badge-view hidden-v">
-      <div class="badge-game-layout">
-        <div class="badge-game-left">
-          <div id="badgeQCard" class="badge-qcard">
-            <div class="badge-qheader">
-              <span id="badgeQNum" class="badge-qnum">Q1 / 8</span>
-              <div id="badgeTimer" class="badge-timer">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                <span id="badgeTimerText">35s</span>
+    <!-- ===== VIEW: GAME ===== -->
+    <div id="bdgViewGame" class="hidden flex-1 min-h-0 w-full flex flex-row">
+      <div id="bdgMain" class="flex-1 min-w-0 min-h-0 max-w-3xl mx-auto flex flex-col gap-2 px-3 sm:px-6 py-2 overflow-y-auto scrollbar-none">
+        <!-- Stage: countdown / question card / prompt echo -->
+        <div id="bdgStage" class="relative flex items-center justify-center min-h-[190px] sm:min-h-[210px] flex-shrink-0">
+          <div id="bdgCountdown" class="hidden font-display font-black text-7xl sm:text-8xl text-pik-gold"></div>
+          <div id="bdgPromptEcho" class="hidden text-center font-display font-bold text-base sm:text-lg text-slate-300 px-4 max-w-xl"></div>
+
+          <div id="bdgQCard" class="hidden w-full max-w-xl bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-pik-border/60 pb-2.5">
+              <span id="bdgQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Round 1</span>
+              <div id="bdgTimerPill" class="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/40 border border-red-500/40 rounded-full font-display text-xs text-red-400 font-bold">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <span id="bdgTimerText">35s</span>
               </div>
             </div>
-            <h3 id="badgePrompt" class="badge-prompt">Loading...</h3>
-            <div class="flex gap-2">
-              <input id="badgeAnswerInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')badgeSubmit()" oninput="badgeHideFeedback()" class="badge-input flex-1">
-              <button id="badgeSubmitBtn" onclick="badgeSubmit()" class="badge-btn badge-btn-primary whitespace-nowrap">Submit</button>
-              <button id="badgeSkipBtn" onclick="badgeSkip()" class="badge-btn badge-btn-secondary">Skip</button>
+            <h2 id="bdgPrompt" class="font-display font-extrabold text-lg sm:text-xl text-slate-100 tracking-tight leading-snug py-1"></h2>
+            <div class="flex flex-col sm:flex-row items-center gap-2">
+              <input id="bdgAnswerInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')bdgSubmit()" oninput="bdgHideFeedback()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
+              <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button id="bdgSubmitBtn" onclick="bdgSubmit()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition-all shadow-md whitespace-nowrap">
+                  <span id="bdgSubmitText">Submit</span>
+                </button>
+                <button id="bdgSkipBtn" onclick="bdgSkip(false)" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition-all">
+                  Skip
+                </button>
+              </div>
             </div>
-            <div id="badgeFeedback" class="badge-feedback"></div>
+            <div id="bdgFeedback" class="hidden text-xs text-pik-gold font-display font-medium"></div>
+            <div id="bdgReqHint" class="text-[11px] text-slate-500 font-display"></div>
           </div>
-          <div class="badge-team-bar">
-            <span class="badge-team-label">Team Distance</span>
-            <span id="badgeTeamTotal" class="badge-team-num">0 px</span>
-          </div>
-          <div id="badgePlayerLines" class="badge-player-lines"></div>
         </div>
-        <div class="badge-game-right">
-          <div class="badge-card-label">Active Badges</div>
-          <div id="badgeList"></div>
+
+        <!-- Round info + verdict -->
+        <div class="text-center flex-shrink-0">
+          <div id="bdgRoundLine" class="text-[10px] uppercase tracking-wider font-display font-bold text-slate-500"></div>
+          <div id="bdgVerdict" class="min-h-[24px] font-display font-bold text-sm sm:text-base text-slate-100"></div>
+        </div>
+
+        <!-- Players -->
+        <div id="bdgPlayers" class="flex flex-col gap-1.5 w-full flex-shrink-0"></div>
+
+        <!-- End-of-game summary -->
+        <div id="bdgSummary" class="hidden w-full flex-shrink-0 pt-1"></div>
+
+        <!-- End actions -->
+        <div id="bdgEndActions" class="hidden flex-col items-center gap-2 pt-1 pb-2 flex-shrink-0">
+          <div class="flex items-center justify-center gap-2">
+            <button id="bdgAgainBtn" onclick="bdgPlayAgain()" class="hidden px-4 py-2 bg-slate-100 hover:bg-white active:scale-95 text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg">
+              Play Again
+            </button>
+            <button onclick="bdgLeaveToMatch()" class="px-4 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+              Leave
+            </button>
+          </div>
+          <div id="bdgEndWait" class="text-[11px] text-slate-500 font-display"></div>
         </div>
       </div>
+
+      <!-- Badge rail (right side of the screen) -->
+      <aside id="bdgRailWrap" class="flex-shrink-0 border-l border-pik-border/40 flex flex-col items-center py-2 gap-2 min-h-0">
+        <div class="text-center leading-tight flex-shrink-0">
+          <div class="text-[9px] uppercase tracking-wider font-display font-bold text-slate-500">Badges</div>
+          <div id="bdgRailCount" class="font-display font-extrabold text-sm text-pik-gold">0</div>
+        </div>
+        <div id="bdgRail" class="flex-1 min-h-0 w-full overflow-y-auto scrollbar-none flex flex-col items-center gap-1.5 pb-2"></div>
+      </aside>
     </div>
 
-    <!-- View: Results -->
-    <div id="badgeViewResults" class="badge-view hidden-v">
-      <div class="text-center">
-        <div class="badge-note uppercase tracking-wider">Team Total Distance</div>
-        <div id="badgeTeamTotal" class="badge-team-total mt-1">0 px</div>
+    <!-- Projection layer: a badge beams its requirement to the center of the screen -->
+    <div id="bdgProjLayer" class="absolute inset-0 pointer-events-none overflow-hidden" style="z-index:70;">
+      <svg id="bdgBeam" class="absolute inset-0 w-full h-full">
+        <defs>
+          <linearGradient id="bdgBeamGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">
+            <stop id="bdgBeamS0" offset="0" stop-color="#ffffff" stop-opacity="0.7"/>
+            <stop id="bdgBeamS1" offset="1" stop-color="#ffffff" stop-opacity="0.06"/>
+          </linearGradient>
+        </defs>
+        <polygon id="bdgBeamPoly" points="" fill="url(#bdgBeamGrad)"/>
+      </svg>
+      <div id="bdgProjCard" class="bdg-proj-card">
+        <div id="bdgProjShield" class="flex items-center justify-center mb-1"></div>
+        <div id="bdgProjLabel" class="text-[10px] uppercase tracking-widest font-display font-bold text-slate-400"></div>
+        <div id="bdgProjText" class="font-display font-extrabold text-xl sm:text-2xl text-slate-100 leading-snug mt-1.5"></div>
       </div>
-      <div id="badgeStandings" class="badge-standings"></div>
-      <div id="badgeBadgesRecap" class="flex flex-wrap gap-1 justify-center max-w-sm"></div>
-      <div class="flex gap-2">
-        <button id="badgeAgainBtn" onclick="badgePlayAgain()" class="badge-btn badge-btn-primary hidden">Play Again</button>
-        <button onclick="badgeLeaveToLobby()" class="badge-btn badge-btn-secondary">Leave</button>
-      </div>
-      <div id="badgeResultsWait" class="badge-note"></div>
     </div>
-
-    <!-- Badge projection overlay (hover to see full requirement) -->
-    <div id="badgeProjection"></div>
-    <canvas id="badgeConfetti" class="hidden"></canvas>
   </div>
 
   <!-- ================= JAVASCRIPT ENGINE ================= -->
@@ -2057,11 +2112,6 @@
       setEvaluatingState(false);
 
       // Hide PVP and Tournament overlay screens if visible (header Menu button)
-      const badgeScreenEl = document.getElementById('badgesScreen');
-      if (badgeScreenEl && !badgeScreenEl.classList.contains('hidden')) {
-        badgeScreenEl.classList.add('hidden');
-        if (typeof badgeLeaveRoom === 'function') badgeLeaveRoom().catch(() => {});
-      }
       const pvpScreen = document.getElementById('pvpScreen');
       if (pvpScreen && !pvpScreen.classList.contains('hidden')) {
         pvpScreen.classList.add('hidden');
@@ -6612,7 +6662,7 @@ Rules:
        Transport: Firestore (when the cloud is available) or
        same-browser tabs via localStorage as a fallback.
     ==================================================== */
-    const PVP_MAX_PLAYERS = 7;
+    const PVP_MAX_PLAYERS = 5;
     const PVP_ANSWER_SECONDS = 35;
     const PVP_LOSE_POINTS = 5;
     const PVP_COUNTDOWN_MS = 3000;
@@ -8597,6 +8647,1401 @@ Rules:
     }
   </script>
 
+  <!-- ================= BADGES MULTIPLAYER ENGINE ================= -->
+  <script>
+    /* ====================================================
+       BADGES — MULTIPLAYER MODE (2-5 players, co-op)
+       Every question adds a new badge (a rule) to the right side of the
+       screen. Every answer must follow ALL badges. If the whole team skips
+       in one round, the game ends.
+       Transport: shares the same online backend as P-V-PIK / PIK Par
+       (works across devices from a plain HTML file).
+    ==================================================== */
+    const BDG_MAX_PLAYERS = 5;
+    const BDG_MIN_PLAYERS = 2;
+    const BDG_ROUNDS = 12;
+    const BDG_ANSWER_SECONDS = 35;
+    const BDG_COUNTDOWN_MS = 3200;
+    const BDG_REVEAL_MS = 5200;
+    const BDG_GRACE_MS = 20000;
+    const BDG_STALE_MS = 25000;
+    const BDG_DEL = { __pvpDelete: true };
+
+    const BDG = {
+      code: null, room: null, backend: null, unwatch: null, everSeen: false,
+      hbTimer: null, tickTimer: null, lastKey: null, lastStatus: null,
+      beatSeen: {}, prevHost: null, noHostSince: 0, hostKey: null, hostKeyAt: 0, hostBusy: false, fullSince: 0,
+      timer: null, timeLeft: BDG_ANSWER_SECONDS, evaluating: false, submitted: false, qStart: 0, pausedMs: 0,
+      used: new Set(), phaseTimers: [], busy: false, projIdx: -1, projEl: null
+    };
+
+    const bdgEl = (id) => document.getElementById(id);
+    const bdgMe = () => PVP.myId;
+
+    function bdgEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    /* ---------- Badge definitions ---------- */
+    const BDG_KIND = {
+      start:  { color: '#60a5fa', label: 'Starts with' },
+      end:    { color: '#60a5fa', label: 'Ends with' },
+      minlen: { color: '#34d399', label: 'Minimum length' },
+      maxlen: { color: '#34d399', label: 'Maximum length' },
+      words:  { color: '#fbbf24', label: 'Word count' },
+      has:    { color: '#a3e635', label: 'Must contain' },
+      no:     { color: '#f87171', label: 'Forbidden letter' },
+      double: { color: '#f472b6', label: 'Double letter' },
+      vowels: { color: '#c084fc', label: 'Vowels' }
+    };
+
+    function bdgText(b) {
+      switch (b.t) {
+        case 'start': return `Must start with the letter ${b.l}`;
+        case 'end': return `Must end with the letter ${b.l}`;
+        case 'minlen': return `At least ${b.n} letters long`;
+        case 'maxlen': return `No more than ${b.n} letters long`;
+        case 'words': return b.m === 'one' ? 'Must be exactly 1 word' : b.m === 'two' ? 'Must be exactly 2 words' : 'Must be 2 or more words';
+        case 'has': return `Must contain the letter ${b.l}`;
+        case 'no': return `Must NOT contain the letter ${b.l}`;
+        case 'double': return 'Must have a double letter (like \u201Cll\u201D or \u201Cee\u201D)';
+        case 'vowels': return `Must have at least ${b.n} vowels`;
+      }
+      return '';
+    }
+
+    function bdgGlyph(b) {
+      switch (b.t) {
+        case 'start': return b.l + '\u2026';
+        case 'end': return '\u2026' + b.l;
+        case 'minlen': return b.n + '+';
+        case 'maxlen': return '\u2264' + b.n;
+        case 'words': return b.m === 'one' ? '1w' : b.m === 'two' ? '2w' : '2w+';
+        case 'has': return '+' + b.l;
+        case 'no': return '\u2212' + b.l;
+        case 'double': return '\u00D72';
+        case 'vowels': return b.n + '+V';
+      }
+      return '?';
+    }
+
+    function bdgShieldSvg(b) {
+      const k = BDG_KIND[b.t] || { color: '#ffffff' };
+      const g = bdgGlyph(b);
+      const fs = g.length >= 4 ? 11 : g.length === 3 ? 13 : 16;
+      return `<svg viewBox="0 0 40 46" aria-hidden="true"><path d="M20 2.5 L36.5 8.5 V22 C36.5 32.5 29 40.5 20 43.5 C11 40.5 3.5 32.5 3.5 22 V8.5 Z" fill="#161616" stroke="${k.color}" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 6.5 L33 11.2 V22 C33 30.6 27 37.2 20 39.8 C13 37.2 7 30.6 7 22 V11.2 Z" fill="${k.color}" fill-opacity="0.13"/><text x="20" y="27" text-anchor="middle" font-family="Space Grotesk, Inter, sans-serif" font-weight="800" font-size="${fs}" fill="${k.color}">${bdgEsc(g)}</text></svg>`;
+    }
+
+    // Checks are done locally (no AI needed), so they're instant and always exact
+    function bdgCheck(b, text) {
+      const t = String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      const letters = t.replace(/[^a-z]/g, '');
+      const alnum = t.replace(/[^a-z0-9]/g, '');
+      const l = (b.l || '').toLowerCase();
+      switch (b.t) {
+        case 'start': return alnum.charAt(0) === l;
+        case 'end': return alnum.charAt(alnum.length - 1) === l;
+        case 'minlen': return letters.length >= b.n;
+        case 'maxlen': return letters.length <= b.n;
+        case 'words': {
+          const w = t.split(/\s+/).filter(Boolean).length;
+          return b.m === 'one' ? w === 1 : b.m === 'two' ? w === 2 : w >= 2;
+        }
+        case 'has': return letters.indexOf(l) >= 0;
+        case 'no': return letters.indexOf(l) < 0;
+        case 'double': return /([a-z])\1/.test(t);
+        case 'vowels': return (letters.match(/[aeiou]/g) || []).length >= b.n;
+      }
+      return true;
+    }
+
+    function bdgFailed(badges, upto, text) {
+      const out = [];
+      for (let i = 0; i < upto && i < badges.length; i++) if (!bdgCheck(badges[i], text)) out.push(i);
+      return out;
+    }
+
+    /* ---------- Badge generation (host only; stored in the room so everyone agrees) ---------- */
+    function bdgCandidate(type, d, list) {
+      const of = (t) => list.filter(b => b.t === t);
+      const letters = (t) => of(t).map(b => b.l);
+      const banned = letters('no');
+      const needed = [].concat(letters('start'), letters('end'), letters('has'));
+      const isV = (c) => 'AEIOU'.indexOf(c) >= 0;
+      const pickL = (pool) => {
+        const ok = pool.split('').filter(c => banned.indexOf(c) < 0 && needed.indexOf(c) < 0);
+        return ok.length ? ok[getRandomInt(ok.length)] : null;
+      };
+      const bannedVowels = banned.filter(isV).length;
+      switch (type) {
+        case 'start': { if (of('start').length) return null; const l = pickL('SCBMPTAGDRHLFWN'); return l ? { t: 'start', l } : null; }
+        case 'end': { if (of('end').length) return null; const l = pickL(d < 0.6 ? 'SEDYNT' : 'SEDYNTRLAOK'); return l ? { t: 'end', l } : null; }
+        case 'minlen': {
+          if (of('minlen').length) return null;
+          const n = 4 + Math.round(d * 2);
+          const mx = of('maxlen')[0];
+          if (mx && mx.n - n < 3) return null;
+          return { t: 'minlen', n };
+        }
+        case 'maxlen': {
+          if (of('maxlen').length) return null;
+          const n = 12 - Math.round(d * 3);
+          const mn = of('minlen')[0];
+          if (mn && n - mn.n < 3) return null;
+          return { t: 'maxlen', n };
+        }
+        case 'words': {
+          if (of('words').length) return null;
+          const modes = d < 0.5 ? ['one', 'two_plus'] : ['one', 'two', 'two_plus'];
+          return { t: 'words', m: modes[getRandomInt(modes.length)] };
+        }
+        case 'has': { if (of('has').length >= 2) return null; const l = pickL('AEIORNLTSD'); return l ? { t: 'has', l } : null; }
+        case 'no': {
+          if (of('no').length >= 4) return null;
+          const pool = d < 0.45 ? 'ZQXJKVWY' : d < 0.75 ? 'ZXJKVWYUFBGPHCM' : 'UFBGPHCMDLWYKVEAOI';
+          const l = pickL(pool);
+          if (!l) return null;
+          if (isV(l) && bannedVowels >= 2) return null;
+          return { t: 'no', l };
+        }
+        case 'double': {
+          if (of('double').length) return null;
+          const mx = of('maxlen')[0];
+          if (mx && mx.n < 5) return null;
+          return { t: 'double' };
+        }
+        case 'vowels': { if (of('vowels').length || bannedVowels >= 2) return null; return { t: 'vowels', n: 3 }; }
+      }
+      return null;
+    }
+
+    function bdgBuildBadges(n) {
+      const list = [];
+      for (let i = 0; i < n; i++) {
+        const d = n > 1 ? i / (n - 1) : 0;
+        const w = {
+          start: 3, minlen: 3, words: 3, no: 3,
+          vowels: d > 0.2 ? 1.5 : 0, has: d > 0.3 ? 2.5 : 0, end: d > 0.3 ? 2.5 : 0,
+          maxlen: d > 0.4 ? 2.5 : 0, double: d > 0.5 ? 1.5 : 0
+        };
+        const types = Object.keys(w).filter(t => w[t] > 0);
+        const total = types.reduce((s, t) => s + w[t], 0);
+        let made = null, tries = 0;
+        while (!made && tries++ < 40) {
+          let r = Math.random() * total, pick = types[0];
+          for (const t of types) { r -= w[t]; if (r <= 0) { pick = t; break; } }
+          made = bdgCandidate(pick, d, list);
+        }
+        if (!made) {
+          const all = ['no', 'has', 'start', 'end', 'words', 'minlen', 'maxlen', 'double', 'vowels'];
+          for (let k = 0; k < all.length && !made; k++) made = bdgCandidate(all[k], Math.max(d, 0.5), list);
+        }
+        if (!made) break;
+        list.push(made);
+      }
+      return list;
+    }
+
+    /* ---------- Screen / view helpers ---------- */
+    function bdgShowView(name) {
+      ['Match', 'Lobby', 'Game'].forEach(v => {
+        const el = bdgEl('bdgView' + v);
+        if (el) el.classList.toggle('hidden', v !== name);
+      });
+    }
+
+    function bdgSetMsg(msg, id = 'bdgMatchMsg') {
+      const el = bdgEl(id);
+      if (el) el.textContent = msg || '';
+    }
+
+    function bdgToggleAudio() {
+      toggleAudio();
+      const a = bdgEl('bdgAudioIcon'), b = bdgEl('audioIcon');
+      if (a && b) a.innerHTML = b.innerHTML;
+    }
+
+    function bdgGetName() {
+      const input = bdgEl('bdgNameInput');
+      let name = (input ? input.value : '').trim().replace(/\s+/g, ' ').slice(0, 14);
+      if (!name) name = 'Player ' + (100 + getRandomInt(900));
+      if (input) input.value = name;
+      try { localStorage.setItem('pik_pvp_name', name); } catch (e) {}
+      return name;
+    }
+
+    async function bdgGetBackend() {
+      const b = await pvpGetBackend();
+      BDG.backend = b;
+      return b;
+    }
+
+    function bdgCloseMultiMenu() {
+      const wrap = bdgEl('multiWrap');
+      if (wrap) wrap.classList.remove('multi-open');
+    }
+
+    function openBadges() {
+      if (isLaunchingMode) return;
+      bdgCloseMultiMenu();
+      closeSoloMenu();
+      playAudioTone('launch');
+      const screen = bdgEl('bdgScreen');
+      if (!screen) return;
+      screen.classList.remove('hidden');
+      screen.classList.remove('pvp-screen-in');
+      void screen.offsetWidth;
+      screen.classList.add('pvp-screen-in');
+      bdgShowView('Match');
+      bdgSetMsg('');
+      const priv = bdgEl('bdgPrivateBox');
+      if (priv) priv.classList.add('hidden');
+      const input = bdgEl('bdgNameInput');
+      if (input && !input.value) {
+        try { input.value = localStorage.getItem('pik_pvp_name') || ''; } catch (e) {}
+      }
+      const note = bdgEl('bdgBackendNote');
+      if (note) note.textContent = '';
+      bdgGetBackend().then(b => {
+        if (note) note.textContent = b.kind === 'local' ? 'Could not reach online matchmaking \u2014 only tabs in this browser can join each other' : 'Online matchmaking connected';
+      });
+    }
+
+    function bdgExitToMenu() {
+      bdgLeaveRoom().catch(() => {});
+      const screen = bdgEl('bdgScreen');
+      if (screen) screen.classList.add('hidden');
+      bdgCloseMultiMenu();
+      playAudioTone('menu');
+      animateMenuEntrance();
+    }
+
+    function bdgLeaveToMatch() {
+      bdgLeaveRoom().catch(() => {});
+      bdgShowView('Match');
+      bdgSetMsg('');
+    }
+
+    function bdgTogglePrivate() {
+      const box = bdgEl('bdgPrivateBox');
+      if (box) box.classList.toggle('hidden');
+      bdgSetMsg('');
+    }
+
+    /* ---------- Matchmaking ---------- */
+    // Badges lobby codes are 4 digits, so they can never collide with P-V-PIK / PIK Par letter codes
+    function bdgRandomCode() {
+      const A = '23456789';
+      let s = '';
+      for (let i = 0; i < 4; i++) s += A[getRandomInt(A.length)];
+      return s;
+    }
+
+    function bdgSortedIds(room) {
+      return Object.keys(room.players || {}).sort((a, b) => {
+        const pa = room.players[a], pb = room.players[b];
+        return ((pa.joinedAt || 0) - (pb.joinedAt || 0)) || (a < b ? -1 : 1);
+      });
+    }
+
+    function bdgRoomFresh(r) {
+      const now = Date.now();
+      return Object.values(r.players || {}).some(p => now - (p.seen || 0) < 60000);
+    }
+
+    function bdgUniqueName(players, name) {
+      const taken = new Set(Object.values(players || {}).map(p => (p.name || '').toLowerCase()));
+      if (!taken.has(name.toLowerCase())) return name;
+      for (let i = 2; i < 10; i++) {
+        const cand = (name.slice(0, 11) + ' ' + i);
+        if (!taken.has(cand.toLowerCase())) return cand;
+      }
+      return name + Math.floor(Math.random() * 9);
+    }
+
+    function bdgSetBusy(on) {
+      BDG.busy = on;
+      ['bdgPublicBtn', 'bdgPrivateToggleBtn'].forEach(id => { const b = bdgEl(id); if (b) b.disabled = on; });
+    }
+
+    async function bdgTryJoin(code) {
+      const b = await bdgGetBackend();
+      const name = bdgGetName();
+      const me = bdgMe();
+      const fail = (m) => { if (b.release) b.release(code); return m; };
+      const r = await b.get(code);
+      if (!r) return fail('Lobby not found.');
+      if (r.mode !== 'badges') return fail('That code belongs to a different game mode.');
+      if (r.status !== 'lobby') return fail('That game has already started.');
+      if (Object.keys(r.players || {}).length >= BDG_MAX_PLAYERS) return fail('That lobby is full.');
+      const now = Date.now();
+      await b.patch(code, { ['players.' + me]: { name: bdgUniqueName(r.players, name), joinedAt: now, seen: now } });
+      let r2 = null;
+      for (let i = 0; i < 14; i++) {
+        r2 = await b.get(code);
+        if (r2 && r2.players && r2.players[me]) break;
+        await new Promise(res => setTimeout(res, 250));
+      }
+      if (!r2 || !r2.players || !r2.players[me]) return fail('Could not join \u2014 the host may have left.');
+      const idx = bdgSortedIds(r2).indexOf(me);
+      if (idx >= BDG_MAX_PLAYERS) {
+        await b.patch(code, { ['players.' + me]: BDG_DEL });
+        return fail('That lobby is full.');
+      }
+      bdgEnterRoom(code);
+      return null;
+    }
+
+    async function bdgCreateRoom(isPublic) {
+      const b = await bdgGetBackend();
+      const name = bdgGetName();
+      let code = null;
+      for (let i = 0; i < 10; i++) {
+        const c = bdgRandomCode();
+        if (!(await b.get(c))) { code = c; break; }
+      }
+      if (!code) return 'Could not create a lobby. Try again.';
+      const now = Date.now();
+      await b.set(code, {
+        code, mode: 'badges', isPublic: !!isPublic, hostId: bdgMe(), status: 'lobby', createdAt: now, updatedAt: now,
+        players: { [bdgMe()]: { name, joinedAt: now, seen: now } }
+      });
+      bdgEnterRoom(code);
+      return null;
+    }
+
+    async function bdgPlayPublic() {
+      if (BDG.busy) return;
+      bdgSetBusy(true);
+      bdgSetMsg('Searching for a public lobby...');
+      try {
+        const b = await bdgGetBackend();
+        const list = (await b.listPublic())
+          .filter(r => r.status === 'lobby' && r.mode === 'badges' && Object.keys(r.players || {}).length < BDG_MAX_PLAYERS && bdgRoomFresh(r))
+          .sort((a, c) => Object.keys(c.players).length - Object.keys(a.players).length);
+        for (const r of list) {
+          const err = await bdgTryJoin(r.code);
+          if (!err) { bdgSetBusy(false); return; }
+        }
+        bdgSetMsg('No open lobby found \u2014 creating one...');
+        const err = await bdgCreateRoom(true);
+        if (err) bdgSetMsg(err);
+      } catch (e) {
+        console.warn('[Badges]', e);
+        bdgSetMsg('Could not reach matchmaking. Please try again.');
+      }
+      bdgSetBusy(false);
+    }
+
+    async function bdgCreatePrivate() {
+      if (BDG.busy) return;
+      bdgSetBusy(true);
+      bdgSetMsg('Creating private lobby...');
+      try {
+        const err = await bdgCreateRoom(false);
+        if (err) bdgSetMsg(err);
+      } catch (e) {
+        console.warn('[Badges]', e);
+        bdgSetMsg('Could not create a lobby. Please try again.');
+      }
+      bdgSetBusy(false);
+    }
+
+    async function bdgJoinPrivate() {
+      if (BDG.busy) return;
+      const input = bdgEl('bdgCodeInput');
+      const code = (input ? input.value : '').trim().toUpperCase();
+      if (code.length !== 4) { bdgSetMsg('Enter the 4-digit lobby code.'); playAudioTone('error'); return; }
+      bdgSetBusy(true);
+      bdgSetMsg('Joining...');
+      try {
+        const err = await bdgTryJoin(code);
+        if (err) { bdgSetMsg(err); playAudioTone('error'); }
+      } catch (e) {
+        console.warn('[Badges]', e);
+        bdgSetMsg('Could not join. Please try again.');
+      }
+      bdgSetBusy(false);
+    }
+
+    /* ---------- Room lifecycle ---------- */
+    function bdgEnterRoom(code) {
+      bdgStopAll();
+      BDG.code = code;
+      BDG.room = null;
+      BDG.everSeen = false;
+      BDG.lastKey = null;
+      BDG.lastStatus = null;
+      BDG.beatSeen = {};
+      BDG.prevHost = null;
+      BDG.noHostSince = 0;
+      BDG.hostKey = null;
+      BDG.used = new Set();
+      bdgSetMsg('');
+      bdgSetMsg('', 'bdgLobbyMsg');
+      BDG.unwatch = BDG.backend.watch(code, bdgOnRoom);
+      BDG.hbTimer = setInterval(bdgHeartbeat, 4000);
+      BDG.tickTimer = setInterval(bdgTick, 1000);
+    }
+
+    function bdgStopAll() {
+      const prevCode = BDG.code, prevBackend = BDG.backend;
+      if (prevCode && prevBackend && prevBackend.release) setTimeout(() => prevBackend.release(prevCode), 3000);
+      if (BDG.unwatch) { try { BDG.unwatch(); } catch (e) {} BDG.unwatch = null; }
+      clearInterval(BDG.hbTimer); clearInterval(BDG.tickTimer); clearInterval(BDG.timer);
+      BDG.hbTimer = BDG.tickTimer = BDG.timer = null;
+      bdgClearTransient();
+      bdgProjHide(true);
+      BDG.code = null;
+      BDG.room = null;
+      BDG.everSeen = false;
+      BDG.lastKey = null;
+      BDG.lastStatus = null;
+      BDG.evaluating = false;
+      BDG.submitted = false;
+    }
+
+    function bdgClearTransient() {
+      BDG.phaseTimers.forEach(clearTimeout);
+      BDG.phaseTimers = [];
+    }
+
+    async function bdgLeaveRoom() {
+      const b = BDG.backend, code = BDG.code, room = BDG.room;
+      bdgStopAll();
+      if (!b || !code) return;
+      try {
+        const me = bdgMe();
+        const others = Object.keys((room && room.players) || {}).filter(id => id !== me);
+        if (!room || others.length === 0) {
+          await b.remove(code);
+        } else {
+          const patch = { ['players.' + me]: BDG_DEL };
+          if (room.hostId === me) {
+            const next = bdgSortedIds(room).filter(id => id !== me)[0];
+            if (next) patch.hostId = next;
+          }
+          await b.patch(code, patch);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    window.addEventListener('pagehide', () => { if (BDG.code) bdgLeaveRoom(); });
+
+    function bdgHeartbeat() {
+      if (!BDG.code || !BDG.backend) return;
+      BDG.backend.patch(BDG.code, { ['players.' + bdgMe() + '.seen']: Date.now() }).catch(() => {});
+    }
+
+    function bdgTrackBeats(room) {
+      const now = Date.now();
+      for (const id in (room.players || {})) {
+        const s = room.players[id].seen;
+        const b = BDG.beatSeen[id];
+        if (!b || b.seen !== s) BDG.beatSeen[id] = { seen: s, at: now };
+      }
+    }
+
+    function bdgAlive(id) {
+      if (id === bdgMe()) return true;
+      const b = BDG.beatSeen[id];
+      if (!b) return true;
+      return Date.now() - b.at <= BDG_STALE_MS;
+    }
+
+    function bdgActiveIds(room) {
+      const g = room.game || {};
+      return (g.order || []).filter(id => room.players && room.players[id] && bdgAlive(id));
+    }
+
+    function bdgClosedBack(msg) {
+      bdgStopAll();
+      bdgShowView('Match');
+      bdgSetMsg(msg);
+    }
+
+    function bdgOnRoom(room) {
+      if (!BDG.code) return;
+      if (!room) {
+        if (BDG.everSeen) bdgClosedBack('The lobby was closed.');
+        return;
+      }
+      const me = bdgMe();
+      if (!room.players || !room.players[me]) {
+        if (BDG.everSeen) bdgClosedBack('You were removed from the lobby.');
+        return;
+      }
+      BDG.everSeen = true;
+      BDG.room = room;
+      bdgTrackBeats(room);
+      if (BDG.prevHost !== room.hostId) {
+        if (room.hostId === me && BDG.prevHost) {
+          const t = Date.now();
+          Object.keys(BDG.beatSeen).forEach(id => { BDG.beatSeen[id].at = t; });
+        }
+        BDG.prevHost = room.hostId;
+      }
+
+      if (room.status === 'lobby') {
+        if (BDG.lastStatus !== 'lobby') bdgResetGameUi();
+        bdgShowView('Lobby');
+        bdgRenderLobby(room);
+      } else if (room.status === 'playing' && room.game) {
+        if (BDG.lastStatus !== 'playing') {
+          bdgResetGameUi();
+          bdgBuildRows(room);
+          BDG.lastKey = null;
+        }
+        bdgShowView('Game');
+        bdgOnGame(room);
+      }
+      BDG.lastStatus = room.status;
+      bdgHostStep();
+    }
+
+    function bdgTick() {
+      const room = BDG.room;
+      if (!room || !BDG.code) return;
+      const me = bdgMe();
+      // Host migration: if the host goes silent, the next player in join order takes over
+      if (room.hostId !== me) {
+        const host = room.players[room.hostId];
+        const rank = Math.max(0, bdgSortedIds(room).indexOf(me));
+        let silent = 0;
+        if (!host) {
+          if (!BDG.noHostSince) BDG.noHostSince = Date.now();
+          silent = Date.now() - BDG.noHostSince + BDG_STALE_MS;
+        } else {
+          BDG.noHostSince = 0;
+          const hb = BDG.beatSeen[room.hostId];
+          silent = hb ? Date.now() - hb.at : 0;
+        }
+        if (silent > BDG_STALE_MS + rank * 2500) {
+          BDG.backend.patch(BDG.code, { hostId: me }).catch(() => {});
+        }
+      }
+      bdgHostStep();
+    }
+
+    function bdgResetGameUi() {
+      clearInterval(BDG.timer);
+      bdgClearTransient();
+      bdgProjHide(true);
+      BDG.used = new Set();
+      BDG.submitted = false;
+      BDG.evaluating = false;
+      BDG.hostKey = null;
+      BDG.hostBusy = false;
+      const hide = (id) => { const el = bdgEl(id); if (el) el.classList.add('hidden'); };
+      hide('bdgQCard'); hide('bdgCountdown'); hide('bdgPromptEcho'); hide('bdgSummary');
+      const end = bdgEl('bdgEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      const sm = bdgEl('bdgSummary'); if (sm) sm.innerHTML = '';
+      const v = bdgEl('bdgVerdict'); if (v) v.innerHTML = '';
+      const rl = bdgEl('bdgRoundLine'); if (rl) rl.textContent = '';
+      const pl = bdgEl('bdgPlayers'); if (pl) pl.innerHTML = '';
+      const rail = bdgEl('bdgRail'); if (rail) rail.innerHTML = '';
+      const rc = bdgEl('bdgRailCount'); if (rc) rc.textContent = '0';
+    }
+
+    /* ---------- Lobby ---------- */
+    function bdgRenderLobby(room) {
+      const ids = bdgSortedIds(room);
+      const me = bdgMe();
+      const isHost = room.hostId === me;
+      const codeEl = bdgEl('bdgLobbyCode'); if (codeEl) codeEl.textContent = room.code;
+      const badge = bdgEl('bdgLobbyBadge'); if (badge) badge.textContent = `Badges \u2022 ${room.isPublic ? 'Public' : 'Private'}`;
+
+      let html = '';
+      for (let i = 0; i < BDG_MAX_PLAYERS; i++) {
+        const id = ids[i];
+        if (id) {
+          const p = room.players[id];
+          html += `<div class="flex items-center justify-between gap-2 bg-pik-card border ${id === me ? 'border-slate-400/60' : 'border-pik-border'} rounded-xl px-3.5 py-2.5">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-pik-uncommon flex-shrink-0"></span>
+              <span class="font-display font-bold text-sm text-slate-100 truncate">${bdgEsc(p.name)}</span>
+              ${id === me ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-400">You</span>' : ''}
+            </div>
+            ${id === room.hostId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-pik-gold">Host</span>' : ''}
+          </div>`;
+        } else {
+          html += `<div class="flex items-center gap-2 bg-pik-bg border border-dashed border-pik-border rounded-xl px-3.5 py-2.5 text-slate-600 font-display text-sm">
+            <span class="w-2.5 h-2.5 rounded-full border border-slate-700"></span>Waiting for player...
+          </div>`;
+        }
+      }
+      const slots = bdgEl('bdgLobbySlots'); if (slots) slots.innerHTML = html;
+
+      const startBtn = bdgEl('bdgStartBtn');
+      const wait = bdgEl('bdgLobbyWait');
+      if (startBtn) {
+        startBtn.classList.toggle('hidden', !isHost);
+        startBtn.disabled = ids.length < BDG_MIN_PLAYERS;
+        startBtn.textContent = ids.length < BDG_MIN_PLAYERS ? `Need at least ${BDG_MIN_PLAYERS} players` : 'Start Game';
+      }
+      if (wait) {
+        wait.textContent = isHost
+          ? (room.isPublic && ids.length === BDG_MAX_PLAYERS ? 'Lobby full \u2014 starting soon...' : `${ids.length} / ${BDG_MAX_PLAYERS} players`)
+          : 'Waiting for the host to start...';
+      }
+    }
+
+    function bdgCopyCode() {
+      const room = BDG.room;
+      if (!room) return;
+      const note = bdgEl('bdgCopyNote');
+      try {
+        navigator.clipboard.writeText(room.code).then(() => { if (note) note.textContent = 'Copied!'; }).catch(() => {});
+      } catch (e) {}
+      setTimeout(() => { if (note) note.textContent = 'Click the code to copy it'; }, 1500);
+    }
+
+    async function bdgStartGame() {
+      const room = BDG.room;
+      if (!room || room.hostId !== bdgMe() || room.status !== 'lobby') return;
+      const order = bdgSortedIds(room).filter(id => bdgAlive(id)).slice(0, BDG_MAX_PLAYERS);
+      if (order.length < BDG_MIN_PLAYERS) { bdgSetMsg(`You need at least ${BDG_MIN_PLAYERS} players.`, 'bdgLobbyMsg'); return; }
+      const names = {};
+      order.forEach(id => { names[id] = room.players[id].name; });
+      try {
+        const badges = bdgBuildBadges(BDG_ROUNDS);
+        const questions = pvpPickQuestions(badges.length);
+        await BDG.backend.patch(BDG.code, {
+          status: 'playing',
+          updatedAt: Date.now(),
+          game: { questions, badges, order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], over: false, reason: '' }
+        });
+        playAudioTone('launch');
+      } catch (e) {
+        console.warn('[Badges]', e);
+        bdgSetMsg('Could not start the game. Try again.', 'bdgLobbyMsg');
+      }
+    }
+
+    async function bdgPlayAgain() {
+      const room = BDG.room;
+      if (!room || room.hostId !== bdgMe()) return;
+      try {
+        await BDG.backend.patch(BDG.code, { status: 'lobby', game: BDG_DEL, updatedAt: Date.now() });
+      } catch (e) { console.warn('[Badges]', e); }
+    }
+
+    /* ---------- Host-authoritative round engine ---------- */
+    function bdgHostStep() {
+      const room = BDG.room;
+      const me = bdgMe();
+      if (!room || room.hostId !== me || !BDG.code) return;
+      const now = Date.now();
+
+      if (room.status === 'lobby') {
+        Object.keys(room.players).forEach(id => {
+          if (id !== me && !bdgAlive(id)) BDG.backend.patch(BDG.code, { ['players.' + id]: BDG_DEL }).catch(() => {});
+        });
+        const count = Object.keys(room.players).length;
+        if (room.isPublic && count >= BDG_MAX_PLAYERS) {
+          if (!BDG.fullSince) BDG.fullSince = now;
+          if (now - BDG.fullSince > 2500) { BDG.fullSince = 0; bdgStartGame(); }
+        } else {
+          BDG.fullSince = 0;
+        }
+        return;
+      }
+
+      const g = room.game;
+      if (room.status !== 'playing' || !g || g.phase === 'done') return;
+
+      const key = `${g.round}:${g.phase}`;
+      if (BDG.hostKey !== key) { BDG.hostKey = key; BDG.hostKeyAt = now; BDG.hostBusy = false; }
+      const elapsed = now - BDG.hostKeyAt;
+      const active = bdgActiveIds(room);
+
+      if (BDG.hostBusy) return;
+
+      if (active.length < 1) {
+        BDG.hostBusy = true;
+        bdgEndGame(room).catch(() => { BDG.hostBusy = false; });
+        return;
+      }
+
+      const guarded = (fn) => {
+        BDG.hostBusy = true;
+        let p;
+        try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); }
+        p.catch((e) => { console.warn('[Badges]', e); setTimeout(() => { BDG.hostBusy = false; }, 1500); });
+      };
+
+      if (g.phase === 'countdown') {
+        if (elapsed >= BDG_COUNTDOWN_MS + 350) {
+          guarded(() => BDG.backend.patch(BDG.code, { 'game.phase': 'answering' }));
+        }
+      } else if (g.phase === 'answering') {
+        const answers = g.answers || {};
+        const allIn = active.every(id => answers[id]);
+        if (allIn || elapsed >= BDG_ANSWER_SECONDS * 1000 + BDG_GRACE_MS) {
+          guarded(() => bdgFinalizeRound(room, active));
+        }
+      } else if (g.phase === 'reveal') {
+        if (elapsed >= BDG_REVEAL_MS) {
+          const last = (g.rounds || [])[g.round];
+          if ((last && last.allSkip) || g.round + 1 >= (g.questions || []).length) {
+            guarded(() => bdgEndGame(room));
+          } else {
+            guarded(() => BDG.backend.patch(BDG.code, { 'game.round': g.round + 1, 'game.phase': 'countdown', 'game.answers': {} }));
+          }
+        }
+      }
+    }
+
+    async function bdgFinalizeRound(room, active) {
+      const g = room.game;
+      if ((g.rounds || []).length > g.round) {
+        await BDG.backend.patch(BDG.code, { 'game.phase': 'reveal' });
+        return;
+      }
+      const answers = {};
+      active.forEach(id => {
+        const a = g.answers && g.answers[id];
+        answers[id] = a
+          ? { text: a.text || '', key: a.key || '', len: a.len || 0, ms: a.ms || 0, skip: !!a.skip }
+          : { text: '', key: '', len: 0, ms: BDG_ANSWER_SECONDS * 1000, skip: true };
+      });
+      const allSkip = active.every(id => answers[id].skip);
+      const round = { prompt: g.questions[g.round], badge: g.badges[g.round] || null, answers, allSkip };
+      await BDG.backend.patch(BDG.code, {
+        'game.rounds': (g.rounds || []).concat([round]),
+        'game.phase': 'reveal'
+      });
+    }
+
+    async function bdgEndGame(room) {
+      const g = room.game;
+      const rounds = g.rounds || [];
+      const last = rounds[rounds.length - 1];
+      const over = !!(last && last.allSkip);
+      const reason = over ? 'skip' : (rounds.length >= (g.questions || []).length ? 'cleared' : 'left');
+      await BDG.backend.patch(BDG.code, { 'game.phase': 'done', 'game.over': over, 'game.reason': reason });
+    }
+
+    /* ---------- Client-side phase handling ---------- */
+    function bdgOnGame(room) {
+      const g = room.game;
+      const key = `${g.round}:${g.phase}`;
+      if (key !== BDG.lastKey) {
+        const first = BDG.lastKey === null;
+        BDG.lastKey = key;
+        bdgEnterPhase(room, first);
+      } else {
+        bdgRefreshLive(room);
+      }
+    }
+
+    function bdgName(room, id) {
+      return (room.players && room.players[id] && room.players[id].name) || (room.game.names && room.game.names[id]) || 'Player';
+    }
+
+    function bdgChipHtml(a) {
+      if (!a) return '';
+      const secs = ((a.ms || 0) / 1000).toFixed(1);
+      if (a.skip) return `<span class="text-slate-500">${a.text ? 'Skipped' : 'No answer'} &bull; ${secs}s</span>`;
+      const cfg = RARITY_CONFIG[a.key] || RARITY_CONFIG.common;
+      return `<span style="color:${cfg.color}">${bdgEsc(a.text)} &bull; ${cfg.name} &bull; ${secs}s</span>`;
+    }
+
+    function bdgSetChip(id, html, pop) {
+      const el = bdgEl('bdg-chip-' + id);
+      if (!el) return;
+      el.innerHTML = html;
+      if (pop) {
+        el.classList.remove('feedback-slide-in');
+        void el.offsetWidth;
+        el.classList.add('feedback-slide-in');
+      }
+    }
+
+    function bdgBuildRows(room) {
+      const host = bdgEl('bdgPlayers');
+      if (!host) return;
+      const me = bdgMe();
+      host.innerHTML = (room.game.order || []).map(id => `
+        <div id="bdg-row-${id}" class="bdg-row${id === me ? ' bdg-row-me' : ''}">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="font-display font-bold text-xs sm:text-sm text-slate-100 truncate">${bdgEsc(bdgName(room, id))}</span>
+            ${id === me ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-500">You</span>' : ''}
+          </div>
+          <div id="bdg-chip-${id}" class="text-[11px] sm:text-xs font-display font-bold text-right truncate max-w-[62%]"></div>
+        </div>`).join('');
+    }
+
+    function bdgResetRows(room) {
+      (room.game.order || []).forEach(id => {
+        const row = bdgEl('bdg-row-' + id);
+        if (row) { row.classList.remove('bdg-row-ok', 'bdg-row-skip'); row.style.opacity = ''; }
+        bdgSetChip(id, '');
+      });
+    }
+
+    function bdgRefreshLive(room) {
+      const g = room.game;
+      (g.order || []).forEach(id => {
+        const present = room.players && room.players[id] && bdgAlive(id);
+        const row = bdgEl('bdg-row-' + id);
+        if (row) row.style.opacity = present || g.phase === 'done' ? '' : '0.45';
+        if (g.phase === 'answering') {
+          if (!present) { bdgSetChip(id, '<span class="text-slate-600">left the game</span>'); return; }
+          const done = g.answers && g.answers[id];
+          bdgSetChip(id, done
+            ? '<span class="text-pik-uncommon">Locked in &#10003;</span>'
+            : '<span class="text-slate-500">typing...</span>');
+        }
+      });
+      if (g.phase === 'done') bdgRenderEndActions(room);
+    }
+
+    function bdgSetRailCount(n) {
+      const rc = bdgEl('bdgRailCount');
+      if (rc) rc.textContent = String(n);
+    }
+
+    function bdgEnterPhase(room, firstLoad) {
+      const g = room.game;
+      bdgClearTransient();
+      clearInterval(BDG.timer);
+      bdgProjHide(true);
+
+      const total = (g.questions || []).length;
+      const roundLine = bdgEl('bdgRoundLine');
+      if (roundLine) {
+        roundLine.textContent = g.phase === 'done'
+          ? 'Game over'
+          : `Round ${g.round + 1} of ${total} \u2022 ${g.round + 1} badge${g.round ? 's' : ''} in play`;
+      }
+
+      const card = bdgEl('bdgQCard');
+      const cd = bdgEl('bdgCountdown');
+      const echo = bdgEl('bdgPromptEcho');
+      const verdict = bdgEl('bdgVerdict');
+      const summary = bdgEl('bdgSummary');
+
+      if (g.phase === 'countdown') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (cd) cd.classList.add('hidden');
+        if (summary) { summary.classList.add('hidden'); summary.innerHTML = ''; }
+        const end = bdgEl('bdgEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+        bdgResetRows(room);
+        if (verdict) verdict.innerHTML = '<span class="text-slate-400">A new badge is on its way...</span>';
+        bdgPlayNewBadge(room);
+        BDG.phaseTimers.push(setTimeout(() => {
+          if (!cd) return;
+          cd.textContent = 'GO';
+          cd.classList.remove('hidden', 'bdg-go-pop');
+          void cd.offsetWidth;
+          cd.classList.add('bdg-go-pop');
+          playAudioTone('launch');
+        }, BDG_COUNTDOWN_MS - 100));
+      } else if (g.phase === 'answering') {
+        if (cd) cd.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (verdict) verdict.innerHTML = '';
+        bdgRenderRail(room, g.round + 1);
+        const prompt = g.questions[g.round];
+        const qn = bdgEl('bdgQNum'); if (qn) qn.textContent = `Round ${g.round + 1}`;
+        const pr = bdgEl('bdgPrompt'); if (pr) pr.textContent = prompt;
+        const hint = bdgEl('bdgReqHint');
+        if (hint) hint.textContent = `Your answer must follow all ${g.round + 1} badge${g.round ? 's' : ''} on the right. Hover (or tap) a badge to read it.`;
+        bdgHideFeedback();
+        BDG.evaluating = false;
+        const already = g.answers && g.answers[bdgMe()];
+        BDG.submitted = !!already;
+        BDG.qStart = Date.now();
+        BDG.pausedMs = 0;
+        const input = bdgEl('bdgAnswerInput');
+        if (input) input.value = '';
+        bdgSetEvalUi(false);
+        if (already) bdgLockInputs();
+        if (card) {
+          card.classList.remove('hidden');
+          card.classList.add('card-rise-in-prepare');
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            card.classList.add('card-rise-in-spring');
+            card.classList.remove('card-rise-in-prepare');
+            BDG.phaseTimers.push(setTimeout(() => card.classList.remove('card-rise-in-spring'), 480));
+          }));
+        }
+        if (input && !already) setTimeout(() => input.focus(), 60);
+        bdgRefreshLive(room);
+        if (!already) bdgStartTimer(BDG_ANSWER_SECONDS);
+      } else if (g.phase === 'reveal') {
+        if (cd) cd.classList.add('hidden');
+        if (card && !card.classList.contains('hidden')) {
+          card.classList.add('card-slide-out');
+          BDG.phaseTimers.push(setTimeout(() => { card.classList.add('hidden'); card.classList.remove('card-slide-out'); }, 320));
+        } else if (card) {
+          card.classList.add('hidden');
+        }
+        const r = (g.rounds || [])[g.round];
+        if (!r) return;
+        bdgRenderRail(room, g.round + 1);
+        if (echo) { echo.textContent = r.prompt; echo.classList.remove('hidden'); }
+        bdgPlayReveal(room, r, firstLoad);
+      } else if (g.phase === 'done') {
+        if (cd) cd.classList.add('hidden');
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        bdgRenderRail(room, Math.min((g.rounds || []).length, (g.badges || []).length));
+        const last = (g.rounds || [])[(g.rounds || []).length - 1];
+        if (last) (g.order || []).forEach(id => { if (last.answers && last.answers[id]) bdgSetChip(id, bdgChipHtml(last.answers[id])); });
+        bdgShowEnd(room, firstLoad);
+      }
+    }
+
+    function bdgPlayReveal(room, r, firstLoad) {
+      const g = room.game;
+      const verdict = bdgEl('bdgVerdict');
+      let bestKey = 'common', bestLen = -1, answered = 0, count = 0;
+      (g.order || []).forEach(id => {
+        const a = r.answers && r.answers[id];
+        const row = bdgEl('bdg-row-' + id);
+        if (row) { row.style.opacity = ''; row.classList.remove('bdg-row-ok', 'bdg-row-skip'); }
+        if (a) {
+          count++;
+          bdgSetChip(id, bdgChipHtml(a), !firstLoad);
+          if (a.skip) { if (row) row.classList.add('bdg-row-skip'); }
+          else {
+            answered++;
+            if (row) row.classList.add('bdg-row-ok');
+            if ((a.len || 0) > bestLen) { bestLen = a.len || 0; bestKey = a.key; }
+          }
+        } else {
+          bdgSetChip(id, '<span class="text-slate-600">left the game</span>');
+        }
+      });
+      if (r.allSkip) {
+        if (verdict) verdict.innerHTML = '<span class="text-red-400">Everyone skipped &mdash; the team is out of answers!</span>';
+        if (!firstLoad) playAudioTone('timeout');
+      } else {
+        if (verdict) verdict.innerHTML = `<span class="text-pik-uncommon">${answered} of ${count} answered &mdash; the team survives!</span>`;
+        if (!firstLoad) playAudioTone('stretch', RARITY_CONFIG[bestKey] ? bestKey : 'common');
+      }
+    }
+
+    /* ---------- Badge rail + projection ---------- */
+    function bdgMakeBadgeEl(b, i) {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'bdg-badge';
+      el.dataset.i = String(i);
+      el.style.setProperty('--bc', (BDG_KIND[b.t] || { color: '#fff' }).color);
+      el.setAttribute('aria-label', `Badge ${i + 1}: ${bdgText(b)}`);
+      el.innerHTML = bdgShieldSvg(b);
+      let pointer = 'mouse';
+      el.addEventListener('pointerdown', (e) => { pointer = e.pointerType || 'mouse'; });
+      el.addEventListener('pointerenter', (e) => { if ((e.pointerType || 'mouse') === 'mouse') bdgProjShow(i, el); });
+      el.addEventListener('pointerleave', (e) => { if ((e.pointerType || 'mouse') === 'mouse' && BDG.projIdx === i) bdgProjHide(); });
+      el.addEventListener('focus', () => bdgProjShow(i, el));
+      el.addEventListener('blur', () => { if (BDG.projIdx === i) bdgProjHide(); });
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (pointer === 'mouse') return;   // mouse users already get the hover projection
+        if (BDG.projIdx === i) { bdgProjHide(); return; }
+        bdgProjShow(i, el);
+        clearTimeout(BDG.projTimer);
+        BDG.projTimer = setTimeout(() => { if (BDG.projIdx === i) bdgProjHide(); }, 4000);
+      });
+      return el;
+    }
+
+    function bdgRenderRail(room, count) {
+      const rail = bdgEl('bdgRail');
+      if (!rail) return;
+      const badges = (room.game && room.game.badges) || [];
+      rail.innerHTML = '';
+      for (let i = 0; i < count && i < badges.length; i++) rail.appendChild(bdgMakeBadgeEl(badges[i], i));
+      bdgSetRailCount(Math.min(count, badges.length));
+    }
+
+    function bdgFlashBadges(idxs) {
+      const rail = bdgEl('bdgRail');
+      if (!rail) return;
+      idxs.forEach(i => {
+        const el = rail.querySelector(`[data-i="${i}"]`);
+        if (!el) return;
+        el.classList.remove('bdg-badge-fail');
+        void el.offsetWidth;
+        el.classList.add('bdg-badge-fail');
+        setTimeout(() => el.classList.remove('bdg-badge-fail'), 900);
+      });
+    }
+
+    function bdgGeom(el) {
+      const layer = bdgEl('bdgProjLayer');
+      const lr = layer.getBoundingClientRect();
+      const W = lr.width, H = lr.height;
+      if (!el) return { W, H, px: W / 2, py: H / 2, dx: 0, dy: 0 };
+      const r = el.getBoundingClientRect();
+      const px = r.left + r.width / 2 - lr.left;
+      const py = r.top + r.height / 2 - lr.top;
+      return { W, H, px, py, dx: px - W / 2, dy: py - H / 2 };
+    }
+
+    function bdgProjSetContent(b, i, label) {
+      const k = BDG_KIND[b.t] || { color: '#d4af37', label: '' };
+      const card = bdgEl('bdgProjCard');
+      card.style.setProperty('--bc', k.color);
+      card.style.setProperty('--bcg', k.color + '55');
+      const sh = bdgEl('bdgProjShield');
+      sh.innerHTML = bdgShieldSvg(b);
+      const svg = sh.firstElementChild;
+      if (svg) { svg.style.width = '56px'; svg.style.height = '64px'; svg.style.display = 'block'; }
+      bdgEl('bdgProjLabel').textContent = label || `Badge ${i + 1} \u2022 ${k.label}`;
+      bdgEl('bdgProjText').textContent = bdgText(b);
+    }
+
+    function bdgProjCardTo(dx, dy, s, opacity, animate) {
+      const card = bdgEl('bdgProjCard');
+      if (!animate) card.style.transition = 'none';
+      card.style.setProperty('--dx', dx + 'px');
+      card.style.setProperty('--dy', dy + 'px');
+      card.style.setProperty('--s', String(s));
+      card.style.opacity = String(opacity);
+      if (!animate) { void card.offsetWidth; card.style.transition = ''; }
+    }
+
+    function bdgBeam(geo, color, on) {
+      const svg = bdgEl('bdgBeam');
+      if (!svg) return;
+      if (!on) { svg.style.opacity = '0'; return; }
+      const card = bdgEl('bdgProjCard');
+      const cw = card.offsetWidth, ch = card.offsetHeight;
+      const ex = geo.W / 2 + cw / 2;
+      if (geo.px - ex < 12) { svg.style.opacity = '0'; return; }
+      bdgEl('bdgBeamPoly').setAttribute('points',
+        `${geo.px},${geo.py - 6} ${ex},${geo.H / 2 - ch / 2} ${ex},${geo.H / 2 + ch / 2} ${geo.px},${geo.py + 6}`);
+      const grad = bdgEl('bdgBeamGrad');
+      grad.setAttribute('x1', geo.px); grad.setAttribute('y1', geo.py);
+      grad.setAttribute('x2', ex); grad.setAttribute('y2', geo.H / 2);
+      bdgEl('bdgBeamS0').setAttribute('stop-color', color);
+      bdgEl('bdgBeamS1').setAttribute('stop-color', color);
+      svg.style.opacity = '1';
+    }
+
+    // Project a badge's requirement from the rail to the center of the screen
+    function bdgProjShow(i, el) {
+      const room = BDG.room;
+      const b = room && room.game && room.game.badges && room.game.badges[i];
+      if (!b || !el) return;
+      clearTimeout(BDG.projTimer);
+      bdgProjSetContent(b, i);
+      const geo = bdgGeom(el);
+      bdgProjCardTo(geo.dx, geo.dy, 0.1, 0, false);
+      requestAnimationFrame(() => {
+        if (BDG.projEl !== el) return;
+        bdgProjCardTo(0, 0, 1, 1, true);
+        bdgBeam(geo, (BDG_KIND[b.t] || { color: '#fff' }).color, true);
+      });
+      BDG.projIdx = i;
+      BDG.projEl = el;
+    }
+
+    function bdgProjHide(instant) {
+      clearTimeout(BDG.projTimer);
+      const el = BDG.projEl;
+      BDG.projIdx = -1;
+      BDG.projEl = null;
+      bdgBeam(null, '#fff', false);
+      if (instant || !el || !el.isConnected) { bdgProjCardTo(0, 0, 0.1, 0, false); return; }
+      const geo = bdgGeom(el);
+      bdgProjCardTo(geo.dx, geo.dy, 0.1, 0, true);
+    }
+
+    // A new badge pops up in the middle of the screen, then flies onto the rail
+    function bdgPlayNewBadge(room) {
+      const g = room.game, i = g.round, b = g.badges[i];
+      bdgRenderRail(room, i);
+      if (!b) return;
+      const rail = bdgEl('bdgRail');
+      const slot = bdgMakeBadgeEl(b, i);
+      slot.style.opacity = '0';
+      rail.appendChild(slot);
+      try { slot.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+
+      BDG.phaseTimers.push(setTimeout(() => {
+        bdgProjSetContent(b, i, `New badge \u2022 ${(BDG_KIND[b.t] || { label: '' }).label}`);
+        bdgProjCardTo(0, 0, 0.3, 0, false);
+        requestAnimationFrame(() => bdgProjCardTo(0, 0, 1, 1, true));
+        playAudioTone('menu');
+      }, 150));
+      BDG.phaseTimers.push(setTimeout(() => {
+        const geo = bdgGeom(slot);
+        bdgProjCardTo(geo.dx, geo.dy, 0.1, 0, true);
+      }, 2450));
+      BDG.phaseTimers.push(setTimeout(() => {
+        slot.style.opacity = '1';
+        slot.classList.add('bdg-badge-land');
+        bdgSetRailCount(i + 1);
+        playAudioTone('stretch', 'uncommon');
+      }, 2950));
+    }
+
+    /* ---------- End of game ---------- */
+    function bdgComputeStats(room) {
+      const g = room.game;
+      const rounds = g.rounds || [];
+      const stats = {};
+      (g.order || []).forEach(id => { stats[id] = { id, answers: 0, skips: 0, bestLen: -1, best: null }; });
+      rounds.forEach(r => {
+        Object.keys(r.answers || {}).forEach(id => {
+          const st = stats[id];
+          if (!st) return;
+          const a = r.answers[id];
+          if (a.skip) { st.skips++; return; }
+          st.answers++;
+          if ((a.len || 0) > st.bestLen) { st.bestLen = a.len || 0; st.best = a; }
+        });
+      });
+      return stats;
+    }
+
+    function bdgShowEnd(room, firstLoad) {
+      const g = room.game;
+      const rounds = g.rounds || [];
+      const total = (g.questions || []).length;
+      const survived = rounds.filter(r => !r.allSkip).length;
+      const cleared = g.reason === 'cleared';
+      const verdict = bdgEl('bdgVerdict');
+      const badgeCount = Math.min(rounds.length, (g.badges || []).length);
+
+      let html;
+      if (cleared) html = `<span class="bdg-go-pop text-pik-gold text-lg sm:text-xl font-black mr-1">Perfect run!</span> Your team followed all ${total} badges.`;
+      else if (g.over) html = `Everyone skipped on round ${rounds.length} &mdash; the game is over.`;
+      else html = 'The game ended.';
+      if (verdict) verdict.innerHTML = html;
+      if (!firstLoad) playAudioTone('finish');
+
+      const stats = bdgComputeStats(room);
+      const lastBadge = g.over && rounds.length ? (g.badges || [])[rounds.length - 1] : null;
+      const rows = (g.order || []).map(id => {
+        const st = stats[id];
+        const best = st.best ? `<span style="color:${(RARITY_CONFIG[st.best.key] || RARITY_CONFIG.common).color}">${bdgEsc(st.best.text)}</span>` : '<span class="text-slate-600">&mdash;</span>';
+        return `<div class="flex items-center justify-between gap-2 px-3 py-1.5 border-t border-pik-border/50 text-[11px] sm:text-xs font-display">
+          <span class="font-bold text-slate-100 truncate min-w-0">${bdgEsc(bdgName(room, id))}</span>
+          <span class="text-slate-400 whitespace-nowrap">${st.answers} answered &bull; ${st.skips} skipped</span>
+          <span class="truncate max-w-[34%] text-right">${best}</span>
+        </div>`;
+      }).join('');
+
+      const box = bdgEl('bdgSummary');
+      if (box) {
+        box.innerHTML = `<div class="rounded-2xl border border-pik-gold/40 bg-pik-card/50 overflow-hidden feedback-slide-in">
+          <div class="grid grid-cols-2 text-center py-3">
+            <div><div class="font-display font-black text-3xl text-pik-gold">${survived}</div><div class="text-[10px] uppercase tracking-wider font-display font-bold text-slate-500">Rounds cleared</div></div>
+            <div><div class="font-display font-black text-3xl text-slate-100">${badgeCount}</div><div class="text-[10px] uppercase tracking-wider font-display font-bold text-slate-500">Badges collected</div></div>
+          </div>
+          ${lastBadge ? `<div class="px-3 pb-3 text-center text-[11px] sm:text-xs text-slate-400 font-display">Final badge: <span style="color:${(BDG_KIND[lastBadge.t] || { color: '#fff' }).color}" class="font-bold">${bdgEsc(bdgText(lastBadge))}</span></div>` : ''}
+          <div class="px-3 py-1 text-[10px] uppercase tracking-wider font-display font-bold text-slate-500 text-center border-t border-pik-border/50">Players &bull; best answer</div>
+          ${rows}
+        </div>`;
+        box.classList.remove('hidden');
+      }
+      bdgRenderEndActions(room);
+    }
+
+    function bdgRenderEndActions(room) {
+      const end = bdgEl('bdgEndActions');
+      if (!end) return;
+      end.classList.remove('hidden');
+      end.classList.add('flex');
+      const isHost = room.hostId === bdgMe();
+      const again = bdgEl('bdgAgainBtn'); if (again) again.classList.toggle('hidden', !isHost);
+      const wait = bdgEl('bdgEndWait'); if (wait) wait.textContent = isHost ? '' : 'Waiting for the host to start another game...';
+    }
+
+    /* ---------- Answering ---------- */
+    function bdgShowFeedback(msg) {
+      const fb = bdgEl('bdgFeedback');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden', 'feedback-slide-in');
+        void fb.offsetWidth;
+        fb.classList.add('feedback-slide-in');
+      }
+      const input = bdgEl('bdgAnswerInput');
+      if (input) {
+        input.classList.remove('input-shake');
+        void input.offsetWidth;
+        input.classList.add('input-shake');
+      }
+    }
+
+    function bdgHideFeedback() {
+      const fb = bdgEl('bdgFeedback');
+      if (fb) { fb.textContent = ''; fb.classList.add('hidden'); }
+      const input = bdgEl('bdgAnswerInput');
+      if (input) input.classList.remove('input-shake');
+    }
+
+    function bdgSetEvalUi(on) {
+      const i = bdgEl('bdgAnswerInput'), s = bdgEl('bdgSubmitBtn'), k = bdgEl('bdgSkipBtn'), t = bdgEl('bdgSubmitText'), c = bdgEl('bdgQCard');
+      if (i) i.disabled = on;
+      if (s) s.disabled = on;
+      if (k) k.disabled = on;
+      if (c) c.classList.toggle('card-evaluating', on);
+      if (t) t.textContent = on ? 'Judging...' : 'Submit';
+    }
+
+    function bdgLockInputs() {
+      const i = bdgEl('bdgAnswerInput'), s = bdgEl('bdgSubmitBtn'), k = bdgEl('bdgSkipBtn'), t = bdgEl('bdgSubmitText');
+      if (i) i.disabled = true;
+      if (s) s.disabled = true;
+      if (k) k.disabled = true;
+      if (t) t.textContent = 'Locked in';
+    }
+
+    function bdgStartTimer(seconds) {
+      clearInterval(BDG.timer);
+      BDG.timeLeft = seconds;
+      const txt = bdgEl('bdgTimerText'), pill = bdgEl('bdgTimerPill');
+      const paint = () => {
+        if (txt) txt.textContent = `${Math.max(0, BDG.timeLeft)}s`;
+        if (pill) pill.classList.toggle('timer-urgent', BDG.timeLeft > 0 && BDG.timeLeft <= 7);
+      };
+      paint();
+      BDG.timer = setInterval(() => {
+        if (BDG.evaluating || BDG.submitted) return;
+        BDG.timeLeft--;
+        paint();
+        if (BDG.timeLeft <= 0) {
+          clearInterval(BDG.timer);
+          if (pill) pill.classList.remove('timer-urgent');
+          playAudioTone('timeout');
+          bdgSkip(true);
+        }
+      }, 1000);
+    }
+
+    async function bdgSendAnswer(ans) {
+      const room = BDG.room;
+      if (!room || !room.game || room.game.phase !== 'answering') return;
+      BDG.submitted = true;
+      clearInterval(BDG.timer);
+      const pill = bdgEl('bdgTimerPill'); if (pill) pill.classList.remove('timer-urgent');
+      bdgLockInputs();
+      bdgSetChip(bdgMe(), '<span class="text-pik-uncommon">Locked in &#10003;</span>');
+      try {
+        await BDG.backend.patch(BDG.code, { ['game.answers.' + bdgMe()]: ans });
+      } catch (e) {
+        console.warn('[Badges]', e);
+        BDG.submitted = false;
+        bdgSetEvalUi(false);
+        bdgShowFeedback('Connection problem \u2014 please try again.');
+        bdgStartTimer(Math.max(1, BDG.timeLeft));
+      }
+    }
+
+    function bdgSkip(auto) {
+      if (BDG.submitted) return;
+      if (BDG.evaluating && !auto) return;
+      const g = BDG.room && BDG.room.game;
+      if (!g || g.phase !== 'answering') return;
+      if (!auto) playAudioTone('skip');
+      const ms = auto ? BDG_ANSWER_SECONDS * 1000 : Math.max(0, Date.now() - BDG.qStart - BDG.pausedMs);
+      bdgSendAnswer({ text: 'Skipped', key: 'skipped', len: 0, ms, skip: true });
+    }
+
+    function bdgBreakMsg(g, fails, raw) {
+      const first = bdgText(g.badges[fails[0]]);
+      return `\u201C${raw}\u201D breaks badge ${fails[0] + 1}: ${first}` + (fails.length > 1 ? ` (and ${fails.length - 1} more)` : '');
+    }
+
+    async function bdgSubmit() {
+      if (BDG.submitted || BDG.evaluating) return;
+      const g = BDG.room && BDG.room.game;
+      if (!g || g.phase !== 'answering') return;
+
+      const input = bdgEl('bdgAnswerInput');
+      const raw = input ? input.value.trim() : '';
+      if (!raw) { bdgShowFeedback('Please enter an answer or skip.'); playAudioTone('error'); return; }
+
+      // Every badge in play must be followed (checked instantly, before any AI judging)
+      const badgesInPlay = g.round + 1;
+      const fails = bdgFailed(g.badges || [], badgesInPlay, raw);
+      if (fails.length) {
+        bdgShowFeedback(bdgBreakMsg(g, fails, raw));
+        bdgFlashBadges(fails);
+        playAudioTone('error');
+        return;
+      }
+
+      const norm = normalize(raw);
+      if (BDG.used.has(norm)) { bdgShowFeedback(`"${raw}" has already been used this game.`); playAudioTone('error'); return; }
+
+      const typedMs = Math.max(0, Date.now() - BDG.qStart - BDG.pausedMs);
+      const round = g.round;
+      const prompt = g.questions[round];
+      const judgeStart = Date.now();
+
+      BDG.evaluating = true;
+      bdgHideFeedback();
+      bdgSetEvalUi(true);
+
+      const stillValid = () => {
+        const cur = BDG.room && BDG.room.game;
+        return cur && cur.round === round && cur.phase === 'answering';
+      };
+
+      try {
+        const verdict = await evaluateAnswerWithGroq(prompt, raw);
+        BDG.evaluating = false;
+        if (!stillValid()) return;
+        bdgSetEvalUi(false);
+
+        if (!verdict || !verdict.valid) {
+          BDG.pausedMs += Date.now() - judgeStart;
+          const reasonMsg = verdict && verdict.reason ? ` \u2014 ${verdict.reason}` : '';
+          bdgShowFeedback(`"${raw}" doesn't fit${reasonMsg}`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+
+        let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
+        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
+        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
+
+        // Show the judged spelling only if it still follows every badge; otherwise keep what was typed
+        let cleanAnswer = (verdict.normalizedAnswer || raw).trim();
+        if (bdgFailed(g.badges || [], badgesInPlay, cleanAnswer).length) cleanAnswer = raw;
+        const normClean = normalize(cleanAnswer);
+        if (BDG.used.has(normClean)) {
+          BDG.pausedMs += Date.now() - judgeStart;
+          bdgShowFeedback(`"${cleanAnswer}" has already been used this game.`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+        BDG.used.add(norm);
+        BDG.used.add(normClean);
+
+        bdgSendAnswer({ text: cleanAnswer, key: rarityKey, len: RARITY_CONFIG[rarityKey].length, ms: typedMs, skip: false });
+      } catch (err) {
+        BDG.evaluating = false;
+        if (!stillValid()) return;
+        bdgSetEvalUi(false);
+        BDG.pausedMs += Date.now() - judgeStart;
+        playAudioTone('error');
+        bdgShowFeedback('Unable to verify answer right now. Please try again.' + (pikJudgeDiagText() ? ` [${pikJudgeDiagText()}]` : ''));
+        if (input) input.focus();
+      }
+    }
+
+    // Tapping anywhere else closes a projected badge
+    (function () {
+      const screen = document.getElementById('bdgScreen');
+      if (screen) screen.addEventListener('click', () => { if (BDG.projIdx >= 0) bdgProjHide(); });
+    })();
+  </script>
+
   <!-- ================= SHARED CLOUD VERDICT SYNC ================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -8699,792 +10144,6 @@ Rules:
     })();
   </script>
 
-
-
-  <!-- ================= BADGES ENGINE ================= -->
-  <script>
-    const BADGE_MAX_PLAYERS = 5;
-    const BADGE_QUESTION_COUNT = 8;
-    const BADGE_ANSWER_SECONDS = 35;
-    const BADGE_COUNTDOWN_MS = 3000;
-    const BADGE_REVEAL_MS = 5000;
-    const BADGE_GRACE_MS = 15000;
-    const BADGE_STALE_MS = 25000;
-    const BADGE_DEL = { __badgeDelete: true };
-
-    const BADGES = {
-      myId: 'b' + Math.random().toString(36).slice(2, 9),
-      backend: null, backendPromise: null,
-      code: null, room: null, unwatch: null, everSeen: false,
-      hbTimer: null, tickTimer: null,
-      lastKey: null, lastStatus: null,
-      beatSeen: {}, prevHost: null, noHostSince: 0,
-      hostKey: null, hostKeyAt: 0, hostBusy: false,
-      timer: null, timeLeft: BADGE_ANSWER_SECONDS,
-      evaluating: false, submitted: false,
-      qStart: 0, pausedMs: 0, used: new Set(),
-      cdTimers: [], phaseTimers: [], confettiRaf: 0
-    };
-
-    const badgeEl = (id) => document.getElementById(id);
-    const badgeEsc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-    function badgeApplyPatch(doc, patch) {
-      for (const path in patch) {
-        const parts = path.split('.');
-        let o = doc;
-        for (let i = 0; i < parts.length - 1; i++) {
-          if (o[parts[i]] == null || typeof o[parts[i]] !== 'object') o[parts[i]] = {};
-          o = o[parts[i]];
-        }
-        const last = parts[parts.length - 1];
-        const v = patch[path];
-        if (v && v.__badgeDelete) delete o[last];
-        else o[last] = JSON.parse(JSON.stringify(v === undefined ? null : v));
-      }
-    }
-
-    /* ---------- Badge generation + validation ---------- */
-    const BADGE_POOL = [
-      { type: 'starts_with', icon: 'A\u2192', color: '#388e3c', gen: () => { const l = 'ABCDEFGHJKLMNPQRSTUVWXYZ'[getRandomInt(23)]; return { text: 'Starts with "' + l + '"', param: l }; } },
-      { type: 'ends_with', icon: '\u2192Z', color: '#388e3c', gen: () => { const s = ['ing','tion','er','ly','a','s','e','n'][getRandomInt(8)]; return { text: 'Ends in "-' + s + '"', param: s }; } },
-      { type: 'contains_letter', icon: '\u2208L', color: '#388e3c', gen: () => { const l = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[getRandomInt(26)]; return { text: 'Contains letter "' + l + '"', param: l }; } },
-      { type: 'no_letter', icon: '\u2209L', color: '#388e3c', gen: () => { const l = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[getRandomInt(26)]; return { text: 'NO letter "' + l + '"', param: l }; } },
-      { type: 'no_vowel_start', icon: '\u00acV', color: '#388e3c', text: 'Must NOT start with a vowel', param: '' },
-      { type: 'one_word', icon: '1W', color: '#1976d2', text: 'Exactly ONE word', param: '' },
-      { type: 'two_words', icon: '2W', color: '#1976d2', text: 'Exactly TWO words', param: '' },
-      { type: 'short', icon: '<6', color: '#1976d2', text: 'Less than 6 letters', param: '' },
-      { type: 'long', icon: '>8', color: '#1976d2', text: 'More than 8 letters', param: '' },
-      { type: 'double_letter', icon: '\u29c9', color: '#1976d2', text: 'Has a double letter (e.g. "tt")', param: '' },
-      { type: 'same_start_end', icon: 'A\u21c4A', color: '#1976d2', text: 'Starts & ends with same letter', param: '' },
-      { type: 'has_hyphen', icon: '-', color: '#1976d2', text: 'Must contain a hyphen', param: '' },
-      { type: 'no_hyphen', icon: '\u00ac-', color: '#1976d2', text: 'Must NOT contain a hyphen', param: '' },
-      { type: 'all_consonants', icon: 'BCDF', color: '#1976d2', text: 'All consonants (no vowels)', param: '' },
-      { type: 'vowel_count', icon: 'V\u00b3', color: '#1976d2', gen: () => { const n = getRandomInt(3) + 2; return { text: 'Exactly ' + n + ' vowels', param: String(n) }; } },
-    ];
-
-    function badgeGenerate(qIdx) {
-      const tmpl = BADGE_POOL[getRandomInt(BADGE_POOL.length)];
-      const extra = tmpl.gen ? tmpl.gen() : { text: tmpl.text, param: tmpl.param || '' };
-      return { type: tmpl.type, icon: tmpl.icon, color: tmpl.color, text: extra.text, param: extra.param, questionIndex: qIdx };
-    }
-
-    function badgeCheck(badge, answer) {
-      const a = (answer || '').toLowerCase().trim();
-      const clean = a.replace(/[^a-z]/g, '');
-      switch (badge.type) {
-        case 'starts_with': return a.startsWith((badge.param || '').toLowerCase());
-        case 'ends_with': return a.endsWith((badge.param || '').toLowerCase());
-        case 'contains_letter': return a.includes((badge.param || '').toLowerCase());
-        case 'no_letter': return !a.includes((badge.param || '').toLowerCase());
-        case 'no_vowel_start': return !/^[aeiou]/.test(a);
-        case 'one_word': return a.split(/\s+/).filter(Boolean).length === 1;
-        case 'two_words': return a.split(/\s+/).filter(Boolean).length === 2;
-        case 'short': return clean.length < 6;
-        case 'long': return clean.length > 8;
-        case 'double_letter': return /([a-z])\1/.test(a);
-        case 'same_start_end': return clean.length > 0 && clean[0] === clean[clean.length - 1];
-        case 'has_hyphen': return (answer || '').includes('-');
-        case 'no_hyphen': return !(answer || '').includes('-');
-        case 'all_consonants': return clean.length > 0 && !/[aeiou]/.test(clean);
-        case 'vowel_count': return (a.match(/[aeiou]/g) || []).length === parseInt(badge.param);
-        default: return true;
-      }
-    }
-
-    function badgeCheckAll(badges, answer) {
-      for (const b of badges) {
-        if (!badgeCheck(b, answer)) {
-          return { passed: false, violated: b };
-        }
-      }
-      return { passed: true, violated: null };
-    }
-
-    function badgeGenerateAll(qIdx) {
-      const result = [];
-      const used = new Set();
-      for (let i = 0; i < qIdx; i++) {
-        let attempts = 0;
-        let badge;
-        do {
-          badge = badgeGenerate(i);
-          attempts++;
-        } while (used.has(badge.type) && attempts < 10);
-        used.add(badge.type);
-        result.push(badge);
-      }
-      return result;
-    }
-
-    /* ---------- Backend ---------- */
-    function badgeLocalBackend() {
-      const P = 'pik_badge_room_';
-      const watchers = {};
-      const read = (c) => { try { const r = localStorage.getItem(P + c); return r ? JSON.parse(r) : null; } catch (e) { return null; } };
-      const write = (c, d) => { try { localStorage.setItem(P + c, JSON.stringify(d)); } catch (e) {} };
-      const notify = (c) => { (watchers[c] || []).slice().forEach(cb => cb(read(c))); };
-      window.addEventListener('storage', (e) => { if (e.key && e.key.startsWith(P)) notify(e.key.slice(P.length)); });
-      return {
-        kind: 'local',
-        async get(c) { return read(c); },
-        async set(c, d) { write(c, d); notify(c); },
-        async patch(c, obj) { const d = read(c); if (!d) return; badgeApplyPatch(d, obj); write(c, d); notify(c); },
-        async remove(c) { try { localStorage.removeItem(P + c); } catch (e) {} notify(c); },
-        watch(c, cb) { (watchers[c] = watchers[c] || []).push(cb); setTimeout(() => cb(read(c)), 0); return () => { watchers[c] = (watchers[c] || []).filter(x => x !== cb); }; },
-        release(c) {}
-      };
-    }
-
-    function badgeMqttBackend(client) {
-      const ROOT = 'pik/badges/v1/';
-      const docs = {}, revs = {}, watchers = {}, waiters = {};
-      const subs = new Set();
-      const stateT = (c) => ROOT + 'r/' + c + '/state';
-      const inT = (c) => ROOT + 'r/' + c + '/in';
-      const iAmHost = (c) => !!(docs[c] && docs[c].hostId === BADGES.myId);
-      const emit = (c) => { (watchers[c] || []).slice().forEach(cb => cb(docs[c] || null)); };
-      const pub = (topic, payload, retain) => { try { client.publish(topic, payload, { qos: 1, retain: !!retain }); } catch (e) {} };
-      const sub = (t) => { if (subs.has(t)) return; subs.add(t); try { client.subscribe(t, { qos: 1 }); } catch (e) {} };
-      function publishState(c) { const d = docs[c]; if (!d) return; revs[c] = (revs[c] || 0) + 1; pub(stateT(c), JSON.stringify({ by: BADGES.myId, rev: revs[c], doc: d }), true); emit(c); }
-      client.on('connect', () => { subs.forEach(t => { try { client.subscribe(t, { qos: 1 }); } catch (e) {} }); });
-      client.on('message', (topic, buf) => {
-        const text = buf.toString();
-        const m = topic.match(/^pik\/badges\/v1\/r\/([A-Z0-9]+)\/(state|in)$/);
-        if (!m) return;
-        const c = m[1]; let msg = null; if (text) { try { msg = JSON.parse(text); } catch (e) { return; } }
-        if (m[2] === 'state') { if (msg && msg.by === BADGES.myId) return; docs[c] = msg ? msg.doc : null; if (msg) revs[c] = Math.max(revs[c] || 0, msg.rev || 0); (waiters[c] || []).splice(0).forEach(f => f()); emit(c); }
-        else if (msg && msg.patch && iAmHost(c)) { badgeApplyPatch(docs[c], msg.patch); publishState(c); }
-      });
-      return {
-        kind: 'mqtt',
-        async get(c) { sub(stateT(c)); if (docs[c] === undefined) { await new Promise(res => { (waiters[c] = waiters[c] || []).push(res); setTimeout(res, 1500); }); } return docs[c] === undefined ? null : docs[c]; },
-        async set(c, d) { docs[c] = d; revs[c] = 0; sub(stateT(c)); sub(inT(c)); publishState(c); },
-        async patch(c, obj) { if (iAmHost(c)) { badgeApplyPatch(docs[c], obj); publishState(c); return; } if (obj.hostId === BADGES.myId && docs[c]) { badgeApplyPatch(docs[c], obj); sub(inT(c)); publishState(c); return; } pub(inT(c), JSON.stringify({ patch: obj, from: BADGES.myId }), false); },
-        async remove(c) { pub(stateT(c), '', true); docs[c] = null; },
-        watch(c, cb) { sub(stateT(c)); sub(inT(c)); (watchers[c] = watchers[c] || []).push(cb); if (docs[c] !== undefined) setTimeout(() => cb(docs[c]), 0); return () => { watchers[c] = (watchers[c] || []).filter(x => x !== cb); }; },
-        release(c) {}
-      };
-    }
-
-    function badgeCloudBackend(cloud) {
-      const { db, appId, fb } = cloud;
-      const base = ['artifacts', appId, 'public', 'data', 'badgeRooms'];
-      const ref = (c) => fb.doc(db, ...base, c);
-      return {
-        kind: 'cloud',
-        async get(c) { const s = await fb.getDoc(ref(c)); return s.exists() ? s.data() : null; },
-        async set(c, d) { await fb.setDoc(ref(c), d); },
-        async patch(c, obj) { const o = {}; for (const k in obj) o[k] = (obj[k] && obj[k].__badgeDelete) ? fb.deleteField() : obj[k]; await fb.updateDoc(ref(c), o); },
-        async remove(c) { await fb.deleteDoc(ref(c)); },
-        watch(c, cb) { return fb.onSnapshot(ref(c), (s) => cb(s.exists() ? s.data() : null), (err) => console.warn('[Badges] listener error:', err)); }
-      };
-    }
-
-    async function badgeGetBackend() {
-      if (BADGES.backend) return BADGES.backend;
-      if (!BADGES.backendPromise) {
-        BADGES.backendPromise = (async () => {
-          const t0 = Date.now();
-          while (Date.now() - t0 < 3500) {
-            if (window.__pikCloud) { BADGES.backend = badgeCloudBackend(window.__pikCloud); return BADGES.backend; }
-            if (window.__pikCloudFailed) break;
-            await new Promise(r => setTimeout(r, 120));
-          }
-          if (typeof pvpConnectMqtt === 'function') { const client = await pvpConnectMqtt(); if (client) { BADGES.backend = badgeMqttBackend(client); return BADGES.backend; } }
-          BADGES.backend = badgeLocalBackend();
-          return BADGES.backend;
-        })();
-      }
-      return BADGES.backendPromise;
-    }
-
-    /* ---------- Screen / view helpers ---------- */
-    function badgeShowView(name) {
-      ['Lobby', 'Wait', 'Game', 'Results'].forEach(v => { const el = badgeEl('badgeView' + v); if (el) el.classList.toggle('hidden-v', v !== name); });
-    }
-    function badgeSetMsg(msg, id) { const el = badgeEl(id || 'badgeLobbyMsg'); if (el) el.textContent = msg || ''; }
-    function badgeToggleAudio() { toggleAudio(); const a = badgeEl('badgeAudioIcon'), b = badgeEl('audioIcon'); if (a && b) a.innerHTML = b.innerHTML; }
-    function badgeGetName() { const input = badgeEl('badgeNameInput'); let name = (input ? input.value : '').trim().replace(/\s+/g, ' ').slice(0, 14); if (!name) name = 'Player ' + (100 + getRandomInt(900)); if (input) input.value = name; try { localStorage.setItem('pik_badge_name', name); } catch (e) {} return name; }
-
-    function openBadges() {
-      if (isLaunchingMode) return;
-      pvpCloseMultiMenu(); closeSoloMenu();
-      playAudioTone('launch');
-      const screen = badgeEl('badgesScreen');
-      if (!screen) return;
-      screen.classList.remove('hidden');
-      screen.classList.remove('badge-screen-in');
-      void screen.offsetWidth;
-      screen.classList.add('badge-screen-in');
-      badgeShowView('Lobby');
-      badgeSetMsg('');
-      const input = badgeEl('badgeNameInput');
-      if (input && !input.value) { try { input.value = localStorage.getItem('pik_badge_name') || ''; } catch (e) {} }
-      const note = badgeEl('badgeBackendNote');
-      if (note) note.textContent = '';
-      badgeGetBackend().then(b => { if (note) note.textContent = b.kind === 'local' ? 'Could not reach online matchmaking \u2014 only tabs in this browser can join' : 'Online matchmaking connected'; });
-    }
-
-    function badgeExitToMenu() {
-      badgeLeaveRoom().catch(() => {});
-      const screen = badgeEl('badgesScreen'); if (screen) screen.classList.add('hidden');
-      playAudioTone('menu'); animateMenuEntrance();
-    }
-
-    function badgeLeaveToLobby() {
-      badgeLeaveRoom().catch(() => {});
-      badgeShowView('Lobby'); badgeSetMsg('');
-    }
-
-    /* ---------- Room lifecycle ---------- */
-    function badgeRandomCode() { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; let s = ''; for (let i = 0; i < 4; i++) s += A[getRandomInt(A.length)]; return s; }
-    function badgeSortedIds(room) { return Object.keys(room.players || {}).sort((a, b) => { const pa = room.players[a], pb = room.players[b]; return ((pa.joinedAt || 0) - (pb.joinedAt || 0)) || (a < b ? -1 : 1); }); }
-    function badgeAlive(id) { if (id === BADGES.myId) return true; const b = BADGES.beatSeen[id]; if (!b) return true; return Date.now() - b.at <= BADGE_STALE_MS; }
-    function badgeActiveIds(room) { return Object.keys(room.players || {}).filter(id => badgeAlive(id)); }
-    function badgeUniqueName(players, name) { const taken = new Set(Object.values(players || {}).map(p => (p.name || '').toLowerCase())); if (!taken.has(name.toLowerCase())) return name; for (let i = 2; i < 10; i++) { const cand = name.slice(0, 11) + ' ' + i; if (!taken.has(cand.toLowerCase())) return cand; } return name + Math.floor(Math.random() * 9); }
-
-    async function badgeCreatePrivate() {
-      const b = await badgeGetBackend(); const name = badgeGetName(); let code = null;
-      for (let i = 0; i < 10; i++) { const c = badgeRandomCode(); if (!(await b.get(c))) { code = c; break; } }
-      if (!code) { badgeSetMsg('Could not create a game. Try again.'); return; }
-      const now = Date.now();
-      await b.set(code, { code, hostId: BADGES.myId, status: 'lobby', createdAt: now, updatedAt: now, players: { [BADGES.myId]: { name, joinedAt: now, seen: now } } });
-      badgeEnterRoom(code);
-    }
-
-    async function badgeJoinPrivate() {
-      const input = badgeEl('badgeCodeInput'); const code = (input ? input.value : '').trim().toUpperCase();
-      if (code.length !== 4) { badgeSetMsg('Enter the 4-letter code.'); playAudioTone('error'); return; }
-      badgeSetMsg('Joining...');
-      const b = await badgeGetBackend(); const name = badgeGetName(); const r = await b.get(code);
-      if (!r) { badgeSetMsg('Game not found.'); return; }
-      if (r.status !== 'lobby') { badgeSetMsg('That game has already started.'); return; }
-      if (Object.keys(r.players || {}).length >= BADGE_MAX_PLAYERS) { badgeSetMsg('That game is full.'); return; }
-      const now = Date.now();
-      await b.patch(code, { ['players.' + BADGES.myId]: { name: badgeUniqueName(r.players, name), joinedAt: now, seen: now } });
-      badgeEnterRoom(code);
-    }
-
-    function badgeEnterRoom(code) {
-      if (BADGES.unwatch) { try { BADGES.unwatch(); } catch (e) {} }
-      if (BADGES.hbTimer) clearInterval(BADGES.hbTimer);
-      if (BADGES.tickTimer) clearInterval(BADGES.tickTimer);
-      if (BADGES.timer) clearInterval(BADGES.timer);
-      BADGES.code = code; BADGES.room = null; BADGES.everSeen = false;
-      BADGES.lastKey = null; BADGES.lastStatus = null; BADGES.beatSeen = {};
-      BADGES.prevHost = null; BADGES.hostBusy = false; BADGES.used = new Set();
-      badgeSetMsg(''); badgeEl('badgeLobbyCode').textContent = code;
-      badgeGetBackend().then(b => {
-        BADGES.unwatch = b.watch(code, badgeOnRoom);
-        BADGES.hbTimer = setInterval(() => { if (BADGES.code && BADGES.backend) BADGES.backend.patch(BADGES.code, { ['players.' + BADGES.myId + '.seen']: Date.now() }).catch(() => {}); }, 4000);
-        BADGES.tickTimer = setInterval(badgeTick, 1000);
-      });
-    }
-
-    function badgeStopAll() {
-      const prevCode = BADGES.code, prevBackend = BADGES.backend;
-      if (prevCode && prevBackend && prevBackend.release) setTimeout(() => prevBackend.release(prevCode), 3000);
-      if (BADGES.unwatch) { try { BADGES.unwatch(); } catch (e) {} BADGES.unwatch = null; }
-      badgeStopConfetti();
-      clearInterval(BADGES.hbTimer); clearInterval(BADGES.tickTimer); clearInterval(BADGES.timer);
-      BADGES.hbTimer = BADGES.tickTimer = BADGES.timer = null;
-      BADGES.cdTimers.forEach(clearTimeout); BADGES.cdTimers = [];
-      BADGES.phaseTimers.forEach(clearTimeout); BADGES.phaseTimers = [];
-      BADGES.code = null; BADGES.room = null; BADGES.everSeen = false;
-      BADGES.evaluating = false; BADGES.submitted = false;
-    }
-
-    async function badgeLeaveRoom() {
-      const b = BADGES.backend, code = BADGES.code, room = BADGES.room;
-      badgeStopAll();
-      if (!b || !code) return;
-      try {
-        const others = Object.keys((room && room.players) || {}).filter(id => id !== BADGES.myId);
-        if (!room || others.length === 0) { await b.remove(code); }
-        else {
-          const patch = { ['players.' + BADGES.myId]: BADGE_DEL };
-          if (room.hostId === BADGES.myId) { const next = badgeSortedIds(room).filter(id => id !== BADGES.myId)[0]; if (next) patch.hostId = next; }
-          await b.patch(code, patch);
-        }
-      } catch (e) {}
-    }
-
-    window.addEventListener('pagehide', () => { if (BADGES.code) badgeLeaveRoom(); });
-
-    function badgeTrackBeats(room) { const now = Date.now(); for (const id in (room.players || {})) { const s = room.players[id].seen; const b = BADGES.beatSeen[id]; if (!b || b.seen !== s) BADGES.beatSeen[id] = { seen: s, at: now }; } }
-
-    function badgeTick() {
-      const room = BADGES.room; if (!room || !BADGES.code) return;
-      if (room.hostId !== BADGES.myId) {
-        const host = room.players[room.hostId]; const rank = Math.max(0, badgeSortedIds(room).indexOf(BADGES.myId));
-        let silent = 0;
-        if (!host) { if (!BADGES.noHostSince) BADGES.noHostSince = Date.now(); silent = Date.now() - BADGES.noHostSince + BADGE_STALE_MS; }
-        else { BADGES.noHostSince = 0; const hb = BADGES.beatSeen[room.hostId]; silent = hb ? Date.now() - hb.at : 0; }
-        if (silent > BADGE_STALE_MS + rank * 2500) { BADGES.backend.patch(BADGES.code, { hostId: BADGES.myId }).catch(() => {}); }
-      }
-      badgeHostStep();
-    }
-
-    /* ---------- Room state handler ---------- */
-    function badgeOnRoom(room) {
-      if (!BADGES.code) return;
-      if (!room) { if (BADGES.everSeen) { badgeStopAll(); badgeShowView('Lobby'); badgeSetMsg('The game was closed.'); } return; }
-      if (!room.players || !room.players[BADGES.myId]) { if (BADGES.everSeen) { badgeStopAll(); badgeShowView('Lobby'); badgeSetMsg('You were removed.'); } return; }
-      BADGES.everSeen = true; BADGES.room = room; badgeTrackBeats(room);
-      if (BADGES.prevHost !== room.hostId) { if (room.hostId === BADGES.myId && BADGES.prevHost) { const t = Date.now(); Object.keys(BADGES.beatSeen).forEach(id => { BADGES.beatSeen[id].at = t; }); } BADGES.prevHost = room.hostId; }
-
-      if (room.status === 'lobby') { if (BADGES.lastStatus !== 'lobby') badgeResetGameUi(); badgeShowView('Wait'); badgeRenderLobby(room); }
-      else if (room.status === 'playing' && room.game) { if (BADGES.lastStatus !== 'playing') badgeResetGameUi(); badgeShowView('Game'); badgeOnGame(room); }
-      else if (room.status === 'done') { badgeShowView('Results'); badgeRenderResults(room); }
-      BADGES.lastStatus = room.status;
-      badgeHostStep();
-    }
-
-    function badgeResetGameUi() {
-      clearInterval(BADGES.timer);
-      BADGES.cdTimers.forEach(clearTimeout); BADGES.cdTimers = [];
-      BADGES.phaseTimers.forEach(clearTimeout); BADGES.phaseTimers = [];
-      BADGES.used = new Set(); BADGES.submitted = false; BADGES.evaluating = false;
-      BADGES.hostKey = null; BADGES.hostBusy = false;
-    }
-
-    /* ---------- Lobby ---------- */
-    function badgeRenderLobby(room) {
-      const ids = badgeSortedIds(room); const isHost = room.hostId === BADGES.myId;
-      badgeEl('badgeLobbyCode').textContent = room.code;
-      let html = '';
-      for (let i = 0; i < BADGE_MAX_PLAYERS; i++) {
-        const id = ids[i];
-        if (id) {
-          const p = room.players[id]; const isMe = id === BADGES.myId;
-          html += '<div class="badge-slot ' + (id === room.hostId ? 'host' : 'filled') + '"><span class="w-2.5 h-2.5 rounded-full bg-pik-epic flex-shrink-0"></span><span style="color:#e2e8f0">' + badgeEsc(p.name) + '</span>' + (isMe ? '<span style="color:#64748b;font-size:0.6rem;margin-left:auto">You</span>' : '') + (id === room.hostId ? '<span style="color:#c084fc;font-size:0.6rem;margin-left:auto">Host</span>' : '') + '</div>';
-        } else {
-          html += '<div class="badge-slot empty"><span class="w-2.5 h-2.5 rounded-full border border-slate-700"></span>Waiting...</div>';
-        }
-      }
-      const slots = badgeEl('badgeLobbySlots'); if (slots) slots.innerHTML = html;
-      const startBtn = badgeEl('badgeStartBtn'); const waitNote = badgeEl('badgeWaitNote');
-      if (startBtn) { startBtn.classList.toggle('hidden', !isHost); startBtn.disabled = ids.length < 2; startBtn.textContent = ids.length < 2 ? 'Need at least 2 players' : 'Start Game'; }
-      if (waitNote) waitNote.textContent = isHost ? (ids.length + ' / ' + BADGE_MAX_PLAYERS + ' players') : 'Waiting for the host to start...';
-    }
-
-    function badgeCopyCode() { const room = BADGES.room; if (!room) return; try { navigator.clipboard.writeText(room.code).then(() => { const n = badgeEl('badgeCopyNote'); if (n) n.textContent = 'Copied!'; }).catch(() => {}); } catch (e) {} setTimeout(() => { const n = badgeEl('badgeCopyNote'); if (n) n.textContent = 'Click code to copy'; }, 1500); }
-
-    /* ---------- Game flow ---------- */
-    function badgeName(room, id) { return (room.players && room.players[id] && room.players[id].name) || 'Player'; }
-    function badgeTotalLen(room, id) {
-      const g = room.game || {};
-      const rr = g.roundResults || {};
-      let t = 0;
-      Object.keys(rr).forEach(r => {
-        const a = rr[r] && rr[r].answers && rr[r].answers[id];
-        if (a && !a.skip) t += a.len || 0;
-      });
-      if (g.phase === 'answering') {
-        const ca = g.currentAnswers && g.currentAnswers[g.round] && g.currentAnswers[g.round][id];
-        if (ca && !ca.skip) t += ca.len || 0;
-      }
-      return t;
-    }
-
-    function badgeOnGame(room) {
-      const g = room.game;
-      const key = g.round + ':' + g.phase;
-      if (key !== BADGES.lastKey) { const first = BADGES.lastKey === null; BADGES.lastKey = key; badgeEnterPhase(room, first); }
-      else { badgeRefreshGame(room); }
-    }
-
-    function badgeEnterPhase(room, firstLoad) {
-      const g = room.game;
-      BADGES.cdTimers.forEach(clearTimeout); BADGES.cdTimers = [];
-      clearInterval(BADGES.timer);
-      const qCard = badgeEl('badgeQCard'); const timer = badgeEl('badgeTimer'); const feedback = badgeEl('badgeFeedback');
-
-      if (g.phase === 'countdown') {
-        if (qCard) qCard.classList.add('hidden');
-        if (timer) timer.classList.add('hidden');
-        // Show badges during countdown
-        badgeRenderBadges(room);
-        badgeRenderPlayers(room);
-        // Brief countdown via feedback area
-        const showCd = (txt) => { if (feedback) { feedback.textContent = txt; feedback.className = 'badge-feedback success'; } };
-        showCd('Get ready... 3'); playAudioTone('menu');
-        BADGES.cdTimers.push(setTimeout(() => { showCd('Get ready... 2'); playAudioTone('menu'); }, 1000));
-        BADGES.cdTimers.push(setTimeout(() => { showCd('Get ready... 1'); playAudioTone('menu'); }, 2000));
-      } else if (g.phase === 'answering') {
-        if (qCard) qCard.classList.remove('hidden');
-        if (timer) timer.classList.remove('hidden');
-        if (feedback) { feedback.textContent = ''; feedback.className = 'badge-feedback'; }
-        BADGES.used = BADGES.used || new Set();
-        const prompt = g.questions[g.round];
-        const qNum = badgeEl('badgeQNum'); if (qNum) qNum.textContent = 'Q' + (g.round + 1) + ' / ' + BADGE_QUESTION_COUNT;
-        const pr = badgeEl('badgePrompt'); if (pr) pr.textContent = prompt;
-        badgeHideFeedback();
-        BADGES.evaluating = false;
-        const already = g.currentAnswers && g.currentAnswers[g.round] && g.currentAnswers[g.round][BADGES.myId];
-        BADGES.submitted = !!already;
-        BADGES.qStart = Date.now(); BADGES.pausedMs = 0;
-        const input = badgeEl('badgeAnswerInput'); if (input) input.value = '';
-        badgeSetEvalUi(false);
-        if (already) badgeLockInputs();
-        if (input && !already) setTimeout(() => input.focus(), 60);
-        badgeRenderBadges(room);
-        badgeRenderPlayers(room);
-        if (!already) badgeStartTimer(BADGE_ANSWER_SECONDS);
-      } else if (g.phase === 'reveal') {
-        if (qCard) qCard.classList.add('hidden');
-        if (timer) timer.classList.add('hidden');
-        badgeRenderBadges(room);
-        badgeRenderPlayers(room);
-        if (feedback) { feedback.textContent = 'Revealing answers...'; feedback.className = 'badge-feedback success'; }
-      } else if (g.phase === 'between') {
-        badgeRenderBadges(room);
-        badgeRenderPlayers(room);
-        if (feedback) { feedback.textContent = 'Next question...'; feedback.className = 'badge-feedback success'; }
-      }
-    }
-
-    function badgeRefreshGame(room) {
-      badgeRenderBadges(room);
-      badgeRenderPlayers(room);
-    }
-
-    /* ---------- Badge rendering ---------- */
-    function badgeRenderBadges(room) {
-      const g = room.game || {};
-      const badges = g.badges || [];
-      const list = badgeEl('badgeList');
-      if (!list) return;
-      // Show badges active for the current round (badges with questionIndex <= g.round)
-      const activeBadges = badges.filter(b => b.questionIndex <= (g.round || 0));
-      let html = '';
-      activeBadges.forEach((b, i) => {
-        const isNew = b.questionIndex === g.round && g.phase === 'countdown';
-        html += '<div class="badge-card ' + (isNew ? 'badge-card-new' : '') + '" style="border-color: ' + b.color + ';" onmouseenter="badgeProject(' + badges.indexOf(b) + ')" onmouseleave="badgeUnproject()">';
-        html += '<div class="badge-card-icon" style="background: ' + b.color + '22; color: ' + b.color + ';">' + badgeEsc(b.icon) + '</div>';
-        html += '<div class="badge-card-text">' + badgeEsc(b.text) + '</div>';
-        html += '</div>';
-      });
-      if (activeBadges.length === 0) {
-        html = '<div class="badge-note">No badges yet</div>';
-      }
-      list.innerHTML = html;
-    }
-
-    function badgeProject(badgeIdx) {
-      const room = BADGES.room; if (!room || !room.game) return;
-      const badge = room.game.badges[badgeIdx]; if (!badge) return;
-      const overlay = badgeEl('badgeProjection');
-      if (overlay) {
-        overlay.innerHTML = '<div class="badge-proj-card" style="border-color: ' + badge.color + ';"><div class="badge-proj-label">Badge Rule</div><div class="badge-proj-icon" style="background: ' + badge.color + '22; color: ' + badge.color + ';">' + badgeEsc(badge.icon) + '</div><div class="badge-proj-text">' + badgeEsc(badge.text) + '</div></div>';
-        overlay.classList.add('active');
-      }
-    }
-
-    function badgeUnproject() {
-      const overlay = badgeEl('badgeProjection');
-      if (overlay) overlay.classList.remove('active');
-    }
-
-    /* ---------- Player rendering ---------- */
-    function badgeBuildPlayerLines(room) {
-      const host = badgeEl('badgePlayerLines');
-      if (!host) return;
-      const ids = badgeActiveIds(room);
-      const existing = host.querySelectorAll('.badge-line-row');
-      const existingIds = Array.from(existing).map(r => r.id.replace('badge-line-row-', ''));
-      // Rebuild only if player set changed
-      const sameSet = existingIds.length === ids.length && existingIds.every(id => ids.includes(id));
-      if (sameSet) return;
-      let html = '';
-      ids.forEach(id => {
-        const isMe = id === BADGES.myId;
-        html += '<div class="badge-line-row" id="badge-line-row-' + id + '">';
-        html += '<div class="badge-line-info">';
-        html += '<span class="badge-line-name ' + (isMe ? 'me' : '') + '">' + badgeEsc(badgeName(room, id)) + (isMe ? ' (You)' : '') + '</span>';
-        html += '<span class="badge-line-len" id="badge-len-' + id + '">0px</span>';
-        html += '</div>';
-        html += '<div class="badge-line-track">';
-        html += '<svg id="badge-svg-' + id + '" class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 1000 20" preserveAspectRatio="none"></svg>';
-        html += '<div id="badge-nodes-' + id + '" class="absolute inset-0 pointer-events-none"></div>';
-        html += '</div></div>';
-      });
-      host.innerHTML = html;
-    }
-
-    function badgeDrawAllLines(room) {
-      const ids = badgeActiveIds(room);
-      badgeBuildPlayerLines(room);
-      const maxT = Math.max(1, ...ids.map(id => badgeTotalLen(room, id)));
-      const W = Math.max(1000, maxT + 120);
-      ids.forEach(id => badgeDrawLine(room, id, W));
-      const teamTotal = ids.reduce((sum, id) => sum + badgeTotalLen(room, id), 0);
-      const tt = badgeEl('badgeTeamTotal');
-      if (tt) tt.textContent = teamTotal + ' px';
-    }
-
-    function badgeDrawLine(room, id, W) {
-      const svg = badgeEl('badge-svg-' + id);
-      const nodes = badgeEl('badge-nodes-' + id);
-      if (!svg || !nodes) return;
-      svg.setAttribute('viewBox', '0 0 ' + W + ' 20');
-      const pct = (x) => ((x / W) * 100).toFixed(3);
-      const g = room.game || {};
-      const rr = g.roundResults || {};
-      let html = '<line x1="0" y1="10" x2="' + W + '" y2="10" stroke="#ffffff" stroke-opacity="0.15" stroke-width="3" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>';
-      let x = 60;
-      let nodeHtml = '';
-      let hasSegments = false;
-      for (let r = 0; r < BADGE_QUESTION_COUNT; r++) {
-        let a = null;
-        if (rr[r] && rr[r].answers && rr[r].answers[id]) { a = rr[r].answers[id]; }
-        else if (r === g.round && g.phase === 'answering' && g.currentAnswers && g.currentAnswers[r] && g.currentAnswers[r][id]) { a = g.currentAnswers[r][id]; }
-        if (a && !a.skip) {
-          const len = a.len || 0;
-          const color = (RARITY_CONFIG[a.key] || RARITY_CONFIG.common).color;
-          html += '<line x1="' + x + '" y1="10" x2="' + (x + len) + '" y2="10" stroke="' + color + '" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-          nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:9999px;border:2px solid ' + color + ';background:' + color + ';"></span>';
-          x += len;
-          hasSegments = true;
-        }
-      }
-      if (hasSegments) {
-        nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:0;height:0;"><span class="target-node-halo" style="position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:9999px;border:1.5px solid #ffffff;"></span></span>';
-        nodeHtml += '<span style="position:absolute;top:50%;left:' + pct(x) + '%;width:12px;height:12px;transform:translate(-50%,-50%);border-radius:9999px;border:2px solid #ffffff;background:#121212;"></span>';
-      }
-      svg.innerHTML = html;
-      nodes.innerHTML = nodeHtml;
-      const lenEl = badgeEl('badge-len-' + id);
-      if (lenEl) lenEl.textContent = badgeTotalLen(room, id) + 'px';
-    }
-
-    function badgeRenderPlayers(room) {
-      badgeDrawAllLines(room);
-    }
-
-    /* ---------- Answer submission ---------- */
-    function badgeSetEvalUi(on) {
-      const i = badgeEl('badgeAnswerInput'), s = badgeEl('badgeSubmitBtn'), k = badgeEl('badgeSkipBtn'), c = badgeEl('badgeQCard');
-      if (i) i.disabled = on; if (s) s.disabled = on; if (k) k.disabled = on;
-      if (c) c.classList.toggle('evaluating', on);
-      if (s) s.textContent = on ? 'Judging...' : 'Submit';
-    }
-    function badgeLockInputs() { const i = badgeEl('badgeAnswerInput'), s = badgeEl('badgeSubmitBtn'), k = badgeEl('badgeSkipBtn'); if (i) i.disabled = true; if (s) s.disabled = true; if (k) k.disabled = true; if (s) s.textContent = 'Locked'; }
-    function badgeHideFeedback() { const fb = badgeEl('badgeFeedback'); if (fb) { fb.textContent = ''; fb.className = 'badge-feedback'; } }
-    function badgeShowFeedback(msg, success) { const fb = badgeEl('badgeFeedback'); if (fb) { fb.textContent = msg; fb.className = 'badge-feedback' + (success ? ' success' : ''); } }
-
-    function badgeStartTimer(seconds) {
-      clearInterval(BADGES.timer); BADGES.timeLeft = seconds;
-      const txt = badgeEl('badgeTimerText'), pill = badgeEl('badgeTimer');
-      const paint = () => { if (txt) txt.textContent = BADGES.timeLeft + 's'; if (pill) pill.classList.toggle('urgent', BADGES.timeLeft > 0 && BADGES.timeLeft <= 7); };
-      paint();
-      BADGES.timer = setInterval(() => {
-        if (BADGES.evaluating || BADGES.submitted) return;
-        BADGES.timeLeft--; paint();
-        if (BADGES.timeLeft <= 0) { clearInterval(BADGES.timer); if (pill) pill.classList.remove('urgent'); playAudioTone('timeout'); badgeSkip(true); }
-      }, 1000);
-    }
-
-    async function badgeSubmit() {
-      if (BADGES.submitted || BADGES.evaluating) return;
-      const g = BADGES.room && BADGES.room.game;
-      if (!g || g.phase !== 'answering') return;
-      const input = badgeEl('badgeAnswerInput');
-      const raw = input ? input.value.trim() : '';
-      if (!raw) { badgeShowFeedback('Please enter an answer or skip.'); playAudioTone('error'); return; }
-      const norm = normalize(raw);
-      if (BADGES.used.has(norm)) { badgeShowFeedback('"' + raw + '" already used.'); playAudioTone('error'); return; }
-
-      // Check all active badge rules (client-side, before AI judge)
-      const activeBadges = (g.badges || []).filter(b => b.questionIndex <= g.round);
-      const check = badgeCheckAll(activeBadges, raw);
-      if (!check.passed) {
-        badgeShowFeedback('Rule broken: ' + check.violated.text); playAudioTone('error');
-        const inp = badgeEl('badgeAnswerInput'); if (inp) { inp.classList.add('input-shake'); void inp.offsetWidth; inp.classList.remove('input-shake'); inp.focus(); }
-        return;
-      }
-
-      // Badge rules passed — now send to AI judge
-      const typedMs = Math.max(0, Date.now() - BADGES.qStart - BADGES.pausedMs);
-      const prompt = g.questions[g.round];
-      const judgeStart = Date.now();
-      BADGES.evaluating = true; badgeHideFeedback(); badgeSetEvalUi(true);
-      const stillValid = () => { const cur = BADGES.room && BADGES.room.game; return cur && cur.round === g.round && cur.phase === 'answering'; };
-      try {
-        const verdict = await evaluateAnswerWithGroq(prompt, raw);
-        BADGES.evaluating = false;
-        if (!stillValid()) return;
-        badgeSetEvalUi(false);
-        if (!verdict || !verdict.valid) { BADGES.pausedMs += Date.now() - judgeStart; const r = verdict && verdict.reason ? ' \u2014 ' + verdict.reason : ''; badgeShowFeedback('"' + raw + '" doesn\u2019t fit' + r); playAudioTone('error'); if (input) input.focus(); return; }
-        let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
-        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
-        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
-        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
-        const cleanAnswer = (verdict.normalizedAnswer || raw).trim();
-        const normClean = normalize(cleanAnswer);
-        if (BADGES.used.has(normClean)) { BADGES.pausedMs += Date.now() - judgeStart; badgeShowFeedback('"' + cleanAnswer + '" already used.'); playAudioTone('error'); if (input) input.focus(); return; }
-        BADGES.used.add(norm); BADGES.used.add(normClean);
-        badgeSendAnswer({ text: cleanAnswer, key: rarityKey, len: RARITY_CONFIG[rarityKey].length, ms: typedMs, skip: false });
-      } catch (err) {
-        BADGES.evaluating = false; if (!stillValid()) return;
-        badgeSetEvalUi(false); BADGES.pausedMs += Date.now() - judgeStart;
-        playAudioTone('error'); badgeShowFeedback('Unable to verify. Try again.');
-        if (input) input.focus();
-      }
-    }
-
-    function badgeSkip(auto) {
-      if (BADGES.submitted || BADGES.evaluating) return;
-      const g = BADGES.room && BADGES.room.game;
-      if (!g || g.phase !== 'answering') return;
-      if (!auto) playAudioTone('skip');
-      const ms = auto ? BADGE_ANSWER_SECONDS * 1000 : Math.max(0, Date.now() - BADGES.qStart - BADGES.pausedMs);
-      badgeSendAnswer({ text: 'Skipped', key: 'skipped', len: 0, ms, skip: true });
-    }
-
-    async function badgeSendAnswer(ans) {
-      const room = BADGES.room;
-      if (!room || !room.game || room.game.phase !== 'answering') return;
-      BADGES.submitted = true;
-      clearInterval(BADGES.timer);
-      const pill = badgeEl('badgeTimer'); if (pill) pill.classList.remove('urgent');
-      badgeLockInputs();
-      try {
-        await BADGES.backend.patch(BADGES.code, { ['game.currentAnswers.' + room.game.round + '.' + BADGES.myId]: ans });
-      } catch (e) { BADGES.submitted = false; badgeSetEvalUi(false); badgeShowFeedback('Connection problem.'); badgeStartTimer(Math.max(1, BADGES.timeLeft)); }
-    }
-
-    /* ---------- Host-authoritative game flow ---------- */
-    function badgeHostStep() {
-      const room = BADGES.room;
-      if (!room || room.hostId !== BADGES.myId || !BADGES.code) return;
-      const now = Date.now();
-      if (room.status === 'lobby') {
-        Object.keys(room.players).forEach(id => { if (id !== BADGES.myId && !badgeAlive(id)) BADGES.backend.patch(BADGES.code, { ['players.' + id]: BADGE_DEL }).catch(() => {}); });
-        return;
-      }
-      const g = room.game;
-      if (room.status !== 'playing' || !g || g.phase === 'done') return;
-      const key = g.round + ':' + g.phase;
-      if (BADGES.hostKey !== key) { BADGES.hostKey = key; BADGES.hostKeyAt = now; BADGES.hostBusy = false; }
-      const elapsed = now - BADGES.hostKeyAt;
-      const active = badgeActiveIds(room);
-      if (BADGES.hostBusy) return;
-      if (active.length < 1) { BADGES.hostBusy = true; BADGES.backend.patch(BADGES.code, { status: 'done', 'game.phase': 'done' }).catch(() => { BADGES.hostBusy = false; }); return; }
-      const guarded = (fn) => { BADGES.hostBusy = true; let p; try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); } p.catch(() => { setTimeout(() => { BADGES.hostBusy = false; }, 1500); }); };
-
-      if (g.phase === 'countdown') {
-        if (elapsed >= BADGE_COUNTDOWN_MS + 300) guarded(() => BADGES.backend.patch(BADGES.code, { 'game.phase': 'answering' }));
-      } else if (g.phase === 'answering') {
-        const answers = (g.currentAnswers && g.currentAnswers[g.round]) || {};
-        const allIn = active.every(id => answers[id]);
-        if (allIn || elapsed >= BADGE_ANSWER_SECONDS * 1000 + BADGE_GRACE_MS) {
-          // Check if ALL active players skipped
-          const allSkipped = active.every(id => answers[id] && answers[id].skip);
-          if (allSkipped) { guarded(() => BADGES.backend.patch(BADGES.code, { status: 'done', 'game.phase': 'done', 'game.endReason': 'all_skipped' })); }
-          else { guarded(() => badgeFinalizeRound(room)); }
-        }
-      } else if (g.phase === 'reveal') {
-        if (elapsed >= BADGE_REVEAL_MS) guarded(() => badgeAdvanceRound(room));
-      } else if (g.phase === 'between') {
-        if (elapsed >= 1500) guarded(() => badgeAdvanceRound(room));
-      }
-    }
-
-    async function badgeFinalizeRound(room) {
-      const g = room.game;
-      const active = badgeActiveIds(room);
-      const answers = {};
-      active.forEach(id => {
-        const a = g.currentAnswers && g.currentAnswers[g.round] && g.currentAnswers[g.round][id];
-        answers[id] = a ? { text: a.text || '', key: a.key || '', len: a.len || 0, ms: a.ms || 0, skip: !!a.skip } : { text: '', key: '', len: 0, ms: BADGE_ANSWER_SECONDS * 1000, skip: true };
-      });
-      await BADGES.backend.patch(BADGES.code, {
-        ['game.roundResults.' + g.round]: { prompt: g.questions[g.round], answers, badges: (g.badges || []).filter(b => b.questionIndex <= g.round) },
-        'game.phase': 'reveal'
-      });
-    }
-
-    async function badgeAdvanceRound(room) {
-      const g = room.game;
-      const nextRound = g.round + 1;
-      if (nextRound >= BADGE_QUESTION_COUNT) {
-        // Game complete
-        await BADGES.backend.patch(BADGES.code, { status: 'done', 'game.phase': 'done', 'game.endReason': 'complete' });
-        playAudioTone('finish');
-      } else {
-        await BADGES.backend.patch(BADGES.code, { 'game.round': nextRound, 'game.phase': 'countdown' });
-      }
-    }
-
-    /* ---------- Start game ---------- */
-    async function badgeStartGame() {
-      const room = BADGES.room;
-      if (!room || room.hostId !== BADGES.myId || room.status !== 'lobby') return;
-      const ids = badgeSortedIds(room).filter(id => badgeAlive(id)).slice(0, BADGE_MAX_PLAYERS);
-      if (ids.length < 2) { badgeSetMsg('Need at least 2 players.', 'badgeWaitMsg'); return; }
-      const questions = pvpPickQuestions(BADGE_QUESTION_COUNT);
-      const badges = badgeGenerateAll(BADGE_QUESTION_COUNT);
-      try {
-        await BADGES.backend.patch(BADGES.code, {
-          status: 'playing',
-          updatedAt: Date.now(),
-          game: { questions, badges, round: 0, phase: 'countdown', currentAnswers: {}, roundResults: {}, endReason: null }
-        });
-        playAudioTone('launch');
-      } catch (e) { badgeSetMsg('Could not start. Try again.', 'badgeWaitMsg'); }
-    }
-
-    async function badgePlayAgain() {
-      const room = BADGES.room;
-      if (!room || room.hostId !== BADGES.myId) return;
-      try {
-        const players = {};
-        Object.keys(room.players).forEach(id => { players[id] = { name: room.players[id].name, joinedAt: room.players[id].joinedAt, seen: Date.now() }; });
-        await BADGES.backend.patch(BADGES.code, { status: 'lobby', game: BADGE_DEL, players, updatedAt: Date.now() });
-      } catch (e) {}
-    }
-
-    /* ---------- Results ---------- */
-    function badgeRenderResults(room) {
-      const g = room.game || {};
-      const ids = badgeSortedIds(room);
-      let teamTotal = 0;
-      ids.forEach(id => { teamTotal += badgeTotalLen(room, id); });
-      const totalEl = badgeEl('badgeTeamTotal'); if (totalEl) totalEl.textContent = teamTotal + ' px';
-
-      const standings = badgeEl('badgeStandings');
-      if (standings) {
-        const sorted = ids.slice().sort((a, b) => badgeTotalLen(room, b) - badgeTotalLen(room, a));
-        standings.innerHTML = sorted.map((id, i) => {
-          const len = badgeTotalLen(room, id);
-          return '<div class="badge-standing"><span style="font-weight:900;color:#c084fc;width:1.5rem;flex-shrink:0;">' + (i + 1) + '</span><span class="name">' + badgeEsc(badgeName(room, id)) + (id === BADGES.myId ? ' (You)' : '') + '</span><span class="dist">' + len + ' px</span></div>';
-        }).join('');
-      }
-
-      const recap = badgeEl('badgeBadgesRecap');
-      if (recap) {
-        const allBadges = g.badges || [];
-        recap.innerHTML = allBadges.map((b, i) => '<span style="padding:0.25rem 0.5rem;border-radius:0.4rem;border:1px solid ' + b.color + ';background:' + b.color + '11;color:' + b.color + ';font-size:0.6rem;font-weight:700;font-family:Space Grotesk,sans-serif;">' + badgeEsc(b.icon) + ' ' + badgeEsc(b.text) + '</span>').join('');
-      }
-
-      const again = badgeEl('badgeAgainBtn'); const wait = badgeEl('badgeResultsWait');
-      const isHost = room.hostId === BADGES.myId;
-      if (again) again.classList.toggle('hidden', !isHost);
-      if (wait) wait.textContent = isHost ? '' : 'Waiting for host...';
-      playAudioTone('finish');
-    }
-
-    /* ---------- Confetti ---------- */
-    function badgeStopConfetti() {
-      if (BADGES.confettiRaf) cancelAnimationFrame(BADGES.confettiRaf);
-      BADGES.confettiRaf = 0;
-      const cv = badgeEl('badgeConfetti'); if (!cv) return;
-      try { const c = cv.getContext && cv.getContext('2d'); if (c) c.clearRect(0, 0, cv.width, cv.height); } catch (e) {}
-      cv.classList.add('hidden');
-    }
-  </script>
 
 </body>
 </html>
