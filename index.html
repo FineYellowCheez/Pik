@@ -9,7 +9,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect width='48' height='48' rx='10' fill='%23121212'/><circle cx='24' cy='11' r='4' fill='%237e8c8d'/><circle cx='36.3' cy='20' r='4' fill='%23388e3c'/><circle cx='31.6' cy='34.4' r='4' fill='%231976d2'/><circle cx='16.4' cy='34.4' r='4' fill='%238e24aa'/><circle cx='11.7' cy='20' r='4' fill='%23d4af37'/><circle cx='24' cy='24' r='4' fill='%23f97316'/></svg>">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 
   <!-- Google Fonts: Space Grotesk & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1428,7 +1428,7 @@
       <div class="text-center">
         <h2 id="pvpMatchTitle" class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">P-V-PIK</h2>
         <p id="pvpMatchTag1" class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">2&ndash;8 players &bull; Don&rsquo;t give the most common answer</p>
-        <p id="pvpMatchTag2" class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.</p>
+        <p id="pvpMatchTag2" class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5">Lowest rarity each round takes a point. Hit 5 points and you&rsquo;re eliminated &mdash; last one standing wins.</p>
       </div>
 
       <div class="w-full max-w-sm flex flex-col gap-3">
@@ -6670,6 +6670,7 @@ Rules:
     const PVP_GRACE_MS = 20000;
     const PVP_STALE_MS = 25000;
     const PVP_QUESTION_COUNT = 24;
+    const PVP_ELIM_QUESTION_COUNT = 40;
     const PVP_DEL = { __pvpDelete: true };
 
     const PVP = {
@@ -7405,7 +7406,7 @@ Rules:
         await PVP.backend.patch(PVP.code, {
           status: 'playing',
           updatedAt: Date.now(),
-          game: { questions: pvpPickQuestions(PVP_QUESTION_COUNT), order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], winners: [], par: room.mode === 'par' ? order.length * PAR_PER_PLAYER : 0, reached: false }
+          game: { questions: pvpPickQuestions(room.mode === 'par' ? PVP_QUESTION_COUNT : PVP_ELIM_QUESTION_COUNT), order, names, round: 0, phase: 'countdown', answers: {}, rounds: [], winners: [], par: room.mode === 'par' ? order.length * PAR_PER_PLAYER : 0, reached: false }
         });
         playAudioTone('launch');
       } catch (e) {
@@ -7438,6 +7439,11 @@ Rules:
       }, 0);
     }
 
+    // P-V-PIK: a player who reaches the point limit is eliminated and stops playing
+    function pvpOut(room, id, excludeLast) {
+      return room.mode !== 'par' && pvpPoints(room, id, excludeLast) >= PVP_LOSE_POINTS;
+    }
+
     function pvpHostStep() {
       const room = PVP.room;
       if (!room || room.hostId !== PVP.myId || !PVP.code) return;
@@ -7466,10 +7472,11 @@ Rules:
       if (PVP.hostKey !== key) { PVP.hostKey = key; PVP.hostKeyAt = now; PVP.hostBusy = false; }
       const elapsed = now - PVP.hostKeyAt;
       const active = pvpActiveIds(room);
+      const contenders = room.mode === 'par' ? active : active.filter(id => !pvpOut(room, id, false));
 
       if (PVP.hostBusy) return;
 
-      if (active.length < 2) {
+      if ((room.mode === 'par' || g.phase === 'reveal' ? active : contenders).length < 2) {
         PVP.hostBusy = true;
         pvpEndMatch(room).catch(() => { PVP.hostBusy = false; });
         return;
@@ -7488,9 +7495,9 @@ Rules:
         }
       } else if (g.phase === 'answering') {
         const answers = g.answers || {};
-        const allIn = active.every(id => answers[id]);
+        const allIn = contenders.every(id => answers[id]);
         if (allIn || elapsed >= PVP_ANSWER_SECONDS * 1000 + PVP_GRACE_MS) {
-          guarded(() => pvpFinalizeRound(room, active));
+          guarded(() => pvpFinalizeRound(room, contenders));
         }
       } else if (g.phase === 'reveal') {
         if (elapsed >= (room.mode === 'par' ? PAR_REVEAL_MS : PVP_REVEAL_MS)) {
@@ -7499,8 +7506,7 @@ Rules:
             else guarded(() => PVP.backend.patch(PVP.code, { 'game.round': g.round + 1, 'game.phase': 'countdown', 'game.answers': {} }));
             return;
           }
-          const maxPts = Math.max(0, ...(g.order || []).map(id => pvpPoints(room, id, false)));
-          if (maxPts >= PVP_LOSE_POINTS || g.round + 1 >= (g.questions || []).length) {
+          if (contenders.length <= 1 || g.round + 1 >= (g.questions || []).length) {
             guarded(() => pvpEndMatch(room));
           } else {
             guarded(() => PVP.backend.patch(PVP.code, { 'game.round': g.round + 1, 'game.phase': 'countdown', 'game.answers': {} }));
@@ -7565,6 +7571,8 @@ Rules:
       }
       let pool = pvpActiveIds(room);
       if (pool.length === 0) pool = (g.order || []).slice();
+      const standing = pool.filter(id => !pvpOut(room, id, false));
+      if (standing.length) pool = standing;
       const pts = {};
       pool.forEach(id => { pts[id] = pvpPoints(room, id, false); });
       const minPts = Math.min(...pool.map(id => pts[id]));
@@ -7630,10 +7638,12 @@ Rules:
       const g = room.game;
       (g.order || []).forEach(id => {
         const present = room.players && room.players[id] && pvpAlive(id);
+        const out = pvpOut(room, id, g.phase === 'reveal');
         const row = pvpEl('pvp-row-' + id);
-        if (row) row.style.opacity = present || g.phase === 'done' ? '' : '0.45';
+        if (row) row.style.opacity = (present && !out) || g.phase === 'done' ? '' : '0.45';
         if (g.phase === 'answering') {
           if (!present) { pvpSetChip(id, '<span class="text-slate-600">left the match</span>'); return; }
+          if (out) { pvpSetChip(id, '<span class="text-slate-600">eliminated</span>'); return; }
           const done = g.answers && g.answers[id];
           pvpSetChip(id, done
             ? '<span class="text-pik-uncommon">Locked in &#10003;</span>'
@@ -7651,7 +7661,7 @@ Rules:
       const roundLine = pvpEl('pvpRoundLine');
       if (roundLine) {
         if (room.mode === 'par') roundLine.textContent = g.phase === 'done' ? 'Round complete' : `Round ${g.round + 1} \u2022 Work together to reach PAR`;
-        else roundLine.textContent = g.phase === 'done' ? 'Match over' : `Round ${g.round + 1} \u2022 ${PVP_LOSE_POINTS} points ends the match \u2022 fewest points wins`;
+        else roundLine.textContent = g.phase === 'done' ? 'Match over' : `Round ${g.round + 1} \u2022 ${PVP_LOSE_POINTS} points and you\u2019re out \u2022 last one standing wins`;
       }
 
       const card = pvpEl('pvpQCard');
@@ -7667,6 +7677,13 @@ Rules:
           parResetRound(room);
         } else {
           pvpResetRowMarks(room);
+          (g.order || []).forEach(id => {
+            if (pvpOut(room, id, false)) {
+              pvpSetTag(id, '<span class="text-slate-500">OUT</span>');
+              const orow = pvpEl('pvp-row-' + id);
+              if (orow) orow.style.opacity = '0.45';
+            }
+          });
           const awBox = pvpEl('pvpAwards'); if (awBox) { awBox.classList.add('hidden'); awBox.innerHTML = ''; }
           pvpRenderPips(room, true);
           pvpDrawAllTracks(room, -1);
@@ -7689,6 +7706,15 @@ Rules:
         if (echo) echo.classList.add('hidden');
         if (verdict) verdict.innerHTML = '';
         pvpRenderPips(room, true);
+        if (room.mode !== 'par' && pvpOut(room, PVP.myId, false)) {
+          // Eliminated players watch the rest of the match
+          if (card) card.classList.add('hidden');
+          PVP.submitted = true;
+          if (echo) { echo.textContent = g.questions[g.round]; echo.classList.remove('hidden'); }
+          if (verdict) verdict.innerHTML = '<span class="text-slate-400">You\'re eliminated &mdash; watching the rest of the match.</span>';
+          pvpRefreshLive(room);
+          return;
+        }
         PVP.used = PVP.used || new Set();
         const prompt = g.questions[g.round];
         const qn = pvpEl('pvpQNum'); if (qn) qn.textContent = `Round ${g.round + 1}`;
@@ -7747,11 +7773,12 @@ Rules:
       const idx = g.round;
       const verdict = pvpEl('pvpVerdict');
       (g.order || []).forEach(id => {
-        pvpSetTag(id, '');
+        const wasOut = pvpOut(room, id, true);
+        pvpSetTag(id, wasOut ? '<span class="text-slate-500">OUT</span>' : '');
         const row = pvpEl('pvp-row-' + id);
-        if (row) { row.classList.remove('pvp-flash-red'); row.style.opacity = ''; }
+        if (row) { row.classList.remove('pvp-flash-red'); row.style.opacity = wasOut ? '0.45' : ''; }
         if (r.answers && r.answers[id]) pvpSetChip(id, pvpChipHtml(r.answers[id]), !firstLoad);
-        else pvpSetChip(id, '<span class="text-slate-600">left the match</span>');
+        else pvpSetChip(id, wasOut ? '<span class="text-slate-600">eliminated</span>' : '<span class="text-slate-600">left the match</span>');
       });
       pvpRenderPips(room, firstLoad);
       pvpDrawAllTracks(room, firstLoad ? -1 : idx);
@@ -7793,6 +7820,10 @@ Rules:
       } else {
         html = `${name} had the lowest rarity (${pvpEsc(low)}) and takes the point.`;
       }
+      if (pvpPoints(room, r.loser, false) >= PVP_LOSE_POINTS) {
+        html += ` <span class="text-red-400">${pvpEsc(pvpName(room, r.loser))} hit ${PVP_LOSE_POINTS} points and is eliminated!</span>`;
+        pvpSetTag(r.loser, '<span class="text-red-400">ELIMINATED</span>');
+      }
       if (verdict) verdict.innerHTML = html;
     }
 
@@ -7816,7 +7847,7 @@ Rules:
       set('pvpMatchTag1', par ? '2&ndash;8 players &bull; Work together to reach PAR' : '2&ndash;8 players &bull; Don&rsquo;t give the most common answer');
       set('pvpMatchTag2', par
         ? 'Everyone answers each round and your rarity sections join into one shared line. Rarer answers get the team there faster.'
-        : 'Lowest rarity each round takes a point. Hit 5 points and the match ends &mdash; fewest points wins.');
+        : 'Lowest rarity each round takes a point. Hit 5 points and you&rsquo;re eliminated &mdash; last one standing wins.');
     }
 
     /* ----- menu: Multiplayer button with two sliding options ----- */
@@ -8239,7 +8270,7 @@ Rules:
           if (row) row.classList.add('pvp-row-winner');
           pvpSetTag(id, '<span class="text-pik-gold">WINNER</span>');
         } else {
-          pvpSetTag(id, '');
+          pvpSetTag(id, pvpOut(room, id, false) ? '<span class="text-red-400">OUT</span>' : '');
         }
       });
       const names = winners.map(id => `<span class="text-pik-gold">${pvpEsc(pvpName(room, id))}</span>`).join(' &amp; ');
@@ -8250,7 +8281,9 @@ Rules:
         html = 'Match over.';
       } else if (hit.length) {
         const hitNames = hit.map(id => pvpEsc(pvpName(room, id))).join(' & ');
-        html = `${hitNames} hit ${PVP_LOSE_POINTS} points &mdash; ${names} ${winners.length > 1 ? 'win' : 'wins'} with ${wPts} point${wPts === 1 ? '' : 's'}!`;
+        html = winners.length === 1 && hit.length >= (g.order || []).length - 1
+          ? `${names} is the last one standing with ${wPts} point${wPts === 1 ? '' : 's'}!`
+          : `${names} ${winners.length > 1 ? 'win' : 'wins'} with ${wPts} point${wPts === 1 ? '' : 's'}!`;
       } else {
         html = `Match ended early &mdash; ${names} ${winners.length > 1 ? 'win' : 'wins'}!`;
       }
