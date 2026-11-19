@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -923,6 +922,94 @@
       #bdgLobbyCode { font-size: 2.5rem; }
     }
   </style>
+  <style>
+    /* ===== TOURNAMENT (Multiplayer Mode) ===== */
+    .multi-sub:nth-child(4) { --reveal-delay: 210ms; }
+    #multiTournamentBtn { border-color: rgba(251, 113, 133, 0.55); color: #fb7185; }
+    #multiTournamentBtn:hover { border-color: rgba(251, 113, 133, 0.9); box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 18px rgba(251, 113, 133, 0.35); }
+
+    /* Centered screens that must still scroll when the content is taller than the screen */
+    #trnViewMatch, #trnViewLobby { justify-content: flex-start; }
+    #trnViewMatch > :first-child, #trnViewLobby > :first-child { margin-top: auto; }
+    #trnViewMatch > :last-child, #trnViewLobby > :last-child { margin-bottom: auto; }
+
+    /* Bracket */
+    #trnBracketWrap svg { display: block; }
+    .trn-slot-rect { transition: stroke 0.3s ease, fill 0.3s ease; }
+    .trn-slot-text { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 700; font-size: 15px; }
+    .trn-spin .trn-slot-rect { animation: trnSpinGlow 0.35s ease-in-out infinite; }
+    @keyframes trnSpinGlow {
+      0%, 100% { stroke: #d4af37; }
+      50% { stroke: #f5d76e; }
+    }
+    @keyframes trnPop {
+      0% { transform: scale(0.4); opacity: 0; }
+      60% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .trn-lock { transform-box: fill-box; transform-origin: center; animation: trnPop 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
+    @keyframes trnRing {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(1.3, 1.9); opacity: 0; }
+    }
+    .trn-ring { transform-box: fill-box; transform-origin: center; fill: none; stroke: #d4af37; stroke-width: 2.5; animation: trnRing 0.75s ease-out forwards; pointer-events: none; }
+    @keyframes trnAdv {
+      from { stroke-dashoffset: 100; }
+      to { stroke-dashoffset: 0; }
+    }
+    .trn-adv-anim { stroke-dasharray: 100; animation: trnAdv 1.3s ease-out both; }
+    @keyframes trnActive {
+      0%, 100% { stroke-opacity: 1; }
+      50% { stroke-opacity: 0.45; }
+    }
+    .trn-active-rect { animation: trnActive 1.4s ease-in-out infinite; }
+
+    /* Draw pool */
+    .trn-chip {
+      padding: 0.3rem 0.7rem; border-radius: 9999px;
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 700; font-size: 0.75rem; color: #e2e8f0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .trn-chip-gone { opacity: 0; transform: scale(0.5); }
+    @keyframes trnChipBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .trn-chip-bob { animation: trnChipBob 1.2s ease-in-out infinite; }
+
+    /* Duel panel */
+    .trn-duel-card {
+      display: flex; flex-direction: column; gap: 0.3rem; min-width: 0;
+      padding: 0.55rem 0.75rem; border-radius: 0.9rem;
+      background: rgba(26, 26, 26, 0.7); border: 1px solid #2a2a2a;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    }
+    .trn-duel-me { border-color: rgba(148, 163, 184, 0.5); }
+    .trn-duel-win { border-color: rgba(212, 175, 55, 0.85); box-shadow: 0 0 18px rgba(212, 175, 55, 0.3); }
+    .trn-duel-lose { opacity: 0.6; }
+    .trn-pip { width: 0.6rem; height: 0.6rem; border-radius: 9999px; border: 1.5px solid #475569; transition: background-color 0.3s ease, border-color 0.3s ease; }
+    .trn-pip-on { background: #d4af37; border-color: #d4af37; }
+
+    @keyframes trnBannerPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .trn-banner-pop { animation: trnBannerPop 0.55s cubic-bezier(0.22, 1.3, 0.36, 1) both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .trn-lock, .trn-ring, .trn-adv-anim, .trn-banner-pop, .trn-chip-bob, .trn-active-rect, .trn-spin .trn-slot-rect { animation: none; }
+    }
+
+    @media (max-width: 640px) {
+      #trnScreen > div:first-child { padding: 0.5rem 0.75rem; }
+      #trnViewMatch, #trnViewLobby { padding-left: 0.75rem; padding-right: 0.75rem; gap: 0.75rem; }
+      #trnViewGame { padding-left: 0.5rem; padding-right: 0.5rem; }
+      #trnQCard { padding: 0.75rem; gap: 0.6rem; }
+      #trnLobbyCode { font-size: 2.5rem; }
+    }
+  </style>
 </head>
 <body class="bg-pik-bg text-slate-100 flex flex-col justify-between h-screen w-screen overflow-hidden font-sans relative">
 
@@ -1010,22 +1097,27 @@
           <button id="multiPvpBtn" class="multi-sub" onclick="openPvp('pvp')">P-V-PIK</button>
           <button id="multiParBtn" class="multi-sub" onclick="openPvp('par')">PIK Par</button>
           <button id="multiBadgesBtn" class="multi-sub" onclick="openBadges()">Badges</button>
+          <button id="multiTournamentBtn" class="multi-sub" onclick="openTournament()">Tournament</button>
         </div>
       </div>
     </div>
 
     <!-- Bottom Footer Subtext -->
-    <div id="menuFooterSubtext" class="text-[11px] text-slate-500 font-display flex flex-col items-center gap-2 py-2">
-      <!-- 6 colored rarity tier bars -->
-      <div class="flex items-center justify-center gap-1 max-w-md w-full px-4">
-        <span class="flex-1 h-1 rounded-l-full bg-[#7e8c8d]"></span>
-        <span class="flex-1 h-1 bg-[#388e3c]"></span>
-        <span class="flex-1 h-1 bg-[#f97316]"></span>
-        <span class="flex-1 h-1 bg-[#1976d2]"></span>
-        <span class="flex-1 h-1 bg-[#8e24aa]"></span>
-        <span class="flex-1 h-1 rounded-r-full bg-[#d4af37]"></span>
-      </div>
-      <span>8 Questions • 6 Rarity Tiers</span>
+    <div id="menuFooterSubtext" class="text-[11px] text-slate-500 font-display">
+      8 Questions • 6 Rarity Tiers
+    </div>
+    <!-- Rarity color bar (decorative) -->
+    <style>
+      #menuRarityBar { display: flex; gap: 5px; width: 240px; max-width: 72vw; height: 6px; margin-top: 10px; pointer-events: none; }
+      #menuRarityBar span { flex: 1 1 0; height: 100%; border-radius: 9999px; }
+    </style>
+    <div id="menuRarityBar" aria-hidden="true">
+      <span style="background:#7e8c8d"></span>
+      <span style="background:#388e3c"></span>
+      <span style="background:#f97316"></span>
+      <span style="background:#1976d2"></span>
+      <span style="background:#8e24aa"></span>
+      <span style="background:#d4af37"></span>
     </div>
   </div>
 
@@ -1757,6 +1849,187 @@
         <div id="bdgProjText" class="font-display font-extrabold text-xl sm:text-2xl text-slate-100 leading-snug mt-1.5"></div>
       </div>
     </div>
+  </div>
+
+  <!-- ================= TOURNAMENT MULTIPLAYER SCREEN ================= -->
+  <div id="trnScreen" class="hidden absolute inset-0 flex flex-col bg-pik-bg overflow-hidden" style="z-index:45;">
+    <!-- Top bar -->
+    <div class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-pik-border/40 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="11" r="4" fill="#7e8c8d"/>
+          <circle cx="36.3" cy="20" r="4" fill="#388e3c"/>
+          <circle cx="31.6" cy="34.4" r="4" fill="#1976d2"/>
+          <circle cx="16.4" cy="34.4" r="4" fill="#8e24aa"/>
+          <circle cx="11.7" cy="20" r="4" fill="#d4af37"/>
+          <circle cx="24" cy="24" r="4" fill="#f97316"/>
+        </svg>
+        <span class="font-display font-extrabold text-xl tracking-tight text-slate-100">Tournament</span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="trnToggleAudio()" title="Toggle Sound" class="p-2 bg-pik-card hover:bg-slate-800 border border-pik-border rounded-xl transition text-slate-300">
+          <svg id="trnAudioIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg>
+        </button>
+        <button onclick="trnExitToMenu()" title="Main Menu" class="px-3 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 border border-pik-border rounded-xl transition text-slate-300 font-display font-bold text-xs flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Menu
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: MATCHMAKING ===== -->
+    <div id="trnViewMatch" class="flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
+      <div class="text-center">
+        <h2 class="font-display font-black text-3xl sm:text-4xl tracking-wider text-slate-100">Tournament</h2>
+        <p class="text-xs sm:text-sm text-slate-300 font-display font-bold mt-1">8 players &bull; Single-elimination bracket</p>
+        <p class="text-[11px] sm:text-xs text-slate-500 font-display mt-0.5 max-w-sm mx-auto">The bracket is drawn at random. Face one opponent at a time &mdash; the rarer answer wins the round, and the first to 2 round wins moves on. Last player standing is champion.</p>
+      </div>
+
+      <div class="w-full max-w-sm flex flex-col gap-3">
+        <div>
+          <div class="text-[10px] uppercase font-display tracking-wider text-slate-400 mb-1">Your Name</div>
+          <input id="trnNameInput" type="text" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Enter a name..." class="w-full bg-pik-card border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
+        </div>
+
+        <button id="trnPublicBtn" onclick="trnPlayPublic()" class="w-full py-3 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95 flex items-center justify-center gap-2 border-2 border-slate-300">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          Public Tournament
+        </button>
+
+        <button id="trnPrivateToggleBtn" onclick="trnTogglePrivate()" class="w-full py-3 bg-pik-card hover:bg-slate-800 text-slate-200 border border-pik-border font-display font-bold text-sm rounded-2xl transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4 text-pik-gold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Private Lobby
+        </button>
+
+        <div id="trnPrivateBox" class="hidden flex flex-col gap-2 bg-pik-card/60 border border-pik-border rounded-2xl p-3">
+          <button onclick="trnCreatePrivate()" class="w-full py-2.5 bg-pik-bg hover:bg-slate-800 text-slate-100 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+            Create Private Lobby
+          </button>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 h-px bg-pik-border"></div>
+            <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">or join with code</span>
+            <div class="flex-1 h-px bg-pik-border"></div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="trnCodeInput" type="text" maxlength="4" autocomplete="off" spellcheck="false" placeholder="CODE" onkeydown="if(event.key==='Enter')trnJoinPrivate()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-display font-bold tracking-[0.3em] uppercase text-center">
+            <button onclick="trnJoinPrivate()" class="px-4 py-2.5 bg-slate-100 hover:bg-white text-slate-950 font-display font-extrabold text-xs rounded-xl transition active:scale-95 whitespace-nowrap">Join</button>
+          </div>
+        </div>
+
+        <div id="trnMatchMsg" class="min-h-[18px] text-center text-xs text-pik-gold font-display font-medium"></div>
+        <div id="trnBackendNote" class="text-center text-[10px] text-slate-600 font-display"></div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: LOBBY ===== -->
+    <div id="trnViewLobby" class="hidden flex-1 min-h-0 flex flex-col items-center justify-center gap-4 px-4 py-4 overflow-y-auto scrollbar-none">
+      <div class="text-center">
+        <div class="flex items-center justify-center gap-2">
+          <span id="trnLobbyBadge" class="px-2.5 py-0.5 rounded-full bg-pik-card border border-pik-border text-[10px] font-display font-bold tracking-widest uppercase text-slate-400">Tournament</span>
+          <span class="text-[10px] font-display uppercase tracking-wider text-slate-500">Lobby Code</span>
+        </div>
+        <button onclick="trnCopyCode()" title="Copy code" class="font-display font-black text-4xl sm:text-5xl tracking-[0.3em] text-pik-gold mt-1 hover:text-white transition pl-[0.3em]" id="trnLobbyCode">----</button>
+        <div id="trnCopyNote" class="text-[10px] text-slate-500 font-display h-3">Click the code to copy it</div>
+      </div>
+
+      <div id="trnLobbySlots" class="w-full max-w-md grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+
+      <div class="w-full max-w-sm flex flex-col gap-2">
+        <button id="trnStartBtn" onclick="trnStartGame()" class="hidden w-full py-3 bg-slate-100 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-sm rounded-2xl transition shadow-xl active:scale-95">
+          Draw the Bracket
+        </button>
+        <div id="trnLobbyWait" class="text-center text-xs text-slate-400 font-display"></div>
+        <button onclick="trnLeaveToMatch()" class="w-full py-2.5 bg-pik-card hover:bg-slate-800 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition active:scale-95">
+          Leave Lobby
+        </button>
+        <div id="trnLobbyMsg" class="min-h-[16px] text-center text-xs text-pik-gold font-display font-medium"></div>
+      </div>
+    </div>
+
+    <!-- ===== VIEW: GAME ===== -->
+    <div id="trnViewGame" class="hidden flex-1 min-h-0 w-full max-w-5xl mx-auto flex flex-col gap-2 px-3 sm:px-6 py-2 overflow-y-auto scrollbar-none">
+      <div class="text-center flex-shrink-0">
+        <div id="trnTitle" class="font-display font-extrabold text-sm sm:text-base text-slate-100 tracking-tight"></div>
+        <div id="trnSub" class="text-[10px] uppercase tracking-wider font-display font-bold text-slate-500"></div>
+      </div>
+
+      <!-- Bracket -->
+      <div id="trnBracketWrap" class="w-full flex-shrink-0 overflow-x-auto scrollbar-none">
+        <svg id="trnBracket" viewBox="0 0 976 440" preserveAspectRatio="xMidYMid meet" class="mx-auto" style="width:100%;min-width:680px;max-height:46vh;"></svg>
+      </div>
+
+      <!-- Draw pool: players waiting to be placed -->
+      <div id="trnPool" class="hidden flex flex-wrap items-center justify-center gap-1.5 flex-shrink-0"></div>
+
+      <!-- Banner -->
+      <div id="trnBanner" class="hidden text-center flex-shrink-0 py-1">
+        <div id="trnBannerMain" class="font-display font-black text-2xl sm:text-3xl text-pik-gold tracking-tight"></div>
+        <div id="trnBannerSub" class="text-xs sm:text-sm text-slate-400 font-display font-bold mt-0.5"></div>
+      </div>
+
+      <!-- Duel panel -->
+      <div id="trnDuel" class="hidden w-full max-w-xl mx-auto grid items-center gap-2 flex-shrink-0" style="grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);">
+        <div id="trnDuelA" class="trn-duel-card">
+          <div class="flex items-center justify-between gap-2 min-w-0">
+            <span id="trnNameA" class="font-display font-bold text-sm text-slate-100 truncate"></span>
+            <span id="trnPipsA" class="flex items-center gap-1 flex-shrink-0"></span>
+          </div>
+          <div id="trnChipA" class="text-[11px] sm:text-xs font-display font-bold leading-tight break-words min-h-[1.2em]"></div>
+        </div>
+        <div class="font-display font-black text-lg text-slate-500">VS</div>
+        <div id="trnDuelB" class="trn-duel-card">
+          <div class="flex items-center justify-between gap-2 min-w-0">
+            <span id="trnNameB" class="font-display font-bold text-sm text-slate-100 truncate"></span>
+            <span id="trnPipsB" class="flex items-center gap-1 flex-shrink-0"></span>
+          </div>
+          <div id="trnChipB" class="text-[11px] sm:text-xs font-display font-bold leading-tight break-words min-h-[1.2em]"></div>
+        </div>
+      </div>
+
+      <!-- Question card (only the two players in the current match) -->
+      <div id="trnPromptEcho" class="hidden text-center font-display font-bold text-base sm:text-lg text-slate-300 px-4 max-w-xl mx-auto flex-shrink-0"></div>
+      <div id="trnQCard" class="hidden w-full max-w-xl mx-auto bg-pik-card border border-pik-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xl relative flex-shrink-0">
+        <div class="flex items-center justify-between border-b border-pik-border/60 pb-2.5">
+          <span id="trnQNum" class="font-display font-bold text-xs uppercase tracking-wider text-pik-gold">Round 1</span>
+          <div id="trnTimerPill" class="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/40 border border-red-500/40 rounded-full font-display text-xs text-red-400 font-bold">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span id="trnTimerText">30s</span>
+          </div>
+        </div>
+        <h2 id="trnPrompt" class="font-display font-extrabold text-lg sm:text-xl text-slate-100 tracking-tight leading-snug py-1"></h2>
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <input id="trnAnswerInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')trnSubmit()" oninput="trnHideFeedback()" class="w-full bg-pik-bg border border-pik-border focus:border-slate-400 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-sans">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button id="trnSubmitBtn" onclick="trnSubmit()" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-white active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-display font-extrabold text-xs rounded-xl transition-all shadow-md whitespace-nowrap">
+              <span id="trnSubmitText">Submit</span>
+            </button>
+            <button id="trnSkipBtn" onclick="trnSkip(false)" class="px-3.5 py-2.5 bg-pik-bg hover:bg-slate-800 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-slate-400 hover:text-slate-200 border border-pik-border font-display font-bold text-xs rounded-xl transition-all">
+              Skip
+            </button>
+          </div>
+        </div>
+        <div id="trnFeedback" class="hidden text-xs text-pik-gold font-display font-medium"></div>
+      </div>
+
+      <!-- Verdict -->
+      <div id="trnVerdict" class="text-center min-h-[24px] font-display font-bold text-sm sm:text-base text-slate-100 flex-shrink-0"></div>
+
+      <!-- End actions -->
+      <div id="trnEndActions" class="hidden flex-col items-center gap-2 pt-1 pb-2 flex-shrink-0">
+        <div class="flex items-center justify-center gap-2">
+          <button id="trnAgainBtn" onclick="trnPlayAgain()" class="hidden px-4 py-2 bg-slate-100 hover:bg-white active:scale-95 text-slate-950 font-display font-extrabold text-xs rounded-xl transition shadow-lg">
+            Play Again
+          </button>
+          <button onclick="trnLeaveToMatch()" class="px-4 py-2 bg-pik-card hover:bg-slate-800 active:scale-95 text-slate-300 border border-pik-border font-display font-bold text-xs rounded-xl transition">
+            Leave
+          </button>
+        </div>
+        <div id="trnEndWait" class="text-[11px] text-slate-500 font-display"></div>
+      </div>
+    </div>
+
+    <!-- Champion celebration -->
+    <canvas id="trnConfetti" class="hidden pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:60;"></canvas>
   </div>
 
   <!-- ================= JAVASCRIPT ENGINE ================= -->
@@ -10083,6 +10356,1302 @@ Rules:
       const screen = document.getElementById('bdgScreen');
       if (screen) screen.addEventListener('click', () => { if (BDG.projIdx >= 0) bdgProjHide(); });
     })();
+  </script>
+
+  <!-- ================= TOURNAMENT MULTIPLAYER ENGINE ================= -->
+  <script>
+    /* ====================================================
+       TOURNAMENT — MULTIPLAYER MODE (exactly 8 players)
+       The bracket is drawn at random (animated), then the players face
+       each other one match at a time. In every round both players answer
+       the same prompt: the rarer answer wins the round (faster typing
+       breaks a tie). First to 2 round wins takes the match and moves on.
+       Transport: shares the same online backend as the other multiplayer
+       modes (works across devices from a plain HTML file).
+    ==================================================== */
+    const TRN_PLAYERS = 8;
+    const TRN_WINS = 2;
+    const TRN_ANSWER_SECONDS = 30;
+    const TRN_QUESTION_COUNT = 24;
+    const TRN_DRAW_LEAD = 2200;
+    const TRN_DRAW_STEP = 900;
+    const TRN_DRAW_MS = TRN_DRAW_LEAD + TRN_DRAW_STEP * 8 + 1200;
+    const TRN_INTRO_MS = 3200;
+    const TRN_REVEAL_MS = 6000;
+    const TRN_ADVANCE_MS = 4600;
+    const TRN_GRACE_MS = 20000;
+    const TRN_STALE_MS = 25000;
+    const TRN_DEL = { __pvpDelete: true };
+    const TRN_META = ['Quarterfinal 1', 'Quarterfinal 2', 'Quarterfinal 3', 'Quarterfinal 4', 'Semifinal 1', 'Semifinal 2', 'Final'];
+
+    const TRN = {
+      code: null, room: null, backend: null, unwatch: null, everSeen: false,
+      hbTimer: null, tickTimer: null, lastKey: null, lastStatus: null,
+      beatSeen: {}, prevHost: null, noHostSince: 0, hostKey: null, hostKeyAt: 0, hostBusy: false, fullSince: 0,
+      timer: null, timeLeft: TRN_ANSWER_SECONDS, evaluating: false, submitted: false, qStart: 0, pausedMs: 0,
+      used: new Set(), phaseTimers: [], busy: false, confettiRaf: 0
+    };
+
+    const trnEl = (id) => document.getElementById(id);
+    const trnMe = () => PVP.myId;
+
+    function trnEsc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    /* ---------- Bracket structure ---------- */
+    const TRN_W = 190, TRN_H = 36;
+    const TRN_COLX = [0, 262, 524, 786];
+    const TRN_CY = [[38, 82, 150, 194, 262, 306, 374, 418], [94, 138, 318, 362], [206, 250], [228]];
+
+    function trnMatchOfSlot(col, idx) { return col === 0 ? Math.floor(idx / 2) : col === 1 ? 4 + Math.floor(idx / 2) : 6; }
+
+    // Where the winner of match m goes next
+    function trnFeed(m) {
+      if (m < 4) return { col: 1, idx: (m >> 1) * 2 + (m & 1) };
+      if (m < 6) return { col: 2, idx: m - 4 };
+      return { col: 3, idx: 0 };
+    }
+
+    function trnApplyWinner(matches, m, w) {
+      matches[m].w = w;
+      if (m < 4) { const nm = matches[4 + (m >> 1)]; if (m & 1) nm.b = w; else nm.a = w; }
+      else if (m < 6) { const f = matches[6]; if (m === 5) f.b = w; else f.a = w; }
+    }
+
+    function trnName(room, id) {
+      return (room.players && room.players[id] && room.players[id].name) || (room.game && room.game.names && room.game.names[id]) || 'Player';
+    }
+
+    function trnShuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) { const j = getRandomInt(i + 1); const t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    }
+
+    function trnSlotId(g, col, idx, pending) {
+      const M = g.matches || [];
+      if (col === 3) {
+        if (g.phase === 'done') return g.champion || (M[6] && M[6].w) || null;
+        if (g.phase === 'advance' && g.m === 6) return M[6] && M[6].w;
+        return null;
+      }
+      const m = trnMatchOfSlot(col, idx);
+      const mt = M[m];
+      if (!mt) return null;
+      // The slot a winner is about to move into stays empty until the advance animation
+      if (pending >= 0) { const f = trnFeed(pending); if (f.col === col && f.idx === idx) return null; }
+      const side = col === 2 ? idx : idx % 2;
+      return side ? mt.b : mt.a;
+    }
+
+    function trnRenderBracket(room, opts) {
+      opts = opts || {};
+      const svg = trnEl('trnBracket');
+      if (!svg || !room.game || !room.game.matches) return;
+      const g = room.game, M = g.matches;
+      const undrawn = opts.undrawn || null;
+      const activeM = ['intro', 'answering', 'reveal'].indexOf(g.phase) >= 0 ? g.m : -1;
+      const pending = (g.phase === 'reveal' && M[g.m] && M[g.m].w) ? g.m : -1;
+      let paths = '', slots = '';
+
+      for (let m = 0; m < 7; m++) {
+        const colL = m < 4 ? 0 : m < 6 ? 1 : 2;
+        const ia = m < 4 ? m * 2 : m < 6 ? (m - 4) * 2 : 0;
+        const xr = TRN_COLX[colL] + TRN_W, ya = TRN_CY[colL][ia], yb = TRN_CY[colL][ia + 1];
+        const xm = xr + 22, cym = (ya + yb) / 2;
+        const f = trnFeed(m);
+        const xn = TRN_COLX[f.col], yn = TRN_CY[f.col][f.idx];
+        paths += `<path d="M${xr} ${ya}H${xm}V${yb}H${xr}" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        const decided = !!M[m].w && m !== pending;
+        const cls = m === opts.advAnim ? ' class="trn-adv-anim"' : '';
+        paths += `<path id="trn-adv-${m}"${cls} pathLength="100" d="M${xm} ${cym}H${xm + 16}V${yn}H${xn}" fill="none" stroke="${decided ? '#d4af37' : '#ffffff'}" stroke-opacity="${decided ? 0.9 : 0.15}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }
+
+      for (let col = 0; col < 4; col++) {
+        TRN_CY[col].forEach((cy, idx) => {
+          const x = TRN_COLX[col], y = cy - TRN_H / 2;
+          const id = trnSlotId(g, col, idx, pending);
+          const isChamp = col === 3;
+          const m = isChamp ? 6 : trnMatchOfSlot(col, idx);
+          const mt = M[m] || {};
+          const decided = !!mt.w && m !== pending;
+          const isLoser = !isChamp && id && decided && mt.w !== id;
+          const isWinner = !isChamp && id && decided && mt.w === id;
+          const active = !isChamp && id && activeM === m;
+          const draw = col === 0 && undrawn && undrawn.has(idx);
+          const label = draw ? '?' : (id ? trnEsc(trnName(room, id)) : (isChamp ? '' : 'TBD'));
+          let stroke = '#2a2a2a', sw = 1.5, fill = '#1a1a1a', dash = '', rectCls = 'trn-slot-rect';
+          if (!id && !draw) dash = ' stroke-dasharray="4 4"';
+          if (isWinner) stroke = 'rgba(212,175,55,0.55)';
+          if (active) { stroke = '#d4af37'; sw = 2.4; rectCls += ' trn-active-rect'; }
+          if (isChamp) { stroke = id ? '#d4af37' : '#2a2a2a'; sw = id ? 2.6 : 1.5; fill = id ? '#1f1a0a' : '#161616'; }
+          if (draw) stroke = '#3a3a3a';
+          const tFill = draw ? '#7c6a2a' : (isChamp && id ? '#f5d76e' : (id ? '#e2e8f0' : '#475569'));
+          const fillCls = opts.animNew && opts.animNew.col === col && opts.animNew.idx === idx && id ? ' trn-lock' : '';
+          const op = isLoser ? ' opacity="0.42"' : '';
+          let pips = '';
+          if (!isChamp && id && mt.a && mt.b && m <= g.m) {
+            const side = col === 2 ? idx : idx % 2;
+            let wins = side ? (mt.wb || 0) : (mt.wa || 0);
+            if (opts.pipDelta && opts.pipDelta.id === id) wins = Math.max(0, wins + opts.pipDelta.d);
+            for (let k = 0; k < TRN_WINS; k++) {
+              const cx = x + TRN_W - 12 - (TRN_WINS - 1 - k) * 14;
+              pips += `<circle cx="${cx}" cy="${cy}" r="4.5" fill="${k < wins ? '#d4af37' : 'none'}" stroke="${k < wins ? '#d4af37' : '#475569'}" stroke-width="1.5"/>`;
+            }
+          }
+          const head = isChamp ? `<text x="${x + TRN_W / 2}" y="${y - 8}" text-anchor="middle" font-family="Space Grotesk, Inter, sans-serif" font-weight="800" font-size="11" letter-spacing="2" fill="#d4af37">CHAMPION</text>` : '';
+          slots += `<g id="trn-g-${col}-${idx}"${op}>${head}<rect id="trn-r-${col}-${idx}" class="${rectCls}" x="${x}" y="${y}" width="${TRN_W}" height="${TRN_H}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"${dash}/><text id="trn-t-${col}-${idx}" class="trn-slot-text${fillCls}" x="${isChamp ? x + TRN_W / 2 : x + 12}" y="${cy + 5}" ${isChamp ? 'text-anchor="middle" ' : ''}fill="${tFill}">${label}</text>${pips}</g>`;
+        });
+      }
+      svg.innerHTML = paths + slots;
+    }
+
+    /* ---------- Screen / view helpers ---------- */
+    function trnShowView(name) {
+      ['Match', 'Lobby', 'Game'].forEach(v => {
+        const el = trnEl('trnView' + v);
+        if (el) el.classList.toggle('hidden', v !== name);
+      });
+    }
+
+    function trnSetMsg(msg, id = 'trnMatchMsg') {
+      const el = trnEl(id);
+      if (el) el.textContent = msg || '';
+    }
+
+    function trnToggleAudio() {
+      toggleAudio();
+      const a = trnEl('trnAudioIcon'), b = trnEl('audioIcon');
+      if (a && b) a.innerHTML = b.innerHTML;
+    }
+
+    function trnGetName() {
+      const input = trnEl('trnNameInput');
+      let name = (input ? input.value : '').trim().replace(/\s+/g, ' ').slice(0, 14);
+      if (!name) name = 'Player ' + (100 + getRandomInt(900));
+      if (input) input.value = name;
+      try { localStorage.setItem('pik_pvp_name', name); } catch (e) {}
+      return name;
+    }
+
+    async function trnGetBackend() {
+      const b = await pvpGetBackend();
+      TRN.backend = b;
+      return b;
+    }
+
+    function trnCloseMultiMenu() {
+      const wrap = trnEl('multiWrap');
+      if (wrap) wrap.classList.remove('multi-open');
+    }
+
+    function openTournament() {
+      if (isLaunchingMode) return;
+      trnCloseMultiMenu();
+      closeSoloMenu();
+      playAudioTone('launch');
+      const screen = trnEl('trnScreen');
+      if (!screen) return;
+      screen.classList.remove('hidden');
+      screen.classList.remove('pvp-screen-in');
+      void screen.offsetWidth;
+      screen.classList.add('pvp-screen-in');
+      trnShowView('Match');
+      trnSetMsg('');
+      const priv = trnEl('trnPrivateBox');
+      if (priv) priv.classList.add('hidden');
+      const input = trnEl('trnNameInput');
+      if (input && !input.value) {
+        try { input.value = localStorage.getItem('pik_pvp_name') || ''; } catch (e) {}
+      }
+      const note = trnEl('trnBackendNote');
+      if (note) note.textContent = '';
+      trnGetBackend().then(b => {
+        if (note) note.textContent = b.kind === 'local' ? 'Could not reach online matchmaking \u2014 only tabs in this browser can join each other' : 'Online matchmaking connected';
+      });
+    }
+
+    function trnExitToMenu() {
+      trnLeaveRoom().catch(() => {});
+      const screen = trnEl('trnScreen');
+      if (screen) screen.classList.add('hidden');
+      trnCloseMultiMenu();
+      playAudioTone('menu');
+      animateMenuEntrance();
+    }
+
+    function trnLeaveToMatch() {
+      trnLeaveRoom().catch(() => {});
+      trnShowView('Match');
+      trnSetMsg('');
+    }
+
+    function trnTogglePrivate() {
+      const box = trnEl('trnPrivateBox');
+      if (box) box.classList.toggle('hidden');
+      trnSetMsg('');
+    }
+
+    /* ---------- Matchmaking ---------- */
+    function trnRandomCode() {
+      const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      let s = '';
+      for (let i = 0; i < 4; i++) s += A[getRandomInt(A.length)];
+      return s;
+    }
+
+    function trnSortedIds(room) {
+      return Object.keys(room.players || {}).sort((a, b) => {
+        const pa = room.players[a], pb = room.players[b];
+        return ((pa.joinedAt || 0) - (pb.joinedAt || 0)) || (a < b ? -1 : 1);
+      });
+    }
+
+    function trnRoomFresh(r) {
+      const now = Date.now();
+      return Object.values(r.players || {}).some(p => now - (p.seen || 0) < 60000);
+    }
+
+    function trnUniqueName(players, name) {
+      const taken = new Set(Object.values(players || {}).map(p => (p.name || '').toLowerCase()));
+      if (!taken.has(name.toLowerCase())) return name;
+      for (let i = 2; i < 10; i++) {
+        const cand = (name.slice(0, 11) + ' ' + i);
+        if (!taken.has(cand.toLowerCase())) return cand;
+      }
+      return name + Math.floor(Math.random() * 9);
+    }
+
+    function trnSetBusy(on) {
+      TRN.busy = on;
+      ['trnPublicBtn', 'trnPrivateToggleBtn'].forEach(id => { const b = trnEl(id); if (b) b.disabled = on; });
+    }
+
+    async function trnTryJoin(code) {
+      const b = await trnGetBackend();
+      const name = trnGetName();
+      const me = trnMe();
+      const fail = (m) => { if (b.release) b.release(code); return m; };
+      const r = await b.get(code);
+      if (!r) return fail('Lobby not found.');
+      if (r.mode !== 'tournament') return fail('That code belongs to a different game mode.');
+      if (r.status !== 'lobby') return fail('That tournament has already started.');
+      if (Object.keys(r.players || {}).length >= TRN_PLAYERS) return fail('That lobby is full.');
+      const now = Date.now();
+      await b.patch(code, { ['players.' + me]: { name: trnUniqueName(r.players, name), joinedAt: now, seen: now } });
+      let r2 = null;
+      for (let i = 0; i < 14; i++) {
+        r2 = await b.get(code);
+        if (r2 && r2.players && r2.players[me]) break;
+        await new Promise(res => setTimeout(res, 250));
+      }
+      if (!r2 || !r2.players || !r2.players[me]) return fail('Could not join \u2014 the host may have left.');
+      const idx = trnSortedIds(r2).indexOf(me);
+      if (idx >= TRN_PLAYERS) {
+        await b.patch(code, { ['players.' + me]: TRN_DEL });
+        return fail('That lobby is full.');
+      }
+      trnEnterRoom(code);
+      return null;
+    }
+
+    async function trnCreateRoom(isPublic) {
+      const b = await trnGetBackend();
+      const name = trnGetName();
+      let code = null;
+      for (let i = 0; i < 10; i++) {
+        const c = trnRandomCode();
+        if (!(await b.get(c))) { code = c; break; }
+      }
+      if (!code) return 'Could not create a lobby. Try again.';
+      const now = Date.now();
+      await b.set(code, {
+        code, mode: 'tournament', isPublic: !!isPublic, hostId: trnMe(), status: 'lobby', createdAt: now, updatedAt: now,
+        players: { [trnMe()]: { name, joinedAt: now, seen: now } }
+      });
+      trnEnterRoom(code);
+      return null;
+    }
+
+    async function trnPlayPublic() {
+      if (TRN.busy) return;
+      trnSetBusy(true);
+      trnSetMsg('Searching for a public tournament...');
+      try {
+        const b = await trnGetBackend();
+        const list = (await b.listPublic())
+          .filter(r => r.status === 'lobby' && r.mode === 'tournament' && Object.keys(r.players || {}).length < TRN_PLAYERS && trnRoomFresh(r))
+          .sort((a, c) => Object.keys(c.players).length - Object.keys(a.players).length);
+        for (const r of list) {
+          const err = await trnTryJoin(r.code);
+          if (!err) { trnSetBusy(false); return; }
+        }
+        trnSetMsg('No open lobby found \u2014 creating one...');
+        const err = await trnCreateRoom(true);
+        if (err) trnSetMsg(err);
+      } catch (e) {
+        console.warn('[Tournament]', e);
+        trnSetMsg('Could not reach matchmaking. Please try again.');
+      }
+      trnSetBusy(false);
+    }
+
+    async function trnCreatePrivate() {
+      if (TRN.busy) return;
+      trnSetBusy(true);
+      trnSetMsg('Creating private lobby...');
+      try {
+        const err = await trnCreateRoom(false);
+        if (err) trnSetMsg(err);
+      } catch (e) {
+        console.warn('[Tournament]', e);
+        trnSetMsg('Could not create a lobby. Please try again.');
+      }
+      trnSetBusy(false);
+    }
+
+    async function trnJoinPrivate() {
+      if (TRN.busy) return;
+      const input = trnEl('trnCodeInput');
+      const code = (input ? input.value : '').trim().toUpperCase();
+      if (code.length !== 4) { trnSetMsg('Enter the 4-character lobby code.'); playAudioTone('error'); return; }
+      trnSetBusy(true);
+      trnSetMsg('Joining...');
+      try {
+        const err = await trnTryJoin(code);
+        if (err) { trnSetMsg(err); playAudioTone('error'); }
+      } catch (e) {
+        console.warn('[Tournament]', e);
+        trnSetMsg('Could not join. Please try again.');
+      }
+      trnSetBusy(false);
+    }
+
+    /* ---------- Room lifecycle ---------- */
+    function trnEnterRoom(code) {
+      trnStopAll();
+      TRN.code = code;
+      TRN.room = null;
+      TRN.everSeen = false;
+      TRN.lastKey = null;
+      TRN.lastStatus = null;
+      TRN.beatSeen = {};
+      TRN.prevHost = null;
+      TRN.noHostSince = 0;
+      TRN.hostKey = null;
+      TRN.used = new Set();
+      trnSetMsg('');
+      trnSetMsg('', 'trnLobbyMsg');
+      TRN.unwatch = TRN.backend.watch(code, trnOnRoom);
+      TRN.hbTimer = setInterval(trnHeartbeat, 4000);
+      TRN.tickTimer = setInterval(trnTick, 1000);
+    }
+
+    function trnStopAll() {
+      const prevCode = TRN.code, prevBackend = TRN.backend;
+      if (prevCode && prevBackend && prevBackend.release) setTimeout(() => prevBackend.release(prevCode), 3000);
+      if (TRN.unwatch) { try { TRN.unwatch(); } catch (e) {} TRN.unwatch = null; }
+      clearInterval(TRN.hbTimer); clearInterval(TRN.tickTimer); clearInterval(TRN.timer);
+      TRN.hbTimer = TRN.tickTimer = TRN.timer = null;
+      trnClearTransient();
+      trnStopConfetti();
+      TRN.code = null;
+      TRN.room = null;
+      TRN.everSeen = false;
+      TRN.lastKey = null;
+      TRN.lastStatus = null;
+      TRN.evaluating = false;
+      TRN.submitted = false;
+    }
+
+    function trnClearTransient() {
+      TRN.phaseTimers.forEach(clearTimeout);
+      TRN.phaseTimers = [];
+    }
+
+    async function trnLeaveRoom() {
+      const b = TRN.backend, code = TRN.code, room = TRN.room;
+      trnStopAll();
+      if (!b || !code) return;
+      try {
+        const me = trnMe();
+        const others = Object.keys((room && room.players) || {}).filter(id => id !== me);
+        if (!room || others.length === 0) {
+          await b.remove(code);
+        } else {
+          const patch = { ['players.' + me]: TRN_DEL };
+          if (room.hostId === me) {
+            const next = trnSortedIds(room).filter(id => id !== me)[0];
+            if (next) patch.hostId = next;
+          }
+          await b.patch(code, patch);
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    window.addEventListener('pagehide', () => { if (TRN.code) trnLeaveRoom(); });
+
+    function trnHeartbeat() {
+      if (!TRN.code || !TRN.backend) return;
+      TRN.backend.patch(TRN.code, { ['players.' + trnMe() + '.seen']: Date.now() }).catch(() => {});
+    }
+
+    function trnTrackBeats(room) {
+      const now = Date.now();
+      for (const id in (room.players || {})) {
+        const s = room.players[id].seen;
+        const b = TRN.beatSeen[id];
+        if (!b || b.seen !== s) TRN.beatSeen[id] = { seen: s, at: now };
+      }
+    }
+
+    function trnAlive(id) {
+      if (id === trnMe()) return true;
+      const b = TRN.beatSeen[id];
+      if (!b) return true;
+      return Date.now() - b.at <= TRN_STALE_MS;
+    }
+
+    function trnPresent(room, id) {
+      return !!(id && room.players && room.players[id] && trnAlive(id));
+    }
+
+    function trnClosedBack(msg) {
+      trnStopAll();
+      trnShowView('Match');
+      trnSetMsg(msg);
+    }
+
+    function trnOnRoom(room) {
+      if (!TRN.code) return;
+      if (!room) {
+        if (TRN.everSeen) trnClosedBack('The lobby was closed.');
+        return;
+      }
+      const me = trnMe();
+      if (!room.players || !room.players[me]) {
+        if (TRN.everSeen) trnClosedBack('You were removed from the lobby.');
+        return;
+      }
+      TRN.everSeen = true;
+      TRN.room = room;
+      trnTrackBeats(room);
+      if (TRN.prevHost !== room.hostId) {
+        if (room.hostId === me && TRN.prevHost) {
+          const t = Date.now();
+          Object.keys(TRN.beatSeen).forEach(id => { TRN.beatSeen[id].at = t; });
+        }
+        TRN.prevHost = room.hostId;
+      }
+
+      if (room.status === 'lobby') {
+        if (TRN.lastStatus !== 'lobby') trnResetGameUi();
+        trnShowView('Lobby');
+        trnRenderLobby(room);
+      } else if (room.status === 'playing' && room.game) {
+        if (TRN.lastStatus !== 'playing') {
+          trnResetGameUi();
+          TRN.lastKey = null;
+        }
+        trnShowView('Game');
+        trnOnGame(room);
+      }
+      TRN.lastStatus = room.status;
+      trnHostStep();
+    }
+
+    function trnTick() {
+      const room = TRN.room;
+      if (!room || !TRN.code) return;
+      const me = trnMe();
+      // Host migration: if the host goes silent, the next player in join order takes over
+      if (room.hostId !== me) {
+        const host = room.players[room.hostId];
+        const rank = Math.max(0, trnSortedIds(room).indexOf(me));
+        let silent = 0;
+        if (!host) {
+          if (!TRN.noHostSince) TRN.noHostSince = Date.now();
+          silent = Date.now() - TRN.noHostSince + TRN_STALE_MS;
+        } else {
+          TRN.noHostSince = 0;
+          const hb = TRN.beatSeen[room.hostId];
+          silent = hb ? Date.now() - hb.at : 0;
+        }
+        if (silent > TRN_STALE_MS + rank * 2500) {
+          TRN.backend.patch(TRN.code, { hostId: me }).catch(() => {});
+        }
+      }
+      trnHostStep();
+    }
+
+    function trnResetGameUi() {
+      clearInterval(TRN.timer);
+      trnClearTransient();
+      trnStopConfetti();
+      TRN.used = new Set();
+      TRN.submitted = false;
+      TRN.evaluating = false;
+      TRN.hostKey = null;
+      TRN.hostBusy = false;
+      ['trnQCard', 'trnPromptEcho', 'trnDuel', 'trnBanner', 'trnPool'].forEach(id => { const el = trnEl(id); if (el) el.classList.add('hidden'); });
+      const end = trnEl('trnEndActions'); if (end) { end.classList.add('hidden'); end.classList.remove('flex'); }
+      const v = trnEl('trnVerdict'); if (v) v.innerHTML = '';
+      const br = trnEl('trnBracket'); if (br) br.innerHTML = '';
+    }
+
+    /* ---------- Lobby ---------- */
+    function trnRenderLobby(room) {
+      const ids = trnSortedIds(room);
+      const me = trnMe();
+      const isHost = room.hostId === me;
+      const codeEl = trnEl('trnLobbyCode'); if (codeEl) codeEl.textContent = room.code;
+      const badge = trnEl('trnLobbyBadge'); if (badge) badge.textContent = `Tournament \u2022 ${room.isPublic ? 'Public' : 'Private'}`;
+
+      let html = '';
+      for (let i = 0; i < TRN_PLAYERS; i++) {
+        const id = ids[i];
+        if (id) {
+          const p = room.players[id];
+          html += `<div class="flex items-center justify-between gap-2 bg-pik-card border ${id === me ? 'border-slate-400/60' : 'border-pik-border'} rounded-xl px-3.5 py-2.5">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full bg-pik-uncommon flex-shrink-0"></span>
+              <span class="font-display font-bold text-sm text-slate-100 truncate">${trnEsc(p.name)}</span>
+              ${id === me ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-slate-400">You</span>' : ''}
+            </div>
+            ${id === room.hostId ? '<span class="text-[9px] font-display font-bold uppercase tracking-wider text-pik-gold">Host</span>' : ''}
+          </div>`;
+        } else {
+          html += `<div class="flex items-center gap-2 bg-pik-bg border border-dashed border-pik-border rounded-xl px-3.5 py-2.5 text-slate-600 font-display text-sm">
+            <span class="w-2.5 h-2.5 rounded-full border border-slate-700"></span>Waiting for player...
+          </div>`;
+        }
+      }
+      const slots = trnEl('trnLobbySlots'); if (slots) slots.innerHTML = html;
+
+      const startBtn = trnEl('trnStartBtn');
+      const wait = trnEl('trnLobbyWait');
+      if (startBtn) {
+        startBtn.classList.toggle('hidden', !isHost);
+        startBtn.disabled = ids.length < TRN_PLAYERS;
+        startBtn.textContent = ids.length < TRN_PLAYERS ? `Need ${TRN_PLAYERS} players (${ids.length}/${TRN_PLAYERS})` : 'Draw the Bracket';
+      }
+      if (wait) {
+        wait.textContent = isHost
+          ? (ids.length === TRN_PLAYERS ? (room.isPublic ? 'Lobby full \u2014 starting soon...' : 'Everyone is here \u2014 start when ready.') : `${ids.length} / ${TRN_PLAYERS} players \u2014 all ${TRN_PLAYERS} are needed`)
+          : (ids.length === TRN_PLAYERS ? 'Waiting for the host to start...' : `${ids.length} / ${TRN_PLAYERS} players \u2014 waiting for more`);
+      }
+    }
+
+    function trnCopyCode() {
+      const room = TRN.room;
+      if (!room) return;
+      const note = trnEl('trnCopyNote');
+      try {
+        navigator.clipboard.writeText(room.code).then(() => { if (note) note.textContent = 'Copied!'; }).catch(() => {});
+      } catch (e) {}
+      setTimeout(() => { if (note) note.textContent = 'Click the code to copy it'; }, 1500);
+    }
+
+    async function trnStartGame() {
+      const room = TRN.room;
+      if (!room || room.hostId !== trnMe() || room.status !== 'lobby') return;
+      const order = trnSortedIds(room).filter(id => trnAlive(id));
+      if (order.length !== TRN_PLAYERS) { trnSetMsg(`You need exactly ${TRN_PLAYERS} players.`, 'trnLobbyMsg'); return; }
+      const names = {};
+      order.forEach(id => { names[id] = room.players[id].name; });
+      const seeds = trnShuffle(order);   // random bracket placement
+      const matches = [];
+      for (let i = 0; i < 7; i++) matches.push({ a: null, b: null, wa: 0, wb: 0, w: null });
+      for (let i = 0; i < 4; i++) { matches[i].a = seeds[i * 2]; matches[i].b = seeds[i * 2 + 1]; }
+      try {
+        await TRN.backend.patch(TRN.code, {
+          status: 'playing',
+          updatedAt: Date.now(),
+          game: { order, names, seeds, matches, questions: pvpPickQuestions(TRN_QUESTION_COUNT), m: 0, r: 0, phase: 'draw', answers: {}, rounds: [], champion: null }
+        });
+        playAudioTone('launch');
+      } catch (e) {
+        console.warn('[Tournament]', e);
+        trnSetMsg('Could not start the tournament. Try again.', 'trnLobbyMsg');
+      }
+    }
+
+    async function trnPlayAgain() {
+      const room = TRN.room;
+      if (!room || room.hostId !== trnMe()) return;
+      try {
+        await TRN.backend.patch(TRN.code, { status: 'lobby', game: TRN_DEL, updatedAt: Date.now() });
+      } catch (e) { console.warn('[Tournament]', e); }
+    }
+
+    /* ---------- Host-authoritative engine ---------- */
+    function trnHostStep() {
+      const room = TRN.room;
+      const me = trnMe();
+      if (!room || room.hostId !== me || !TRN.code) return;
+      const now = Date.now();
+
+      if (room.status === 'lobby') {
+        Object.keys(room.players).forEach(id => {
+          if (id !== me && !trnAlive(id)) TRN.backend.patch(TRN.code, { ['players.' + id]: TRN_DEL }).catch(() => {});
+        });
+        const count = Object.keys(room.players).length;
+        if (room.isPublic && count >= TRN_PLAYERS) {
+          if (!TRN.fullSince) TRN.fullSince = now;
+          if (now - TRN.fullSince > 2500) { TRN.fullSince = 0; trnStartGame(); }
+        } else {
+          TRN.fullSince = 0;
+        }
+        return;
+      }
+
+      const g = room.game;
+      if (room.status !== 'playing' || !g || g.phase === 'done') return;
+
+      const key = `${g.m}:${g.r}:${g.phase}`;
+      if (TRN.hostKey !== key) { TRN.hostKey = key; TRN.hostKeyAt = now; TRN.hostBusy = false; }
+      const elapsed = now - TRN.hostKeyAt;
+      if (TRN.hostBusy) return;
+
+      const guarded = (fn) => {
+        TRN.hostBusy = true;
+        let p;
+        try { p = Promise.resolve(fn()); } catch (e) { p = Promise.reject(e); }
+        p.catch((e) => { console.warn('[Tournament]', e); setTimeout(() => { TRN.hostBusy = false; }, 1500); });
+      };
+
+      const mt = (g.matches || [])[g.m];
+      if (!mt) return;
+
+      if (g.phase === 'draw') {
+        if (elapsed >= TRN_DRAW_MS + 400) guarded(() => TRN.backend.patch(TRN.code, { 'game.phase': 'intro' }));
+        return;
+      }
+
+      if (g.phase === 'intro' || g.phase === 'answering') {
+        // A player who left forfeits the match
+        const aOk = trnPresent(room, mt.a), bOk = trnPresent(room, mt.b);
+        if (!aOk || !bOk) { guarded(() => trnForfeit(room, aOk ? mt.b : mt.a)); return; }
+      }
+
+      if (g.phase === 'intro') {
+        if (elapsed >= TRN_INTRO_MS) guarded(() => TRN.backend.patch(TRN.code, { 'game.phase': 'answering' }));
+      } else if (g.phase === 'answering') {
+        const answers = g.answers || {};
+        if ((answers[mt.a] && answers[mt.b]) || elapsed >= TRN_ANSWER_SECONDS * 1000 + TRN_GRACE_MS) {
+          guarded(() => trnFinalizeRound(room));
+        }
+      } else if (g.phase === 'reveal') {
+        if (elapsed >= TRN_REVEAL_MS) {
+          if (mt.w) guarded(() => TRN.backend.patch(TRN.code, { 'game.phase': 'advance' }));
+          else guarded(() => TRN.backend.patch(TRN.code, { 'game.r': g.r + 1, 'game.phase': 'intro', 'game.answers': {} }));
+        }
+      } else if (g.phase === 'advance') {
+        if (elapsed >= TRN_ADVANCE_MS) {
+          if (g.m >= 6) guarded(() => TRN.backend.patch(TRN.code, { 'game.phase': 'done', 'game.champion': mt.w }));
+          else guarded(() => TRN.backend.patch(TRN.code, { 'game.m': g.m + 1, 'game.r': 0, 'game.phase': 'intro', 'game.answers': {} }));
+        }
+      }
+    }
+
+    async function trnForfeit(room, winner) {
+      const g = room.game;
+      const matches = JSON.parse(JSON.stringify(g.matches));
+      const mt = matches[g.m];
+      if (!winner) winner = mt.a;
+      if (winner === mt.a) mt.wa = Math.max(mt.wa || 0, TRN_WINS); else mt.wb = Math.max(mt.wb || 0, TRN_WINS);
+      mt.ff = true;
+      trnApplyWinner(matches, g.m, winner);
+      await TRN.backend.patch(TRN.code, { 'game.matches': matches, 'game.answers': {}, 'game.phase': 'advance' });
+    }
+
+    async function trnFinalizeRound(room) {
+      const g = room.game;
+      if ((g.rounds || []).some(x => x.m === g.m && x.r === g.r)) {
+        await TRN.backend.patch(TRN.code, { 'game.phase': 'reveal' });
+        return;
+      }
+      const matches = JSON.parse(JSON.stringify(g.matches));
+      const mt = matches[g.m];
+      const ids = [mt.a, mt.b];
+      const answers = {};
+      ids.forEach(id => {
+        const a = g.answers && g.answers[id];
+        answers[id] = a
+          ? { text: a.text || '', key: a.key || '', len: a.len || 0, ms: a.ms || 0, skip: !!a.skip }
+          : { text: '', key: '', len: 0, ms: TRN_ANSWER_SECONDS * 1000, skip: true };
+      });
+      const A = answers[mt.a], B = answers[mt.b];
+      // Identical answers share one rarity (the earlier submitter's)
+      if (!A.skip && !B.skip && A.text && normalize(A.text) === normalize(B.text)) {
+        const ref = A.ms <= B.ms ? A : B;
+        A.key = B.key = ref.key; A.len = B.len = ref.len;
+      }
+      let win, how;
+      if (A.skip && B.skip) { win = Math.random() < 0.5 ? mt.a : mt.b; how = 'coin'; }
+      else if (A.skip) { win = mt.b; how = 'skip'; }
+      else if (B.skip) { win = mt.a; how = 'skip'; }
+      else if (A.len !== B.len) { win = A.len > B.len ? mt.a : mt.b; how = 'rarity'; }
+      else if (A.ms !== B.ms) { win = A.ms < B.ms ? mt.a : mt.b; how = 'speed'; }
+      else { win = Math.random() < 0.5 ? mt.a : mt.b; how = 'coin'; }
+
+      if (win === mt.a) mt.wa = (mt.wa || 0) + 1; else mt.wb = (mt.wb || 0) + 1;
+      if ((mt.wa || 0) >= TRN_WINS) trnApplyWinner(matches, g.m, mt.a);
+      else if ((mt.wb || 0) >= TRN_WINS) trnApplyWinner(matches, g.m, mt.b);
+
+      const round = { m: g.m, r: g.r, prompt: g.questions[g.m * 3 + g.r], answers, win, how };
+      await TRN.backend.patch(TRN.code, {
+        'game.rounds': (g.rounds || []).concat([round]),
+        'game.matches': matches,
+        'game.phase': 'reveal'
+      });
+    }
+
+    /* ---------- Client-side phase handling ---------- */
+    function trnOnGame(room) {
+      const g = room.game;
+      const key = `${g.m}:${g.r}:${g.phase}`;
+      if (key !== TRN.lastKey) {
+        const first = TRN.lastKey === null;
+        TRN.lastKey = key;
+        trnEnterPhase(room, first);
+      } else {
+        trnRefreshLive(room);
+      }
+    }
+
+    function trnChipHtml(a) {
+      if (!a) return '';
+      const secs = ((a.ms || 0) / 1000).toFixed(1);
+      if (a.skip) return `<span class="text-slate-500">${a.text ? 'Skipped' : 'No answer'} &bull; ${secs}s</span>`;
+      const cfg = RARITY_CONFIG[a.key] || RARITY_CONFIG.common;
+      return `<span style="color:${cfg.color}">${trnEsc(a.text)} &bull; ${cfg.name} &bull; ${secs}s</span>`;
+    }
+
+    function trnPipsHtml(wins) {
+      let h = '';
+      for (let i = 0; i < TRN_WINS; i++) h += `<span class="trn-pip${i < wins ? ' trn-pip-on' : ''}"></span>`;
+      return h;
+    }
+
+    function trnSetBanner(main, sub, show) {
+      const b = trnEl('trnBanner');
+      if (!b) return;
+      if (!show) { b.classList.add('hidden'); return; }
+      trnEl('trnBannerMain').textContent = main || '';
+      trnEl('trnBannerSub').textContent = sub || '';
+      b.classList.remove('hidden');
+      const m = trnEl('trnBannerMain');
+      m.classList.remove('trn-banner-pop');
+      void m.offsetWidth;
+      m.classList.add('trn-banner-pop');
+    }
+
+    // Fills the two duel cards for the current match
+    function trnSetDuel(room, pipDelta) {
+      const g = room.game, mt = g.matches[g.m];
+      const duel = trnEl('trnDuel');
+      if (!duel || !mt) return;
+      duel.classList.remove('hidden');
+      const me = trnMe();
+      [['A', mt.a, mt.wa], ['B', mt.b, mt.wb]].forEach(([side, id, wins]) => {
+        const card = trnEl('trnDuel' + side);
+        let w = wins || 0;
+        if (pipDelta && pipDelta.id === id) w = Math.max(0, w + pipDelta.d);
+        trnEl('trnName' + side).textContent = trnName(room, id);
+        trnEl('trnPips' + side).innerHTML = trnPipsHtml(w);
+        card.classList.toggle('trn-duel-me', id === me);
+        card.classList.remove('trn-duel-win', 'trn-duel-lose');
+      });
+    }
+
+    function trnSetChip(side, html, pop) {
+      const el = trnEl('trnChip' + side);
+      if (!el) return;
+      el.innerHTML = html;
+      if (pop) {
+        el.classList.remove('feedback-slide-in');
+        void el.offsetWidth;
+        el.classList.add('feedback-slide-in');
+      }
+    }
+
+    function trnIsContestant(room) {
+      const g = room.game, mt = g.matches && g.matches[g.m];
+      const me = trnMe();
+      return !!(mt && (mt.a === me || mt.b === me));
+    }
+
+    function trnIAmOut(room) {
+      const me = trnMe();
+      return (room.game.matches || []).some(mt => mt.w && mt.w !== me && (mt.a === me || mt.b === me));
+    }
+
+    function trnRefreshLive(room) {
+      const g = room.game;
+      const mt = g.matches[g.m];
+      if (g.phase === 'answering' && mt) {
+        [['A', mt.a], ['B', mt.b]].forEach(([side, id]) => {
+          if (!trnPresent(room, id)) { trnSetChip(side, '<span class="text-slate-600">left the tournament</span>'); return; }
+          const done = g.answers && g.answers[id];
+          trnSetChip(side, done ? '<span class="text-pik-uncommon">Locked in &#10003;</span>' : '<span class="text-slate-500">typing...</span>');
+        });
+      }
+      if (g.phase === 'done') trnRenderEndActions(room);
+    }
+
+    function trnEnterPhase(room, firstLoad) {
+      const g = room.game;
+      trnClearTransient();
+      clearInterval(TRN.timer);
+
+      const card = trnEl('trnQCard'), echo = trnEl('trnPromptEcho'), verdict = trnEl('trnVerdict'), duel = trnEl('trnDuel'), pool = trnEl('trnPool');
+      const title = trnEl('trnTitle'), sub = trnEl('trnSub');
+      const mt = (g.matches || [])[g.m];
+      const meta = TRN_META[g.m] || '';
+      const out = trnIAmOut(room);
+
+      if (g.phase !== 'draw' && pool) pool.classList.add('hidden');
+      if (title) title.textContent = g.phase === 'draw' ? 'Drawing the bracket' : (g.phase === 'done' ? 'Tournament complete' : meta);
+      if (sub) {
+        sub.textContent = g.phase === 'draw' ? 'Placement is random'
+          : g.phase === 'done' ? ''
+          : `Round ${g.r + 1} \u2022 first to ${TRN_WINS} round wins${out ? ' \u2022 you\u2019re out \u2014 watching' : ''}`;
+      }
+
+      if (g.phase === 'draw') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (duel) duel.classList.add('hidden');
+        if (verdict) verdict.innerHTML = '';
+        trnPlayDraw(room);
+      } else if (g.phase === 'intro') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (verdict) verdict.innerHTML = '';
+        trnRenderBracket(room);
+        trnSetDuel(room);
+        trnSetChip('A', ''); trnSetChip('B', '');
+        const A = trnName(room, mt.a), B = trnName(room, mt.b);
+        const mine = trnIsContestant(room);
+        if (g.r === 0) trnSetBanner(meta, `${A} vs ${B}${mine ? ' \u2014 you\u2019re up!' : ''}`, true);
+        else trnSetBanner(`Round ${g.r + 1}`, `${A} ${mt.wa || 0}\u2013${mt.wb || 0} ${B}${mine ? ' \u2014 keep going!' : ''}`, true);
+        playAudioTone('menu');
+      } else if (g.phase === 'answering') {
+        trnSetBanner('', '', false);
+        trnRenderBracket(room);
+        trnSetDuel(room);
+        const prompt = g.questions[g.m * 3 + g.r];
+        const mine = trnIsContestant(room);
+        if (mine) {
+          if (echo) echo.classList.add('hidden');
+          const qn = trnEl('trnQNum'); if (qn) qn.textContent = `${meta} \u2022 Round ${g.r + 1}`;
+          const pr = trnEl('trnPrompt'); if (pr) pr.textContent = prompt;
+          trnHideFeedback();
+          TRN.evaluating = false;
+          const already = g.answers && g.answers[trnMe()];
+          TRN.submitted = !!already;
+          TRN.qStart = Date.now();
+          TRN.pausedMs = 0;
+          const input = trnEl('trnAnswerInput');
+          if (input) input.value = '';
+          trnSetEvalUi(false);
+          if (already) trnLockInputs();
+          if (card) {
+            card.classList.remove('hidden');
+            card.classList.add('card-rise-in-prepare');
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              card.classList.add('card-rise-in-spring');
+              card.classList.remove('card-rise-in-prepare');
+              TRN.phaseTimers.push(setTimeout(() => card.classList.remove('card-rise-in-spring'), 480));
+            }));
+          }
+          if (input && !already) setTimeout(() => input.focus(), 60);
+          if (verdict) verdict.innerHTML = '';
+          if (!already) trnStartTimer(TRN_ANSWER_SECONDS);
+        } else {
+          if (card) card.classList.add('hidden');
+          if (echo) { echo.textContent = prompt; echo.classList.remove('hidden'); }
+          if (verdict) verdict.innerHTML = '<span class="text-slate-400">Watching this match...</span>';
+        }
+        trnRefreshLive(room);
+      } else if (g.phase === 'reveal') {
+        if (card && !card.classList.contains('hidden')) {
+          card.classList.add('card-slide-out');
+          TRN.phaseTimers.push(setTimeout(() => { card.classList.add('hidden'); card.classList.remove('card-slide-out'); }, 320));
+        } else if (card) {
+          card.classList.add('hidden');
+        }
+        trnSetBanner('', '', false);
+        const r = (g.rounds || []).filter(x => x.m === g.m && x.r === g.r)[0];
+        if (!r) return;
+        if (echo) { echo.textContent = r.prompt; echo.classList.remove('hidden'); }
+        trnPlayReveal(room, r, firstLoad);
+      } else if (g.phase === 'advance') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        trnSetDuel(room);
+        const wid = mt.w;
+        const loseId = wid === mt.a ? mt.b : mt.a;
+        const sideW = wid === mt.a ? 'A' : 'B', sideL = sideW === 'A' ? 'B' : 'A';
+        trnEl('trnDuel' + sideW).classList.add('trn-duel-win');
+        trnEl('trnDuel' + sideL).classList.add('trn-duel-lose');
+        const last = (g.rounds || []).filter(x => x.m === g.m).pop();
+        if (last) { trnSetChip('A', trnChipHtml(last.answers[mt.a])); trnSetChip('B', trnChipHtml(last.answers[mt.b])); }
+        const finalMatch = g.m === 6;
+        trnSetBanner(`${trnName(room, wid)} ${finalMatch ? 'wins the Tournament!' : 'advances!'}`,
+          mt.ff ? `${trnName(room, loseId)} left the match` : `Won ${Math.max(mt.wa || 0, mt.wb || 0)}\u2013${Math.min(mt.wa || 0, mt.wb || 0)} over ${trnName(room, loseId)}`, true);
+        if (verdict) verdict.innerHTML = '';
+        const f = trnFeed(g.m);
+        trnRenderBracket(room, { animNew: f, advAnim: g.m });
+        playAudioTone('finish');
+        if (finalMatch && wid === trnMe()) TRN.phaseTimers.push(setTimeout(trnLaunchConfetti, 900));
+      } else if (g.phase === 'done') {
+        if (card) card.classList.add('hidden');
+        if (echo) echo.classList.add('hidden');
+        if (duel) duel.classList.add('hidden');
+        trnRenderBracket(room, firstLoad ? {} : { animNew: { col: 3, idx: 0 } });
+        const champ = g.champion || (g.matches[6] && g.matches[6].w);
+        const fm = g.matches[6];
+        const runner = fm && champ ? (champ === fm.a ? fm.b : fm.a) : null;
+        trnSetBanner(`${trnName(room, champ)} is the Champion!`, runner ? `Runner-up: ${trnName(room, runner)}` : '', true);
+        if (verdict) verdict.innerHTML = champ === trnMe() ? '<span class="text-pik-gold text-lg font-black">You won the Tournament!</span>' : '';
+        if (!firstLoad) { playAudioTone('finish'); if (champ === trnMe()) trnLaunchConfetti(); }
+        trnRenderEndActions(room);
+      }
+    }
+
+    function trnPlayReveal(room, r, firstLoad) {
+      const g = room.game, mt = g.matches[g.m];
+      const verdict = trnEl('trnVerdict');
+      const delta = { id: r.win, d: -1 };   // pips show the score from before this round, then update
+      trnSetDuel(room, firstLoad ? null : delta);
+      trnRenderBracket(room, firstLoad ? {} : { pipDelta: delta });
+      trnSetChip('A', trnChipHtml(r.answers[mt.a]), !firstLoad);
+      trnSetChip('B', trnChipHtml(r.answers[mt.b]), !firstLoad);
+
+      let bestKey = 'common', bestLen = -1;
+      [mt.a, mt.b].forEach(id => { const a = r.answers[id]; if (a && !a.skip && (a.len || 0) > bestLen) { bestLen = a.len || 0; bestKey = a.key; } });
+      if (!firstLoad) playAudioTone('stretch', RARITY_CONFIG[bestKey] ? bestKey : 'common');
+
+      const decide = (animate) => {
+        trnSetDuel(room);
+        trnRenderBracket(room);
+        const sideW = r.win === mt.a ? 'A' : 'B', sideL = sideW === 'A' ? 'B' : 'A';
+        trnEl('trnDuel' + sideW).classList.add('trn-duel-win');
+        trnEl('trnDuel' + sideL).classList.add('trn-duel-lose');
+        const loseId = r.win === mt.a ? mt.b : mt.a;
+        const wn = `<span class="text-pik-gold">${trnEsc(trnName(room, r.win))}</span>`;
+        const ln = trnEsc(trnName(room, loseId));
+        const rn = (id) => (RARITY_CONFIG[(r.answers[id] || {}).key] || RARITY_CONFIG.common).name;
+        let html;
+        if (r.how === 'rarity') html = `${wn} wins the round &mdash; ${trnEsc(rn(r.win))} beats ${trnEsc(rn(loseId))}.`;
+        else if (r.how === 'speed') html = `Same rarity &mdash; ${wn} was faster and wins the round.`;
+        else if (r.how === 'skip') html = `${ln} skipped &mdash; ${wn} takes the round.`;
+        else html = `Dead heat &mdash; ${wn} wins the coin flip.`;
+        if (mt.w) html += ` <span class="text-pik-gold">${trnEsc(trnName(room, mt.w))} wins the match!</span>`;
+        if (verdict) verdict.innerHTML = html;
+        if (animate) playAudioTone(r.win === trnMe() ? 'launch' : 'timeout');
+      };
+
+      if (firstLoad) { decide(false); return; }
+      if (verdict) verdict.innerHTML = '<span class="text-slate-400 animate-pulse">Comparing rarity...</span>';
+      TRN.phaseTimers.push(setTimeout(() => decide(true), 1700));
+    }
+
+    /* ---------- The animated bracket draw ---------- */
+    function trnPlayDraw(room) {
+      const g = room.game;
+      const seeds = g.seeds || [];
+      const names = seeds.map(id => trnName(room, id));
+      const undrawn = new Set([0, 1, 2, 3, 4, 5, 6, 7]);
+      trnRenderBracket(room, { undrawn });
+
+      const pool = trnEl('trnPool');
+      if (pool) {
+        pool.innerHTML = (g.order || []).map((id, i) => `<span id="trn-chip-${id}" class="trn-chip trn-chip-bob" style="animation-delay:${(i * 0.13).toFixed(2)}s">${trnEsc(trnName(room, id))}</span>`).join('');
+        pool.classList.remove('hidden');
+      }
+      trnSetBanner('Drawing the bracket...', 'Every spot is picked at random', true);
+      playAudioTone('menu');
+
+      const NS = 'http://www.w3.org/2000/svg';
+      for (let s = 0; s < 8; s++) {
+        const t0 = TRN_DRAW_LEAD + s * TRN_DRAW_STEP;
+        TRN.phaseTimers.push(setTimeout(() => {
+          const grp = trnEl('trn-g-0-' + s), txt = trnEl('trn-t-0-' + s);
+          if (!grp || !txt) return;
+          grp.classList.add('trn-spin');
+          txt.setAttribute('fill', '#f5d76e');
+          playAudioTone('menu');
+          const iv = setInterval(() => { txt.textContent = names[getRandomInt(names.length)]; }, 70);
+          TRN.phaseTimers.push(iv);
+          TRN.phaseTimers.push(setTimeout(() => {
+            clearInterval(iv);
+            txt.textContent = names[s];
+            txt.setAttribute('fill', '#e2e8f0');
+            txt.classList.remove('trn-lock');
+            void txt.getBoundingClientRect();
+            txt.classList.add('trn-lock');
+            grp.classList.remove('trn-spin');
+            const rect = trnEl('trn-r-0-' + s);
+            if (rect) {
+              rect.setAttribute('stroke', 'rgba(212,175,55,0.55)');
+              const ring = document.createElementNS(NS, 'rect');
+              ['x', 'y', 'width', 'height', 'rx'].forEach(a => ring.setAttribute(a, rect.getAttribute(a)));
+              ring.setAttribute('class', 'trn-ring');
+              grp.appendChild(ring);
+              setTimeout(() => { if (ring.parentNode) ring.remove(); }, 900);
+            }
+            const chip = trnEl('trn-chip-' + seeds[s]);
+            if (chip) { chip.classList.remove('trn-chip-bob'); chip.classList.add('trn-chip-gone'); }
+            playAudioTone('stretch', 'rare');
+          }, 700));
+        }, t0));
+      }
+      TRN.phaseTimers.push(setTimeout(() => {
+        trnSetBanner('Bracket set!', 'The first match is about to start', true);
+        playAudioTone('launch');
+      }, TRN_DRAW_LEAD + 8 * TRN_DRAW_STEP));
+    }
+
+    /* ---------- Champion confetti ---------- */
+    function trnStopConfetti() {
+      if (TRN.confettiRaf) cancelAnimationFrame(TRN.confettiRaf);
+      TRN.confettiRaf = 0;
+      const cv = trnEl('trnConfetti');
+      if (!cv) return;
+      try { const c = cv.getContext && cv.getContext('2d'); if (c) c.clearRect(0, 0, cv.width, cv.height); } catch (e) {}
+      cv.classList.add('hidden');
+    }
+
+    function trnLaunchConfetti() {
+      const cv = trnEl('trnConfetti');
+      if (!cv) return;
+      try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+      trnStopConfetti();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      const W = cv.clientWidth || window.innerWidth || 800;
+      const H = cv.clientHeight || window.innerHeight || 600;
+      cv.width = Math.round(W * dpr);
+      cv.height = Math.round(H * dpr);
+      cv.classList.remove('hidden');
+      const ctx = cv.getContext && cv.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+      const colors = ['#d4af37', '#f5d76e', '#ffffff', '#f97316', '#1976d2', '#8e24aa', '#388e3c', '#e53935'];
+      const rnd = (a, b) => a + Math.random() * (b - a);
+      const parts = [];
+      const add = (x, y, vx, vy) => parts.push({ x, y, vx, vy, rot: rnd(0, 6.28), vr: rnd(-0.25, 0.25), w: rnd(6, 11), h: rnd(4, 7), c: colors[(Math.random() * colors.length) | 0], tilt: rnd(0, 6.28), tv: rnd(0.08, 0.25) });
+      const cannon = (x, dir) => {
+        for (let i = 0; i < 60; i++) { const a = -rnd(0.7, 1.3); const sp = rnd(10, 17) * (H / 800 + 0.35); add(x, H + 10, Math.cos(a) * sp * dir, Math.sin(a) * sp); }
+      };
+      const t0 = performance.now();
+      let last = t0, burst = 0;
+      const bursts = [0, 650, 1400];
+      const frame = (now) => {
+        const el = now - t0;
+        const dt = Math.min(2.5, (now - last) / 16.67);
+        last = now;
+        while (burst < bursts.length && el >= bursts[burst]) { cannon(W * 0.04, 1); cannon(W * 0.96, -1); burst++; }
+        if (el < 2400) for (let i = 0; i < 2; i++) add(rnd(0, W), -10, rnd(-1.5, 1.5), rnd(1, 3));
+        ctx.clearRect(0, 0, W, H);
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i];
+          p.vy += 0.16 * dt;
+          const drag = Math.pow(0.98, dt);
+          p.vx = p.vx * drag + Math.sin(p.tilt) * 0.06 * dt;
+          p.vy *= drag;
+          p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; p.tilt += p.tv * dt;
+          if (p.y > H + 30) { parts.splice(i, 1); continue; }
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.c;
+          ctx.fillRect(-p.w / 2, -(p.h * Math.max(0.15, Math.abs(Math.cos(p.tilt)))) / 2, p.w, p.h * Math.max(0.15, Math.abs(Math.cos(p.tilt))));
+          ctx.restore();
+        }
+        if (el < 8000 && (parts.length || el < 2600)) TRN.confettiRaf = requestAnimationFrame(frame);
+        else trnStopConfetti();
+      };
+      TRN.confettiRaf = requestAnimationFrame(frame);
+    }
+
+    function trnRenderEndActions(room) {
+      const end = trnEl('trnEndActions');
+      if (!end) return;
+      end.classList.remove('hidden');
+      end.classList.add('flex');
+      const isHost = room.hostId === trnMe();
+      const again = trnEl('trnAgainBtn'); if (again) again.classList.toggle('hidden', !isHost);
+      const wait = trnEl('trnEndWait'); if (wait) wait.textContent = isHost ? '' : 'Waiting for the host to start another tournament...';
+    }
+
+    /* ---------- Answering (only the two players in the current match) ---------- */
+    function trnShowFeedback(msg) {
+      const fb = trnEl('trnFeedback');
+      if (fb) {
+        fb.textContent = msg;
+        fb.classList.remove('hidden', 'feedback-slide-in');
+        void fb.offsetWidth;
+        fb.classList.add('feedback-slide-in');
+      }
+      const input = trnEl('trnAnswerInput');
+      if (input) {
+        input.classList.remove('input-shake');
+        void input.offsetWidth;
+        input.classList.add('input-shake');
+      }
+    }
+
+    function trnHideFeedback() {
+      const fb = trnEl('trnFeedback');
+      if (fb) { fb.textContent = ''; fb.classList.add('hidden'); }
+      const input = trnEl('trnAnswerInput');
+      if (input) input.classList.remove('input-shake');
+    }
+
+    function trnSetEvalUi(on) {
+      const i = trnEl('trnAnswerInput'), s = trnEl('trnSubmitBtn'), k = trnEl('trnSkipBtn'), t = trnEl('trnSubmitText'), c = trnEl('trnQCard');
+      if (i) i.disabled = on;
+      if (s) s.disabled = on;
+      if (k) k.disabled = on;
+      if (c) c.classList.toggle('card-evaluating', on);
+      if (t) t.textContent = on ? 'Judging...' : 'Submit';
+    }
+
+    function trnLockInputs() {
+      const i = trnEl('trnAnswerInput'), s = trnEl('trnSubmitBtn'), k = trnEl('trnSkipBtn'), t = trnEl('trnSubmitText');
+      if (i) i.disabled = true;
+      if (s) s.disabled = true;
+      if (k) k.disabled = true;
+      if (t) t.textContent = 'Locked in';
+    }
+
+    function trnStartTimer(seconds) {
+      clearInterval(TRN.timer);
+      TRN.timeLeft = seconds;
+      const txt = trnEl('trnTimerText'), pill = trnEl('trnTimerPill');
+      const paint = () => {
+        if (txt) txt.textContent = `${Math.max(0, TRN.timeLeft)}s`;
+        if (pill) pill.classList.toggle('timer-urgent', TRN.timeLeft > 0 && TRN.timeLeft <= 7);
+      };
+      paint();
+      TRN.timer = setInterval(() => {
+        if (TRN.evaluating || TRN.submitted) return;
+        TRN.timeLeft--;
+        paint();
+        if (TRN.timeLeft <= 0) {
+          clearInterval(TRN.timer);
+          if (pill) pill.classList.remove('timer-urgent');
+          playAudioTone('timeout');
+          trnSkip(true);
+        }
+      }, 1000);
+    }
+
+    async function trnSendAnswer(ans) {
+      const room = TRN.room;
+      if (!room || !room.game || room.game.phase !== 'answering') return;
+      TRN.submitted = true;
+      clearInterval(TRN.timer);
+      const pill = trnEl('trnTimerPill'); if (pill) pill.classList.remove('timer-urgent');
+      trnLockInputs();
+      const mt = room.game.matches[room.game.m];
+      trnSetChip(mt.a === trnMe() ? 'A' : 'B', '<span class="text-pik-uncommon">Locked in &#10003;</span>');
+      try {
+        await TRN.backend.patch(TRN.code, { ['game.answers.' + trnMe()]: ans });
+      } catch (e) {
+        console.warn('[Tournament]', e);
+        TRN.submitted = false;
+        trnSetEvalUi(false);
+        trnShowFeedback('Connection problem \u2014 please try again.');
+        trnStartTimer(Math.max(1, TRN.timeLeft));
+      }
+    }
+
+    function trnSkip(auto) {
+      if (TRN.submitted) return;
+      if (TRN.evaluating && !auto) return;
+      const room = TRN.room;
+      const g = room && room.game;
+      if (!g || g.phase !== 'answering' || !trnIsContestant(room)) return;
+      if (!auto) playAudioTone('skip');
+      const ms = auto ? TRN_ANSWER_SECONDS * 1000 : Math.max(0, Date.now() - TRN.qStart - TRN.pausedMs);
+      trnSendAnswer({ text: 'Skipped', key: 'skipped', len: 0, ms, skip: true });
+    }
+
+    async function trnSubmit() {
+      if (TRN.submitted || TRN.evaluating) return;
+      const room = TRN.room;
+      const g = room && room.game;
+      if (!g || g.phase !== 'answering' || !trnIsContestant(room)) return;
+
+      const input = trnEl('trnAnswerInput');
+      const raw = input ? input.value.trim() : '';
+      if (!raw) { trnShowFeedback('Please enter an answer or skip.'); playAudioTone('error'); return; }
+
+      const norm = normalize(raw);
+      if (TRN.used.has(norm)) { trnShowFeedback(`"${raw}" has already been used.`); playAudioTone('error'); return; }
+
+      const typedMs = Math.max(0, Date.now() - TRN.qStart - TRN.pausedMs);
+      const m = g.m, r = g.r;
+      const prompt = g.questions[m * 3 + r];
+      const judgeStart = Date.now();
+
+      TRN.evaluating = true;
+      trnHideFeedback();
+      trnSetEvalUi(true);
+
+      const stillValid = () => {
+        const cur = TRN.room && TRN.room.game;
+        return cur && cur.m === m && cur.r === r && cur.phase === 'answering';
+      };
+
+      try {
+        const verdict = await evaluateAnswerWithGroq(prompt, raw);
+        TRN.evaluating = false;
+        if (!stillValid()) return;
+        trnSetEvalUi(false);
+
+        if (!verdict || !verdict.valid) {
+          TRN.pausedMs += Date.now() - judgeStart;
+          const reasonMsg = verdict && verdict.reason ? ` \u2014 ${verdict.reason}` : '';
+          trnShowFeedback(`"${raw}" doesn't fit${reasonMsg}`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+
+        let rarityKey = (verdict.rarity || 'common').toLowerCase().trim();
+        if (rarityKey === 'the pik' || rarityKey === 'pik') rarityKey = 'gold';
+        if (rarityKey === 'too clever') rarityKey = 'sarcastic';
+        if (!RARITY_CONFIG[rarityKey]) rarityKey = 'common';
+
+        const cleanAnswer = (verdict.normalizedAnswer || raw).trim();
+        const normClean = normalize(cleanAnswer);
+        if (TRN.used.has(normClean)) {
+          TRN.pausedMs += Date.now() - judgeStart;
+          trnShowFeedback(`"${cleanAnswer}" has already been used.`);
+          playAudioTone('error');
+          if (input) input.focus();
+          return;
+        }
+        TRN.used.add(norm);
+        TRN.used.add(normClean);
+
+        trnSendAnswer({ text: cleanAnswer, key: rarityKey, len: RARITY_CONFIG[rarityKey].length, ms: typedMs, skip: false });
+      } catch (err) {
+        TRN.evaluating = false;
+        if (!stillValid()) return;
+        trnSetEvalUi(false);
+        TRN.pausedMs += Date.now() - judgeStart;
+        playAudioTone('error');
+        trnShowFeedback('Unable to verify answer right now. Please try again.' + (pikJudgeDiagText() ? ` [${pikJudgeDiagText()}]` : ''));
+        if (input) input.focus();
+      }
+    }
   </script>
 
   <!-- ================= SHARED CLOUD VERDICT SYNC ================= -->
